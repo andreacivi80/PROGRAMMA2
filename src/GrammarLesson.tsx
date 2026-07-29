@@ -1,5 +1,6 @@
 import type { MobileUnit } from "./curriculum";
 import { grammarGuides } from "./grammarGuides";
+import MixedText from "./MixedText";
 
 export default function GrammarLesson({
   unit,
@@ -20,13 +21,13 @@ export default function GrammarLesson({
 
       {guide ? (
         <section className="deepGuide primaryGuide">
-          <p className="deepOverview">{guide.overview}</p>
+          <p className="deepOverview"><MixedText text={guide.overview} /></p>
 
           {guide.sections.map((section, index) => (
             <article key={section.title}>
               <small>{index + 1} · APPROFONDIMENTO</small>
               <h3>{section.title}</h3>
-              <p>{section.text}</p>
+              <p><MixedText text={section.text} /></p>
               {section.examples?.map((example) => (
                 <div className="deepExample" key={example.en}>
                   <strong lang="en">{example.en}</strong>
@@ -51,7 +52,7 @@ export default function GrammarLesson({
               <div key={example.en}>
                 <strong lang="en">{example.en}</strong>
                 <span>{example.it}</span>
-                <p>{example.noteIt}</p>
+                <p><MixedText text={example.noteIt} /></p>
               </div>
             ))}
           </article>
@@ -73,7 +74,7 @@ export default function GrammarLesson({
               {unit.grammar.explanationIt.map((text, index) => (
                 <div key={text}>
                   <b>{index + 1}</b>
-                  <p>{text}</p>
+                  <p><MixedText text={text} /></p>
                 </div>
               ))}
             </div>
