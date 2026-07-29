@@ -1,0 +1,12 @@
+{
+  "name": "Gambe leggere",
+  "short_name": "Gambe leggere",
+  "description": "Esercizi guidati per il benessere delle gambe",
+  "start_url": "/PROGRAMMA2/gambe-leggere/",
+  "scope": "/PROGRAMMA2/gambe-leggere/",
+  "display": "standalone",
+  "background_color": "#f7f3eb",
+  "theme_color": "#315546",
+  "lang": "it",
+  "icons": [{"src":"favicon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
