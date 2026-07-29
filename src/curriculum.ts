@@ -1,3 +1,5 @@
+import { a1Expansion } from "./a1Expansion";
+
 export type Cefr = "A1" | "A2" | "B1" | "B2";
 
 export type Choice = {
@@ -84,7 +86,7 @@ const U = (
   repetition: { retryMode: "new-order", masteryTarget: 80, reviewAfterDays: [1, 3, 7, 14] }
 });
 
-export const mobileCurriculum: MobileUnit[] = [
+const coreCurriculum: MobileUnit[] = [
   U("a1-be-introductions", 1, "A1", "Presentarsi con be",
     ["Il verbo be serve per dire chi sei, come stai e da dove vieni.", "Con I usa am; con he, she, it usa is; con you, we, they usa are.", "Nelle domande am/is/are viene prima del soggetto."],
     ["Affermativa: soggetto + am/is/are.", "Negativa: soggetto + am/is/are not.", "Domanda: Am/Is/Are + soggetto?"],
@@ -470,13 +472,19 @@ export const mobileCurriculum: MobileUnit[] = [
   )
 ];
 
+export const mobileCurriculum: MobileUnit[] = [
+  ...coreCurriculum.filter((unit) => unit.cefr === "A1"),
+  ...a1Expansion,
+  ...coreCurriculum.filter((unit) => unit.cefr !== "A1")
+].map((unit, index) => ({ ...unit, day: index + 1 }));
+
 export const curriculumIndex = {
-  version: 1,
+  version: 2,
   levels: {
-    A1: { days: [1, 2, 3, 4, 5, 6], goalIt: "Comunicare bisogni immediati e descrivere la vita quotidiana." },
-    A2: { days: [7, 8, 9, 10, 11, 12], goalIt: "Raccontare esperienze, fare programmi, confrontare e chiedere informazioni." },
-    B1: { days: [13, 14, 15, 16, 17, 18], goalIt: "Gestire situazioni reali, lavoro, problemi e spiegazioni articolate." },
-    B2: { days: [19, 20, 21, 22, 23, 24], goalIt: "Argomentare, cogliere sfumature e formulare proposte precise." }
+    A1: { days: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], goalIt: "Comunicare bisogni immediati e descrivere la vita quotidiana." },
+    A2: { days: [13, 14, 15, 16, 17, 18], goalIt: "Raccontare esperienze, fare programmi, confrontare e chiedere informazioni." },
+    B1: { days: [19, 20, 21, 22, 23, 24], goalIt: "Gestire situazioni reali, lavoro, problemi e spiegazioni articolate." },
+    B2: { days: [25, 26, 27, 28, 29, 30], goalIt: "Argomentare, cogliere sfumature e formulare proposte precise." }
   },
   sessionPlan: [
     { phase: "learn", minutes: 4, source: "grammar" },
