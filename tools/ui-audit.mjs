@@ -45,7 +45,12 @@ const checks={
   trivia:readFileSync("src/WordGamesHub.tsx","utf8").includes("Trivia Quest"),
   levelFilter:app.includes("themeSupportsLevel")&&app.includes("topicLevelFilter")
  },
- themeAudio:{
+ visualQuiz:{
+  fullCategoryBank:app.includes("visualTiles(sets)"),
+  newMosaicEveryQuestion:app.includes("Nuovo mosaico casuale a ogni domanda"),
+  selectiveLabels:app.includes("showLabel=revealed.includes(tile.id)"),
+  randomizedPositions:app.includes("shuffled([target,...shuffled(bank.filter")
+ }, themeAudio:{
   listen:pack.includes("speak(pack.scenario.text,setScenarioWord)"),
   pause:pack.includes("speechSynthesis.pause()"),
   resume:pack.includes("speechSynthesis.resume()"),
@@ -74,6 +79,7 @@ const failed=[
  ...(missingHandlers.length?["buttons-without-handler"]:[]),
  ...Object.entries(checks.lessonAudio).filter(([,value])=>!value).map(([name])=>`lesson-audio:${name}`),
  ...Object.entries(checks.games).filter(([,value])=>!value).map(([name])=>`games:${name}`),
+ ...Object.entries(checks.visualQuiz).filter(([,value])=>!value).map(([name])=>`visual-quiz:${name}`),
  ...Object.entries(checks.themeAudio).filter(([,value])=>!value).map(([name])=>`theme-audio:${name}`),
  ...Object.entries(checks.skipping).filter(([,value])=>!value).map(([name])=>`skipping:${name}`),
  ...Object.entries(checks.responsive).filter(([,value])=>!value).map(([name])=>`responsive:${name}`)
