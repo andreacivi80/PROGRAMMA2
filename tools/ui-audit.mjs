@@ -25,6 +25,8 @@ const pack=readFileSync("src/ThemePackLab.tsx","utf8");
 const authentic=readFileSync("src/AuthenticAudio.tsx","utf8");
 const review=readFileSync("src/ReviewLab.tsx","utf8");
 const speechVoices=readFileSync("src/speechVoices.ts","utf8");
+const supplementary=readFileSync("src/supplementaryQuiz.ts","utf8");
+const languageFocus=readFileSync("src/languageFocusPacks.ts","utf8");
 const css=readFileSync("src/styles.css","utf8")+readFileSync("src/themePacks.css","utf8")+readFileSync("src/version29.css","utf8")+readFileSync("src/wordGames.css","utf8");
 const checks={
  buttons,
@@ -62,6 +64,8 @@ const checks={
   genderAwareVoices:speechVoices.includes("femaleSpeakers")&&speechVoices.includes("maleSpeakers"),
   variedVoicePairs:speechVoices.includes("seedIndex")&&app.includes("speechSynthesis.getVoices(),unit.id"),
   singleVoiceFallback:speechVoices.includes("utterance.pitch = role === \"female\" ? 1.08 : 0.9"),
+  centeredScenarioScroll:pack.includes("activeRect.top-boxRect.top+box.scrollTop"),
+  stableScenarioViewport:css.includes("overflow-anchor:none")&&css.includes("scroll-padding-block:42%"),
   authenticPause:authentic.includes("setStatus(\"paused\")"),
   authenticStop:authentic.includes("currentTime=0"),
   authenticSpeeds:authentic.includes("[.8,1,1.2]")
@@ -71,7 +75,18 @@ const checks={
   listeningQuestions:app.includes("skipCurrentQuestion(listeningQuiz.length,nextPhase)"),
   readingQuestions:app.includes("readingSkip")&&app.includes("Domanda saltata"),
   reviewQuestions:review.includes("Salta domanda"),
-  themeQuestions:pack.includes("Salta domanda")
+themeQuestions:pack.includes("Salta domanda")
+ },
+ supplementaryPractice:{
+  autonomousBank:!app.includes("function bonusQuizFor")&&supplementary.includes("supplementaryBankFor"),
+  remembersSeen:app.includes("english-coach-supplementary-seen-v1"),
+  rotatesQuestions:supplementary.includes("excludedSet")&&supplementary.includes("unseen")
+ },
+ languageFocus:{
+  themeEntry:app.includes("Verbi e false friends"),
+  fiveLevels:["A1","A2","B1","B2","C1"].every(level=>languageFocus.includes(`level: "${level}"`)),
+  pastAndParticiple:languageFocus.includes("Past Simple")&&languageFocus.includes("Past Participle"),
+  falseFriends:languageFocus.includes("false friends")&&languageFocus.includes("actually")
  },
  responsive:{
   phoneRules:css.includes("@media(max-width:390px)")&&css.includes("@media(max-width:370px)"),
@@ -87,6 +102,8 @@ const failed=[
  ...Object.entries(checks.visualQuiz).filter(([,value])=>!value).map(([name])=>`visual-quiz:${name}`),
  ...Object.entries(checks.themeAudio).filter(([,value])=>!value).map(([name])=>`theme-audio:${name}`),
  ...Object.entries(checks.skipping).filter(([,value])=>!value).map(([name])=>`skipping:${name}`),
+ ...Object.entries(checks.supplementaryPractice).filter(([,value])=>!value).map(([name])=>`supplementary:${name}`),
+ ...Object.entries(checks.languageFocus).filter(([,value])=>!value).map(([name])=>`language-focus:${name}`),
  ...Object.entries(checks.responsive).filter(([,value])=>!value).map(([name])=>`responsive:${name}`)
 ];
 console.log(JSON.stringify({...checks,failed},null,2));
