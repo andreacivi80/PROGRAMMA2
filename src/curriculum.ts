@@ -170,7 +170,7 @@ const coreCurriculum: MobileUnit[] = [
     [C("After can use:", ["to speak", "speaks", "speak"], 2, "Can + forma base."), C("Correct question:", ["You can help?", "Can you help?", "Do can you help?"], 1, "Can precede il soggetto.")]
   ),
 
-  U("a1-review-real-life", 6, "A1", "Missione A1: vita quotidiana",
+  U("a1-review-real-life", 6, "A1", "Riepilogo intermedio A1: vita quotidiana",
     ["Questa unità integra be, articoli, present simple, continuous e can.", "Prima comprendi il contesto; poi scegli il tempo o la struttura.", "L'obiettivo è comunicare anche con frasi brevi ma corrette."],
     ["Routine → present simple.", "Adesso → present continuous.", "Capacità/richiesta → can + base."],
     [["I work here every day.", "Lavoro qui ogni giorno.", "Routine."], ["I am working now.", "Sto lavorando adesso.", "Azione in corso."], ["Can you repeat that?", "Puoi ripeterlo?", "Richiesta utile."]],
@@ -266,7 +266,7 @@ const coreCurriculum: MobileUnit[] = [
     [C("No necessity:", ["mustn't", "don't have to", "shouldn't always"], 1, "Don't have to = non necessario."), C("Advice:", ["You should rest.", "You must to rest.", "You should to rest."], 0, "Should + base.")]
   ),
 
-  U("a2-review-travel", 12, "A2", "Missione A2: viaggio",
+  U("a2-review-travel", 12, "A2", "Riepilogo intermedio A2: viaggio",
     ["Integra passato, confronto, futuro e modali in un contesto di viaggio.", "Usa il passato per raccontare, i comparativi per scegliere e i modali per consigliare.", "La precisione conta, ma prima viene la comprensibilità."],
     ["Past: went/saw/took.", "Comparison: cheaper than.", "Advice: should + base."],
     [["We took the train yesterday.", "Abbiamo preso il treno ieri.", "Passato concluso."], ["The bus is cheaper.", "L'autobus è più economico.", "Confronto."], ["You should book early.", "Dovresti prenotare presto.", "Consiglio."]],
@@ -362,7 +362,7 @@ const coreCurriculum: MobileUnit[] = [
     [C("Natural collocation:", ["do progress", "make progress", "create progress"], 1, "Si dice make progress."), C("Natural request:", ["Could you send it?", "Could you to send it?", "Could send you it?"], 0, "Could + subject + base.")]
   ),
 
-  U("b1-review-problem-solving", 18, "B1", "Missione B1: risolvere un problema",
+  U("b1-review-problem-solving", 18, "B1", "Riepilogo intermedio B1: risolvere un problema",
     ["Integra present perfect, condizionali, passivo e lessico di lavoro.", "Prima riassumi il problema, poi proponi una soluzione e una condizione.", "Usa il passivo quando l'autore dell'azione non è importante."],
     ["Problem: The deadline has changed.", "Condition: If we start now, we will finish.", "Passive: The report was sent."],
     [["The client has changed the date.", "Il cliente ha cambiato la data.", "Risultato presente."], ["If we share the work, we will finish.", "Se dividiamo il lavoro, finiremo.", "Piano reale."], ["The files were sent yesterday.", "I file sono stati inviati ieri.", "Passivo."]],
@@ -458,7 +458,7 @@ const coreCurriculum: MobileUnit[] = [
     [C("Get behind an idea:", ["hide it", "support it", "delay it"], 1, "Significa sostenere."), C("Indirect criticism:", ["not exactly transparent", "perfectly clear", "fully approved"], 0, "Not exactly attenua la critica.")]
   ),
 
-  U("b2-final-mission", 24, "B2", "Missione finale B2: proposta argomentata",
+  U("b2-final-mission", 24, "B2", "Riepilogo intermedio B2: proposta argomentata",
     ["Integra strutture avanzate in una risposta chiara, argomentata e diplomatica.", "Presenta il contesto, riporta posizioni, valuta alternative e formula una proposta.", "La verifica premia chiarezza, accuratezza, lessico e capacità di cogliere implicazioni."],
     ["Reported: They said that ...", "Hypothesis: If we had ..., we would have ...", "Compromise: on condition that ..."],
     [["The team said that costs had increased.", "Il gruppo disse che i costi erano aumentati.", "Discorso indiretto."], ["If we had planned earlier, we would have saved time.", "Se avessimo pianificato prima, avremmo risparmiato tempo.", "Third conditional."], ["I support it on condition that we review the results.", "Lo sostengo a condizione di verificare i risultati.", "Compromesso."]],
