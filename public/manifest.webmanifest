@@ -1,12 +1,12 @@
 {
   "name": "English Coach",
   "short_name": "English Coach",
-  "description": "Percorso quotidiano di inglese da A1 a B2",
+  "description": "Percorso completo di inglese da A1 a C1 con grammatica, ascolto, scrittura e pronuncia",
   "start_url": "/PROGRAMMA2/",
   "scope": "/PROGRAMMA2/",
   "display": "standalone",
   "background_color": "#f7f5ef",
-  "theme_color": "#6750a4",
+  "theme_color": "#146c5a",
   "lang": "it",
   "icons": [
     {
