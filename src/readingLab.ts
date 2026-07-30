@@ -9,6 +9,8 @@ export type ReadingPassage = {
   paragraphs: string[];
   glossary: [string, string][];
   questions: Choice[];
+  sourceUrl?: string;
+  sourceLabel?: string;
 };
 
 const q=(prompt:string,options:string[],answer:number,explanationIt:string):Choice=>({prompt,options,answer,explanationIt});
@@ -109,4 +111,98 @@ export const readingPassages:ReadingPassage[]=[
       q("What is the passage’s central recommendation?",["Remove automation from every public service","Judge success only by low transaction cost","Combine automation, meaningful review and accessible alternatives"],2,"La conclusione propone automazione per i casi ordinari, revisione proporzionata e canali alternativi accessibili.")
     ]
   }
-];
+,
+  {
+    id:"reading-a1-rainy-trip",level:"A1",title:"A rainy day at the science museum",topic:"Scuola, trasporti e programmi che cambiano",minutes:12,
+    paragraphs:[
+      "On Tuesday, Mrs Bell takes her class to the city science museum. Twenty students meet at school at eight o’clock. They have small backpacks, sandwiches and bottles of water. The sky is grey, but it is not raining when they leave. The class walks to the bus stop together.",
+      "The bus arrives ten minutes late. During the journey, the rain starts. Mia sits next to her friend Noah. They look at the city through the wet window and talk about the space exhibition. Noah wants to see the model rocket, while Mia is interested in the robots.",
+      "At the museum, a guide called Sam welcomes the class. First, he shows them a room about planets. Then the students build a small paper bridge in pairs. Mia and Noah’s bridge holds six toy cars, so they are very pleased. At midday, the class cannot eat in the garden because of the rain. They have lunch in a large room near the entrance instead.",
+      "Before leaving, every student chooses a postcard from the museum shop. The return bus is on time. They arrive at school at four o’clock, tired but excited. Mrs Bell asks them to write three sentences about their favourite activity for homework. Mia decides to write about the bridge, not the robots."
+    ],
+    glossary:[["grey","grigio"],["wet","bagnato"],["guide","guida"],["bridge","ponte"],["instead","invece"],["return bus","autobus di ritorno"]],
+    questions:[
+      q("How many students go to the museum?",["Twelve","Twenty","Thirty"],1,"Il testo dice che venti studenti si incontrano a scuola."),
+      q("What time do they meet?",["At eight","At ten","At four"],0,"Si incontrano alle otto."),
+      q("What does Noah want to see?",["The robots","The model rocket","The garden"],1,"Noah vuole vedere il modellino del razzo."),
+      q("Why do they eat near the entrance?",["The garden is closed for winter","It is raining","They have no sandwiches"],1,"La pioggia impedisce di pranzare in giardino."),
+      q("What does each student choose?",["A toy car","A postcard","A new backpack"],1,"Prima di partire scelgono una cartolina."),
+      q("What will Mia write about?",["The bridge","The bus","The robots"],0,"Alla fine decide di scrivere del ponte.")
+    ]
+  },
+  {
+    id:"reading-a2-lost-wallet",level:"A2",title:"The wallet on platform three",topic:"Viaggio, oggetti smarriti e gentilezza",minutes:15,
+    paragraphs:[
+      "Last Friday, Elena travelled by train to visit her cousin in York. She arrived at the station early and bought a coffee before checking the departure board. Her train was leaving from platform three, so she walked there and sat on a bench. A few minutes later, she noticed a brown wallet under the seat.",
+      "Elena opened the wallet carefully because she wanted to find the owner’s name. It contained some money, two bank cards and a student identity card for a young man called Oliver Grant. She did not take anything out. Instead, she carried the wallet to the information desk and explained exactly where she had found it.",
+      "The station employee made an announcement, but nobody came immediately. Elena’s train was due in five minutes. She left her phone number with the employee and boarded the train. About half an hour later, she received a message from Oliver. He had put the wallet on the bench while buying a ticket and had forgotten to pick it up. He thanked Elena and said the student card was especially important because he needed it for an exam on Monday.",
+      "When Elena returned on Sunday evening, there was a small envelope for her at the information desk. Inside was a thank-you card and a voucher for the station café. Elena was surprised because she had not expected a reward. She used the voucher to buy two hot chocolates and shared them with her cousin before their bus arrived."
+    ],
+    glossary:[["wallet","portafoglio"],["departure board","tabellone partenze"],["identity card","documento di identità"],["announcement","annuncio"],["due","previsto"],["voucher","buono"]],
+    questions:[
+      q("Where did Elena find the wallet?",["In the café","Under a station bench","On the train"],1,"Era sotto il sedile della piattaforma tre."),
+      q("How did she discover the owner’s name?",["From a student card","From a message","From a ticket"],0,"Nel portafoglio c’era la tessera studente di Oliver."),
+      q("What did Elena do with the wallet?",["She took it home","She gave it to the information desk","She left it under the bench"],1,"Lo consegnò al banco informazioni."),
+      q("Why was the student card important?",["Oliver needed it for an exam","It contained money","It was a train pass"],0,"Oliver ne aveva bisogno per un esame del lunedì."),
+      q("When did Elena return?",["Friday morning","Saturday afternoon","Sunday evening"],2,"Tornò domenica sera."),
+      q("What was in the envelope?",["A bank card","A café voucher and thanks","A new train ticket"],1,"Oliver lasciò una cartolina di ringraziamento e un buono.")
+    ]
+  },
+  {
+    id:"reading-b1-repair-cafe",level:"B1",title:"The Saturday repair café",topic:"Comunità, riuso e competenze pratiche",minutes:20,sourceUrl:"https://www.elmbridge.gov.uk/news/2026/repair-cafes-elmbridge-fix-learn-and-reduce-waste",sourceLabel:"Elmbridge Borough Council · tema di attualità",
+    paragraphs:[
+      "Once a month, the community hall in Millford becomes a repair café. Residents bring small electrical devices, clothes, bicycles and toys that no longer work properly. The service is run by volunteers and repairs are free, although visitors can make a donation to cover materials. The goal is not only to save objects from being thrown away but also to teach owners how basic repairs are done.",
+      "At a recent event, Aisha brought a desk lamp that had stopped working. She expected to leave it with a volunteer and collect it later. Instead, Tom, a retired electrician, invited her to sit beside him. He first checked the plug and cable, then showed her how to test the switch safely. The problem was a loose connection, not the bulb as Aisha had assumed. Within twenty minutes, the lamp was working again.",
+      "Not every object can be repaired immediately. Spare parts may be unavailable, and volunteers refuse items that could be dangerous. Large appliances are not accepted because they are difficult to move and require specialist equipment. Visitors are therefore asked to describe the fault when booking. This helps organisers match each person with a volunteer who has the right experience.",
+      "The social side is almost as important as the technical work. People drink tea while they wait, exchange advice and sometimes offer skills of their own. After her lamp was fixed, Aisha joined a short sewing demonstration and learned how to replace a button. She has now volunteered to welcome visitors at the next event.",
+      "Organisers say the café cannot replace professional repair businesses, but it can change how people think about broken possessions. An item with a small fault is not automatically rubbish. Even when a repair fails, owners leave with a clearer explanation of the problem and can make a better decision about replacement."
+    ],
+    glossary:[["loose connection","collegamento allentato"],["fault","guasto"],["spare parts","pezzi di ricambio"],["assume","presumere"],["replace","sostituire"],["possession","oggetto posseduto"]],
+    questions:[
+      q("What are visitors encouraged to do during a repair?",["Watch and learn","Leave the building","Buy a new object"],0,"Il modello invita il proprietario a osservare e imparare."),
+      q("What was wrong with Aisha’s lamp?",["The bulb was missing","There was a loose connection","The cable was too long"],1,"Tom trovò un collegamento allentato."),
+      q("Why must visitors describe a fault in advance?",["To calculate a sales price","To select a suitable volunteer","To refuse all electrical objects"],1,"Gli organizzatori abbinano il problema alla competenza giusta."),
+      q("Which items are not accepted?",["Clothes","Small toys","Large appliances"],2,"Gli elettrodomestici grandi richiedono attrezzature specialistiche."),
+      q("What did Aisha do after the repair?",["She learned to sew on a button","She bought another lamp","She repaired a bicycle"],0,"Partecipò a una dimostrazione di cucito."),
+      q("What is the main message?",["Every repair always succeeds","Small faults need not turn objects into waste","Professional repair shops are unnecessary"],1,"Il testo sottolinea riuso, apprendimento e decisioni più informate.")
+    ]
+  },
+  {
+    id:"reading-b2-tourism",level:"B2",title:"Can a popular city welcome visitors without losing itself?",topic:"Turismo sostenibile, residenti e politiche urbane",minutes:25,sourceUrl:"https://www.europarl.europa.eu/legislative-train/carriage/european-strategy-on-sustainable-tourism/report?sid=10001",sourceLabel:"Parlamento europeo · tema di attualità",
+    paragraphs:[
+      "The fictional coastal city of Bellamar receives nearly six visitors for every permanent resident during the busiest summer weeks. Tourism supports hotels, restaurants and hundreds of seasonal jobs, yet residents increasingly complain about crowded buses, late-night noise and apartments being converted into short-term accommodation. The local council has therefore introduced a two-year plan intended to protect everyday life without treating visitors as the enemy.",
+      "The plan does not impose a simple limit on arrivals. Instead, it changes where and when tourism takes place. Cruise ships receive lower port fees if they arrive outside the busiest hours, while museums stay open later to spread demand across the day. The city has also created walking routes through less-visited districts, but only after consulting residents and funding public toilets, cleaning and transport in those areas.",
+      "Housing is the most controversial part. Owners who rent an entire home to tourists for more than ninety nights a year now need a special licence. Supporters argue that this will return some properties to the long-term market. Critics say that large professional operators will manage the rules more easily than families who depend on occasional rental income. The council has promised to publish data on licences, rents and evictions every six months.",
+      "Businesses are divided too. Some souvenir shops fear that encouraging off-season travel will reduce spontaneous summer sales. Hotel managers, however, prefer a longer season because it allows them to offer more stable employment. Environmental groups support fewer coach journeys in the centre but warn that promoting distant neighbourhoods could simply move congestion rather than reduce it.",
+      "Bellamar’s experiment illustrates why sustainable tourism involves trade-offs rather than a single perfect measure. Success cannot be judged only by visitor numbers or total spending. The council will also track resident satisfaction, public transport delays, waste, housing availability and the proportion of year-round jobs. A city can remain welcoming while setting limits, but only if the benefits and costs are measured openly and shared more fairly."
+    ],
+    glossary:[["permanent resident","residente stabile"],["short-term accommodation","alloggio a breve termine"],["spread demand","distribuire la domanda"],["licence","licenza"],["eviction","sfratto"],["trade-off","compromesso tra costi e benefici"]],
+    questions:[
+      q("What is the plan’s main approach?",["Ban all visitors","Redistribute tourism across time and place","Build only more hotels"],1,"Il piano distribuisce flussi e orari invece di vietare il turismo."),
+      q("Why were residents consulted about new walking routes?",["New areas need services and local consent","Visitors requested private guides","Museums wanted to close"],0,"Il testo collega nuovi itinerari a servizi e consultazione locale."),
+      q("What requires a special licence?",["Every restaurant table","Frequent whole-home tourist rental","All long-term housing"],1,"La licenza riguarda l’affitto turistico dell’intera casa oltre novanta notti."),
+      q("Why do hotel managers support a longer season?",["It permits more stable jobs","It removes all taxes","It increases cruise congestion"],0,"Una stagione lunga rende più stabile l’occupazione."),
+      q("What concern do environmental groups express?",["Congestion may simply move elsewhere","Public transport is never used","Residents dislike museums"],0,"Promuovere altri quartieri potrebbe soltanto spostare il problema."),
+      q("Which measure best reflects the author’s conclusion?",["Visitor numbers alone","Resident, housing, transport and job indicators together","Souvenir sales only"],1,"La sostenibilità richiede una valutazione multidimensionale.")
+    ]
+  },
+  {
+    id:"reading-c1-urban-heat",level:"C1",title:"The unequal geography of urban heat",topic:"Clima urbano, dati e giustizia sociale",minutes:30,
+    paragraphs:[
+      "Heatwaves are often reported through a single figure: the maximum temperature recorded at an airport or central weather station. That number is useful for comparing days, but it can hide sharp differences within the same city. Streets with mature trees, permeable ground and shaded courtyards may remain several degrees cooler than nearby districts dominated by dark roofs, wide roads and large car parks.",
+      "These differences are not merely physical accidents. Planning decisions made over decades influence where parks are created, which streets receive maintenance and how densely housing is built. Lower-income residents are more likely to live in small flats that overheat, work in jobs that cannot be done remotely and depend on walking or public transport. They may therefore face greater exposure while having fewer resources to adapt.",
+      "Cities increasingly use satellite images and mobile temperature sensors to map neighbourhood-level heat. Such data can reveal patterns that a conventional weather station misses. Yet measurement is not automatically fair. Sensors placed only where researchers can easily obtain permission may underrepresent informal housing, industrial edges or private rental areas. A technically detailed map can still reproduce gaps in attention.",
+      "Interventions also require careful interpretation. Planting trees is widely beneficial, but young trees provide little immediate shade and need years of watering. Reflective roofs can lower indoor temperatures, although landlords may resist paying when tenants receive most of the benefit. Air-conditioned public centres protect people during emergencies, but they are ineffective if opening hours, transport or fear of identification prevent vulnerable residents from using them.",
+      "Some authorities rank projects solely by the number of people who would experience a temperature reduction. Others add social vulnerability, existing health conditions and access to green space. The second method may direct funds toward smaller populations facing greater risk. Critics call this less efficient because fewer residents are reached; supporters argue that equal spending is not equitable when exposure and capacity to respond are profoundly unequal.",
+      "A defensible heat strategy combines rapid protection with long-term redesign. Emergency alerts, water points and extended opening hours reduce immediate harm. Building standards, shade requirements and investment in neglected streets address the causes of unequal exposure. Most importantly, residents should help interpret data and evaluate whether measures work in daily life. A cooler average city is desirable, but an intervention should also be judged by whose homes, journeys and working conditions actually become safer."
+    ],
+    glossary:[["permeable","permeabile"],["exposure","esposizione"],["underrepresent","rappresentare in misura insufficiente"],["reflective roof","tetto riflettente"],["vulnerability","vulnerabilità"],["equitable","equo rispetto ai bisogni"]],
+    questions:[
+      q("Why is one citywide temperature figure insufficient?",["Airports never record temperature","Neighbourhood conditions create substantial variation","Weather stations measure only rain"],1,"Il testo evidenzia differenze locali legate a ombra, suolo e materiali."),
+      q("How can planning contribute to unequal heat?",["Through long-term decisions about trees, roads and housing","By changing the national forecast","By eliminating all public transport"],0,"Le decisioni urbane storiche distribuiscono diversamente protezione ed esposizione."),
+      q("What limitation can affect sensor maps?",["Convenient locations may omit marginal areas","Satellites cannot observe cities","All sensors report identical values"],0,"La facilità di accesso può creare lacune sistematiche nei dati."),
+      q("Why are tree-planting programmes not an immediate complete solution?",["Trees always increase heat","Young trees need time and water","Residents never want shade"],1,"Gli alberi giovani non producono subito ombra e richiedono cura."),
+      q("What distinguishes an equity-based project ranking?",["It considers vulnerability as well as numbers","It funds only the largest district","It ignores health conditions"],0,"La valutazione equa include rischio e capacità di risposta."),
+      q("What is the passage’s central argument?",["Only average temperature matters","Emergency response should replace planning","Heat policy should combine data, immediate protection, structural change and resident experience"],2,"La conclusione integra protezione rapida, redesign urbano e partecipazione.")
+    ]
+  }];

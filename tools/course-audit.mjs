@@ -43,7 +43,7 @@ try {
   const visualMissing = visualSets.flatMap(set => set.audioMode === "browser" ? [] : set.items).filter(item => { const slug = item.en.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); const path = resolve("public/audio/words", `${slug}.wav`); return !existsSync(path) || statSync(path).size < 1000; }).map(item => item.en);
   const visualQuiz = { sets: visualSets.length, items: visualItems.length, missingAudio: visualMissing };
   console.log(JSON.stringify({ total: mobileCurriculum.length, levels, minMinutes: Math.min(...mobileCurriculum.map(unit => unit.minutes)), maxMinutes: Math.max(...mobileCurriculum.map(unit => unit.minutes)), exerciseMinimums, reading, visualQuiz, invalid, missing }, null, 2));
-  if (missing.length || invalid.length || readingInvalid.length || visualMissing.length || readingPassages.length !== 5 || visualItems.length < 81 || mobileCurriculum.length !== 60) process.exitCode = 1;
+  if (missing.length || invalid.length || readingInvalid.length || visualMissing.length || readingPassages.length !== 10 || visualItems.length < 81 || mobileCurriculum.length !== 60) process.exitCode = 1;
 } finally {
   await server.close();
 }
