@@ -1,6 +1,7 @@
 import type { MobileUnit } from "./curriculum";
 import { grammarGuides } from "./grammarGuides";
 import MixedText from "./MixedText";
+import GrammarVisual from "./GrammarVisual";
 
 export default function GrammarLesson({
   unit,
@@ -97,6 +98,8 @@ export default function GrammarLesson({
           </div>
         </section>
       )}
+
+      <GrammarVisual unit={unit} />
 
       <button className="continue" onClick={onContinue}>
         Ascolta gli esempi <b>→</b>
