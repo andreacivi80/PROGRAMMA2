@@ -1,7 +1,9 @@
 import { a1Expansion } from "./a1Expansion";
 import { a2Expansion } from "./a2Expansion";
+import { b1Expansion, b2Expansion } from "./advancedCurriculum";
+import { c1Curriculum } from "./c1Curriculum";
 
-export type Cefr = "A1" | "A2" | "B1" | "B2";
+export type Cefr = "A1" | "A2" | "B1" | "B2" | "C1";
 
 export type Choice = {
   prompt: string;
@@ -479,7 +481,10 @@ const orderedCurriculum: MobileUnit[] = [
   ...coreCurriculum.filter((unit) => unit.cefr === "A2"),
   ...a2Expansion,
   ...coreCurriculum.filter((unit) => unit.cefr === "B1"),
-  ...coreCurriculum.filter((unit) => unit.cefr === "B2")
+  ...b1Expansion,
+  ...coreCurriculum.filter((unit) => unit.cefr === "B2"),
+  ...b2Expansion,
+  ...c1Curriculum
 ];
 const a1Durations = [18, 18, 20, 20, 22, 22, 20, 22, 25, 25, 25, 30];
 export const mobileCurriculum: MobileUnit[] = orderedCurriculum.map((unit, index) => {
@@ -488,12 +493,13 @@ export const mobileCurriculum: MobileUnit[] = orderedCurriculum.map((unit, index
 });
 
 export const curriculumIndex = {
-  version: 3,
+  version: 4,
   levels: {
     A1: { days: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], goalIt: "Comunicare bisogni immediati e descrivere la vita quotidiana." },
     A2: { days: [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24], goalIt: "Raccontare esperienze, fare programmi, confrontare e chiedere informazioni." },
-    B1: { days: [25, 26, 27, 28, 29, 30], goalIt: "Gestire situazioni reali, lavoro, problemi e spiegazioni articolate." },
-    B2: { days: [31, 32, 33, 34, 35, 36], goalIt: "Argomentare, cogliere sfumature e formulare proposte precise." }
+    B1: { days: [25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36], goalIt: "Gestire situazioni reali, lavoro, problemi e spiegazioni articolate." },
+    B2: { days: [37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48], goalIt: "Argomentare, cogliere sfumature e formulare proposte precise." },
+    C1: { days: [49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60], goalIt: "Padroneggiare sfumature, registro, sintesi critica e comunicazione professionale avanzata." }
   },
   sessionPlan: [
     { phase: "learn", minutes: 4, source: "grammar" },
