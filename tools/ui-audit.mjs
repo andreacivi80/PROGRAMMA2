@@ -1,7 +1,7 @@
 import ts from "typescript";
 import {readFileSync} from "node:fs";
 
-const files=["src/App.tsx","src/GrammarLesson.tsx","src/ReviewLab.tsx","src/ThemePackHub.tsx","src/ThemePackLab.tsx","src/AuthenticAudio.tsx"];
+const files=["src/App.tsx","src/GrammarLesson.tsx","src/ReviewLab.tsx","src/ThemePackHub.tsx","src/ThemePackLab.tsx","src/AuthenticAudio.tsx","src/WordGamesHub.tsx"];
 const missingHandlers=[];
 let buttons=0;
 for(const file of files){
@@ -24,7 +24,7 @@ const app=readFileSync("src/App.tsx","utf8");
 const pack=readFileSync("src/ThemePackLab.tsx","utf8");
 const authentic=readFileSync("src/AuthenticAudio.tsx","utf8");
 const review=readFileSync("src/ReviewLab.tsx","utf8");
-const css=readFileSync("src/styles.css","utf8")+readFileSync("src/themePacks.css","utf8")+readFileSync("src/version29.css","utf8");
+const css=readFileSync("src/styles.css","utf8")+readFileSync("src/themePacks.css","utf8")+readFileSync("src/version29.css","utf8")+readFileSync("src/wordGames.css","utf8");
 const checks={
  buttons,
  missingHandlers,
@@ -36,12 +36,20 @@ const checks={
   speeds:[`${"[.8,1,1.2]"}`].every(value=>app.includes(value)),
   stopsOnNavigation:app.includes("useEffect(()=>()=>stopActiveAudio?.(),[view,phase,unit.id])")
  },
+ games:{
+  crossword:readFileSync("src/WordGamesHub.tsx","utf8").includes("Mini Crossword"),
+  hangman:readFileSync("src/WordGamesHub.tsx","utf8").includes("Hangman Phrases"),
+  wordOrder:readFileSync("src/WordGamesHub.tsx","utf8").includes("Word Order"),
+  matching:readFileSync("src/WordGamesHub.tsx","utf8").includes("Match the Meaning"),
+  levelFilter:app.includes("themeSupportsLevel")&&app.includes("topicLevelFilter")
+ },
  themeAudio:{
   listen:pack.includes("speak(pack.scenario.text,setScenarioWord)"),
   pause:pack.includes("speechSynthesis.pause()"),
   resume:pack.includes("speechSynthesis.resume()"),
   stop:pack.includes("speechSynthesis.cancel()"),
-  stopsBeforeQuiz:pack.includes("startQuiz=()=>{speechSynthesis?.cancel()"),
+  stopsBeforeQuiz:pack.includes("startQuiz=()=>{stopScenarioSpeech()"),
+  alternatingDialogue:pack.includes("turnIndex%2?secondary:primary")&&app.includes("turnIndex%2?second:first"),
   authenticPause:authentic.includes("setStatus(\"paused\")"),
   authenticStop:authentic.includes("currentTime=0"),
   authenticSpeeds:authentic.includes("[.8,1,1.2]")
@@ -63,6 +71,7 @@ const checks={
 const failed=[
  ...(missingHandlers.length?["buttons-without-handler"]:[]),
  ...Object.entries(checks.lessonAudio).filter(([,value])=>!value).map(([name])=>`lesson-audio:${name}`),
+ ...Object.entries(checks.games).filter(([,value])=>!value).map(([name])=>`games:${name}`),
  ...Object.entries(checks.themeAudio).filter(([,value])=>!value).map(([name])=>`theme-audio:${name}`),
  ...Object.entries(checks.skipping).filter(([,value])=>!value).map(([name])=>`skipping:${name}`),
  ...Object.entries(checks.responsive).filter(([,value])=>!value).map(([name])=>`responsive:${name}`)

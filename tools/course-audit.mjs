@@ -7,6 +7,8 @@ try {
   const { mobileCurriculum } = await server.ssrLoadModule("/src/curriculum.ts");
   const { readingPassages } = await server.ssrLoadModule("/src/readingLab.ts");
   const { themePacks } = await server.ssrLoadModule("/src/themePacks.ts");
+  const { wordGameSets } = await server.ssrLoadModule("/src/wordGames.ts");
+  const { buildCrossword } = await server.ssrLoadModule("/src/WordGamesHub.tsx");
   const { kitchenVisualSets, jobVisualSets, actionVisualSets, phrasalVisualSets } = await server.ssrLoadModule("/src/visualQuiz.ts");
   const levels = Object.fromEntries(["A1", "A2", "B1", "B2", "C1"].map(level => [level, mobileCurriculum.filter(unit => unit.cefr === level).length]));
   const missing = [];
@@ -43,10 +45,11 @@ try {
   const visualItems = visualSets.flatMap(set => set.items);
   const visualMissing = visualSets.flatMap(set => set.audioMode === "browser" ? [] : set.items).filter(item => { const slug = item.en.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); const path = resolve("public/audio/words", `${slug}.wav`); return !existsSync(path) || statSync(path).size < 1000; }).map(item => item.en);
   const visualQuiz = { sets: visualSets.length, items: visualItems.length, missingAudio: visualMissing };
-  const themePackInvalid = themePacks.filter(pack => !["2.7", "2.8", "2.9"].includes(pack.introducedIn) || pack.guide.length < 4 || pack.vocabulary.length !== 8 || pack.questions.length !== 2 || pack.scenario.text.split(/\s+/).length < 20 || pack.questions.some(question => question.options.length < 3 || question.answer < 0 || question.answer >= question.options.length));
+  const themePackInvalid = themePacks.filter(pack => !["2.7", "2.8", "2.9", "3.0"].includes(pack.introducedIn) || pack.guide.length < 4 || pack.vocabulary.length !== 8 || pack.questions.length < 2 || pack.scenario.text.split(/\s+/).length < 20 || pack.questions.some(question => question.options.length < 3 || question.answer < 0 || question.answer >= question.options.length));
+  const wordGames = Object.fromEntries(Object.entries(wordGameSets).map(([level,set]) => [level,{crosswordWords:set.crossword.length,placedWords:buildCrossword(set.crossword).placed.length,hangmanPhrases:set.hangman.length}]));
   const themePackAudit = { total: themePacks.length, social: themePacks.filter(pack => pack.category === "social").length, dining: themePacks.filter(pack => pack.category === "dining").length, ira: themePacks.filter(pack => pack.category === "ira").length, accents: themePacks.filter(pack => pack.category === "accents").length, levels: Object.fromEntries(["A1", "A2", "B1", "B2", "C1"].map(level => [level, themePacks.filter(pack => pack.level === level).length])), invalid: themePackInvalid.map(pack => pack.id) };
-  console.log(JSON.stringify({ total: mobileCurriculum.length, levels, minMinutes: Math.min(...mobileCurriculum.map(unit => unit.minutes)), maxMinutes: Math.max(...mobileCurriculum.map(unit => unit.minutes)), exerciseMinimums, reading, visualQuiz, themePackAudit, invalid, missing }, null, 2));
-  if (missing.length || invalid.length || readingInvalid.length || visualMissing.length || readingPassages.length !== 10 || visualItems.length < 81 || themePackInvalid.length || themePacks.length !== 16 || themePackAudit.social !== 5 || themePackAudit.dining !== 4 || themePackAudit.ira !== 4 || themePackAudit.accents !== 3 || themePacks.filter(pack => pack.category === "accents").some(pack => !pack.authenticAudio?.url || !pack.sourceUrl) || mobileCurriculum.length !== 60) process.exitCode = 1;
+  console.log(JSON.stringify({ total: mobileCurriculum.length, levels, minMinutes: Math.min(...mobileCurriculum.map(unit => unit.minutes)), maxMinutes: Math.max(...mobileCurriculum.map(unit => unit.minutes)), exerciseMinimums, reading, visualQuiz, themePackAudit, wordGames, invalid, missing }, null, 2));
+  if (missing.length || invalid.length || readingInvalid.length || visualMissing.length || readingPassages.length !== 10 || visualItems.length < 81 || themePackInvalid.length || themePacks.length !== 21 || themePackAudit.social !== 5 || themePackAudit.dining !== 4 || themePackAudit.ira !== 4 || themePackAudit.accents !== 8 || themePacks.filter(pack => pack.category === "accents").some(pack => !pack.authenticAudio?.url || !pack.sourceUrl) || Object.values(wordGames).some(game => game.crosswordWords < 8 || game.placedWords < 5 || game.hangmanPhrases < 5) || mobileCurriculum.length !== 60) process.exitCode = 1;
 } finally {
   await server.close();
 }
