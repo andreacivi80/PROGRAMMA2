@@ -69,20 +69,16 @@ const englishTerms = [
   "an",
 ];
 
-const escaped = englishTerms
-  .sort((a, b) => b.length - a.length)
-  .map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
 
-const matcher = new RegExp(
-  `(^|[\\s,;:()“”«»])(${escaped.join("|")})(?=$|[\\s,;:.!?()“”«»])`,
-  "gi",
-);
-
-export default function MixedText({ text }: { text: string }) {
+export default function MixedText({ text, terms = [] }: { text: string; terms?: string[] }) {
+  const localTerms = [...new Set([...terms, ...englishTerms])]
+    .sort((a, b) => b.length - a.length)
+    .map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  const localMatcher = new RegExp(`(^|[\\s,;:()“”«»])(${localTerms.join("|")})(?=$|[\\s,;:.!?()“”«»])`, "gi");
   const chunks: Array<{ value: string; english: boolean }> = [];
   let cursor = 0;
 
-  for (const match of text.matchAll(matcher)) {
+  for (const match of text.matchAll(localMatcher)) {
     const start = match.index ?? 0;
     const prefix = match[1] ?? "";
     const term = match[2];

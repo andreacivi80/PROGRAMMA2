@@ -24,6 +24,7 @@ const app=readFileSync("src/App.tsx","utf8");
 const pack=readFileSync("src/ThemePackLab.tsx","utf8");
 const authentic=readFileSync("src/AuthenticAudio.tsx","utf8");
 const review=readFileSync("src/ReviewLab.tsx","utf8");
+const speechVoices=readFileSync("src/speechVoices.ts","utf8");
 const css=readFileSync("src/styles.css","utf8")+readFileSync("src/themePacks.css","utf8")+readFileSync("src/version29.css","utf8")+readFileSync("src/wordGames.css","utf8");
 const checks={
  buttons,
@@ -56,7 +57,11 @@ const checks={
   resume:pack.includes("speechSynthesis.resume()"),
   stop:pack.includes("speechSynthesis.cancel()"),
   stopsBeforeQuiz:pack.includes("startQuiz=()=>{stopScenarioSpeech()"),
-  alternatingDialogue:pack.includes("turnIndex%2?secondary:primary")&&app.includes("turnIndex%2?second:first"),
+  alternatingDialogue:pack.includes("applyDialogueVoice(utterance,pair,dialogueRole")&&app.includes("applyDialogueVoice(utterance,pair,dialogueRole"),
+  noTechnicalAudioNote:!app.includes("Due voci inglesi alternate · i nomi non vengono pronunciati"),
+  genderAwareVoices:speechVoices.includes("femaleSpeakers")&&speechVoices.includes("maleSpeakers"),
+  variedVoicePairs:speechVoices.includes("seedIndex")&&app.includes("speechSynthesis.getVoices(),unit.id"),
+  singleVoiceFallback:speechVoices.includes("utterance.pitch = role === \"female\" ? 1.08 : 0.9"),
   authenticPause:authentic.includes("setStatus(\"paused\")"),
   authenticStop:authentic.includes("currentTime=0"),
   authenticSpeeds:authentic.includes("[.8,1,1.2]")
