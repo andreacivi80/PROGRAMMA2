@@ -1,3 +1,5 @@
+import { a1ExpansionGuides } from "./a1ExpansionGuides";
+
 export type GrammarGuide = {
   overview: string;
   sections: {
@@ -268,4 +270,5 @@ export const grammarGuides: Record<string, GrammarGuide> = {
       },
     ],
   },
+  ...a1ExpansionGuides,
 };
