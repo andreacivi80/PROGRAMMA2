@@ -34,7 +34,7 @@ export default function ThemePackLab({pack,badge,previous,onClose,onComplete}:Pr
  const[quiz,setQuiz]=useState(()=>buildQuiz(pack)),[index,setIndex]=useState(0),[selected,setSelected]=useState<number|null>(null),[correct,setCorrect]=useState(0);
  const reported=useRef(false),item=quiz[index],score=Math.round(correct/quiz.length*100);
  const levelTone=useMemo(()=>`level-${pack.level.toLowerCase()}`,[pack.level]);
- const startQuiz=()=>{setQuiz(buildQuiz(pack));setIndex(0);setSelected(null);setCorrect(0);reported.current=false;setPhase("quiz");scrollTo(0,0)};
+ const startQuiz=()=>{speechSynthesis?.cancel();setQuiz(buildQuiz(pack));setIndex(0);setSelected(null);setCorrect(0);reported.current=false;setPhase("quiz");scrollTo(0,0)};
  const next=()=>{if(index+1<quiz.length){setIndex(value=>value+1);setSelected(null)}else{const finalScore=Math.round(correct/quiz.length*100);if(!reported.current){reported.current=true;onComplete(finalScore)}setPhase("result");scrollTo(0,0)}};
  const choose=(choice:number)=>{if(selected!==null)return;setSelected(choice);if(choice===item.answer)setCorrect(value=>value+1)};
  const shownScore=phase==="result"?Math.round(correct/quiz.length*100):score;

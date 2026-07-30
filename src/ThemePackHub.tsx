@@ -6,7 +6,7 @@ export default function ThemePackHub({title,intro,packs,currentVersion,saved,onO
   <div className="themeHeading"><span><small>MINI-PERCORSI INTERATTIVI</small><h2>{title}</h2></span><b>{packs.length} sessioni</b></div>
   <p className="readingHubIntro">{intro}</p>
   <div className="themePackCards">{packs.map(pack=>{const result=saved[pack.id],isCurrent=pack.introducedIn===currentVersion;return <button type="button" className={result?"done":""} key={pack.id} onClick={()=>onOpen(pack)}>
-   <span className={`versionBadge ${isCurrent?"current":""}`}>{isCurrent?`NEW ${pack.introducedIn}`:`Aggiunto in ${pack.introducedIn}`}</span>
+   <span className={`versionBadge ${isCurrent?"current":""}`}>{isCurrent?`NEW ${pack.introducedIn}`:`V ${pack.introducedIn}`}</span>
    <div><b>{pack.level}</b><small>{pack.minutes} min</small></div>
    <strong>{pack.title}</strong><p>{pack.summary}</p>
    <footer><span>▶ ascolto</span><span>8 vocaboli</span><span>10 quiz</span>{result&&<em>✓ ultimo {result.score}%</em>}</footer>
