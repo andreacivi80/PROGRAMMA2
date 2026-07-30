@@ -1,7 +1,7 @@
 import ts from "typescript";
 import {readFileSync} from "node:fs";
 
-const files=["src/App.tsx","src/GrammarLesson.tsx","src/ReviewLab.tsx","src/ThemePackHub.tsx","src/ThemePackLab.tsx"];
+const files=["src/App.tsx","src/GrammarLesson.tsx","src/ReviewLab.tsx","src/ThemePackHub.tsx","src/ThemePackLab.tsx","src/AuthenticAudio.tsx"];
 const missingHandlers=[];
 let buttons=0;
 for(const file of files){
@@ -22,7 +22,9 @@ for(const file of files){
 
 const app=readFileSync("src/App.tsx","utf8");
 const pack=readFileSync("src/ThemePackLab.tsx","utf8");
-const css=readFileSync("src/styles.css","utf8")+readFileSync("src/themePacks.css","utf8");
+const authentic=readFileSync("src/AuthenticAudio.tsx","utf8");
+const review=readFileSync("src/ReviewLab.tsx","utf8");
+const css=readFileSync("src/styles.css","utf8")+readFileSync("src/themePacks.css","utf8")+readFileSync("src/version29.css","utf8");
 const checks={
  buttons,
  missingHandlers,
@@ -35,11 +37,21 @@ const checks={
   stopsOnNavigation:app.includes("useEffect(()=>()=>stopActiveAudio?.(),[view,phase,unit.id])")
  },
  themeAudio:{
-  listen:pack.includes("speak(pack.scenario.text)"),
+  listen:pack.includes("speak(pack.scenario.text,setScenarioWord)"),
   pause:pack.includes("speechSynthesis.pause()"),
   resume:pack.includes("speechSynthesis.resume()"),
   stop:pack.includes("speechSynthesis.cancel()"),
-  stopsBeforeQuiz:pack.includes("startQuiz=()=>{speechSynthesis?.cancel()")
+  stopsBeforeQuiz:pack.includes("startQuiz=()=>{speechSynthesis?.cancel()"),
+  authenticPause:authentic.includes("setStatus(\"paused\")"),
+  authenticStop:authentic.includes("currentTime=0"),
+  authenticSpeeds:authentic.includes("[.8,1,1.2]")
+ },
+ skipping:{
+  coreQuestions:app.includes("skipCurrentQuestion(finalQuiz.length,finish)"),
+  listeningQuestions:app.includes("skipCurrentQuestion(listeningQuiz.length,nextPhase)"),
+  readingQuestions:app.includes("readingSkip")&&app.includes("Domanda saltata"),
+  reviewQuestions:review.includes("Salta domanda"),
+  themeQuestions:pack.includes("Salta domanda")
  },
  responsive:{
   phoneRules:css.includes("@media(max-width:390px)")&&css.includes("@media(max-width:370px)"),
@@ -52,6 +64,7 @@ const failed=[
  ...(missingHandlers.length?["buttons-without-handler"]:[]),
  ...Object.entries(checks.lessonAudio).filter(([,value])=>!value).map(([name])=>`lesson-audio:${name}`),
  ...Object.entries(checks.themeAudio).filter(([,value])=>!value).map(([name])=>`theme-audio:${name}`),
+ ...Object.entries(checks.skipping).filter(([,value])=>!value).map(([name])=>`skipping:${name}`),
  ...Object.entries(checks.responsive).filter(([,value])=>!value).map(([name])=>`responsive:${name}`)
 ];
 console.log(JSON.stringify({...checks,failed},null,2));
