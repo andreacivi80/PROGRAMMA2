@@ -45,3 +45,20 @@
 .kitchenLabTitle span>em{margin-top:3px;color:#76642e;font-size:9px;font-style:normal}.kitchenGameTools{display:flex;align-items:center;justify-content:space-between;gap:9px;margin:8px 0 12px}.kitchenGameTools p{margin:0;color:#76642e;font-size:11px}.kitchenGameTools button{min-height:36px;padding:6px 9px;border:1px solid #ddc579;border-radius:11px;background:#fff;color:#765a12;font-size:9px;font-weight:900;white-space:nowrap}.bottomSkip{position:fixed;z-index:40;right:max(16px,calc((100vw - 620px)/2 + 16px));bottom:calc(16px + env(safe-area-inset-bottom));display:block;min-height:44px;margin:0;padding:8px 14px;border:1px solid #d3cfc4;border-radius:99px;background:#fffef9ed;color:var(--muted);box-shadow:0 8px 25px #26363029;backdrop-filter:blur(10px);font-size:11px;font-weight:900}
 @media(max-width:370px){.kitchenGameTools{align-items:stretch;flex-direction:column}.kitchenGameTools button{width:100%}}.visualQuizHub{scroll-margin-top:14px;padding:17px;border:1px solid var(--line);border-radius:22px;background:var(--card)}.visualCategories{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.visualCategories>button{min-width:0;min-height:65px;display:grid;grid-template-columns:30px 1fr;gap:6px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:14px;background:#fff;text-align:left}.visualCategories>button>b{width:29px;height:29px;display:grid;place-items:center;border-radius:9px;background:#efede6;color:var(--green);font-size:9px}.visualCategories>button>span{min-width:0;display:grid;font-size:10px;font-weight:900}.visualCategories small{overflow:hidden;color:var(--muted);font-size:7px;font-weight:600;text-overflow:ellipsis;white-space:nowrap}.visualCategories>button.active{border-color:var(--green);background:var(--mint)}.visualCategories>button.active>b{background:var(--green);color:#fff}.visualQuizHub>.kitchenLab{margin-bottom:0}
 @media(max-width:370px){.visualCategories{grid-template-columns:1fr}.visualCategories>button{min-height:52px}}
+/* Versione 2.3 · pannello audio unificato e quiz visuale esplorabile */
+.audioControl{width:fit-content;max-width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;padding:5px;border:1px solid #dcd8ce;border-radius:16px;background:linear-gradient(145deg,#fff,#f5f2ea);box-shadow:0 5px 16px #27363112}
+.audioActions{width:auto;display:grid;grid-template-columns:minmax(112px,1fr) 64px;gap:5px;align-items:center}
+.audioActions .audio{min-height:42px;border-radius:12px;box-shadow:none}
+.audioStop{width:64px;min-height:42px;padding:7px;border-color:#ead6cf;border-radius:12px;background:#fff7f4}
+.audioStop:disabled{visibility:visible;opacity:.34}
+.audioControl .speed{align-self:center;justify-self:end;border-color:#d6d2c8;background:#e9e6de}
+.player .audioControl,.repeat .audioControl{width:min(100%,470px);padding:6px;border-color:#ffffff24;background:#ffffff10;box-shadow:none}
+.vocabularyList .audioControl{width:100%;grid-template-columns:1fr}.vocabularyList .speed{justify-self:start}
+.kitchenExploreHint{margin:9px 0 12px!important;padding:10px 12px;border-left:4px solid #d6a927;border-radius:10px;background:#fff3c8;color:#65531d!important;line-height:1.45}
+.utensilGrid>button{cursor:pointer;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.utensilGrid>button:active{transform:scale(.97)}
+.utensilGrid.explore>button:not(.correct):not(.wrong){border-color:#d6c88e}
+.utensilGrid.explore>button span{inset:auto 3px 3px;pointer-events:none}
+.utensilGrid.explore>button span small{display:block;margin-top:1px}
+.visualCategories{grid-template-columns:repeat(2,1fr)}
+@media(max-width:370px){.player .audioControl,.repeat .audioControl,.kitchenPrompt .audioControl{grid-template-columns:1fr}.player .speed,.repeat .speed,.kitchenPrompt .speed{justify-self:center}.audioActions{grid-template-columns:minmax(0,1fr) 62px}.audioStop{width:62px}.visualCategories{grid-template-columns:1fr 1fr}}

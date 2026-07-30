@@ -6,7 +6,7 @@ const server = await createServer({ server: { middlewareMode: true }, appType: "
 try {
   const { mobileCurriculum } = await server.ssrLoadModule("/src/curriculum.ts");
   const { readingPassages } = await server.ssrLoadModule("/src/readingLab.ts");
-  const { kitchenVisualSets, jobVisualSets, actionVisualSets } = await server.ssrLoadModule("/src/visualQuiz.ts");
+  const { kitchenVisualSets, jobVisualSets, actionVisualSets, phrasalVisualSets } = await server.ssrLoadModule("/src/visualQuiz.ts");
   const levels = Object.fromEntries(["A1", "A2", "B1", "B2", "C1"].map(level => [level, mobileCurriculum.filter(unit => unit.cefr === level).length]));
   const missing = [];
   const invalid = [];
@@ -38,12 +38,12 @@ try {
   };
   const readingInvalid = readingPassages.filter(passage => passage.paragraphs.join(" ").split(/\s+/).length < 180 || passage.questions.length !== 6 || passage.glossary.length < 6 || passage.questions.some(question => question.options.length !== 3 || question.answer < 0 || question.answer > 2 || !question.explanationIt));
   const reading = { total: readingPassages.length, levels: Object.fromEntries(["A1", "A2", "B1", "B2", "C1"].map(level => [level, readingPassages.filter(passage => passage.level === level).length])), minWords: Math.min(...readingPassages.map(passage => passage.paragraphs.join(" ").split(/\s+/).length)), questionsPerText: Math.min(...readingPassages.map(passage => passage.questions.length)), invalid: readingInvalid.map(passage => passage.id) };
-  const visualSets = [...kitchenVisualSets, ...jobVisualSets, ...actionVisualSets];
+  const visualSets = [...kitchenVisualSets, ...jobVisualSets, ...actionVisualSets, ...phrasalVisualSets];
   const visualItems = visualSets.flatMap(set => set.items);
-  const visualMissing = visualItems.filter(item => { const slug = item.en.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); const path = resolve("public/audio/words", `${slug}.wav`); return !existsSync(path) || statSync(path).size < 1000; }).map(item => item.en);
+  const visualMissing = visualSets.flatMap(set => set.audioMode === "browser" ? [] : set.items).filter(item => { const slug = item.en.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); const path = resolve("public/audio/words", `${slug}.wav`); return !existsSync(path) || statSync(path).size < 1000; }).map(item => item.en);
   const visualQuiz = { sets: visualSets.length, items: visualItems.length, missingAudio: visualMissing };
   console.log(JSON.stringify({ total: mobileCurriculum.length, levels, minMinutes: Math.min(...mobileCurriculum.map(unit => unit.minutes)), maxMinutes: Math.max(...mobileCurriculum.map(unit => unit.minutes)), exerciseMinimums, reading, visualQuiz, invalid, missing }, null, 2));
-  if (missing.length || invalid.length || readingInvalid.length || visualMissing.length || readingPassages.length !== 5 || visualItems.length < 72 || mobileCurriculum.length !== 60) process.exitCode = 1;
+  if (missing.length || invalid.length || readingInvalid.length || visualMissing.length || readingPassages.length !== 5 || visualItems.length < 81 || mobileCurriculum.length !== 60) process.exitCode = 1;
 } finally {
   await server.close();
 }

@@ -1,5 +1,5 @@
 export type VisualItem={en:string;it:string;verb:string};
-export type VisualSet={id:string;title:string;image:string;items:VisualItem[]};
+export type VisualSet={id:string;title:string;image:string;items:VisualItem[];audioMode?:"file"|"browser"};
 
 export const kitchenVisualSets:VisualSet[]=[
  {id:"basic",title:"Utensili essenziali",image:"images/kitchen-utensils-grid.png",items:[
@@ -27,4 +27,7 @@ export const jobVisualSets:VisualSet[]=[{id:"jobs",title:"Lavori e professioni",
 
 export const actionVisualSets:VisualSet[]=[{id:"actions",title:"Azioni quotidiane",image:"images/visual-actions-grid.png",items:[
  {en:"sit down",it:"sedersi",verb:"sit – sat – sat"},{en:"stand up",it:"alzarsi",verb:"stand – stood – stood"},{en:"open a door",it:"aprire una porta",verb:"open · aprire"},{en:"close a window",it:"chiudere una finestra",verb:"close · chiudere"},{en:"pick up a box",it:"sollevare una scatola",verb:"pick up · raccogliere"},{en:"put down a bag",it:"posare una borsa",verb:"put down · posare"},{en:"turn on a light",it:"accendere una luce",verb:"turn on · accendere"},{en:"turn off a tap",it:"chiudere un rubinetto",verb:"turn off · spegnere/chiudere"},{en:"wash your hands",it:"lavarsi le mani",verb:"wash · lavare"}
+]}];
+export const phrasalVisualSets:VisualSet[]=[{id:"phrasal-travel-routine",audioMode:"browser",title:"Phrasal verbs: viaggio e routine",image:"images/visual-phrasal-verbs-grid.png",items:[
+ {en:"take off",it:"decollare",verb:"the plane takes off"},{en:"land",it:"atterrare",verb:"the plane lands"},{en:"get on",it:"salire su",verb:"get on the bus"},{en:"get off",it:"scendere da",verb:"get off the bus"},{en:"wake up",it:"svegliarsi",verb:"wake up early"},{en:"get dressed",it:"vestirsi",verb:"get dressed quickly"},{en:"look for",it:"cercare",verb:"look for the keys"},{en:"turn around",it:"girarsi",verb:"turn around slowly"},{en:"hurry up",it:"sbrigarsi",verb:"hurry up, please"}
 ]}];
