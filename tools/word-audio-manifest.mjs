@@ -1,4 +1,4 @@
 import { createServer } from "vite";
 const server=await createServer({server:{middlewareMode:true},appType:"custom",logLevel:"silent"});
 const slug=word=>word.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
-try{const {mobileCurriculum}=await server.ssrLoadModule("/src/curriculum.ts");const words=new Map();for(const unit of mobileCurriculum){for(const word of unit.speaking.target.match(/[A-Za-z]+(?:'[A-Za-z]+)?/g)??[])words.set(slug(word),word)}console.log(JSON.stringify([...words].map(([file,text])=>({file:`${file}.wav`,text}))))}finally{await server.close()}
+try{const {mobileCurriculum}=await server.ssrLoadModule("/src/curriculum.ts");const words=new Map();for(const unit of mobileCurriculum){const source=`${unit.speaking.target} ${unit.listening.transcript}`;for(const word of source.match(/[A-Za-z]+(?:'[A-Za-z]+)?/g)??[])words.set(slug(word),word)}console.log(JSON.stringify([...words].map(([file,text])=>({file:`${file}.wav`,text}))))}finally{await server.close()}

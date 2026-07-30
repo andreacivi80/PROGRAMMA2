@@ -24,6 +24,7 @@ $voice.Rate = -2
 $created = 0
 foreach ($item in $items) {
   $target = Join-Path $audioRoot $item.file
+  if (Test-Path -LiteralPath $target) { continue }
   $stream = New-Object -ComObject SAPI.SpFileStream
   try {
     $stream.Open($target, 3, $false)
