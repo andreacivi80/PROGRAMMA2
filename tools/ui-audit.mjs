@@ -41,6 +41,8 @@ const checks={
   hangman:readFileSync("src/WordGamesHub.tsx","utf8").includes("Hangman Phrases"),
   wordOrder:readFileSync("src/WordGamesHub.tsx","utf8").includes("Word Order"),
   matching:readFileSync("src/WordGamesHub.tsx","utf8").includes("Match the Meaning"),
+  millionaire:readFileSync("src/WordGamesHub.tsx","utf8").includes("English Millionaire"),
+  trivia:readFileSync("src/WordGamesHub.tsx","utf8").includes("Trivia Quest"),
   levelFilter:app.includes("themeSupportsLevel")&&app.includes("topicLevelFilter")
  },
  themeAudio:{
