@@ -1,4 +1,5 @@
 import { a1Expansion } from "../src/a1Expansion.ts";
+import { a2Expansion } from "../src/a2Expansion.ts";
 
 const slug = word =>
   word
@@ -9,7 +10,7 @@ const slug = word =>
     .replace(/^-|-$/g, "");
 
 const words = new Map();
-for (const unit of a1Expansion) {
+for (const unit of [...a1Expansion, ...a2Expansion]) {
   const tokens = unit.speaking.target.match(/[A-Za-z]+(?:'[A-Za-z]+)?/g) ?? [];
   for (const word of tokens) words.set(slug(word), word);
 }

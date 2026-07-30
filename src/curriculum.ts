@@ -1,4 +1,5 @@
 import { a1Expansion } from "./a1Expansion";
+import { a2Expansion } from "./a2Expansion";
 
 export type Cefr = "A1" | "A2" | "B1" | "B2";
 
@@ -472,19 +473,27 @@ const coreCurriculum: MobileUnit[] = [
   )
 ];
 
-export const mobileCurriculum: MobileUnit[] = [
+const orderedCurriculum: MobileUnit[] = [
   ...coreCurriculum.filter((unit) => unit.cefr === "A1"),
   ...a1Expansion,
-  ...coreCurriculum.filter((unit) => unit.cefr !== "A1")
-].map((unit, index) => ({ ...unit, day: index + 1 }));
+  ...coreCurriculum.filter((unit) => unit.cefr === "A2"),
+  ...a2Expansion,
+  ...coreCurriculum.filter((unit) => unit.cefr === "B1"),
+  ...coreCurriculum.filter((unit) => unit.cefr === "B2")
+];
+const a1Durations = [18, 18, 20, 20, 22, 22, 20, 22, 25, 25, 25, 30];
+export const mobileCurriculum: MobileUnit[] = orderedCurriculum.map((unit, index) => {
+  const levelIndex = orderedCurriculum.slice(0, index).filter((item) => item.cefr === unit.cefr).length;
+  return { ...unit, day: index + 1, minutes: unit.cefr === "A1" ? a1Durations[levelIndex] ?? unit.minutes : unit.minutes };
+});
 
 export const curriculumIndex = {
-  version: 2,
+  version: 3,
   levels: {
     A1: { days: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], goalIt: "Comunicare bisogni immediati e descrivere la vita quotidiana." },
-    A2: { days: [13, 14, 15, 16, 17, 18], goalIt: "Raccontare esperienze, fare programmi, confrontare e chiedere informazioni." },
-    B1: { days: [19, 20, 21, 22, 23, 24], goalIt: "Gestire situazioni reali, lavoro, problemi e spiegazioni articolate." },
-    B2: { days: [25, 26, 27, 28, 29, 30], goalIt: "Argomentare, cogliere sfumature e formulare proposte precise." }
+    A2: { days: [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24], goalIt: "Raccontare esperienze, fare programmi, confrontare e chiedere informazioni." },
+    B1: { days: [25, 26, 27, 28, 29, 30], goalIt: "Gestire situazioni reali, lavoro, problemi e spiegazioni articolate." },
+    B2: { days: [31, 32, 33, 34, 35, 36], goalIt: "Argomentare, cogliere sfumature e formulare proposte precise." }
   },
   sessionPlan: [
     { phase: "learn", minutes: 4, source: "grammar" },
