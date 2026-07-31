@@ -50,9 +50,11 @@ const checks={
  },
  visualQuiz:{
   fullCategoryBank:app.includes("visualTiles(sets)"),
-  newMosaicEveryQuestion:app.includes("Nuovo mosaico casuale a ogni domanda"),
+  newMosaicEveryQuestion:app.includes("mosaic=useMemo(()=>target?shuffled([target,...shuffled(bank.filter"),
   selectiveLabels:app.includes("showLabel=revealed.includes(tile.id)"),
-  randomizedPositions:app.includes("shuffled([target,...shuffled(bank.filter")
+  randomizedPositions:app.includes("shuffled([target,...shuffled(bank.filter"),
+  noServiceCopy:!["BANCA ","Nuovo mosaico casuale","posizioni cambiano continuamente","81 immagini","intera banca della categoria"].some(text=>app.includes(text)),
+  compactPhoneView:css.includes("quiz visivo essenziale e compatto")&&css.includes("grid-template-columns:repeat(4,minmax(0,1fr))")
  }, themeAudio:{
   listen:pack.includes("speak(pack.scenario.text,setScenarioWord)"),
   pause:pack.includes("speechSynthesis.pause()"),
