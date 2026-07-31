@@ -89,14 +89,44 @@ window.__technicsTestScan=acceptScan;$("code").addEventListener("input",()=>{awa
 .printmessage.printing{border-color:#9fc7b8;background:#edf7f2;color:#17483e}.printbar button:disabled{opacity:.8;cursor:wait}
 .printconfirmcard{max-width:430px;text-align:center}.printconfirmicon{display:grid;place-items:center;width:68px;height:68px;margin:0 auto 14px;border-radius:22px;background:#dff1ea;color:#0f4c3e;font-size:34px;font-weight:900}.printconfirmcard h3{margin:0 0 8px}.printconfirmcard p{font-size:18px;line-height:1.35}
 .printingveil{position:fixed;inset:0;z-index:90;display:grid;place-items:center;background:rgba(5,34,27,.88);backdrop-filter:blur(5px)}.printingcard{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:250px;padding:30px 26px;border-radius:26px;background:#fff;color:#0f4c3e;box-shadow:0 24px 70px #0006;text-align:center}.printingcard strong{font-size:24px}.printingcard small{font-size:14px;color:#60766f}.printspinner{width:46px;height:46px;border:5px solid #d5e9e2;border-top-color:#0f5949;border-radius:50%;animation:printspin .75s linear infinite}@keyframes printspin{to{transform:rotate(360deg)}}
+.serverpreviewhost{width:794px;min-height:1123px;padding:0!important;background:transparent!important;box-shadow:none!important}.serverprintpages{display:flex;flex-direction:column;gap:22px}.serverprintpage{display:block;width:794px;height:auto;background:#fff;box-shadow:0 10px 35px #102a2440}.serverpreviewloading{display:grid;place-items:center;width:794px;height:1123px;background:#fff;color:#174f42;font-size:22px;font-weight:800}.serverpreviewerror{padding:40px;background:#fff;color:#9d3d37;font-size:18px;font-weight:800}
 </style>
 <script>
 const byId1214=id=>document.getElementById(id);
-byId1214("previewPacking").addEventListener("click",()=>setTimeout(()=>{
-  const footer=byId1214("printContent").querySelector(".printfooter");
-  const status=[...byId1214("printContent").querySelectorAll(".printmeta strong")][2]?.textContent||"APERTA";
-  if(footer)footer.innerHTML=`<span>Stato <strong>${status}</strong></span><span>Stampata il <strong>${new Date().toLocaleString("it-IT")}</strong></span>`;
-},0));
+async function loadServerPrintPreview1217(){
+  const host=byId1214("printContent"),box=byId1214("printMessage");
+  const barcode=(byId1214("opbarcode").textContent.match(/Barcode\s+(\S+)/)||[])[1];
+  host.className="serverpreviewhost";
+  host.innerHTML='<div class="serverpreviewloading">Preparazione anteprima A4…</div>';
+  box.classList.add("hidden");
+  try{
+    if(!barcode)throw new Error("Barcode del foglio non disponibile.");
+    const r=await fetch("https://student-tarot-occultist.ngrok-free.dev/api/packing/print-preview",{
+      method:"POST",
+      cache:"no-store",
+      headers:{"Content-Type":"application/json","Cache-Control":"no-store","ngrok-skip-browser-warning":"1"},
+      body:JSON.stringify({opBarcode:barcode})
+    });
+    const text=await r.text();
+    let payload;
+    try{payload=JSON.parse(text)}catch{throw new Error("Anteprima momentaneamente non disponibile. Riprova tra pochi secondi.")}
+    if(!r.ok||!payload.ok||!payload.previewId||!Number(payload.pageCount))throw new Error(payload.error||"Anteprima non generata.");
+    const pages=document.createElement("div");
+    pages.className="serverprintpages";
+    for(let index=0;index<Number(payload.pageCount);index++){
+      const image=document.createElement("img");
+      image.className="serverprintpage";
+      image.src=`https://student-tarot-occultist.ngrok-free.dev/api/packing/print-preview-image?id=${encodeURIComponent(payload.previewId)}&page=${index+1}`;
+      image.alt=`Anteprima A4 · pagina ${index+1} di ${payload.pageCount}`;
+      pages.appendChild(image);
+    }
+    host.replaceChildren(pages);
+    requestAnimationFrame(()=>window.dispatchEvent(new Event("resize")));
+  }catch(error){
+    host.innerHTML=`<div class="serverpreviewerror">${String(error.message||"Anteprima non disponibile.")}</div>`;
+  }
+}
+byId1214("previewPacking").addEventListener("click",()=>setTimeout(loadServerPrintPreview1217,0));
 async function sendPackingPrint1216(){
   const box=byId1214("printMessage"),button=byId1214("printPacking");
   const barcode=(byId1214("opbarcode").textContent.match(/Barcode\s+(\S+)/)||[])[1];
