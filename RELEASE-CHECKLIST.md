@@ -1,10 +1,10 @@
-# English Coach 6.3 — stato verificato
+# English Coach 6.4 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 6.3, con data e identificativo visibili.
+- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 6.4, con data e identificativo visibili.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 - **VERIFICATO** — i nomi dell’archivio locale restano stabili tra le revisioni: una nuova pubblicazione sostituisce l’interfaccia, non i dati dell’utente.
@@ -87,6 +87,14 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 - **IMPLEMENTATO** — dopo una risposta errata sono disponibili regola, soluzione, strategia e ripetizione immediata della stessa domanda; errore e successiva conferma vengono registrati separatamente.
 - **IMPLEMENTATO** — piano quotidiano 40/30/20/10, modalità intelligente da 5 minuti, obiettivo personale, quaderno delle frasi, sfida settimanale e controllo mensile comparabile.
 - **VERIFICATO** — simulazione mobile di 60 minuti con studente forte e studente in difficoltà: avanzamento, ritorno al prerequisito, ripetizione, conteggio degli errori e miglioramento risultano coerenti.
+
+## 19. Verifica grafica prolungata
+
+- **VERIFICATO** — simulazione Chrome di 60 minuti a 390×844 e 1440×900 su Oggi, Percorso, Progressi, esempi, Listening e Temi.
+- **VERIFICATO** — nessun overflow orizzontale, nessuna sovrapposizione tra controlli e nessuna variazione di misura passando da play a pausa o stop.
+- **IMPLEMENTATO** — play, stop e velocità degli esempi e del Listening occupano una barra unica; Stop non lascia più una riga vuota quando è inattivo.
+- **IMPLEMENTATO** — Studio intelligente e test di livello sono affiancati nella home, riducendo lo scorrimento iniziale senza nascondere le funzioni.
+- **IMPLEMENTATO** — descrizioni dei temi, modalità di ascolto, dettato, salvataggio frase e navigazione della lezione hanno dimensioni più leggibili e coerenti.
 - **VERIFICATO** — nessuna classifica obbligatoria o penalizzazione aggressiva.
 
 ## 18–20. Grafica, accessibilità e dati

@@ -55,9 +55,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "6.3";
+const APP_VERSION = "6.4";
 const BUILD_DATE = "31 luglio 2026";
-const BUILD_ID = "EC-6.3-0731";
+const BUILD_ID = "EC-6.4-0731";
 type View =
   | "home"
   | "path"
@@ -3329,42 +3329,42 @@ export default function Home() {
         </details>
       )}
       {view === "home" && (
-        <details className="smartStudyHome">
-          <summary><span>Studio intelligente</span><b>{learningSkills.slice().sort((a, b) => a.score - b.score)[0].skill}</b></summary>
-          <Deferred>
-            <LearningCoach
-              level={selectedLevel}
-              goal={progress.learningGoal ?? learningGoal}
-              skills={learningSkills}
-              clusters={learningClusters}
-              phrases={progress.savedPhrases ?? []}
-              monthly={progress.monthlyChecks ?? {}}
-              weeklyDone={Boolean(progress.weeklyChallenges?.[weekKey()])}
-              prerequisite={{
-                required: prerequisiteRequired,
-                first: prerequisiteUnit.title,
-                then: nextLearningUnit.title,
-                reason: `${weakestLearningSkill.skill} è al ${weakestLearningSkill.score}%: conviene consolidare la base prima di aumentare la difficoltà.`,
-              }}
-              onGoal={updateLearningGoal}
-              onMicro={startMicroSession}
-              onNew={() => open(nextLearningUnit, 30)}
-              onPrerequisite={() => open(prerequisiteUnit, 15)}
-              onReview={startLearningReview}
-              onReading={startLearningReading}
-              onSimulation={openLearningSimulation}
-              onRemovePhrase={removePhrase}
-              onMonthly={completeMonthlyCheck}
-              onWeekly={completeWeeklyChallenge}
-            />
-          </Deferred>
-        </details>
-      )}
-      {view === "home" && (
-        <button type="button" className="placementEntry" onClick={() => setView("placement")}>
-          <span><small>NON SAI DA DOVE PARTIRE?</small><strong>Valuta o aggiorna il tuo livello</strong></span>
-          <b>30 domande →</b>
-        </button>
+        <div className="homeQuickRow">
+          <details className="smartStudyHome">
+            <summary><span>Studio intelligente</span><b>{learningSkills.slice().sort((a, b) => a.score - b.score)[0].skill}</b></summary>
+            <Deferred>
+              <LearningCoach
+                level={selectedLevel}
+                goal={progress.learningGoal ?? learningGoal}
+                skills={learningSkills}
+                clusters={learningClusters}
+                phrases={progress.savedPhrases ?? []}
+                monthly={progress.monthlyChecks ?? {}}
+                weeklyDone={Boolean(progress.weeklyChallenges?.[weekKey()])}
+                prerequisite={{
+                  required: prerequisiteRequired,
+                  first: prerequisiteUnit.title,
+                  then: nextLearningUnit.title,
+                  reason: `${weakestLearningSkill.skill} è al ${weakestLearningSkill.score}%: conviene consolidare la base prima di aumentare la difficoltà.`,
+                }}
+                onGoal={updateLearningGoal}
+                onMicro={startMicroSession}
+                onNew={() => open(nextLearningUnit, 30)}
+                onPrerequisite={() => open(prerequisiteUnit, 15)}
+                onReview={startLearningReview}
+                onReading={startLearningReading}
+                onSimulation={openLearningSimulation}
+                onRemovePhrase={removePhrase}
+                onMonthly={completeMonthlyCheck}
+                onWeekly={completeWeeklyChallenge}
+              />
+            </Deferred>
+          </details>
+          <button type="button" className="placementEntry" onClick={() => setView("placement")}>
+            <span><strong>Valuta il tuo livello</strong><small>30 domande</small></span>
+            <b>→</b>
+          </button>
+        </div>
       )}
       {view === "home" &&
         smartReviews.some((review) => !review.mastered) &&

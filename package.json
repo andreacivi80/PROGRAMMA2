@@ -1,6 +1,6 @@
 {
   "name": "english-coach-public",
-  "version": "6.3.0",
+  "version": "6.4.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -22,6 +22,7 @@
     "audit:journey2": "node tools/adversarial-journey-2-audit.mjs",
     "audit:learning": "node tools/learner-progression-audit.mjs",
     "audit:journey3": "node tools/adaptive-persona-journey-audit.mjs",
+    "audit:visual": "node tools/visual-layout-audit.mjs",
     "audit:cefr": "node tools/cefr-boundary-audit.mjs",
     "test": "npm run audit:placement && npm run audit:ui && npm run audit:course && npm run audit:diversity && npm run audit:personas && npm run audit:cefr && npm run audit:didactic && npm run audit:accessibility && npm run audit:language-labs && npm run audit:learning && npm run audit:journey && npm run audit:journey2 && npm run audit:journey3 && npm run audit:persistence && npm run audit:migrations && npm run audit:audio && npm run audit:release && npm run build"
   },

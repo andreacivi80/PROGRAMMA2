@@ -150,7 +150,7 @@ try {
   check("audio-preferences-are-saved", localStorage.getItem("english-coach-audio-accent-v1") === "en-US" && localStorage.getItem("english-coach-audio-rate-v1") === "1.2");
 
   fireEvent.click(within(screen.getByRole("navigation", { name: "Navigazione principale" })).getByRole("button", { name: "Oggi" })); await sleep(10);
-  fireEvent.click(screen.getByRole("button", { name: /Valuta o aggiorna il tuo livello/ }));
+  fireEvent.click(screen.getByRole("button", { name: /Valuta il tuo livello/ }));
   await waitFor(() => screen.getByText("1/30"), { timeout: 4000 });
   check("placement-really-starts-with-thirty-items", Boolean(screen.getByText("1/30")));
   for (let index = 0; index < 30; index++) {

@@ -1140,3 +1140,78 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
     min-height: 82px;
   }
 }
+
+.examples { gap: 10px; }
+.examples > div { padding: 13px; }
+.examples > div > .audioControl {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px;
+  padding: 5px;
+  border-radius: 15px;
+}
+.examples .audioActions {
+  width: 100%;
+  grid-template-columns: minmax(96px, 1fr) 54px;
+  gap: 5px;
+}
+.examples .audioActions .audio,
+.examples .audioStop { min-height: 42px; border-radius: 11px; }
+.examples .audioStop { width: 54px; padding-inline: 5px; }
+.examples .audioStop:disabled { display: none; }
+.examples .speed { grid-template-columns: repeat(3, 36px); justify-self: end; }
+.examples .speed button { min-width: 36px; min-height: 40px; font-size: 11px; }
+.examples .savePhrase { min-height: 40px !important; font-size: 11px !important; }
+.lessonActions :is(.backStage, .skipStage) { min-height: 42px; }
+.themeGrid small { font-size: 11px; line-height: 1.35; }
+.homeQuickRow {
+  width: calc(100% - 32px);
+  margin: 10px auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+  gap: 8px;
+  align-items: start;
+}
+.homeQuickRow .smartStudyHome,
+.homeQuickRow .placementEntry { width: 100%; margin: 0; }
+.homeQuickRow .smartStudyHome > summary,
+.homeQuickRow .placementEntry { min-height: 58px; padding: 9px 11px; }
+.homeQuickRow .smartStudyHome > summary { gap: 6px; }
+.homeQuickRow .smartStudyHome > summary > span,
+.homeQuickRow .placementEntry strong { font-size: 13px; line-height: 1.15; }
+.homeQuickRow .smartStudyHome > summary b { padding: 5px 7px; font-size: 9px; }
+.homeQuickRow .placementEntry span { display: grid; gap: 2px; }
+.homeQuickRow .placementEntry small { color: var(--muted); font-size: 10px; }
+.homeQuickRow .placementEntry > b { font-size: 18px; }
+.homeQuickRow .smartStudyHome[open] { grid-column: 1 / -1; }
+.homeQuickRow .smartStudyHome[open] + .placementEntry { grid-column: 1 / -1; min-height: 48px; }
+.guidedPlayer .audioControl {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px;
+  padding: 5px;
+}
+.guidedPlayer .audioActions {
+  width: 100%;
+  grid-template-columns: minmax(100px, 1fr) 54px;
+  gap: 5px;
+}
+.guidedPlayer .audioActions .audio,
+.guidedPlayer .audioStop { min-height: 42px; border-radius: 11px; }
+.guidedPlayer .audioStop { width: 54px; padding-inline: 5px; }
+.guidedPlayer .audioStop:disabled { display: none; }
+.guidedPlayer .speed { grid-template-columns: repeat(3, 36px); justify-self: end; }
+.guidedPlayer .speed button { min-width: 36px; min-height: 40px; font-size: 11px; }
+.listeningModes button { min-height: 42px; font-size: 11px; }
+.dictationLab > summary { min-height: 40px; display: flex; align-items: center; }
+
+@media (max-width: 390px) {
+  .examples > div > .audioControl { grid-template-columns: minmax(0, 1fr) auto; }
+  .examples .audioActions { grid-template-columns: minmax(88px, 1fr) 50px; }
+  .examples .audioStop { width: 50px; }
+  .examples .speed { grid-template-columns: repeat(3, 34px); }
+  .examples .speed button { min-width: 34px; }
+  .homeQuickRow { width: calc(100% - 20px); }
+  .guidedPlayer .audioActions { grid-template-columns: minmax(90px, 1fr) 50px; }
+  .guidedPlayer .audioStop { width: 50px; }
+  .guidedPlayer .speed { grid-template-columns: repeat(3, 34px); }
+  .guidedPlayer .speed button { min-width: 34px; }
+}
