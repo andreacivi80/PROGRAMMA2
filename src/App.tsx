@@ -51,9 +51,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "5.6";
+const APP_VERSION = "5.7";
 const BUILD_DATE = "31 luglio 2026";
-const BUILD_ID = "EC-5.6-0731";
+const BUILD_ID = "EC-5.7-0731";
 type View =
   | "home"
   | "path"
@@ -1825,6 +1825,15 @@ export default function Home() {
     return () => window.clearInterval(timer);
   }, [recording]);
   useEffect(() => () => stopActiveAudio?.(), [view, phase, unit.id]);
+  useEffect(() => {
+    const closeOverlay = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      if (resetConfirm) setResetConfirm(false);
+      else if (resumePrompt) setResumePrompt(null);
+    };
+    window.addEventListener("keydown", closeOverlay);
+    return () => window.removeEventListener("keydown", closeOverlay);
+  }, [resetConfirm, resumePrompt]);
   const completed = progress ? Object.keys(progress.days).length : 0,
     average = useMemo(
       () =>
@@ -3031,7 +3040,7 @@ export default function Home() {
             <small>Versione {APP_VERSION} · Un passo al giorno</small>
           </span>
         </button>
-        <span className={`sync ${sync}`}>
+        <span className={`sync ${sync}`} role="status" aria-live="polite">
           {sync === "saving" ? "Salvataggio…" : "Salvato qui"}
         </span>
       </header>
@@ -3051,7 +3060,7 @@ export default function Home() {
               </select>
             </label>
             <div className="confirmActions">
-              <button className="primary" onClick={() => { setWelcomeOpen(false); setView("placement"); }}>
+              <button autoFocus className="primary" onClick={() => { setWelcomeOpen(false); setView("placement"); }}>
                 Fai il test iniziale
               </button>
               <button onClick={() => completeOnboarding()}>
@@ -3079,6 +3088,7 @@ export default function Home() {
             </p>
             <div className="confirmActions">
               <button
+                autoFocus
                 className="primary"
                 onClick={() => {
                   setSessionMinutes(resumePrompt.checkpoint.sessionMinutes ?? null);
@@ -3125,6 +3135,7 @@ export default function Home() {
                 Sì, cancella tutto
               </button>
               <button
+                autoFocus
                 className="primary"
                 onClick={() => setResetConfirm(false)}
               >
@@ -5689,30 +5700,34 @@ export default function Home() {
         view !== "errors" &&
         view !== "placement" &&
         view !== "themePack" && (
-          <nav>
+          <nav aria-label="Navigazione principale">
             <button
               className={view === "home" ? "active" : ""}
+              aria-current={view === "home" ? "page" : undefined}
               onClick={() => setView("home")}
             >
-              <b>⌂</b>Oggi
+              <b aria-hidden="true">⌂</b>Oggi
             </button>
             <button
               className={view === "path" ? "active" : ""}
+              aria-current={view === "path" ? "page" : undefined}
               onClick={() => setView("path")}
             >
-              <b>◇</b>Percorso
+              <b aria-hidden="true">◇</b>Percorso
             </button>
             <button
               className={view === "topics" ? "active" : ""}
+              aria-current={view === "topics" ? "page" : undefined}
               onClick={() => setView("topics")}
             >
-              <b>✦</b>Temi
+              <b aria-hidden="true">✦</b>Temi
             </button>
             <button
               className={view === "progress" ? "active" : ""}
+              aria-current={view === "progress" ? "page" : undefined}
               onClick={() => setView("progress")}
             >
-              <b>↗</b>Progressi
+              <b aria-hidden="true">↗</b>Progressi
             </button>
           </nav>
         )}

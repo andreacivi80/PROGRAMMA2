@@ -1,10 +1,10 @@
-# English Coach 5.6 — stato verificato
+# English Coach 5.7 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 5.6, con data e identificativo visibili.
+- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 5.7, con data e identificativo visibili.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 
@@ -77,6 +77,9 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 ## 18–20. Grafica, accessibilità e dati
 
 - **IMPLEMENTATO** — layout compatto, modalità chiara/scura, testo regolabile, focus visibile, riduzione animazioni e controlli tattili.
+- **VERIFICATO** — lo zoom del browser non è bloccato; testo grande, griglie, audio e navigazione rifluiscono sugli schermi stretti.
+- **VERIFICATO** — navigazione, stato del salvataggio e finestre di conferma hanno ruoli, etichette e gestione del focus; i comandi annullabili rispondono anche a Esc.
+- **VERIFICATO** — testi lunghi, quiz e pulsanti di salto restano contenuti nei rispettivi riquadri senza scorrimento orizzontale.
 - **VERIFICATO** — nessun pulsante privo di gestore; quiz visivi contenuti e nessun comando basato soltanto sul trascinamento.
 - **IMPLEMENTATO** — esportazione, importazione validata, migrazioni, azzeramento con conferma e salvataggio automatico.
 - **VERIFICATO** — il backup include anche sessione, selezione, lettura ed esercizi supplementari in corso; continua ad accettare i vecchi backup.
