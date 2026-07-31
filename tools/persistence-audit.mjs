@@ -12,7 +12,7 @@ const checks = {
   levelAndTheme: app.includes("english-coach-selection-v1") && app.includes("lessonId: selectedLessonId") && app.includes("theme: selectedTheme"),
   scrollPerView: app.includes("`english-coach-scroll-${view}`"),
   panelState: app.includes("english-coach-adaptive-open") && app.includes("english-coach-free-open"),
-  forwardCompatibleMigration: app.includes("function normalizeProgress") && app.includes("schemaVersion: 12") && app.includes("normalizeProgress(imported.progress, deviceId())"),
+  forwardCompatibleMigration: app.includes("function normalizeProgress") && app.includes("schemaVersion: 13") && app.includes("normalizeProgress(imported.progress, deviceId())"),
   checkpointMigration: app.includes("function normalizeCheckpoint") && app.includes("counts[phase] - 1") && app.includes("normalizeCheckpoint(saved)?.checkpoint"),
   completeBackup: ["checkpoints", "selection", "readingDraft", "supplementarySeen"].every((field) => app.includes(field)),
   preventsDoubleCompletion: app.includes("finishingRef.current") && app.includes("if (!progress || finishingRef.current) return"),

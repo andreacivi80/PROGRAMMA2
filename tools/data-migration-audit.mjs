@@ -25,7 +25,7 @@ try {
   const malformed = normalizeProgress({ currentDay: 999, days: [], activity: [], smartReview: [] }, "audit-device");
   const checks = {
     migratesThreeCourseExpansions: Boolean(legacy.currentDay === 37 && legacy.days[13] && legacy.days[25] && legacy.days[37]),
-    preservesDeviceAndSchema: legacy.deviceId === "audit-device" && legacy.schemaVersion === 12,
+    preservesDeviceAndSchema: legacy.deviceId === "audit-device" && legacy.schemaVersion === 13,
     clampsInvalidCounters: legacy.streak === 0 && malformed.currentDay === mobileCurriculum.length,
     repairsCollections: !Array.isArray(malformed.days) && !Array.isArray(malformed.activity) && !Array.isArray(malformed.smartReview),
     trimsReviewHistory: legacy.smartReview.old.attempts.length === 30,

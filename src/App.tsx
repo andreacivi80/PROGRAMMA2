@@ -48,13 +48,14 @@ const ThemePackLab = lazy(() => import("./ThemePackLab"));
 const WordGamesHub = lazy(() => import("./WordGamesHub"));
 const PlacementTest = lazy(() => import("./PlacementTest"));
 const SkillsLab = lazy(() => import("./SkillsLab"));
+const StoryPath = lazy(() => import("./StoryPath"));
 const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "6.0";
+const APP_VERSION = "6.2";
 const BUILD_DATE = "31 luglio 2026";
-const BUILD_ID = "EC-6.0-0731";
+const BUILD_ID = "EC-6.2-0731";
 type View =
   | "home"
   | "path"
@@ -155,6 +156,10 @@ type Progress = {
   wordGames?: Record<
     string,
     { score: number; attempts: number; completedAt: string }
+  >;
+  lessonFeedback?: Record<
+    string,
+    { rating: "easy" | "right" | "hard"; at: string; score: number }
   >;
   smartReview?: Record<string, SmartReviewItem>;
 };
@@ -328,6 +333,13 @@ const themes = [
     matches: [],
   },
   {
+    id: "story",
+    icon: "∞",
+    title: "Storia a episodi",
+    description: "Una storia progressiva con scelte, ascolto e scrittura.",
+    matches: [],
+  },
+  {
     id: "video",
     icon: "▻",
     title: "Video Lab",
@@ -375,7 +387,7 @@ const videoResources = [
 ] as const;
 type ThemeId = (typeof themes)[number]["id"];
 function themeSupportsLevel(id: ThemeId, level: Cefr) {
-  if (id === "games" || id === "visual" || id === "skills") return true;
+  if (id === "games" || id === "visual" || id === "skills" || id === "story") return true;
   if (id === "reading")
     return readingPassages.some((item) => item.level === level);
   if (id === "video")
@@ -447,7 +459,7 @@ const reviewKey = (unitId: string, kind: ReviewKind, prompt: string) =>
     .replace(/[^\p{L}\p{N}]+/gu, "-")
     .slice(0, 80)}`;
 const fresh = (id: string): Progress => ({
-  schemaVersion: 12,
+  schemaVersion: 13,
   deviceId: id,
   currentDay: 1,
   streak: 0,
@@ -458,6 +470,7 @@ const fresh = (id: string): Progress => ({
   reviews: {},
   themePacks: {},
   wordGames: {},
+  lessonFeedback: {},
   smartReview: {},
 });
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -489,6 +502,7 @@ export function normalizeProgress(value: unknown, id: string): Progress {
   raw.reviews = isRecord(raw.reviews) ? raw.reviews : {};
   raw.themePacks = isRecord(raw.themePacks) ? raw.themePacks : {};
   raw.wordGames = isRecord(raw.wordGames) ? raw.wordGames : {};
+  raw.lessonFeedback = isRecord(raw.lessonFeedback) ? raw.lessonFeedback : {};
   raw.smartReview = isRecord(raw.smartReview) ? raw.smartReview : {};
   raw.smartReview = Object.fromEntries(
     Object.entries(raw.smartReview).map(([key, item]) => {
@@ -520,7 +534,7 @@ export function normalizeProgress(value: unknown, id: string): Progress {
   return {
     ...fresh(id),
     ...raw,
-    schemaVersion: 12,
+    schemaVersion: 13,
     deviceId: id,
     currentDay: Math.min(
       mobileCurriculum.length,
@@ -2670,27 +2684,27 @@ export default function Home() {
     }),
     reviewFocus = [...masteryAreas].sort((a, b) => b.open - a.open)[0];
   const lessonForTime = (minutes: number) => {
-      const lessons = mobileCurriculum.filter(
-          (candidate) =>
-            candidate.cefr === selectedLevel && !progress.days[candidate.day],
-        ),
-        available = lessons
-          .filter((candidate) => candidate.minutes <= minutes)
-          .sort((a, b) => b.minutes - a.minutes);
-      return (
-        available[0] ??
-        lessons.sort(
-          (a, b) =>
-            Math.abs(a.minutes - minutes) - Math.abs(b.minutes - minutes),
-        )[0] ??
-        mobileCurriculum.find((candidate) => candidate.cefr === selectedLevel)!
-      );
+      const lessons = mobileCurriculum
+          .filter((candidate) => candidate.cefr === selectedLevel)
+          .sort((a, b) => a.day - b.day),
+        next = lessons.find((candidate) => !progress.days[candidate.day]),
+        selected = lessons.find((candidate) => candidate.id === selectedLessonId),
+        selectedRating = selected
+          ? progress.lessonFeedback?.[selected.id]?.rating
+          : undefined;
+      if (minutes <= 15 && selected && selectedRating === "hard") return selected;
+      return next ?? selected ?? lessons[0];
     },
     adaptiveOptions = ([5, 15, 30] as const).map((minutes) => ({
       minutes,
       lesson: lessonForTime(minutes),
       detail:
-        minutes === 5
+        progress.lessonFeedback?.[selectedLessonId]?.rating === "hard" &&
+        minutes <= 15
+          ? "Rinforzo guidato sui punti difficili"
+          : progress.lessonFeedback?.[selectedLessonId]?.rating === "easy"
+            ? "Passo successivo con attività nuove"
+          : minutes === 5
           ? "Ripasso, frase e pronuncia"
           : minutes === 15
             ? "Regola, pratica, ascolto e voce"
@@ -2748,6 +2762,21 @@ export default function Home() {
       setProgress(updated);
       void save(updated);
     };
+  const rateLesson = (rating: "easy" | "right" | "hard") => {
+    const updated: Progress = {
+      ...progress,
+      lessonFeedback: {
+        ...(progress.lessonFeedback ?? {}),
+        [unit.id]: {
+          rating,
+          at: new Date().toISOString(),
+          score: points.all ? Math.round((points.yes / points.all) * 100) : 0,
+        },
+      },
+    };
+    setProgress(updated);
+    void save(updated);
+  };
   const startRecovery = () => {
     const open = shuffled(
         smartReviews.filter((review) => !review.mastered),
@@ -3147,7 +3176,7 @@ export default function Home() {
                 <b>∞</b>
                 <span>
                   <strong>Sessione completa</strong>
-                  <small>Tutte le attività · {lessonForTime(40).minutes} min</small>
+                  <small>{lessonForTime(40).title} · {lessonForTime(40).minutes} min</small>
                 </span>
               </button>
             </div>
@@ -3710,6 +3739,17 @@ export default function Home() {
                     })}
                 </div>
               </section>
+            </div>
+          ) : selectedTheme === "story" ? (
+            <div ref={(node) => { themeResultsRef.current = node; }}>
+              <Deferred>
+                <StoryPath
+                  key={selectedLevel}
+                  level={selectedLevel}
+                  saved={progress.wordGames ?? {}}
+                  onComplete={finishWordGame}
+                />
+              </Deferred>
             </div>
           ) : selectedTheme === "video" ? (
             <section
@@ -5603,6 +5643,34 @@ export default function Home() {
                   %
                 </strong>
                 <small>precisione di oggi</small>
+                <section className="lessonFeedback" aria-labelledby="lesson-feedback-title">
+                  <h2 id="lesson-feedback-title">Com’è stata questa sessione?</h2>
+                  <div>
+                    {([
+                      ["easy", "Troppo facile"],
+                      ["right", "Giusta"],
+                      ["hard", "Troppo difficile"],
+                    ] as const).map(([rating, label]) => (
+                      <button
+                        type="button"
+                        key={rating}
+                        aria-pressed={progress.lessonFeedback?.[unit.id]?.rating === rating}
+                        onClick={() => rateLesson(rating)}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                  {progress.lessonFeedback?.[unit.id]?.rating && (
+                    <p role="status">
+                      {progress.lessonFeedback[unit.id].rating === "hard"
+                        ? "Le proposte brevi riprenderanno questa lezione e i punti da rinforzare."
+                        : progress.lessonFeedback[unit.id].rating === "easy"
+                          ? "La prossima proposta avanzerà con attività nuove."
+                          : "Continueremo con questo ritmo."}
+                    </p>
+                  )}
+                </section>
                 {!bonusDone && (
                   <section className="bonusOffer">
                     <h2>Hai ancora tempo?</h2>

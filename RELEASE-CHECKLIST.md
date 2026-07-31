@@ -1,10 +1,10 @@
-# English Coach 6.0 — stato verificato
+# English Coach 6.2 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 6.0, con data e identificativo visibili.
+- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 6.2, con data e identificativo visibili.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 - **VERIFICATO** — i nomi dell’archivio locale restano stabili tra le revisioni: una nuova pubblicazione sostituisce l’interfaccia, non i dati dell’utente.
@@ -68,6 +68,8 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 ## 14–15. Tempo ed esami
 
 - **IMPLEMENTATO** — scelte 5, 15, 30 minuti e sessione completa con composizione diversa e salvataggio del punto raggiunto.
+- **IMPLEMENTATO** — la durata non può più far saltare lezioni: viene proposta la prima attività non completata; una difficoltà segnalata riapre invece un rinforzo breve mirato.
+- **IMPLEMENTATO** — al termine si può indicare “troppo facile”, “giusta” o “troppo difficile”; la scelta resta locale e adatta la proposta successiva.
 - **IMPLEMENTATO** — tempo realmente trascorso calcolato dall’inizio alla conclusione, non attribuito con valore fisso.
 - **IMPLEMENTATO** — esame per livello con grammatica, vocabolario, contesto, lettura, ascolto, scrittura, parlato e mediazione.
 - **IMPLEMENTATO** — rapporto 0–100%, confronto precedente, aree forti/deboli, consiglio e stampa/PDF.
@@ -98,8 +100,12 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 - **VERIFICATO** — strumenti di compilazione aggiornati alla versione corretta e controllo di sicurezza senza vulnerabilità note.
 - **VERIFICATO** — 221 pulsanti, audio, stop, velocità, salti, ripassi, giochi, missioni e persistenza coperti dagli audit statici.
 - **VERIFICATO** — test automatici per 60 lezioni, 30 prove d’ingresso, profili CEFR, duplicati, banche esercizi e struttura UI.
+- **VERIFICATO** — il test d’ingresso usa 3 alternative in A1–A2, 4 in B1–B2 e 5 in C1, con soglie separate di lettura/ascolto e produzione avanzata obbligatoria per B2/C1.
+- **VERIFICATO** — profili di confine, abilità sbilanciate e 500 compilazioni casuali non ottengono un livello alto senza i prerequisiti.
 - **VERIFICATO** — 41 scenari di utilizzo concatenati simulano un’ora di percorso: primo accesso, livelli, viste, errori volontari, salti, indietro, refresh, chiusura, ripresa, preferenze, test d’ingresso, backup e quiz visivo.
+- **VERIFICATO** — un secondo ciclo avversariale separato simula un’altra ora: progressione adattiva, giudizio di difficoltà, riapertura, persistenza, percorso narrativo C1, audio con pausa/ripresa/stop e layout mobile.
 - **VERIFICATO** — cinque profili A1–C1 controllano crescita di durata, listening, lessico e lettura; nessuna domanda identica, opzione duplicata o risposta fuori intervallo.
+- **IMPLEMENTATO** — storia progressiva in tre episodi per ogni livello, con ascolto, comprensione, scrittura ed alternative che crescono da tre a cinque.
 - **RINVIATO CON MOTIVAZIONE** — prove fisiche complete su ogni combinazione di microfono, screen reader e zoom richiedono la relativa matrice di dispositivi.
 
 ## 23–24. Vincoli finali
