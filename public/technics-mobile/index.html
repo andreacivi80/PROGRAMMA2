@@ -229,14 +229,18 @@ window.__technicsTestScan=acceptScan;$("code").addEventListener("input",()=>{awa
       op:productionVisible?barcode:"",
       code:byId("code").value.trim(),
       lot:byId("lot").value.trim(),
-      scrollY:window.scrollY,
-      order:productionVisible&&currentOrder?currentOrder:null
+      scrollY:window.scrollY
     };
     try{localStorage.setItem(key,JSON.stringify(state))}catch{}
+    try{
+      if(productionVisible&&currentOrder)sessionStorage.setItem(key+"-order",JSON.stringify(currentOrder));
+      else if(mode!=="production")sessionStorage.removeItem(key+"-order");
+    }catch{}
   };
   document.addEventListener("DOMContentLoaded",()=>{
     let saved=null;
     try{saved=JSON.parse(localStorage.getItem(key)||"null")}catch{}
+    if(saved)try{saved.order=JSON.parse(sessionStorage.getItem(key+"-order")||"null")}catch{}
     const reveal=()=>document.documentElement.classList.remove("resume-production");
     const ready=()=>!byId("production").classList.contains("hidden")||!byId("openPackingHome").classList.contains("hidden");
     const observer=new MutationObserver(()=>{save();if(ready())reveal()});
