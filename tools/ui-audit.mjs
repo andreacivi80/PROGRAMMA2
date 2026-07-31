@@ -126,6 +126,7 @@ themeQuestions:pack.includes("Salta domanda")
   ,readingOneAtATime:app.includes("slice(readingQuestionIndex,readingQuestionIndex+1)")&&app.includes("setReadingQuestionIndex")
   ,compactLevelPicker:app.includes('className="compactLevelPicker"')&&css.includes(".compactLevelPicker>summary")
   ,mainViewPersists:app.includes("english-coach-view-v1")&&app.includes("initialMainView")
+  ,themePersists:app.includes("theme: selectedTheme")&&app.includes("setSelectedTheme(savedTheme)")
  },
  languageFocus:{
   themeEntry:app.includes("Verbi e false friends"),

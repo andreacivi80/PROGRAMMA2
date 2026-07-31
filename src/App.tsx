@@ -37,7 +37,7 @@ import "./version29.css";
 import "./wordGames.css";
 import "./version33.css";
 
-const APP_VERSION = "3.9";
+const APP_VERSION = "4.0";
 type View =
   | "home"
   | "path"
@@ -1480,7 +1480,9 @@ export default function Home() {
       p = { ...p, ...raw, deviceId: id };
     } catch {}
     setProgress(p);
-    let savedLevel: Cefr | undefined, savedChoiceId: string | undefined;
+    let savedLevel: Cefr | undefined,
+      savedChoiceId: string | undefined,
+      savedTheme: ThemeId | undefined;
     try {
       const saved = JSON.parse(
           localStorage.getItem("english-coach-selection-v1") || "{}",
@@ -1495,21 +1497,28 @@ export default function Home() {
         savedLevel = level;
         savedChoiceId = saved.lessonId;
       }
+      if (themes.some((theme) => theme.id === saved.theme))
+        savedTheme = saved.theme;
     } catch {}
     const selected =
       mobileCurriculum.find((x) => x.day === p.currentDay) ??
       mobileCurriculum[0];
     setSelectedLevel(savedLevel ?? selected.cefr);
     setSelectedLessonId(savedChoiceId ?? selected.id);
+    if (savedTheme) setSelectedTheme(savedTheme);
     setSync("offline");
   }, []);
   useEffect(() => {
     if (!progress) return;
     localStorage.setItem(
       "english-coach-selection-v1",
-      JSON.stringify({ level: selectedLevel, lessonId: selectedLessonId }),
+      JSON.stringify({
+        level: selectedLevel,
+        lessonId: selectedLessonId,
+        theme: selectedTheme,
+      }),
     );
-  }, [progress, selectedLevel, selectedLessonId]);
+  }, [progress, selectedLevel, selectedLessonId, selectedTheme]);
   useEffect(() => {
     if (
       view === "home" ||
