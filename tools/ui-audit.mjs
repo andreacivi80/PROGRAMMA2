@@ -27,7 +27,9 @@ const review=readFileSync("src/ReviewLab.tsx","utf8");
 const speechVoices=readFileSync("src/speechVoices.ts","utf8");
 const supplementary=readFileSync("src/supplementaryQuiz.ts","utf8");
 const languageFocus=readFileSync("src/languageFocusPacks.ts","utf8");
-const css=readFileSync("src/styles.css","utf8")+readFileSync("src/themePacks.css","utf8")+readFileSync("src/version29.css","utf8")+readFileSync("src/wordGames.css","utf8");
+const mixedText=readFileSync("src/MixedText.tsx","utf8");
+const grammarLesson=readFileSync("src/GrammarLesson.tsx","utf8");
+const css=readFileSync("src/styles.css","utf8")+readFileSync("src/themePacks.css","utf8")+readFileSync("src/version29.css","utf8")+readFileSync("src/version33.css","utf8")+readFileSync("src/wordGames.css","utf8");
 const checks={
  buttons,
  missingHandlers,
@@ -84,6 +86,21 @@ themeQuestions:pack.includes("Salta domanda")
   remembersSeen:app.includes("english-coach-supplementary-seen-v1"),
   rotatesQuestions:supplementary.includes("excludedSet")&&supplementary.includes("unseen")
  },
+ smartReview:{
+  storesErrors:app.includes("smartReview?:Record<string,SmartReviewItem>")&&app.includes("queueReview"),
+  storesSkipped:app.includes('skipStage=()=>{if(phase==="cloze")')&&app.includes('queueReview("Ascolto"'),
+  pronunciation:app.includes('speechScore<75')&&app.includes('queueReview("Pronuncia"'),
+  schedule:app.includes("const delays=[1,3,7,14]"),
+  dueToday:app.includes("Da ripassare oggi")&&app.includes('view==="smartReview"'),
+  savesLocally:app.includes("smartReview:{...(current.smartReview??{})"),
+  resetAndBackup:app.includes("schemaVersion:8")&&app.includes("smartReview:imported.smartReview??{}")
+ },
+ learningClarity:{
+  noServiceCopy:!["banca tecnica","algoritmo interno","posizioni cambiano continuamente","dettaglio di implementazione"].some(text=>app.toLowerCase().includes(text)),
+  englishEmphasis:mixedText.includes("inlineEnglish")&&mixedText.includes("I'm afraid")&&grammarLesson.includes("terms={lessonTerms}"),
+  visibleEnglishStyle:css.includes(".inlineEnglish")&&css.includes("text-decoration-color:#efc85e"),
+  phoneReviewLayout:css.includes("@media(max-width:430px)")&&css.includes(".smartReviewChoices{grid-template-columns:1fr}")
+ },
  languageFocus:{
   themeEntry:app.includes("Verbi e false friends"),
   fiveLevels:["A1","A2","B1","B2","C1"].every(level=>languageFocus.includes(`level: "${level}"`)),
@@ -105,6 +122,8 @@ const failed=[
  ...Object.entries(checks.themeAudio).filter(([,value])=>!value).map(([name])=>`theme-audio:${name}`),
  ...Object.entries(checks.skipping).filter(([,value])=>!value).map(([name])=>`skipping:${name}`),
  ...Object.entries(checks.supplementaryPractice).filter(([,value])=>!value).map(([name])=>`supplementary:${name}`),
+ ...Object.entries(checks.smartReview).filter(([,value])=>!value).map(([name])=>`smart-review:${name}`),
+ ...Object.entries(checks.learningClarity).filter(([,value])=>!value).map(([name])=>`learning-clarity:${name}`),
  ...Object.entries(checks.languageFocus).filter(([,value])=>!value).map(([name])=>`language-focus:${name}`),
  ...Object.entries(checks.responsive).filter(([,value])=>!value).map(([name])=>`responsive:${name}`)
 ];
