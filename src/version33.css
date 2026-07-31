@@ -138,3 +138,272 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
     grid-template-columns: 1fr;
   }
 }
+
+.welcomeSheet {
+  text-align: left;
+}
+
+.welcomeGoal {
+  display: grid;
+  gap: 6px;
+  margin: 16px 0;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.welcomeGoal select {
+  min-height: 48px;
+  padding: 9px 12px;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--ink);
+}
+
+.placementEntry {
+  width: calc(100% - 32px);
+  min-height: 62px;
+  margin: 2px 16px 10px;
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid #c9ddd5;
+  border-radius: 18px;
+  background: #f4faf7;
+  text-align: left;
+}
+
+.placementEntry span {
+  display: grid;
+  gap: 3px;
+}
+
+.placementEntry small {
+  color: var(--green);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.placementEntry strong {
+  font: 800 14px var(--font-display);
+}
+
+.placementEntry > b {
+  color: var(--green);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.placementView {
+  width: min(100%, 620px);
+  min-height: 100dvh;
+  margin: auto;
+  padding: 0 14px 28px;
+  background: var(--paper);
+}
+
+.placementPanel,
+.placementResult {
+  padding: clamp(22px, 6vw, 34px);
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: var(--card);
+  box-shadow: 0 12px 34px #26363012;
+}
+
+.placementPanel > h1,
+.placementResult > h1 {
+  font-size: clamp(27px, 7vw, 38px);
+  line-height: 1.12;
+}
+
+.placementActions {
+  margin-top: 18px;
+}
+
+.placementResult {
+  margin-top: 7vh;
+  text-align: center;
+}
+
+.placementResult > strong {
+  display: inline-block;
+  margin: 8px 0 14px;
+  padding: 14px 20px;
+  border-radius: 18px;
+  background: var(--green);
+  color: #fff;
+  font-size: 30px;
+}
+
+.placementResult > p {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.placementLevelChoices {
+  margin: 12px 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.placementLevelChoices button {
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  font-weight: 900;
+}
+
+.skillsHub,
+.skillSession {
+  margin-top: 12px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--card);
+}
+
+.skillsCards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+.skillsCards button {
+  min-height: 112px;
+  padding: 14px;
+  display: grid;
+  justify-items: start;
+  gap: 5px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: #fff;
+  text-align: left;
+}
+
+.skillsCards button > b {
+  min-width: 38px;
+  min-height: 38px;
+  padding: 5px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--mint);
+  color: var(--green);
+  font-size: 10px;
+}
+
+.skillsCards strong {
+  font: 800 14px var(--font-display);
+}
+
+.skillsCards small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.skillSession > h1 {
+  margin: 18px 0 12px;
+  font-size: clamp(25px, 7vw, 36px);
+  line-height: 1.2;
+}
+
+.skillSession blockquote {
+  margin: 14px 0;
+  padding: 16px;
+  border-left: 4px solid var(--yellow);
+  border-radius: 12px;
+  background: #fff7dc;
+  line-height: 1.5;
+}
+
+.skillSession textarea {
+  width: 100%;
+  min-height: 150px;
+  padding: 14px;
+  border: 2px solid var(--line);
+  border-radius: 15px;
+  resize: vertical;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.pairListen {
+  width: 100%;
+  min-height: 56px;
+  border: 0;
+  border-radius: 17px;
+  background: var(--green);
+  color: #fff;
+  font-weight: 900;
+}
+
+.pairChoices,
+.dialogueChoices {
+  display: grid;
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.pairChoices {
+  grid-template-columns: 1fr 1fr;
+}
+
+.pairChoices button,
+.dialogueChoices button {
+  min-height: 58px;
+  padding: 12px;
+  border: 2px solid var(--line);
+  border-radius: 15px;
+  background: #fff;
+}
+
+.pairChoices button.right,
+.dialogueChoices button.right {
+  border-color: #60b798;
+  background: #effaf6;
+}
+
+.pairChoices button.wrong,
+.dialogueChoices button.wrong {
+  border-color: var(--coral);
+  background: var(--soft);
+}
+
+.dialogueChoices button {
+  display: grid;
+  gap: 5px;
+  text-align: left;
+}
+
+.dialogueChoices small {
+  color: var(--muted);
+}
+
+.familyLine {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 13px;
+  background: var(--mint);
+  color: var(--deep);
+  font-weight: 800;
+}
+
+@media (max-width: 390px) {
+  .skillsHub,
+  .skillSession {
+    padding: 14px;
+  }
+  .skillsCards {
+    grid-template-columns: 1fr;
+  }
+  .skillsCards button {
+    min-height: 82px;
+  }
+}

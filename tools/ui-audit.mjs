@@ -1,7 +1,7 @@
 import ts from "typescript";
 import {readFileSync} from "node:fs";
 
-const files=["src/App.tsx","src/GrammarLesson.tsx","src/ReviewLab.tsx","src/ThemePackHub.tsx","src/ThemePackLab.tsx","src/AuthenticAudio.tsx","src/WordGamesHub.tsx"];
+const files=["src/App.tsx","src/GrammarLesson.tsx","src/ReviewLab.tsx","src/ThemePackHub.tsx","src/ThemePackLab.tsx","src/AuthenticAudio.tsx","src/WordGamesHub.tsx","src/PlacementTest.tsx","src/SkillsLab.tsx"];
 const missingHandlers=[];
 let buttons=0;
 for(const file of files){
@@ -35,6 +35,8 @@ const supplementary=searchable(readFileSync("src/supplementaryQuiz.ts","utf8"));
 const languageFocus=searchable(readFileSync("src/languageFocusPacks.ts","utf8"));
 const mixedText=searchable(readFileSync("src/MixedText.tsx","utf8"));
 const grammarLesson=searchable(readFileSync("src/GrammarLesson.tsx","utf8"));
+const placement=searchable(readFileSync("src/PlacementTest.tsx","utf8"));
+const skills=searchable(readFileSync("src/SkillsLab.tsx","utf8"));
 const conceptText=searchable(readFileSync("src/ConceptText.tsx","utf8"));
 const css=readFileSync("src/styles.css","utf8")+readFileSync("src/themePacks.css","utf8")+readFileSync("src/version29.css","utf8")+readFileSync("src/version33.css","utf8")+readFileSync("src/wordGames.css","utf8");
 const checks={
@@ -55,7 +57,13 @@ const checks={
   matching:readFileSync("src/WordGamesHub.tsx","utf8").includes("Match the Meaning"),
   millionaire:readFileSync("src/WordGamesHub.tsx","utf8").includes("English Millionaire"),
   trivia:readFileSync("src/WordGamesHub.tsx","utf8").includes("Trivia Quest"),
-  levelFilter:app.includes("themeSupportsLevel")&&app.includes("compactLevelPicker")
+  levelFilter:app.includes("themeSupportsLevel")&&app.includes("compactLevelPicker"),
+  placementTest:placement.includes("Test iniziale")&&placement.includes("Valutazione orientativa")&&app.includes("english-coach-onboarding-v1"),
+  findError:skills.includes("Trova l’errore"),
+  minimalPairs:skills.includes("Minimal pairs"),
+  mediation:skills.includes("SFIDA DI MEDIAZIONE"),
+  wordFamilies:skills.includes("FAMIGLIE DI PAROLE"),
+  branchingDialogue:skills.includes("DIALOGO A BIVI")
  },
  visualQuiz:{
   fullCategoryBank:app.includes("visualTiles(sets)"),

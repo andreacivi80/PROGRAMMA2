@@ -30,6 +30,8 @@ import {
 } from "./preferences";
 import { themePacks, type ThemePack } from "./themePacks";
 import WordGamesHub from "./WordGamesHub";
+import PlacementTest from "./PlacementTest";
+import SkillsLab from "./SkillsLab";
 import {
   applyDialogueVoice,
   dialogueRole,
@@ -45,9 +47,9 @@ import "./version29.css";
 import "./wordGames.css";
 import "./version33.css";
 
-const APP_VERSION = "4.4";
+const APP_VERSION = "4.5";
 const BUILD_DATE = "31 luglio 2026";
-const BUILD_ID = "EC-4.4-0731";
+const BUILD_ID = "EC-4.5-0731";
 type View =
   | "home"
   | "path"
@@ -59,6 +61,7 @@ type View =
   | "smartReview"
   | "recoveryDrill"
   | "errors"
+  | "placement"
   | "themePack";
 type Phase =
   | "grammar"
@@ -302,6 +305,13 @@ const themes = [
     matches: [],
   },
   {
+    id: "skills",
+    icon: "✦",
+    title: "Laboratori pratici",
+    description: "Errori, suoni, mediazione, famiglie e dialoghi.",
+    matches: [],
+  },
+  {
     id: "video",
     icon: "▻",
     title: "Video Lab",
@@ -349,7 +359,7 @@ const videoResources = [
 ] as const;
 type ThemeId = (typeof themes)[number]["id"];
 function themeSupportsLevel(id: ThemeId, level: Cefr) {
-  if (id === "games" || id === "visual") return true;
+  if (id === "games" || id === "visual" || id === "skills") return true;
   if (id === "reading")
     return readingPassages.some((item) => item.level === level);
   if (id === "video")
@@ -1466,6 +1476,13 @@ export default function Home() {
       SmartReviewItem["status"] | "Tutti"
     >("Tutti"),
     [sessionMinutes, setSessionMinutes] = useState<5 | 15 | 30 | null>(null),
+    [welcomeOpen, setWelcomeOpen] = useState(
+      () =>
+        typeof window !== "undefined" &&
+        !localStorage.getItem("english-coach-onboarding-v1") &&
+        !localStorage.getItem("english-coach-selection-v1"),
+    ),
+    [learningGoal, setLearningGoal] = useState("Conversazione quotidiana"),
     [writingNotes, setWritingNotes] = useState<string[] | null>(null),
     [writingSuggestion, setWritingSuggestion] = useState(""),
     [dictation, setDictation] = useState(""),
@@ -1818,6 +1835,16 @@ export default function Home() {
   const chooseLevel = (level: Cefr) => {
     setSelectedLevel(level);
     setSelectedLessonId(mobileCurriculum.find((x) => x.cefr === level)!.id);
+  };
+  const completeOnboarding = (level?: Cefr) => {
+    if (level) chooseLevel(level);
+    localStorage.setItem(
+      "english-coach-onboarding-v1",
+      JSON.stringify({ completedAt: new Date().toISOString(), learningGoal }),
+    );
+    setWelcomeOpen(false);
+    setView("home");
+    scrollTo(0, 0);
   };
   const chooseTheme = (id: ThemeId) => {
     setSelectedTheme(id);
@@ -2401,6 +2428,7 @@ export default function Home() {
     const clean = fresh(deviceId());
     localStorage.removeItem("english-coach-checkpoints-v1");
     localStorage.removeItem("english-coach-selection-v1");
+    localStorage.removeItem("english-coach-onboarding-v1");
     setSelectedLevel("A1");
     setSelectedLessonId(mobileCurriculum[0].id);
     setProgress(clean);
@@ -2738,6 +2766,32 @@ export default function Home() {
           {sync === "saving" ? "Salvataggio…" : "Salvato qui"}
         </span>
       </header>
+      {welcomeOpen && (
+        <div className="confirmBackdrop" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+          <section className="confirmSheet welcomeSheet">
+            <span className="eyebrow">Benvenuto in English Coach</span>
+            <h2 id="welcome-title">Da dove vuoi partire?</h2>
+            <p>Scegli il tuo obiettivo. Potrai modificarlo senza perdere i progressi.</p>
+            <label className="welcomeGoal">
+              Obiettivo principale
+              <select value={learningGoal} onChange={(event) => setLearningGoal(event.target.value)}>
+                <option>Conversazione quotidiana</option>
+                <option>Viaggi e situazioni reali</option>
+                <option>Inglese per il lavoro</option>
+                <option>Grammatica e certificazioni</option>
+              </select>
+            </label>
+            <div className="confirmActions">
+              <button className="primary" onClick={() => { setWelcomeOpen(false); setView("placement"); }}>
+                Fai il test iniziale
+              </button>
+              <button onClick={() => completeOnboarding()}>
+                Conosco già il mio livello
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
       {resumePrompt && (
         <div
           className="confirmBackdrop"
@@ -2891,6 +2945,12 @@ export default function Home() {
             </div>
           </section>
         </details>
+      )}
+      {view === "home" && (
+        <button type="button" className="placementEntry" onClick={() => setView("placement")}>
+          <span><small>NON SAI DA DOVE PARTIRE?</small><strong>Valuta o aggiorna il tuo livello</strong></span>
+          <b>15 domande →</b>
+        </button>
       )}
       {view === "home" &&
         smartReviews.some((review) => !review.mastered) &&
@@ -3561,6 +3621,18 @@ export default function Home() {
                 onComplete={finishWordGame}
               />
             </div>
+          ) : selectedTheme === "skills" ? (
+            <div
+              ref={(node) => {
+                themeResultsRef.current = node;
+              }}
+            >
+              <SkillsLab
+                key={selectedLevel}
+                level={selectedLevel}
+                onComplete={finishWordGame}
+              />
+            </div>
           ) : selectedTheme === "reading" ? (
             <section
               className="readingHub"
@@ -3893,8 +3965,8 @@ export default function Home() {
               <strong>English Coach {APP_VERSION}</strong>
               <small>{BUILD_DATE} · {BUILD_ID}</small>
               <p>
-                Ripresa delle sessioni più completa, calendario locale e
-                quaderno errori con nuovi filtri e storico dei tentativi. I
+                Test iniziale progressivo, ripresa completa delle sessioni,
+                calendario locale e quaderno errori con filtri e storico. I
                 progressi precedenti sono conservati automaticamente.
               </p>
             </div>
@@ -4097,6 +4169,12 @@ export default function Home() {
             )}
           </article>
         </div>
+      )}
+      {view === "placement" && (
+        <PlacementTest
+          onClose={() => { setView("home"); scrollTo(0, 0); }}
+          onChoose={(level) => completeOnboarding(level)}
+        />
       )}
       {view === "recoveryDrill" && (
         <div className="recoveryScreen">
@@ -5154,6 +5232,7 @@ export default function Home() {
         view !== "smartReview" &&
         view !== "recoveryDrill" &&
         view !== "errors" &&
+        view !== "placement" &&
         view !== "themePack" && (
           <nav>
             <button
