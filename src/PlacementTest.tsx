@@ -20,6 +20,8 @@ export default function PlacementTest({ onClose, onChoose }: { onClose: () => vo
   const [selected, setSelected] = useState<number | null>(null);
   const [phase, setPhase] = useState<"questions" | "production" | "result">("questions");
   const [evidence, setEvidence] = useState<ProductionEvidence>({ writing: "", mediation: "", oral: "" });
+  const [recording, setRecording] = useState(false);
+  const [speechMessage, setSpeechMessage] = useState("");
   const item = placementItems[index];
   const result = useMemo(() => evaluatePlacement(answers, evidence), [answers, evidence]);
   const next = () => {
@@ -29,6 +31,36 @@ export default function PlacementTest({ onClose, onChoose }: { onClose: () => vo
       setSelected(null);
     } else setPhase("production");
     scrollTo({ top: 0, behavior: "smooth" });
+  };
+  const recordOral = () => {
+    const browserWindow = window as typeof window & {
+      SpeechRecognition?: new () => any;
+      webkitSpeechRecognition?: new () => any;
+    };
+    const Recognition = browserWindow.SpeechRecognition ?? browserWindow.webkitSpeechRecognition;
+    if (!Recognition) {
+      setSpeechMessage("Il riconoscimento vocale non è disponibile in questo browser: puoi scrivere ciò che hai detto.");
+      return;
+    }
+    const recognition = new Recognition();
+    recognition.lang = "en-GB";
+    recognition.interimResults = true;
+    recognition.continuous = false;
+    setRecording(true);
+    setSpeechMessage("Ti ascolto: parla ora in inglese.");
+    recognition.onresult = (event: any) => {
+      const transcript = Array.from(event.results as ArrayLike<any>).map((result: any) => result[0].transcript).join(" ");
+      setEvidence((current) => ({ ...current, oral: transcript }));
+    };
+    recognition.onerror = () => {
+      setRecording(false);
+      setSpeechMessage("Non ho ricevuto bene la voce. Puoi riprovare subito o scrivere la risposta.");
+    };
+    recognition.onend = () => {
+      setRecording(false);
+      setSpeechMessage("Registrazione terminata. Controlla la trascrizione e riprova se non corrisponde.");
+    };
+    recognition.start();
   };
 
   if (phase === "result") return (
@@ -65,6 +97,8 @@ export default function PlacementTest({ onClose, onChoose }: { onClose: () => vo
         </label>
         <label>
           <b>Produzione orale: parla per circa 30 secondi di un problema che hai risolto. Poi incolla o scrivi qui ciò che hai detto.</b>
+          <button type="button" className={`placementMic ${recording ? "recording" : ""}`} onClick={recordOral} disabled={recording}>{recording ? "● Registrazione in corso…" : "🎙 Parla in inglese"}</button>
+          {speechMessage && <small className="placementSpeechMessage" role="status">{speechMessage}</small>}
           <textarea value={evidence.oral} onChange={(event) => setEvidence((current) => ({ ...current, oral: event.target.value }))} placeholder="What I said…" />
         </label>
         <label>

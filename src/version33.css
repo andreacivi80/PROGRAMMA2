@@ -689,6 +689,29 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
   resize: vertical;
 }
 
+.placementMic {
+  justify-self: start;
+  min-height: 44px;
+  padding: 0 15px;
+  border: 1px solid var(--green);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--green);
+  font-weight: 900;
+}
+
+.placementMic.recording {
+  border-color: #c95043;
+  background: #fff0ed;
+  color: #9f352b;
+  animation: micPulse 1s ease-in-out infinite alternate;
+}
+
+.placementSpeechMessage {
+  color: var(--muted);
+  line-height: 1.4;
+}
+
 .placementBands {
   display: grid;
   grid-template-columns: repeat(5, 1fr);

@@ -3100,7 +3100,7 @@ export default function Home() {
       {view === "home" && (
         <button type="button" className="placementEntry" onClick={() => setView("placement")}>
           <span><small>NON SAI DA DOVE PARTIRE?</small><strong>Valuta o aggiorna il tuo livello</strong></span>
-          <b>15 domande →</b>
+          <b>30 domande →</b>
         </button>
       )}
       {view === "home" &&
