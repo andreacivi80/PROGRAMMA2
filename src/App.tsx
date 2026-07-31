@@ -47,9 +47,9 @@ import "./version29.css";
 import "./wordGames.css";
 import "./version33.css";
 
-const APP_VERSION = "4.6";
+const APP_VERSION = "4.7";
 const BUILD_DATE = "31 luglio 2026";
-const BUILD_ID = "EC-4.6-0731";
+const BUILD_ID = "EC-4.7-0731";
 type View =
   | "home"
   | "path"
@@ -129,6 +129,7 @@ type Progress = {
   streak: number;
   lastStudyDate?: string;
   weeklyGoal?: number;
+  streakPausedUntil?: string;
   days: Record<string, Result>;
   activity: Record<
     string,
@@ -431,7 +432,7 @@ const reviewKey = (unitId: string, kind: ReviewKind, prompt: string) =>
     .replace(/[^\p{L}\p{N}]+/gu, "-")
     .slice(0, 80)}`;
 const fresh = (id: string): Progress => ({
-  schemaVersion: 11,
+  schemaVersion: 12,
   deviceId: id,
   currentDay: 1,
   streak: 0,
@@ -1475,6 +1476,13 @@ export default function Home() {
     [errorStatus, setErrorStatus] = useState<
       SmartReviewItem["status"] | "Tutti"
     >("Tutti"),
+    [errorPeriod, setErrorPeriod] = useState<"Tutti" | "30" | "90">("Tutti"),
+    [adaptiveOpen, setAdaptiveOpen] = useState(
+      () => localStorage.getItem("english-coach-adaptive-open") === "true",
+    ),
+    [freePathOpen, setFreePathOpen] = useState(
+      () => localStorage.getItem("english-coach-free-open") !== "false",
+    ),
     [sessionMinutes, setSessionMinutes] = useState<5 | 15 | 30 | null>(null),
     [welcomeOpen, setWelcomeOpen] = useState(
       () =>
@@ -1506,7 +1514,6 @@ export default function Home() {
 
   useEffect(() => {
     if ("scrollRestoration" in history) history.scrollRestoration = "manual";
-    window.scrollTo(0, 0);
     const id = deviceId();
     let p = fresh(id);
     try {
@@ -1590,6 +1597,10 @@ export default function Home() {
         );
         raw.schemaVersion = 11;
       }
+      if ((raw.schemaVersion ?? 1) < 12) {
+        raw.streakPausedUntil = raw.streakPausedUntil ?? undefined;
+        raw.schemaVersion = 12;
+      }
       p = { ...p, ...raw, deviceId: id };
     } catch {}
     setProgress(p);
@@ -1641,6 +1652,29 @@ export default function Home() {
     )
       localStorage.setItem("english-coach-view-v1", view);
   }, [view]);
+  useEffect(() => {
+    if (!progress || !["home", "path", "topics", "progress"].includes(view)) return;
+    const key = `english-coach-scroll-${view}`;
+    const restore = window.setTimeout(() => {
+      const saved = Number(localStorage.getItem(key) ?? 0);
+      if (Number.isFinite(saved) && saved > 0) window.scrollTo({ top: saved, behavior: "auto" });
+    }, 80);
+    let timer: number | undefined;
+    const remember = () => {
+      if (timer) window.clearTimeout(timer);
+      timer = window.setTimeout(
+        () => localStorage.setItem(key, String(Math.round(window.scrollY))),
+        120,
+      );
+    };
+    window.addEventListener("scroll", remember, { passive: true });
+    return () => {
+      window.clearTimeout(restore);
+      if (timer) window.clearTimeout(timer);
+      localStorage.setItem(key, String(Math.round(window.scrollY)));
+      window.removeEventListener("scroll", remember);
+    };
+  }, [view, Boolean(progress)]);
   useEffect(() => {
     if (view !== "topics" || themeSupportsLevel(selectedTheme, selectedLevel))
       return;
@@ -1969,9 +2003,11 @@ export default function Home() {
       y = new Date();
     y.setDate(y.getDate() - 1);
     const streak =
-        progress.lastStudyDate === today
+        progress.streakPausedUntil && progress.streakPausedUntil >= today
+          ? Math.max(1, progress.streak)
+          : progress.lastStudyDate === today
           ? progress.streak
-          : progress.lastStudyDate === y.toISOString().slice(0, 10)
+          : progress.lastStudyDate === dateKey(y)
             ? progress.streak + 1
             : 1,
       minutes = Math.max(1, Math.round((Date.now() - started.current) / 60000)),
@@ -2448,7 +2484,7 @@ export default function Home() {
           ...fresh(deviceId()),
           ...imported,
           deviceId: deviceId(),
-          schemaVersion: 11,
+          schemaVersion: 12,
           smartReview: imported.smartReview ?? {},
           weeklyGoal: imported.weeklyGoal ?? 3,
         };
@@ -2486,6 +2522,12 @@ export default function Home() {
         (review.status ?? (review.mastered ? "Acquisito" : "Da ripassare")) ===
           errorStatus,
     )
+    .filter((review) => {
+      if (errorPeriod === "Tutti") return true;
+      const stamp = review.lastAttemptAt ?? `${review.dueAt}T12:00:00`;
+      const age = Date.now() - new Date(stamp).getTime();
+      return age <= Number(errorPeriod) * 86400000;
+    })
     .filter((review) =>
       `${review.prompt} ${review.answer} ${review.explanation} ${review.unitTitle}`
         .toLowerCase()
@@ -2553,8 +2595,39 @@ export default function Home() {
     ),
     monthlyMinutes = monthActivity.reduce((sum, [, day]) => sum + day.minutes, 0),
     monthlyActive = monthActivity.length,
+    selectedLevelUnits = mobileCurriculum.filter(
+      (candidate) => candidate.cefr === selectedLevel,
+    ),
+    completedLevelUnits = selectedLevelUnits.filter(
+      (candidate) => progress.days[candidate.day],
+    ),
+    selectedPosition = Math.max(
+      1,
+      selectedLevelUnits.findIndex(
+        (candidate) => candidate.id === selectedLessonId,
+      ) + 1,
+    ),
+    sublevel = `${selectedLevel}.${Math.min(3, Math.ceil(selectedPosition / 4))}`,
+    acquiredWords = new Set(
+      completedLevelUnits.flatMap((candidate) =>
+        candidate.vocabulary.map((word) => word.en.toLowerCase()),
+      ),
+    ).size,
+    lastExam = Object.entries(progress.reviews ?? {})
+      .filter(([id]) => id.includes("-review-12-"))
+      .sort((a, b) => b[1].completedAt.localeCompare(a[1].completedAt))[0],
+    nextActivity = dueSmartReviews.length
+      ? `${dueSmartReviews.length} elementi nel ripasso di oggi`
+      : lessonForTime(30).title,
     setWeeklyGoal = (goal: number) => {
       const updated = { ...progress, weeklyGoal: goal };
+      setProgress(updated);
+      void save(updated);
+    },
+    pauseStreak = () => {
+      const until = new Date();
+      until.setDate(until.getDate() + 7);
+      const updated = { ...progress, streakPausedUntil: dateKey(until) };
       setProgress(updated);
       void save(updated);
     };
@@ -2874,7 +2947,15 @@ export default function Home() {
         </div>
       )}
       {view === "home" && (
-        <details className="homeChoice adaptiveChoice">
+        <details
+          className="homeChoice adaptiveChoice"
+          open={adaptiveOpen}
+          onToggle={(event) => {
+            const open = event.currentTarget.open;
+            setAdaptiveOpen(open);
+            localStorage.setItem("english-coach-adaptive-open", String(open));
+          }}
+        >
           <summary>
             <span>Allenamento su misura</span>
             <b>{selectedLevel}</b>
@@ -2994,7 +3075,15 @@ export default function Home() {
         )}
       {view === "home" && (
         <div className="screen">
-          <details className="homeChoice freeChoice" open>
+          <details
+            className="homeChoice freeChoice"
+            open={freePathOpen}
+            onToggle={(event) => {
+              const open = event.currentTarget.open;
+              setFreePathOpen(open);
+              localStorage.setItem("english-coach-free-open", String(open));
+            }}
+          >
             <summary>
               <span>Percorso libero</span>
               <b>{selectedLevel}</b>
@@ -3747,7 +3836,7 @@ export default function Home() {
             <article>
               <span>Livello</span>
               <b>{selectedLevel}</b>
-              <small>livello selezionato</small>
+              <small>sottolivello {sublevel}</small>
             </article>
             <article>
               <span>Media</span>
@@ -3768,6 +3857,16 @@ export default function Home() {
               <span>Tempo reale</span>
               <b>{totalMinutes} min</b>
               <small>studio completato</small>
+            </article>
+            <article>
+              <span>Parole incontrate</span>
+              <b>{acquiredWords}</b>
+              <small>nelle sessioni completate</small>
+            </article>
+            <article>
+              <span>Attività</span>
+              <b>{completedLevelUnits.length}/12</b>
+              <small>nel livello {selectedLevel}</small>
             </article>
           </div>
           <section className="card">
@@ -3814,6 +3913,22 @@ export default function Home() {
               <small>elementi da rinforzare</small>
             </div>
           </section>
+          <section className="progressNextPanel">
+            <div>
+              <span className="eyebrow">Prossimo passo</span>
+              <h2>{nextActivity}</h2>
+              <p>
+                {dueSmartReviews.length
+                  ? "Prima consolida ciò che è già emerso: bastano pochi minuti."
+                  : "È la prossima attività coerente con il livello che hai scelto."}
+              </p>
+            </div>
+            <div>
+              <small>Ultima prova finale</small>
+              <strong>{lastExam ? `${lastExam[1].score}%` : "Non ancora svolta"}</strong>
+              {lastExam && <span>{lastExam[0].slice(0, 2).toUpperCase()}</span>}
+            </div>
+          </section>
           <section className="weeklyGoalPanel">
             <div>
               <span className="eyebrow">Il tuo ritmo</span>
@@ -3839,6 +3954,28 @@ export default function Home() {
                 </button>
               ))}
             </div>
+            <div className="weeklySummary">
+              <strong>
+                {weeklyActive
+                  ? `Questa settimana hai studiato in ${weeklyActive} ${weeklyActive === 1 ? "giorno" : "giorni"}.`
+                  : "Questa settimana può iniziare anche con cinque minuti."}
+              </strong>
+              <span>
+                {reviewFocus?.open
+                  ? `Il prossimo miglioramento utile è ${reviewFocus.kind.toLowerCase()}.`
+                  : "Le competenze si aggiorneranno con i prossimi esercizi."}
+              </span>
+            </div>
+            <button
+              type="button"
+              className="pauseStreak"
+              onClick={pauseStreak}
+              disabled={Boolean(progress.streakPausedUntil && progress.streakPausedUntil >= dateKey())}
+            >
+              {progress.streakPausedUntil && progress.streakPausedUntil >= dateKey()
+                ? `Ritmo protetto fino al ${new Date(`${progress.streakPausedUntil}T12:00:00`).toLocaleDateString("it-IT")}`
+                : "Proteggi il ritmo per 7 giorni"}
+            </button>
           </section>
           <section className="audioPreferencePanel">
             <div>
@@ -4015,9 +4152,10 @@ export default function Home() {
               <strong>English Coach {APP_VERSION}</strong>
               <small>{BUILD_DATE} · {BUILD_ID}</small>
               <p>
-                Dashboard mensile, rapporto finale stampabile, modalità scura,
-                testo regolabile, test iniziale e laboratori pratici. I
-                progressi precedenti sono conservati automaticamente.
+                Ripristino dello scorrimento e delle sezioni principali,
+                dashboard estesa, filtro temporale degli errori, nuovi esempi
+                ascoltabili e descrizione trasparente dei controlli di
+                scrittura. I progressi precedenti sono conservati.
               </p>
             </div>
           </details>
@@ -4117,13 +4255,33 @@ export default function Home() {
                   ))}
                 </select>
               </label>
+              <label>
+                Periodo
+                <select
+                  value={errorPeriod}
+                  onChange={(event) =>
+                    setErrorPeriod(event.target.value as "Tutti" | "30" | "90")
+                  }
+                >
+                  <option value="Tutti">Tutte le date</option>
+                  <option value="30">Ultimi 30 giorni</option>
+                  <option value="90">Ultimi 90 giorni</option>
+                </select>
+              </label>
             </div>
             {filteredErrors.length ? (
               <div className="errorCards">
                 {filteredErrors.map((review) => {
                   const source = mobileCurriculum.find(
                     (candidate) => candidate.id === review.unitId,
-                  );
+                  ),
+                    relatedWord = source?.vocabulary.find(
+                      (word) =>
+                        review.answer.toLowerCase().includes(word.en.toLowerCase()) ||
+                        review.prompt.toLowerCase().includes(word.en.toLowerCase()),
+                    ),
+                    relatedExample =
+                      relatedWord?.example ?? source?.grammar.examples[1]?.en;
                   return (
                     <section
                       key={review.id}
@@ -4157,6 +4315,14 @@ export default function Home() {
                         <aside className="ruleRecall">
                           <small>REGOLA COLLEGATA</small>
                           <b>{source.grammar.formulas[0]}</b>
+                        </aside>
+                      )}
+                      {relatedExample && (
+                        <aside className="newExampleRecall">
+                          <small>UN ALTRO ESEMPIO</small>
+                          <b lang="en">{relatedExample}</b>
+                          {relatedWord && <span>{relatedWord.it}</span>}
+                          <AudioButton text={relatedExample} label="Ascolta l’esempio" />
                         </aside>
                       )}
                       {!!review.attempts?.length && (
@@ -4894,6 +5060,14 @@ export default function Home() {
               <>
                 <h1>Scrivi con parole tue</h1>
                 <p className="intro">{unit.writing.productionPromptIt}</p>
+                <aside className="writingScope">
+                  <b>Controllo offline di base</b>
+                  <span>
+                    Verifica ortografia del browser, maiuscole, punteggiatura e
+                    alcuni errori grammaticali frequenti. La naturalezza di un
+                    testo complesso richiede ancora una revisione umana.
+                  </span>
+                </aside>
                 <label className="field">
                   La tua risposta in inglese
                   <textarea
@@ -4920,7 +5094,7 @@ export default function Home() {
                   }
                   onClick={analyzeWriting}
                 >
-                  Controlla grammatica e ortografia
+                  Avvia i controlli di base
                 </button>
                 {writingNotes && (
                   <div className="writingReview">
