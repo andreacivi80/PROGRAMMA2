@@ -224,7 +224,14 @@ window.__technicsTestScan=acceptScan;$("code").addEventListener("input",()=>{awa
     const productionHome=!byId("openPackingHome").classList.contains("hidden");
     const mode=productionVisible||productionHome||byId("modeShortcut").classList.contains("active")?"production":"inventory";
     const barcode=(byId("opbarcode").textContent.match(/\d{8,14}/)||[])[0]||"";
-    const state={mode,op:productionVisible?barcode:"",code:byId("code").value.trim(),lot:byId("lot").value.trim()};
+    const state={
+      mode,
+      op:productionVisible?barcode:"",
+      code:byId("code").value.trim(),
+      lot:byId("lot").value.trim(),
+      scrollY:window.scrollY,
+      order:productionVisible&&currentOrder?currentOrder:null
+    };
     try{localStorage.setItem(key,JSON.stringify(state))}catch{}
   };
   document.addEventListener("DOMContentLoaded",()=>{
@@ -242,8 +249,27 @@ window.__technicsTestScan=acceptScan;$("code").addEventListener("input",()=>{awa
     setTimeout(reveal,10000);
     if(!saved){reveal();return}
     if(saved.mode==="production"){
-      if(!byId("modeShortcut").classList.contains("active"))byId("modeShortcut").click();
-      if(saved.op)setTimeout(()=>{byId("code").value=saved.op;byId("form").requestSubmit()},120);
+      if(saved.order&&saved.op){
+        byId("code").value=saved.op;
+        lastCode=saved.op;
+        lastKind="production";
+        showProduction(saved.order);
+        requestAnimationFrame(()=>{
+          window.scrollTo(0,Number(saved.scrollY)||0);
+          save();
+          reveal();
+        });
+        setTimeout(()=>{
+          const keepY=window.scrollY;
+          loadProduction(saved.op,true).finally(()=>requestAnimationFrame(()=>{
+            window.scrollTo(0,keepY);
+            save();
+          }));
+        },250);
+      }else{
+        if(!byId("modeShortcut").classList.contains("active"))byId("modeShortcut").click();
+        if(saved.op)setTimeout(()=>{byId("code").value=saved.op;byId("form").requestSubmit()},0);
+      }
     }else if(saved.code||saved.lot){
       byId("code").value=saved.code||"";
       byId("lot").value=saved.lot||"";
