@@ -276,7 +276,7 @@ window.addEventListener("load",bindPackingPrint1217,{once:true});
 function normalizeLotUsageLabels1219(){
   document.querySelectorAll(".lotusedfield span").forEach(label=>{
     const current=label.textContent.trim();
-    if(/^NUMERO\s+PZ\s+USATI$/i.test(current)){
+    if(/^NUMERO\s+(PZ|PEZZI)\s+USATI$/i.test(current)){
       label.textContent="NUMERO PEZZI USATI";
     }else if(/^NUMERO\s+(.+)\s+USATI$/i.test(current)){
       const unit=current.replace(/^NUMERO\s+/i,"").replace(/\s+USATI$/i,"");
