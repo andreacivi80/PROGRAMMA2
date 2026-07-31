@@ -94,6 +94,16 @@ window.__technicsTestScan=acceptScan;$("code").addEventListener("input",()=>{awa
 <script>
 const byId1214=id=>document.getElementById(id);
 let printPreviewObjectUrls1217=[];
+async function fetchPrintBridge1217(url,options={},attempts=4){
+  let lastError;
+  for(let attempt=0;attempt<attempts;attempt++){
+    try{return await fetch(url,options)}catch(error){
+      lastError=error;
+      if(attempt<attempts-1)await new Promise(resolve=>setTimeout(resolve,500+(attempt*500)));
+    }
+  }
+  throw lastError||new Error("Collegamento anteprima non disponibile.");
+}
 async function loadServerPrintPreview1217(){
   const host=byId1214("printContent"),box=byId1214("printMessage");
   const barcode=(byId1214("opbarcode").textContent.match(/Barcode\s+(\S+)/)||[])[1];
@@ -102,7 +112,7 @@ async function loadServerPrintPreview1217(){
   box.classList.add("hidden");
   try{
     if(!barcode)throw new Error("Barcode del foglio non disponibile.");
-    const r=await fetch("https://student-tarot-occultist.ngrok-free.dev/api/packing/print-preview",{
+    const r=await fetchPrintBridge1217("https://student-tarot-occultist.ngrok-free.dev/api/packing/print-preview",{
       method:"POST",
       cache:"no-store",
       headers:{"Content-Type":"application/json","Cache-Control":"no-store","ngrok-skip-browser-warning":"1"},
@@ -114,7 +124,7 @@ async function loadServerPrintPreview1217(){
     if(!r.ok||!payload.ok||!payload.previewId)throw new Error(payload.error||"Anteprima non avviata.");
     let previewStatus=null;
     for(let attempt=0;attempt<50;attempt++){
-      const statusResponse=await fetch(`https://student-tarot-occultist.ngrok-free.dev/api/packing/print-preview-status?id=${encodeURIComponent(payload.previewId)}`,{
+      const statusResponse=await fetchPrintBridge1217(`https://student-tarot-occultist.ngrok-free.dev/api/packing/print-preview-status?id=${encodeURIComponent(payload.previewId)}`,{
         cache:"no-store",
         headers:{"Cache-Control":"no-store","ngrok-skip-browser-warning":"1"}
       });
@@ -131,7 +141,7 @@ async function loadServerPrintPreview1217(){
     const pages=document.createElement("div");
     pages.className="serverprintpages";
     for(let index=0;index<Number(previewStatus.pageCount);index++){
-      const imageResponse=await fetch(`https://student-tarot-occultist.ngrok-free.dev/api/packing/print-preview-image?id=${encodeURIComponent(payload.previewId)}&page=${index+1}`,{
+      const imageResponse=await fetchPrintBridge1217(`https://student-tarot-occultist.ngrok-free.dev/api/packing/print-preview-image?id=${encodeURIComponent(payload.previewId)}&page=${index+1}`,{
         cache:"no-store",
         headers:{"Cache-Control":"no-store","ngrok-skip-browser-warning":"1"}
       });
