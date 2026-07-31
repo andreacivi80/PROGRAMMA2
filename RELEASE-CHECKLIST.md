@@ -1,4 +1,4 @@
-# English Coach 5.2 — stato verificato
+# English Coach 5.3 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 

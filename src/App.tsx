@@ -51,9 +51,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "5.2";
+const APP_VERSION = "5.3";
 const BUILD_DATE = "31 luglio 2026";
-const BUILD_ID = "EC-5.2-0731";
+const BUILD_ID = "EC-5.3-0731";
 type View =
   | "home"
   | "path"
@@ -166,6 +166,7 @@ type SessionCheckpoint = {
   input?: string;
   dictation?: string;
   sessionMinutes?: 5 | 15 | 30 | null;
+  startedAt?: number;
   updatedAt: string;
 };
 type RecAlternative = { transcript: string; confidence: number };
@@ -1417,21 +1418,41 @@ function Gauge({ value }: { value: number }) {
 function initialMainView(): View {
   if (typeof window === "undefined") return "home";
   const saved = localStorage.getItem("english-coach-view-v1");
-  return saved === "path" || saved === "topics" || saved === "progress"
-    ? saved
-    : "home";
+  if (saved === "lesson" && loadLatestCheckpoint()) return "lesson";
+  if (saved === "reading" && localStorage.getItem("english-coach-reading-draft-v1")) return "reading";
+  if (saved === "placement" && sessionStorage.getItem("english-coach-placement-draft-v2")) return "placement";
+  return saved === "path" || saved === "topics" || saved === "progress" || saved === "errors" ? saved : "home";
+}
+function loadLatestCheckpoint(): { unit: MobileUnit; checkpoint: SessionCheckpoint } | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const all = Object.values(JSON.parse(localStorage.getItem("english-coach-checkpoints-v1") || "{}") as Record<string, SessionCheckpoint>);
+    const checkpoint = all.sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))[0];
+    const unit = checkpoint && mobileCurriculum.find((entry) => entry.id === checkpoint.unitId);
+    return checkpoint && unit ? { unit, checkpoint } : null;
+  } catch { return null; }
+}
+type ReadingDraft = { id: string; step: "text" | "questions" | "result"; answers: Record<number, number>; questionIndex: number };
+function loadReadingDraft(): ReadingDraft | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const value = JSON.parse(localStorage.getItem("english-coach-reading-draft-v1") || "null") as ReadingDraft | null;
+    return value && readingPassages.some((passage) => passage.id === value.id) ? value : null;
+  } catch { return null; }
 }
 export default function Home() {
+  const initialSession = useMemo(loadLatestCheckpoint, []),
+    initialReading = useMemo(loadReadingDraft, []);
   const [view, setView] = useState<View>(initialMainView),
     [progress, setProgress] = useState<Progress | null>(null),
-    [unit, setUnit] = useState<MobileUnit>(mobileCurriculum[0]),
-    [phase, setPhase] = useState<Phase>("grammar"),
-    [item, setItem] = useState(0),
-    [input, setInput] = useState(""),
+    [unit, setUnit] = useState<MobileUnit>(initialSession?.unit ?? mobileCurriculum[0]),
+    [phase, setPhase] = useState<Phase>(initialSession?.checkpoint.phase ?? "grammar"),
+    [item, setItem] = useState(initialSession?.checkpoint.item ?? 0),
+    [input, setInput] = useState(initialSession?.checkpoint.input ?? ""),
     [checked, setChecked] = useState<boolean | null>(null),
-    [writing, setWriting] = useState(""),
+    [writing, setWriting] = useState(initialSession?.checkpoint.writing ?? ""),
     [answered, setAnswered] = useState<boolean | null>(null),
-    [points, setPoints] = useState({ yes: 0, all: 0 }),
+    [points, setPoints] = useState(initialSession?.checkpoint.points ?? { yes: 0, all: 0 }),
     [spoken, setSpoken] = useState(""),
     [recording, setRecording] = useState(false),
     [recordingSeconds, setRecordingSeconds] = useState(0),
@@ -1446,12 +1467,12 @@ export default function Home() {
       checkpoint: SessionCheckpoint;
     } | null>(null),
     [resetConfirm, setResetConfirm] = useState(false),
-    [reading, setReading] = useState<ReadingPassage>(readingPassages[0]),
+    [reading, setReading] = useState<ReadingPassage>(readingPassages.find((passage) => passage.id === initialReading?.id) ?? readingPassages[0]),
     [readingStep, setReadingStep] = useState<"text" | "questions" | "result">(
-      "text",
+      initialReading?.step ?? "text",
     ),
-    [readingAnswers, setReadingAnswers] = useState<Record<number, number>>({}),
-    [readingQuestionIndex, setReadingQuestionIndex] = useState(0),
+    [readingAnswers, setReadingAnswers] = useState<Record<number, number>>(initialReading?.answers ?? {}),
+    [readingQuestionIndex, setReadingQuestionIndex] = useState(initialReading?.questionIndex ?? 0),
     [visualCategory, setVisualCategory] = useState<
       "kitchen" | "jobs" | "actions" | "phrasal"
     >("kitchen"),
@@ -1466,7 +1487,7 @@ export default function Home() {
     [recoveryPick, setRecoveryPick] = useState<number | null>(null),
     [recoveryCorrect, setRecoveryCorrect] = useState(0),
     [recoveryFinished, setRecoveryFinished] = useState(false);
-  const started = useRef(Date.now());
+  const started = useRef(initialSession?.checkpoint.startedAt ?? Date.now());
   const [selectedLevel, setSelectedLevel] = useState<Cefr>("A1"),
     [selectedLessonId, setSelectedLessonId] = useState(mobileCurriculum[0].id),
     [selectedTheme, setSelectedTheme] = useState<ThemeId>("food"),
@@ -1485,7 +1506,7 @@ export default function Home() {
     [freePathOpen, setFreePathOpen] = useState(
       () => localStorage.getItem("english-coach-free-open") !== "false",
     ),
-    [sessionMinutes, setSessionMinutes] = useState<5 | 15 | 30 | null>(null),
+    [sessionMinutes, setSessionMinutes] = useState<5 | 15 | 30 | null>(initialSession?.checkpoint.sessionMinutes ?? null),
     [welcomeOpen, setWelcomeOpen] = useState(
       () =>
         typeof window !== "undefined" &&
@@ -1505,7 +1526,7 @@ export default function Home() {
     ),
     [writingNotes, setWritingNotes] = useState<string[] | null>(null),
     [writingSuggestion, setWritingSuggestion] = useState(""),
-    [dictation, setDictation] = useState(""),
+    [dictation, setDictation] = useState(initialSession?.checkpoint.dictation ?? ""),
     [dictationChecked, setDictationChecked] = useState(false),
     [recordedAudioUrl, setRecordedAudioUrl] = useState("");
   const themeResultsRef = useRef<HTMLElement | null>(null);
@@ -1647,12 +1668,7 @@ export default function Home() {
     );
   }, [progress, selectedLevel, selectedLessonId, selectedTheme]);
   useEffect(() => {
-    if (
-      view === "home" ||
-      view === "path" ||
-      view === "topics" ||
-      view === "progress"
-    )
+    if (["home", "path", "topics", "progress", "errors", "lesson", "reading", "placement"].includes(view))
       localStorage.setItem("english-coach-view-v1", view);
   }, [view]);
   useEffect(() => {
@@ -1708,10 +1724,15 @@ export default function Home() {
       input,
       dictation,
       sessionMinutes,
+      startedAt: started.current,
       updatedAt: new Date().toISOString(),
     };
     localStorage.setItem("english-coach-checkpoints-v1", JSON.stringify(all));
   }, [view, unit.id, phase, item, writing, points, input, dictation, sessionMinutes]);
+  useEffect(() => {
+    if (view !== "reading") return;
+    localStorage.setItem("english-coach-reading-draft-v1", JSON.stringify({ id: reading.id, step: readingStep, answers: readingAnswers, questionIndex: readingQuestionIndex } satisfies ReadingDraft));
+  }, [view, reading.id, readingStep, readingAnswers, readingQuestionIndex]);
   useEffect(() => {
     if (!recording) {
       setRecordingSeconds(0);
@@ -1837,7 +1858,7 @@ export default function Home() {
     setPoints(checkpoint?.points ?? { yes: 0, all: 0 });
     setBonusQuiz([]);
     setBonusMinutes(0);
-    started.current = Date.now();
+    started.current = checkpoint?.startedAt ?? Date.now();
     setResumePrompt(null);
     setView("lesson");
     scrollTo(0, 0);
@@ -2529,6 +2550,9 @@ export default function Home() {
     localStorage.removeItem("english-coach-checkpoints-v1");
     localStorage.removeItem("english-coach-selection-v1");
     localStorage.removeItem("english-coach-onboarding-v1");
+    localStorage.removeItem("english-coach-reading-draft-v1");
+    localStorage.removeItem("english-coach-view-v1");
+    sessionStorage.removeItem("english-coach-placement-draft-v2");
     setSelectedLevel("A1");
     setSelectedLessonId(mobileCurriculum[0].id);
     setProgress(clean);
