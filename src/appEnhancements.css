@@ -1215,3 +1215,13 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
   .guidedPlayer .speed { grid-template-columns: repeat(3, 34px); }
   .guidedPlayer .speed button { min-width: 34px; }
 }
+.themeGrid > button > b {
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+:is(button, h1, h2, h3, p, small, strong, span, label, summary, li, blockquote) {
+  hyphens: none;
+  overflow-wrap: normal;
+  word-break: normal;
+}

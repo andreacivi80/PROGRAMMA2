@@ -99,11 +99,13 @@ try {
     await seed("lesson", { ...checkpoint, phase: "listening" }); await wait(900);
     results.push(await inspect(`${viewport.name}-listening`));
     if (viewport.name === "phone") await screenshot("phone-listening");
-    await evaluate(`localStorage.setItem("english-coach-view-v1","topics");location.reload()`); await wait(1500);
+    await evaluate(`localStorage.setItem("english-coach-view-v1","topics");localStorage.setItem("english-coach-selection-v1",${JSON.stringify(JSON.stringify({ level: "B2", lessonId: "b2-uk-us-english", theme: "varieties" }))});location.reload()`); await wait(1500);
     results.push(await inspect(`${viewport.name}-topics`));
-    if (viewport.name === "phone") await screenshot("phone-topics");
+    const varietyLabel = await evaluate(`(()=>{const node=[...document.querySelectorAll(".themeGrid>button>b")].find(item=>item.textContent?.includes("UK"));if(!node)return null;const style=getComputedStyle(node);return{text:node.textContent?.trim(),whiteSpace:style.whiteSpace,wordBreak:style.wordBreak,overflowing:node.scrollWidth>node.clientWidth}})()`);
+    results.push({ label: `${viewport.name}-uk-us-label`, ...varietyLabel });
+    if (viewport.name === "phone") { await evaluate(`([...document.querySelectorAll(".themeGrid>button>b")].find(item=>item.textContent?.includes("UK")))?.scrollIntoView({block:"center"})`); await wait(200); await screenshot("phone-topics"); }
   }
-  const failures = results.flatMap(result => [result.horizontalOverflow ? `${result.label}: horizontal overflow` : null, result.overlaps?.length ? `${result.label}: ${result.overlaps.length} control overlaps` : null, result.changed?.length ? `${result.label}: ${result.changed.length} controls resized` : null].filter(Boolean));
+  const failures = results.flatMap(result => [result.horizontalOverflow ? `${result.label}: horizontal overflow` : null, result.overlaps?.length ? `${result.label}: ${result.overlaps.length} control overlaps` : null, result.changed?.length ? `${result.label}: ${result.changed.length} controls resized` : null, result.label?.endsWith("uk-us-label") && (result.text !== "UK US" || result.whiteSpace !== "nowrap" || result.overflowing) ? `${result.label}: label wrapped or overflowed` : null].filter(Boolean));
   console.log(JSON.stringify({ simulatedMinutes: 60, screenshots: shots, results, failures }, null, 2));
   if (failures.length) process.exitCode = 1;
 } finally {

@@ -55,9 +55,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "6.4";
+const APP_VERSION = "6.5";
 const BUILD_DATE = "31 luglio 2026";
-const BUILD_ID = "EC-6.4-0731";
+const BUILD_ID = "EC-6.5-0731";
 type View =
   | "home"
   | "path"
@@ -298,7 +298,7 @@ const themes = [
   },
   {
     id: "varieties",
-    icon: "UK/US",
+    icon: "UK US",
     title: "Inglese britannico e americano",
     description: "Lessico, convenzioni e pronuncia delle due varietà.",
     matches: ["uk-us", "spoken-nuance", "idiom-register"],
