@@ -263,13 +263,13 @@ window.__technicsTestScan=acceptScan;$("code").addEventListener("input",()=>{awa
     try{localStorage.setItem(key,JSON.stringify(state))}catch{}
     try{
       const currentDraft=productionVisible&&currentOrder?`technics-packing-${currentOrder.barcode}`:"";
+      if(productionVisible&&currentOrder)localStorage.setItem(key+"-order",JSON.stringify(currentOrder));
+      else if(mode!=="production")localStorage.removeItem(key+"-order");
       for(let index=localStorage.length-1;index>=0;index--){
         const storedKey=localStorage.key(index)||"";
         if(storedKey.startsWith("technics-packing-")&&storedKey!==currentDraft)localStorage.removeItem(storedKey);
         if(storedKey.startsWith("technics-mobile-view-v")&&storedKey!==key&&storedKey!==key+"-order")localStorage.removeItem(storedKey);
       }
-      if(productionVisible&&currentOrder)localStorage.setItem(key+"-order",JSON.stringify(currentOrder));
-      else if(mode!=="production")localStorage.removeItem(key+"-order");
     }catch{}
   };
   document.addEventListener("DOMContentLoaded",()=>{
@@ -642,6 +642,25 @@ window.addEventListener("resize",fitCustomerName1221);
     }catch(error){
       showMismatch(error.message||"Il materiale non può essere verificato e non è stato aggiunto.");
     }
+  };
+})();
+</script>
+<script id="packing-resume-snapshot-v124">
+(()=>{
+  const key="technics-mobile-view-v1222";
+  const originalShowProduction=showProduction;
+  showProduction=function(order){
+    originalShowProduction(order);
+    try{
+      localStorage.setItem(key+"-order",JSON.stringify(order));
+      localStorage.setItem(key,JSON.stringify({
+        mode:"production",
+        op:String(order.barcode||""),
+        code:String(order.barcode||""),
+        lot:"",
+        scrollY:window.scrollY
+      }));
+    }catch{}
   };
 })();
 </script>
