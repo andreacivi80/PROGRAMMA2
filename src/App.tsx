@@ -20,6 +20,14 @@ import {
 import ThemePackLab from "./ThemePackLab";
 import ThemePackHub from "./ThemePackHub";
 import ConceptText from "./ConceptText";
+import {
+  getAudioAccent,
+  getAudioRate,
+  saveAudioAccent,
+  saveAudioRate,
+  type AudioAccent,
+  type AudioRate,
+} from "./preferences";
 import { themePacks, type ThemePack } from "./themePacks";
 import WordGamesHub from "./WordGamesHub";
 import {
@@ -37,7 +45,7 @@ import "./version29.css";
 import "./wordGames.css";
 import "./version33.css";
 
-const APP_VERSION = "4.0";
+const APP_VERSION = "4.1";
 type View =
   | "home"
   | "path"
@@ -500,7 +508,7 @@ function AudioButton({
   const [status, setStatus] = useState<
       "idle" | "waiting" | "playing" | "paused"
     >("idle"),
-    [rate, setRate] = useState(1);
+    [rate, setRate] = useState<AudioRate>(getAudioRate);
   const audioRef = useRef<HTMLAudioElement | null>(null),
     delayRef = useRef<number | null>(null);
   const stop = () => {
@@ -528,9 +536,11 @@ function AudioButton({
     const voices = speechSynthesis
         .getVoices()
         .filter((v) => /^en(?:-|$)/i.test(v.lang)),
+      preferredAccent = getAudioAccent(),
       voice =
-        voices.find((v) => /^en-US/i.test(v.lang)) ??
+        voices.find((v) => v.lang.startsWith(preferredAccent)) ??
         voices.find((v) => /^en-GB/i.test(v.lang)) ??
+        voices.find((v) => /^en-US/i.test(v.lang)) ??
         voices[0];
     if (!voice) {
       stop();
@@ -633,6 +643,7 @@ function AudioButton({
               className={rate === value ? "active" : ""}
               onClick={() => {
                 setRate(value);
+                saveAudioRate(value);
                 if (audioRef.current) audioRef.current.playbackRate = value;
               }}
             >
@@ -917,7 +928,7 @@ function GuidedListening({ unit, src }: { unit: MobileUnit; src: string }) {
   const [status, setStatus] = useState<
       "idle" | "waiting" | "playing" | "paused"
     >("idle"),
-    [rate, setRate] = useState(1),
+    [rate, setRate] = useState<AudioRate>(getAudioRate),
     [current, setCurrent] = useState(0),
     [duration, setDuration] = useState(0),
     [transcriptOpen, setTranscriptOpen] = useState(
@@ -1146,6 +1157,7 @@ function GuidedListening({ unit, src }: { unit: MobileUnit; src: string }) {
               className={rate === value ? "active" : ""}
               onClick={() => {
                 setRate(value);
+                saveAudioRate(value);
                 if (audioRef.current) audioRef.current.playbackRate = value;
               }}
             >
@@ -1415,7 +1427,9 @@ export default function Home() {
   const started = useRef(Date.now());
   const [selectedLevel, setSelectedLevel] = useState<Cefr>("A1"),
     [selectedLessonId, setSelectedLessonId] = useState(mobileCurriculum[0].id),
-    [selectedTheme, setSelectedTheme] = useState<ThemeId>("food");
+    [selectedTheme, setSelectedTheme] = useState<ThemeId>("food"),
+    [audioAccent, setAudioAccent] = useState<AudioAccent>(getAudioAccent),
+    [audioRate, setAudioRate] = useState<AudioRate>(getAudioRate);
   const themeResultsRef = useRef<HTMLElement | null>(null);
   const save = async (p: Progress) => {
     setSync("saving");
@@ -2063,7 +2077,7 @@ export default function Home() {
       return;
     }
     const r = new R();
-    r.lang = "en-US";
+    r.lang = audioAccent;
     r.interimResults = true;
     r.continuous = false;
     r.maxAlternatives = 3;
@@ -2645,160 +2659,161 @@ export default function Home() {
         )}
       {view === "home" && (
         <div className="screen">
-          <details className="homeChoice freeChoice">
+          <details className="homeChoice freeChoice" open>
             <summary>
               <span>Percorso libero</span>
               <b>{selectedLevel}</b>
             </summary>
             <section className="hero compactHero">
-            <div>
-              <span className="eyebrow">Percorso libero</span>
-              <h1>Da dove vuoi iniziare?</h1>
-              <p>
-                Scegli un livello, una lezione o il riepilogo collocato nel
-                punto giusto del percorso.
-              </p>
-            </div>
-            <aside>
-              <b>
-                {completed}/{mobileCurriculum.length}
-              </b>
-              <small>completati</small>
-            </aside>
+              <div>
+                <span className="eyebrow">Percorso libero</span>
+                <h1>Da dove vuoi iniziare?</h1>
+                <p>
+                  Scegli un livello, una lezione o il riepilogo collocato nel
+                  punto giusto del percorso.
+                </p>
+              </div>
+              <aside>
+                <b>
+                  {completed}/{mobileCurriculum.length}
+                </b>
+                <small>completati</small>
+              </aside>
             </section>
             <section
               className="trainingChooser"
               aria-label="Scegli il tuo allenamento"
             >
-            <div className="choiceStep">
-              <b>1</b>
-              <span>
-                <strong>Scegli il livello</strong>
-                <small>Puoi cambiarlo in qualsiasi momento</small>
-              </span>
-            </div>
-            <div className="levelButtons">
-              {(["A1", "A2", "B1", "B2", "C1"] as const).map((level) => (
-                <button
-                  type="button"
-                  key={level}
-                  className={selectedLevel === level ? "active" : ""}
-                  onClick={() => chooseLevel(level)}
-                >
-                  {level}
-                </button>
-              ))}
-            </div>
-            <div className="choiceStep">
-              <b>2</b>
-              <span>
-                <strong>Scegli la sessione</strong>
-                <small>
-                  I riepiloghi compaiono subito dopo le sessioni 4, 8 e 12
-                </small>
-              </span>
-            </div>
-            <select
-              aria-label="Numero della sessione"
-              value={selectedChoice.id}
-              onChange={(e) => setSelectedLessonId(e.target.value)}
-            >
-              {trainingMenu(selectedLevel).map((choice) =>
-                choice.kind === "lesson" ? (
-                  <option key={choice.id} value={choice.id}>
-                    Sessione {choice.position} · {choice.unit.minutes} min
-                  </option>
-                ) : (
-                  <option key={choice.id} value={choice.id}>
-                    {choice.final
-                      ? `Prova finale ${selectedLevel}`
-                      : `Riepilogo sessioni ${choice.end - 3}–${choice.end}`}{" "}
-                    · {choice.minutes} min
-                  </option>
-                ),
+              <div className="choiceStep">
+                <b>1</b>
+                <span>
+                  <strong>Scegli il livello</strong>
+                  <small>Puoi cambiarlo in qualsiasi momento</small>
+                </span>
+              </div>
+              <div className="levelButtons">
+                {(["A1", "A2", "B1", "B2", "C1"] as const).map((level) => (
+                  <button
+                    type="button"
+                    key={level}
+                    className={selectedLevel === level ? "active" : ""}
+                    onClick={() => chooseLevel(level)}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </div>
+              <div className="choiceStep">
+                <b>2</b>
+                <span>
+                  <strong>Scegli la sessione</strong>
+                  <small>
+                    I riepiloghi compaiono subito dopo le sessioni 4, 8 e 12
+                  </small>
+                </span>
+              </div>
+              <select
+                aria-label="Numero della sessione"
+                value={selectedChoice.id}
+                onChange={(e) => setSelectedLessonId(e.target.value)}
+              >
+                {trainingMenu(selectedLevel).map((choice) =>
+                  choice.kind === "lesson" ? (
+                    <option key={choice.id} value={choice.id}>
+                      Sessione {choice.position} · {choice.unit.minutes} min
+                    </option>
+                  ) : (
+                    <option key={choice.id} value={choice.id}>
+                      {choice.final
+                        ? `Prova finale ${selectedLevel}`
+                        : `Riepilogo sessioni ${choice.end - 3}–${choice.end}`}{" "}
+                      · {choice.minutes} min
+                    </option>
+                  ),
+                )}
+              </select>
+              {selectedChoice.kind === "lesson" ? (
+                <article className="selectedLesson">
+                  <div>
+                    <span>
+                      {selectedStarter.cefr} · SESSIONE{" "}
+                      {selectedChoice.position}
+                    </span>
+                    <b>{selectedStarter.minutes} min</b>
+                  </div>
+                  <h2>{selectedStarter.title}</h2>
+                  <p>{selectedStarter.grammar.explanationIt[0]}</p>
+                  <div className="exerciseMix">
+                    <span>
+                      <b>
+                        {practiceFor(selectedStarter).length +
+                          listeningQuizFor(selectedStarter).length +
+                          finalQuizFor(selectedStarter).length}
+                      </b>{" "}
+                      verifiche
+                    </span>
+                    <span>✎ scrittura</span>
+                    <span>◉ pronuncia</span>
+                  </div>
+                </article>
+              ) : (
+                <article className="selectedLesson selectedReview">
+                  <div>
+                    <span>
+                      {selectedChoice.level} ·{" "}
+                      {selectedChoice.final ? "PROVA FINALE" : "RIEPILOGO"}
+                    </span>
+                    <b>{selectedChoice.minutes} min</b>
+                  </div>
+                  <h2>
+                    {selectedChoice.final
+                      ? `Prova finale ${selectedChoice.level}`
+                      : `Riepilogo sessioni ${selectedChoice.end - 3}–${selectedChoice.end}`}
+                  </h2>
+                  <p>
+                    {selectedChoice.final
+                      ? "30 esercizi casuali da tutte le 12 sessioni. Ogni tentativo propone una combinazione diversa."
+                      : "20 esercizi casuali sulle quattro sessioni appena concluse, senza nuova teoria."}
+                  </p>
+                  <div className="exerciseMix">
+                    <span>
+                      <b>{selectedChoice.final ? 30 : 20}</b> verifiche
+                    </span>
+                    <span>↻ ordine casuale</span>
+                    <span>
+                      {progress.reviews?.[
+                        reviewId(selectedChoice.level, selectedChoice.end)
+                      ]
+                        ? "✓ già svolto"
+                        : "NEW da integrare"}
+                    </span>
+                  </div>
+                </article>
               )}
-            </select>
-            {selectedChoice.kind === "lesson" ? (
-              <article className="selectedLesson">
-                <div>
-                  <span>
-                    {selectedStarter.cefr} · SESSIONE {selectedChoice.position}
-                  </span>
-                  <b>{selectedStarter.minutes} min</b>
-                </div>
-                <h2>{selectedStarter.title}</h2>
-                <p>{selectedStarter.grammar.explanationIt[0]}</p>
-                <div className="exerciseMix">
-                  <span>
-                    <b>
-                      {practiceFor(selectedStarter).length +
-                        listeningQuizFor(selectedStarter).length +
-                        finalQuizFor(selectedStarter).length}
-                    </b>{" "}
-                    verifiche
-                  </span>
-                  <span>✎ scrittura</span>
-                  <span>◉ pronuncia</span>
-                </div>
-              </article>
-            ) : (
-              <article className="selectedLesson selectedReview">
-                <div>
-                  <span>
-                    {selectedChoice.level} ·{" "}
-                    {selectedChoice.final ? "PROVA FINALE" : "RIEPILOGO"}
-                  </span>
-                  <b>{selectedChoice.minutes} min</b>
-                </div>
-                <h2>
-                  {selectedChoice.final
-                    ? `Prova finale ${selectedChoice.level}`
-                    : `Riepilogo sessioni ${selectedChoice.end - 3}–${selectedChoice.end}`}
-                </h2>
-                <p>
-                  {selectedChoice.final
-                    ? "30 esercizi casuali da tutte le 12 sessioni. Ogni tentativo propone una combinazione diversa."
-                    : "20 esercizi casuali sulle quattro sessioni appena concluse, senza nuova teoria."}
-                </p>
-                <div className="exerciseMix">
-                  <span>
-                    <b>{selectedChoice.final ? 30 : 20}</b> verifiche
-                  </span>
-                  <span>↻ ordine casuale</span>
-                  <span>
-                    {progress.reviews?.[
-                      reviewId(selectedChoice.level, selectedChoice.end)
-                    ]
-                      ? "✓ già svolto"
-                      : "NEW da integrare"}
-                  </span>
-                </div>
-              </article>
-            )}
-            <button
-              className="start chooserStart"
-              onClick={() =>
-                selectedChoice.kind === "lesson"
-                  ? open(selectedChoice.unit)
-                  : openReview(selectedChoice.level, selectedChoice.end)
-              }
-            >
-              <span>
-                <strong>
-                  {selectedChoice.kind === "lesson"
-                    ? "Inizia questa sessione"
-                    : selectedChoice.final
-                      ? "Inizia la prova finale"
-                      : "Inizia il riepilogo"}
-                </strong>
-                <small>
-                  {selectedChoice.kind === "lesson"
-                    ? selectedChoice.unit.title
-                    : `Dopo la sessione ${selectedChoice.end}`}
-                </small>
-              </span>
-              <b>→</b>
-            </button>
+              <button
+                className="start chooserStart"
+                onClick={() =>
+                  selectedChoice.kind === "lesson"
+                    ? open(selectedChoice.unit)
+                    : openReview(selectedChoice.level, selectedChoice.end)
+                }
+              >
+                <span>
+                  <strong>
+                    {selectedChoice.kind === "lesson"
+                      ? "Inizia questa sessione"
+                      : selectedChoice.final
+                        ? "Inizia la prova finale"
+                        : "Inizia il riepilogo"}
+                  </strong>
+                  <small>
+                    {selectedChoice.kind === "lesson"
+                      ? selectedChoice.unit.title
+                      : `Dopo la sessione ${selectedChoice.end}`}
+                  </small>
+                </span>
+                <b>→</b>
+              </button>
             </section>
           </details>
           <div className="stats">
@@ -3451,6 +3466,59 @@ export default function Home() {
                   <small>giorni</small>
                 </button>
               ))}
+            </div>
+          </section>
+          <section className="audioPreferencePanel">
+            <div>
+              <span className="eyebrow">Ascolto e riconoscimento</span>
+              <h2>Voce e velocità</h2>
+              <p>
+                La scelta vale anche per il riconoscimento quando parli in
+                inglese.
+              </p>
+            </div>
+            <div className="audioPreferenceRow">
+              <strong>Variante</strong>
+              <div>
+                {(
+                  [
+                    ["en-GB", "Britannico"],
+                    ["en-US", "Americano"],
+                  ] as const
+                ).map(([accent, label]) => (
+                  <button
+                    type="button"
+                    key={accent}
+                    className={audioAccent === accent ? "active" : ""}
+                    aria-pressed={audioAccent === accent}
+                    onClick={() => {
+                      setAudioAccent(accent);
+                      saveAudioAccent(accent);
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="audioPreferenceRow">
+              <strong>Velocità</strong>
+              <div>
+                {([0.8, 1, 1.2] as const).map((rate) => (
+                  <button
+                    type="button"
+                    key={rate}
+                    className={audioRate === rate ? "active" : ""}
+                    aria-pressed={audioRate === rate}
+                    onClick={() => {
+                      setAudioRate(rate);
+                      saveAudioRate(rate);
+                    }}
+                  >
+                    {rate}×
+                  </button>
+                ))}
+              </div>
             </div>
           </section>
           <section className="masteryPanel">

@@ -79,7 +79,7 @@ const checks={
   stableScenarioViewport:css.includes("overflow-anchor:none")&&css.includes("scroll-padding-block:42%"),
   authenticPause:authentic.includes("setStatus(\"paused\")"),
   authenticStop:authentic.includes("currentTime=0"),
-  authenticSpeeds:authentic.includes("[.8,1,1.2]")
+  authenticSpeeds:authentic.includes("[0.8,1,1.2]")
  },
  skipping:{
   coreQuestions:app.includes("skipCurrentQuestion(finalQuiz.length,finish)"),
@@ -127,6 +127,8 @@ themeQuestions:pack.includes("Salta domanda")
   ,compactLevelPicker:app.includes('className="compactLevelPicker"')&&css.includes(".compactLevelPicker>summary")
   ,mainViewPersists:app.includes("english-coach-view-v1")&&app.includes("initialMainView")
   ,themePersists:app.includes("theme: selectedTheme")&&app.includes("setSelectedTheme(savedTheme)")
+  ,freePathStartsOpen:app.includes('className="homeChoice freeChoice" open')
+  ,audioPreferences:app.includes("saveAudioAccent")&&app.includes("saveAudioRate")&&app.includes("r.lang = audioAccent")
  },
  languageFocus:{
   themeEntry:app.includes("Verbi e false friends"),
