@@ -142,7 +142,7 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
 @media (width <= 620px) {
   .app > header { height: 60px; padding: 7px 12px 5px; }
   .brand { min-height: 46px; }
-  .brand small { display: none; }
+  .brand small { display: block; font-size: 9px; white-space: nowrap; }
   .logo { width: 40px; height: 40px; border-radius: 12px; }
   .screen { padding: 6px 12px 18px; }
   .pageTitle { padding: 6px 2px 4px; }
