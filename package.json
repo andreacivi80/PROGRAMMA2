@@ -1,6 +1,6 @@
 {
   "name": "english-coach-public",
-  "version": "5.7.0",
+  "version": "5.8.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,7 +15,8 @@
     "audit:migrations": "node tools/data-migration-audit.mjs",
     "audit:didactic": "node tools/didactic-audit.mjs",
     "audit:accessibility": "node tools/accessibility-audit.mjs",
-    "test": "npm run audit:placement && npm run audit:ui && npm run audit:course && npm run audit:diversity && npm run audit:didactic && npm run audit:accessibility && npm run audit:persistence && npm run audit:migrations && npm run audit:audio && npm run build"
+    "audit:language-labs": "node tools/language-lab-audit.mjs",
+    "test": "npm run audit:placement && npm run audit:ui && npm run audit:course && npm run audit:diversity && npm run audit:didactic && npm run audit:accessibility && npm run audit:language-labs && npm run audit:persistence && npm run audit:migrations && npm run audit:audio && npm run build"
   },
   "dependencies": {
     "@vitejs/plugin-react": "6.0.2",

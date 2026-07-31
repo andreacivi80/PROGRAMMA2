@@ -1,10 +1,10 @@
-# English Coach 5.7 — stato verificato
+# English Coach 5.8 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 5.7, con data e identificativo visibili.
+- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 5.8, con data e identificativo visibili.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 
@@ -50,6 +50,7 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 - **IMPLEMENTATO** — trascrizione contenuta e sincronizzata, segmenti riascoltabili, dettato e domande generali/dettagliate.
 - **IMPLEMENTATO** — scelta britannica/americana applicata anche al riconoscimento vocale.
 - **VERIFICATO** — 1.744 file WAV controllati automaticamente: intestazione valida, dimensione utile e nessun audio richiesto mancante.
+- **VERIFICATO** — gli ascolti lunghi locali B1 e C1 durano rispettivamente almeno 60 e 45 secondi; i campioni regionali più lunghi usano soltanto registrazioni umane attribuite.
 - **IMPLEMENTATO** — registrazione visibile, nuovo tentativo, riascolto della propria voce e parole non riconosciute riascoltabili.
 - **VERIFICATO** — l’interfaccia parla correttamente di “parole riconosciute”, non di analisi fonetica completa.
 - **RINVIATO CON MOTIVAZIONE** — fonemi, accento e ritmo specialistici richiedono un motore fonetico dedicato non disponibile offline.
@@ -59,6 +60,7 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 
 - **IMPLEMENTATO** — frase, testo libero, mail, reclamo, sintesi, opinione, confronto, mediazione e risposte professionali nei laboratori e nelle lezioni.
 - **IMPLEMENTATO** — controlli locali dichiarati esplicitamente come controlli di base.
+- **VERIFICATO** — il controllo locale intercetta gli errori più comuni, spiega la regola e permette di applicare, ascoltare, modificare e ricontrollare la proposta senza spostare la pagina.
 - **RINVIATO CON MOTIVAZIONE** — correzione completa di naturalezza e coerenza richiede un correttore linguistico/AI esterno; le verifiche locali non vengono presentate come equivalenti.
 
 ## 14–15. Tempo ed esami

@@ -630,6 +630,39 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
   .themeQuizNav, .reviewNav { grid-template-columns: 1fr; }
 }
 
+.writingReview > article > .audioControl {
+  width: 100%;
+  margin-top: 13px;
+}
+
+.writingReviewActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.writingReviewActions button {
+  min-height: 46px;
+  padding: 8px 10px;
+  border: 1px solid #95c5b4;
+  border-radius: 13px;
+  background: #fff;
+  color: var(--deep);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.writingReviewActions button:first-child {
+  border-color: var(--green);
+  background: var(--green);
+  color: #fff;
+}
+
+@media (max-width: 390px) {
+  .writingReviewActions { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 430px) {
   .monthlyPanel {
     grid-template-columns: 1fr 1fr;

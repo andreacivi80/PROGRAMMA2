@@ -36,6 +36,7 @@ import {
   supplementaryBankFor,
   supplementaryFingerprint,
 } from "./supplementaryQuiz";
+import { analyzeLocalWriting } from "./languageAnalysis";
 import "./themePacks.css";
 import "./lessonEnhancements.css";
 import "./wordGames.css";
@@ -51,9 +52,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "5.7";
+const APP_VERSION = "5.8";
 const BUILD_DATE = "31 luglio 2026";
-const BUILD_ID = "EC-5.7-0731";
+const BUILD_ID = "EC-5.8-0731";
 type View =
   | "home"
   | "path"
@@ -1685,6 +1686,7 @@ export default function Home() {
     [dictationChecked, setDictationChecked] = useState(initialSession?.checkpoint.dictationChecked ?? false),
     [recordedAudioUrl, setRecordedAudioUrl] = useState("");
   const themeResultsRef = useRef<HTMLElement | null>(null),
+    writingRef = useRef<HTMLTextAreaElement | null>(null),
     finishingRef = useRef(false);
   const save = async (p: Progress) => {
     setSync("saving");
@@ -2271,89 +2273,7 @@ export default function Home() {
   };
   const analyzeWriting = () => {
     const t = writing.trim(),
-      notes: string[] = [];
-    let corrected = t;
-    const fix = (pattern: RegExp, replacement: string, note: string) => {
-      if (pattern.test(corrected)) {
-        corrected = corrected.replace(pattern, replacement);
-        notes.push(note);
-      }
-    };
-    if (t && !/^[A-Z]/.test(t)) {
-      corrected = corrected.charAt(0).toUpperCase() + corrected.slice(1);
-      notes.push("La frase inglese inizia con la maiuscola.");
-    }
-    if (t && !/[.!?]$/.test(t)) {
-      corrected += ".";
-      notes.push("Ho aggiunto la punteggiatura finale.");
-    }
-    fix(
-      /\bI am agree\b/gi,
-      "I agree",
-      "Agree è un verbo: si dice I agree, senza am.",
-    );
-    fix(/\bpeople is\b/gi, "people are", "People è plurale e richiede are.");
-    fix(
-      /\bI have (\d+) years(?: old)?\b/gi,
-      "I am $1 years old",
-      "Per l'età l'inglese usa be: I am ... years old.",
-    );
-    fix(
-      /\binformations\b/gi,
-      "information",
-      "Information è non numerabile e non prende -s.",
-    );
-    fix(
-      /\bdepend of\b/gi,
-      "depend on",
-      "La collocazione corretta è depend on.",
-    );
-    fix(
-      /\bmarried with\b/gi,
-      "married to",
-      "La collocazione corretta è married to.",
-    );
-    fix(
-      /\bsince (\d+) years\b/gi,
-      "for $1 years",
-      "Usa for con una durata; since introduce il punto iniziale.",
-    );
-    fix(
-      /\ba ([aeiou]\w*)\b/gi,
-      "an $1",
-      "Davanti a un suono vocalico usa normalmente an.",
-    );
-    const third =
-      /\b(he|she|it)\s+(work|live|speak|need|want|like|start|finish)\b/gi;
-    if (third.test(corrected)) {
-      corrected = corrected.replace(
-        third,
-        (_, subject, verb) =>
-          `${subject} ${verb}${verb.endsWith("s") ? "" : "s"}`,
-      );
-      notes.push("Con he, she o it il Present Simple richiede normalmente -s.");
-    }
-    const past: Record<string, string> = {
-      went: "go",
-      saw: "see",
-      took: "take",
-      came: "come",
-      had: "have",
-      did: "do",
-    };
-    const didPast = /\bdid\s+(went|saw|took|came|had|did)\b/gi;
-    if (didPast.test(corrected)) {
-      corrected = corrected.replace(
-        didPast,
-        (_, verb) => `did ${past[String(verb).toLowerCase()]}`,
-      );
-      notes.push("Dopo did usa il verbo base, non la forma passata.");
-    }
-    const target = unit.grammar.formulas[0]?.trim();
-    if (target && !notes.length)
-      notes.push(
-        `Non vedo errori tra quelli controllabili offline. Struttura da confrontare: ${target}`,
-      );
+      { corrected, notes } = analyzeLocalWriting(t, unit.grammar.formulas[0]?.trim());
     if (corrected !== t)
       queueReview(
         "Scrittura",
@@ -5283,6 +5203,7 @@ export default function Home() {
                 <label className="field">
                   La tua risposta in inglese
                   <textarea
+                    ref={writingRef}
                     rows={7}
                     lang="en"
                     spellCheck
@@ -5335,6 +5256,30 @@ export default function Home() {
                         sempre che il significato resti quello che volevi
                         esprimere.
                       </em>
+                      <AudioButton text={writingSuggestion} label="Ascolta la versione" />
+                      <div className="writingReviewActions">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setWriting(writingSuggestion);
+                            setWritingNotes(null);
+                            setWritingSuggestion("");
+                            window.requestAnimationFrame(() => writingRef.current?.focus({ preventScroll: true }));
+                          }}
+                        >
+                          Applica le correzioni
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setWritingNotes(null);
+                            setWritingSuggestion("");
+                            window.requestAnimationFrame(() => writingRef.current?.focus({ preventScroll: true }));
+                          }}
+                        >
+                          Modifica e ricontrolla
+                        </button>
+                      </div>
                     </article>
                   </div>
                 )}

@@ -9,6 +9,18 @@ const walk = directory => readdirSync(directory, { withFileTypes: true }).flatMa
 });
 const slug = word => word.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 const wavFiles = walk(audioRoot).filter(path => extname(path).toLowerCase() === ".wav");
+const wavDuration = path => {
+  const data = readFileSync(path);
+  let offset = 12, byteRate = 0, dataSize = 0;
+  while (offset + 8 <= data.length) {
+    const id = data.subarray(offset, offset + 4).toString("ascii");
+    const size = data.readUInt32LE(offset + 4);
+    if (id === "fmt " && size >= 12) byteRate = data.readUInt32LE(offset + 16);
+    if (id === "data") { dataSize = size; break; }
+    offset += 8 + size + (size % 2);
+  }
+  return byteRate && dataSize ? dataSize / byteRate : 0;
+};
 const malformed = wavFiles.filter(path => {
   const data = readFileSync(path);
   return data.length < 1000 || data.subarray(0, 4).toString("ascii") !== "RIFF" || data.subarray(8, 12).toString("ascii") !== "WAVE";
@@ -37,6 +49,10 @@ try {
     const path = resolve(audioRoot, file);
     return !existsSync(path) || statSync(path).size < 1000;
   });
+  const longListening = ["b1-long-listening-media-listening.wav", "c1-long-documentary-listening.wav"].map(file => ({
+    file,
+    seconds: Math.round(wavDuration(resolve(audioRoot, file))),
+  }));
   const app = readFileSync("src/App.tsx", "utf8").replace(/\s+/g, "");
   const preferences = readFileSync("src/preferences.ts", "utf8");
   const review = readFileSync("src/ReviewLab.tsx", "utf8");
@@ -56,8 +72,9 @@ try {
     placementUsesPreference: placement.includes("recognition.lang = getAudioAccent()"),
     themePackUsesPreference: themePack.includes("recognition.lang = getAudioAccent()"),
   };
-  console.log(JSON.stringify({ files: wavFiles.length, lessonFiles: lessonFiles.length, visualWordFiles: wordFiles.length, malformed: malformed.map(path => path.replace(audioRoot, "")), duplicatePaths, missing, checks }, null, 2));
-  if (malformed.length || duplicatePaths.length || missing.length || Object.values(checks).some(value => !value)) process.exitCode = 1;
+  const longListeningValid = longListening[0].seconds >= 60 && longListening[1].seconds >= 45;
+  console.log(JSON.stringify({ files: wavFiles.length, lessonFiles: lessonFiles.length, visualWordFiles: wordFiles.length, malformed: malformed.map(path => path.replace(audioRoot, "")), duplicatePaths, missing, longListening, longListeningValid, checks }, null, 2));
+  if (malformed.length || duplicatePaths.length || missing.length || !longListeningValid || Object.values(checks).some(value => !value)) process.exitCode = 1;
 } finally {
   await server.close();
 }
