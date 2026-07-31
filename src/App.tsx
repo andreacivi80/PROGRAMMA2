@@ -45,7 +45,7 @@ import "./version29.css";
 import "./wordGames.css";
 import "./version33.css";
 
-const APP_VERSION = "4.1";
+const APP_VERSION = "4.2";
 type View =
   | "home"
   | "path"
@@ -56,6 +56,7 @@ type View =
   | "review"
   | "smartReview"
   | "recoveryDrill"
+  | "errors"
   | "themePack";
 type Phase =
   | "grammar"
@@ -88,6 +89,11 @@ type SmartReviewItem = {
   dueAt: string;
   step: number;
   mastered?: boolean;
+  givenAnswer?: string;
+  wrongCount?: number;
+  correctStreak?: number;
+  lastAttemptAt?: string;
+  status?: "Nuovo" | "Da ripassare" | "In consolidamento" | "Acquisito";
 };
 type RecoveryQuestion = {
   review: SmartReviewItem;
@@ -392,7 +398,7 @@ const reviewKey = (unitId: string, kind: ReviewKind, prompt: string) =>
     .replace(/[^\p{L}\p{N}]+/gu, "-")
     .slice(0, 80)}`;
 const fresh = (id: string): Progress => ({
-  schemaVersion: 9,
+  schemaVersion: 10,
   deviceId: id,
   currentDay: 1,
   streak: 0,
@@ -1214,7 +1220,7 @@ function Question({
   rule,
 }: {
   data: Choice;
-  done: (ok: boolean, data: Choice) => void;
+  done: (ok: boolean, data: Choice, givenAnswer: string) => void;
   rule?: string;
 }) {
   const [pick, setPick] = useState<number | null>(null),
@@ -1238,7 +1244,7 @@ function Question({
             }
             onClick={() => {
               setPick(i);
-              done(i === data.answer, data);
+              done(i === data.answer, data, x);
             }}
           >
             <b>{String.fromCharCode(65 + i)}</b>
@@ -1429,7 +1435,9 @@ export default function Home() {
     [selectedLessonId, setSelectedLessonId] = useState(mobileCurriculum[0].id),
     [selectedTheme, setSelectedTheme] = useState<ThemeId>("food"),
     [audioAccent, setAudioAccent] = useState<AudioAccent>(getAudioAccent),
-    [audioRate, setAudioRate] = useState<AudioRate>(getAudioRate);
+    [audioRate, setAudioRate] = useState<AudioRate>(getAudioRate),
+    [errorSearch, setErrorSearch] = useState(""),
+    [errorKind, setErrorKind] = useState<ReviewKind | "Tutti">("Tutti");
   const themeResultsRef = useRef<HTMLElement | null>(null);
   const save = async (p: Progress) => {
     setSync("saving");
@@ -1490,6 +1498,29 @@ export default function Home() {
       if ((raw.schemaVersion ?? 1) < 9) {
         raw.weeklyGoal = raw.weeklyGoal ?? 3;
         raw.schemaVersion = 9;
+      }
+      if ((raw.schemaVersion ?? 1) < 10) {
+        raw.smartReview = Object.fromEntries(
+          Object.entries(raw.smartReview ?? {}).map(([id, item]) => {
+            const review = item as SmartReviewItem;
+            return [
+              id,
+              {
+                ...review,
+                wrongCount: review.wrongCount ?? 1,
+                correctStreak: review.correctStreak ?? review.step ?? 0,
+                status:
+                  review.status ??
+                  (review.mastered
+                    ? "Acquisito"
+                    : review.step
+                      ? "In consolidamento"
+                      : "Da ripassare"),
+              },
+            ];
+          }),
+        );
+        raw.schemaVersion = 10;
       }
       p = { ...p, ...raw, deviceId: id };
     } catch {}
@@ -1762,6 +1793,7 @@ export default function Home() {
     prompt: string,
     answer: string,
     explanation: string,
+    givenAnswer = "Domanda saltata o risposta non corretta",
   ) => {
     setProgress((current) => {
       if (!current) return current;
@@ -1779,6 +1811,11 @@ export default function Home() {
           dueAt: dateKey(),
           step: previous?.step ?? 0,
           mastered: false,
+          givenAnswer,
+          wrongCount: (previous?.wrongCount ?? 0) + 1,
+          correctStreak: 0,
+          lastAttemptAt: new Date().toISOString(),
+          status: previous ? "Da ripassare" : "Nuovo",
         },
         updated = {
           ...current,
@@ -1788,7 +1825,7 @@ export default function Home() {
       return updated;
     });
   };
-  const score = (ok: boolean, data: Choice) => {
+  const score = (ok: boolean, data: Choice, givenAnswer: string) => {
     if (answered !== null) return;
     setAnswered(ok);
     setPoints((p) => ({ yes: p.yes + (ok ? 1 : 0), all: p.all + 1 }));
@@ -1802,6 +1839,7 @@ export default function Home() {
         data.prompt,
         data.options[data.answer],
         data.explanationIt,
+        givenAnswer,
       );
   };
   const advance = (n: number) =>
@@ -2269,7 +2307,7 @@ export default function Home() {
           ...fresh(deviceId()),
           ...imported,
           deviceId: deviceId(),
-          schemaVersion: 9,
+          schemaVersion: 10,
           smartReview: imported.smartReview ?? {},
           weeklyGoal: imported.weeklyGoal ?? 3,
         };
@@ -2298,6 +2336,16 @@ export default function Home() {
       .filter((review) => !review.mastered && review.dueAt > dateKey())
       .sort((a, b) => a.dueAt.localeCompare(b.dueAt))[0],
     activeSmartReview = dueSmartReviews[smartReviewIndex];
+  const filteredErrors = smartReviews
+    .filter((review) => errorKind === "Tutti" || review.kind === errorKind)
+    .filter((review) =>
+      `${review.prompt} ${review.answer} ${review.explanation} ${review.unitTitle}`
+        .toLowerCase()
+        .includes(errorSearch.trim().toLowerCase()),
+    )
+    .sort((a, b) =>
+      (b.lastAttemptAt ?? b.dueAt).localeCompare(a.lastAttemptAt ?? a.dueAt),
+    );
   const masteryAreas = (
       ["Grammatica", "Vocabolario", "Ascolto", "Pronuncia"] as ReviewKind[]
     ).map((kind) => {
@@ -2431,6 +2479,16 @@ export default function Home() {
         ...activeSmartReview,
         step: nextStep,
         mastered,
+        correctStreak: remembered
+          ? (activeSmartReview.correctStreak ?? 0) + 1
+          : 0,
+        wrongCount: (activeSmartReview.wrongCount ?? 0) + (remembered ? 0 : 1),
+        lastAttemptAt: new Date().toISOString(),
+        status: mastered
+          ? "Acquisito"
+          : remembered
+            ? "In consolidamento"
+            : "Da ripassare",
         dueAt: mastered
           ? futureDate(3650)
           : futureDate(remembered ? delays[activeSmartReview.step] : 1),
@@ -2453,6 +2511,60 @@ export default function Home() {
       setView("home");
       scrollTo(0, 0);
     }
+  };
+  const openErrors = () => {
+    setErrorSearch("");
+    setErrorKind("Tutti");
+    setView("errors");
+    scrollTo(0, 0);
+  };
+  const retryError = async (review: SmartReviewItem) => {
+    const updated: Progress = {
+      ...progress,
+      smartReview: {
+        ...(progress.smartReview ?? {}),
+        [review.id]: {
+          ...review,
+          dueAt: dateKey(),
+          mastered: false,
+          status: "Da ripassare",
+        },
+      },
+    };
+    setProgress(updated);
+    await save(updated);
+    const due = Object.values(updated.smartReview ?? {})
+      .filter((item) => !item.mastered && item.dueAt <= dateKey())
+      .sort((a, b) => a.dueAt.localeCompare(b.dueAt));
+    setSmartReviewIndex(
+      Math.max(
+        0,
+        due.findIndex((item) => item.id === review.id),
+      ),
+    );
+    setSmartReviewRevealed(false);
+    setView("smartReview");
+    scrollTo(0, 0);
+  };
+  const understandError = async (review: SmartReviewItem) => {
+    const streak = (review.correctStreak ?? 0) + 1,
+      mastered = streak >= 3,
+      updated: Progress = {
+        ...progress,
+        smartReview: {
+          ...(progress.smartReview ?? {}),
+          [review.id]: {
+            ...review,
+            correctStreak: streak,
+            mastered,
+            status: mastered ? "Acquisito" : "In consolidamento",
+            dueAt: futureDate(mastered ? 30 : 3),
+            lastAttemptAt: new Date().toISOString(),
+          },
+        },
+      };
+    setProgress(updated);
+    await save(updated);
   };
   const current =
     mobileCurriculum.find((x) => x.day === progress.currentDay) ??
@@ -3551,6 +3663,17 @@ export default function Home() {
                 </article>
               ))}
             </div>
+            <button
+              type="button"
+              className="errorNotebookStart"
+              onClick={openErrors}
+            >
+              I miei errori
+              <span>
+                {smartReviews.filter((review) => !review.mastered).length}
+              </span>
+              <b>→</b>
+            </button>
             {dueSmartReviews.length > 0 && (
               <button type="button" onClick={openSmartReview}>
                 Ripassa ora ciò che serve <b>→</b>
@@ -3609,6 +3732,145 @@ export default function Home() {
               </button>
             </div>
           </section>
+        </div>
+      )}
+      {view === "errors" && (
+        <div className="errorNotebookView">
+          <div className="lessonTop">
+            <button
+              type="button"
+              aria-label="Chiudi il quaderno degli errori"
+              onClick={() => {
+                setView("progress");
+                scrollTo(0, 0);
+              }}
+            >
+              ×
+            </button>
+            <div>
+              <i style={{ width: "100%" }} />
+            </div>
+            <b>{filteredErrors.length}</b>
+          </div>
+          <article className="errorNotebookPanel">
+            <span className="eyebrow">Ripasso personale</span>
+            <h1>I miei errori</h1>
+            <p className="intro">
+              Cerca una parola o una regola. Un concetto diventa acquisito
+              soltanto dopo più conferme distanziate nel tempo.
+            </p>
+            <label className="errorSearch">
+              Cerca nel quaderno
+              <input
+                type="search"
+                value={errorSearch}
+                onChange={(event) => setErrorSearch(event.target.value)}
+                placeholder="Parola, regola o argomento"
+              />
+            </label>
+            <div className="errorFilters" aria-label="Filtra gli errori">
+              {(
+                [
+                  "Tutti",
+                  "Grammatica",
+                  "Vocabolario",
+                  "Ascolto",
+                  "Pronuncia",
+                ] as const
+              ).map((kind) => (
+                <button
+                  type="button"
+                  key={kind}
+                  className={errorKind === kind ? "active" : ""}
+                  aria-pressed={errorKind === kind}
+                  onClick={() => setErrorKind(kind)}
+                >
+                  {kind}
+                </button>
+              ))}
+            </div>
+            {filteredErrors.length ? (
+              <div className="errorCards">
+                {filteredErrors.map((review) => {
+                  const source = mobileCurriculum.find(
+                    (candidate) => candidate.id === review.unitId,
+                  );
+                  return (
+                    <section
+                      key={review.id}
+                      className={review.mastered ? "mastered" : ""}
+                    >
+                      <header>
+                        <span>
+                          {review.kind} · {review.level}
+                        </span>
+                        <b>
+                          {review.status ??
+                            (review.mastered ? "Acquisito" : "Da ripassare")}
+                        </b>
+                      </header>
+                      <small>{review.unitTitle}</small>
+                      <h2>{review.prompt}</h2>
+                      <dl>
+                        <div>
+                          <dt>Hai risposto</dt>
+                          <dd>
+                            {review.givenAnswer ?? "Risposta non registrata"}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>Risposta corretta</dt>
+                          <dd lang="en">{review.answer}</dd>
+                        </div>
+                      </dl>
+                      <ConceptText text={review.explanation} />
+                      {source?.grammar.formulas[0] && (
+                        <aside className="ruleRecall">
+                          <small>REGOLA COLLEGATA</small>
+                          <b>{source.grammar.formulas[0]}</b>
+                        </aside>
+                      )}
+                      <footer>
+                        <small>
+                          {review.wrongCount ?? 1} errori ·{" "}
+                          {review.correctStreak ?? 0} conferme · prossimo
+                          ripasso{" "}
+                          {new Date(
+                            `${review.dueAt}T12:00:00`,
+                          ).toLocaleDateString("it-IT")}
+                        </small>
+                        <div>
+                          <button
+                            type="button"
+                            className="showSolution"
+                            onClick={() => understandError(review)}
+                          >
+                            Ho capito
+                          </button>
+                          <button
+                            type="button"
+                            className="continue"
+                            onClick={() => retryError(review)}
+                          >
+                            Riprova <b>→</b>
+                          </button>
+                        </div>
+                      </footer>
+                    </section>
+                  );
+                })}
+              </div>
+            ) : (
+              <section className="emptyErrors">
+                <b>✓</b>
+                <h2>Nessun elemento con questi filtri</h2>
+                <p>
+                  Gli errori e le domande saltate compariranno qui
+                  automaticamente.
+                </p>
+              </section>
+            )}
+          </article>
         </div>
       )}
       {view === "recoveryDrill" && (
@@ -4666,6 +4928,7 @@ export default function Home() {
         view !== "review" &&
         view !== "smartReview" &&
         view !== "recoveryDrill" &&
+        view !== "errors" &&
         view !== "themePack" && (
           <nav>
             <button

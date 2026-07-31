@@ -100,7 +100,7 @@ themeQuestions:pack.includes("Salta domanda")
   schedule:app.includes("const delays=[1,3,7,14]"),
   dueToday:app.includes("Da ripassare oggi")&&app.includes('view==="smartReview"'),
   savesLocally:app.includes("smartReview:{...(current.smartReview??{})"),
-  resetAndBackup:app.includes("schemaVersion:9")&&app.includes("smartReview:imported.smartReview??{}")
+  resetAndBackup:app.includes("schemaVersion:10")&&app.includes("smartReview:imported.smartReview??{}")
  },
  recoveryTraining:{
   variableQuestions:app.includes("startRecovery=()=>")&&app.includes("shuffled(smartReviews.filter"),
@@ -129,6 +129,7 @@ themeQuestions:pack.includes("Salta domanda")
   ,themePersists:app.includes("theme: selectedTheme")&&app.includes("setSelectedTheme(savedTheme)")
   ,freePathStartsOpen:app.includes('className="homeChoice freeChoice" open')
   ,audioPreferences:app.includes("saveAudioAccent")&&app.includes("saveAudioRate")&&app.includes("r.lang = audioAccent")
+  ,errorNotebook:app.includes("I miei errori")&&app.includes("filteredErrors")&&app.includes("wrongCount")&&app.includes("correctStreak")&&app.includes("Riprova")
  },
  languageFocus:{
   themeEntry:app.includes("Verbi e false friends"),
