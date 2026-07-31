@@ -1,4 +1,4 @@
-import type { Cefr, Choice } from "./curriculum";
+import { detailedChoice, type Cefr, type Choice } from "./curriculum";
 
 export type ReadingPassage = {
   id: string;
@@ -13,7 +13,7 @@ export type ReadingPassage = {
   sourceLabel?: string;
 };
 
-const q=(prompt:string,options:string[],answer:number,explanationIt:string):Choice=>({prompt,options,answer,explanationIt});
+const q=(prompt:string,options:string[],answer:number,explanationIt:string):Choice=>detailedChoice({prompt,options,answer,explanationIt});
 
 export const readingPassages:ReadingPassage[]=[
   {

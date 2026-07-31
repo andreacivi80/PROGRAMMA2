@@ -1,4 +1,4 @@
-import type { Choice, MobileUnit } from "./curriculum";
+import { detailedChoice, type Choice, type MobileUnit } from "./curriculum";
 
 const shuffle = <T,>(items: T[]) => [...items].sort(() => Math.random() - 0.5);
 const clean = (value: string) => value.trim().replace(/\s+/g, " ");
@@ -115,7 +115,7 @@ export function supplementaryBankFor(unit: MobileUnit): Choice[] {
     explanationIt: `Il modello previsto per questa lezione è: ${unit.speaking.target}`,
   });
 
-  return [...new Map(bank.map(question => [supplementaryFingerprint(question), question])).values()];
+  return [...new Map(bank.map(question => [supplementaryFingerprint(question), detailedChoice(question)])).values()];
 }
 
 export function buildSupplementaryQuiz(unit: MobileUnit, count: number, excluded: string[] = []) {

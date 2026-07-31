@@ -11,6 +11,17 @@ export type Choice = {
   answer: number;
   explanationIt: string;
 };
+const punctuate = (text: string) => /[.!?]$/.test(text.trim()) ? text.trim() : `${text.trim()}.`;
+export function detailedChoice(choice: Choice): Choice {
+  if (choice.explanationIt.includes("soltanto questa rispetta il punto verificato")) return choice;
+  const correct = choice.options[choice.answer],
+    base = punctuate(choice.explanationIt),
+    namesAnswer = base.toLowerCase().includes(correct.toLowerCase());
+  return {
+    ...choice,
+    explanationIt: `${base}${namesAnswer ? "" : ` La risposta corretta è «${correct}».`} Confronta la forma o l’informazione richiesta con le altre alternative: soltanto questa rispetta il punto verificato dalla domanda.`,
+  };
+}
 
 export type MobileUnit = {
   id: string;
@@ -489,7 +500,33 @@ const orderedCurriculum: MobileUnit[] = [
 const a1Durations = [18, 18, 20, 20, 22, 22, 20, 22, 25, 25, 25, 30];
 export const mobileCurriculum: MobileUnit[] = orderedCurriculum.map((unit, index) => {
   const levelIndex = orderedCurriculum.slice(0, index).filter((item) => item.cefr === unit.cefr).length;
-  return { ...unit, day: index + 1, minutes: unit.cefr === "A1" ? a1Durations[levelIndex] ?? unit.minutes : unit.minutes };
+  return {
+    ...unit,
+    day: index + 1,
+    minutes: unit.cefr === "A1" ? a1Durations[levelIndex] ?? unit.minutes : unit.minutes,
+    grammar: {
+      ...unit.grammar,
+      explanationIt: unit.grammar.explanationIt.map(punctuate),
+      examples: unit.grammar.examples.map((example) => {
+        const note = punctuate(example.noteIt);
+        return {
+          ...example,
+          noteIt: note.length >= 24
+            ? note
+            : `${note} Osserva la forma nella frase «${example.en}» e confrontala con lo schema della lezione.`,
+        };
+      }),
+    },
+    writing: {
+      ...unit.writing,
+      cloze: unit.writing.cloze.map((exercise) => ({
+        ...exercise,
+        hintIt: `${punctuate(exercise.hintIt)} La forma attesa è «${exercise.answers[0]}»: rileggi la frase completa e controlla la posizione della parola.`,
+      })),
+    },
+    listening: { ...unit.listening, questions: unit.listening.questions.map(detailedChoice) },
+    quickCheck: unit.quickCheck.map(detailedChoice),
+  };
 });
 
 export const curriculumIndex = {
@@ -523,4 +560,3 @@ export const getUnitByDay = (day: number) =>
 
 export const getUnitsByLevel = (cefr: Cefr) =>
   mobileCurriculum.filter((unit) => unit.cefr === cefr);
-

@@ -222,7 +222,7 @@ export default function ReviewLab({ level, units, final, onClose, onComplete, on
         <h2>{question.prompt}</h2><div>{question.options.map((option, optionIndex) => {
           const state = pick === null ? "" : optionIndex === question.answer ? "right" : optionIndex === pick ? "wrong" : "dim";
           return <button key={`${option}-${optionIndex}`} className={state} disabled={pick !== null} onClick={() => answer(optionIndex)}><b>{String.fromCharCode(65 + optionIndex)}</b><span>{option}</span></button>;
-        })}</div>{pick !== null && <aside className={pick === question.answer ? "good" : "bad"}><strong>{pick === question.answer ? "Ben fatto: consolidiamo il motivo." : "Questa è un’ottima occasione per fissare il concetto."}</strong><ConceptText text={question.explanationIt} /></aside>}</article>
+        })}</div>{pick !== null && <aside className={pick === question.answer ? "good" : "bad"}><strong>{pick === question.answer ? "Ben fatto: consolidiamo il motivo." : "Questa è un’ottima occasione per fissare il concetto."}</strong><ConceptText text={question.explanationIt} terms={question.options} /></aside>}</article>
       <div className="reviewNav"><button type="button" className="showSolution" onClick={next}>Salta domanda</button><button className="continue" disabled={pick === null} onClick={next}>{index + 1 < questions.length ? "Prossimo esercizio" : final ? "Passa alle prove aperte" : "Vedi il riepilogo"}<b>→</b></button></div>
     </section></div>;
 }

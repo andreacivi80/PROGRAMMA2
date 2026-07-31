@@ -534,7 +534,7 @@ export default function ThemePackLab({
                       ][index % 3]
                     : "È un punto utile da rinforzare."}
                 </strong>
-                <ConceptText text={item.explanationIt} />
+                <ConceptText text={item.explanationIt} terms={item.options} />
                 <small>
                   {selected === item.answer
                     ? "La spiegazione consolida anche le risposte corrette."

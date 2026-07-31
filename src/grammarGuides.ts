@@ -1,4 +1,5 @@
 import { a1ExpansionGuides } from "./a1ExpansionGuides";
+import type { MobileUnit } from "./curriculum";
 
 export type GrammarGuide = {
   overview: string;
@@ -272,3 +273,57 @@ export const grammarGuides: Record<string, GrammarGuide> = {
   },
   ...a1ExpansionGuides,
 };
+
+function generatedGuide(unit: MobileUnit): GrammarGuide {
+  const examples = unit.grammar.examples.map(({ en, it }) => ({ en, it })),
+    explanation = unit.grammar.explanationIt.join(" "),
+    structures = unit.grammar.formulas.join(" "),
+    notes = unit.grammar.examples.map((example) => example.noteIt).join(" "),
+    usefulWords = unit.vocabulary.slice(0, 5).map((word) => word.en).join(", ");
+  return {
+    overview: `${explanation} La regola va riconosciuta nel significato della frase prima di scegliere la forma: osserva il soggetto, il momento dell’azione e l’intenzione di chi parla.`,
+    sections: [
+      {
+        title: "Significato e uso reale",
+        text: `${explanation} Prima di costruire la frase, chiediti quale informazione vuoi comunicare e quale parte deve essere più chiara per chi ascolta.`,
+        examples: examples.slice(0, 2),
+      },
+      {
+        title: "Costruzione passo dopo passo",
+        text: `Usa questi schemi come controllo: ${structures} Individua prima il soggetto, poi scegli l’ausiliare o la forma verbale e infine completa la frase. Nelle domande e nelle negative controlla con attenzione l’ordine delle parole.`,
+        examples: examples.slice(1, 3),
+      },
+      {
+        title: "Confronto con l’italiano",
+        text: `La traduzione letterale può produrre un ordine o un tempo verbale innaturale. Parti dal significato complessivo, ricostruisci la frase inglese e soltanto dopo confrontala con l’italiano. ${notes}`,
+        examples: examples.slice(0, 3),
+      },
+      {
+        title: "Controllo degli errori frequenti",
+        text: `Rileggi la frase in tre passaggi. Controlla la concordanza con il soggetto. Controlla se domanda e negativa richiedono un ausiliare. Controlla che il verbo successivo abbia la forma prevista dallo schema. ${notes}`,
+      },
+      {
+        title: "Uso nel contesto e lessico utile",
+        text: `${unit.listening.guideIt} Nel dialogo ascolta la funzione della frase, non soltanto le singole parole. Integra la struttura con il lessico della lezione: ${usefulWords}. Poi crea un esempio personale, perché una regola diventa stabile quando la usi per comunicare qualcosa di vero.`,
+        examples: examples.slice(-2),
+      },
+    ],
+  };
+}
+
+export function grammarGuideFor(unit: MobileUnit): GrammarGuide {
+  const generated = generatedGuide(unit),
+    curated = grammarGuides[unit.id];
+  if (!curated) return generated;
+  const extra = generated.sections.filter((section) =>
+    ["Confronto con l’italiano", "Controllo degli errori frequenti", "Uso nel contesto e lessico utile"].includes(section.title),
+  );
+  const sections = [...curated.sections, ...extra].map((section) => ({
+    ...section,
+    text:
+      section.text.length >= 120
+        ? section.text
+        : `${section.text} Verifica la regola costruendo una frase affermativa, una negativa e una domanda; poi confronta ogni forma con gli esempi della lezione.`,
+  }));
+  return { overview: curated.overview, sections };
+}

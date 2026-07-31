@@ -1,10 +1,10 @@
-# English Coach 5.5 — stato verificato
+# English Coach 5.6 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 5.5, con data e identificativo visibili.
+- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 5.6, con data e identificativo visibili.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 
@@ -29,6 +29,8 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 - **VERIFICATO** — nessun duplicato esatto o ad alta similarità rilevato; risposte, spiegazioni, audio e identificativi controllati.
 - **IMPLEMENTATO** — grammatica, lessico, ascolto, lettura, scrittura, parlato, interazione, mediazione e verifiche.
 - **IMPLEMENTATO** — inglese evidenziato, concetti separati, feedback con testo e icona oltre al colore.
+- **VERIFICATO** — tutte le 60 lezioni hanno una guida grammaticale di almeno cinque sezioni con uso, costruzione, confronto con l’italiano, errori frequenti e applicazione nel contesto.
+- **VERIFICATO** — 1.846 domande tra percorso, letture, temi ed extra hanno opzioni valide e una spiegazione completa mostrata dopo risposte corrette o da rivedere.
 
 ## 9. Missioni reali
 

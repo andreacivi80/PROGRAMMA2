@@ -51,9 +51,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "5.5";
+const APP_VERSION = "5.6";
 const BUILD_DATE = "31 luglio 2026";
-const BUILD_ID = "EC-5.5-0731";
+const BUILD_ID = "EC-5.6-0731";
 type View =
   | "home"
   | "path"
@@ -5049,7 +5049,7 @@ export default function Home() {
                             <strong>{question.options[question.answer]}</strong>
                           </p>
                         )}
-                        <ConceptText text={question.explanationIt} />
+                        <ConceptText text={question.explanationIt} terms={question.options} />
                       </section>
                     );
                   })}
@@ -5197,7 +5197,7 @@ export default function Home() {
                 {checked !== null && (
                   <div className={`feedback ${checked ? "good" : "bad"}`}>
                     <b>{checked ? "Perfetto!" : "Rivediamola insieme."}</b>
-                    <ConceptText text={practiceCloze[item].hintIt} />
+                    <ConceptText text={practiceCloze[item].hintIt} terms={practiceCloze[item].answers} />
                     {!checked && (
                       <p>
                         Risposta:{" "}

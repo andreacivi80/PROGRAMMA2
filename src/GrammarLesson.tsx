@@ -1,5 +1,5 @@
 import type { MobileUnit } from "./curriculum";
-import { grammarGuides } from "./grammarGuides";
+import { grammarGuideFor } from "./grammarGuides";
 import GrammarVisual from "./GrammarVisual";
 import ConceptText from "./ConceptText";
 
@@ -10,11 +10,21 @@ export default function GrammarLesson({
   unit: MobileUnit;
   onContinue: () => void;
 }) {
-  const guide = grammarGuides[unit.id];
-  const lessonTerms = [
-    ...unit.grammar.formulas,
+  const guide = grammarGuideFor(unit);
+  const englishSources = [
     ...unit.grammar.examples.map((example) => example.en),
     ...unit.vocabulary.flatMap((word) => [word.en, word.example]),
+    unit.listening.transcript,
+    unit.speaking.target,
+    ...unit.speaking.focus,
+  ],
+    sourceWords = englishSources.flatMap((text) =>
+      text.match(/[A-Za-z]+(?:['’][A-Za-z]+)?/g) ?? [],
+    ),
+    lessonTerms = [
+    ...unit.grammar.formulas,
+    ...englishSources,
+    ...sourceWords,
   ];
 
   return (
@@ -25,7 +35,7 @@ export default function GrammarLesson({
         l’italiano, errori frequenti ed esempi tradotti.
       </p>
 
-      {guide ? (
+      {(
         <section className="deepGuide primaryGuide">
           <div className="deepOverview">
             <ConceptText text={guide.overview} terms={lessonTerms} />
@@ -73,38 +83,6 @@ export default function GrammarLesson({
               lo stesso.
             </p>
           </aside>
-        </section>
-      ) : (
-        <section className="grammarGuide">
-          <div>
-            <small>1 · QUANDO SI USA</small>
-            <div className="explain">
-              {unit.grammar.explanationIt.map((text, index) => (
-                <div key={text}>
-                  <b>{index + 1}</b>
-                  <ConceptText text={text} terms={lessonTerms} />
-                </div>
-              ))}
-            </div>
-          </div>
-          <div>
-            <small>2 · COME SI COSTRUISCE</small>
-            <div className="formula">
-              {unit.grammar.formulas.map((formula) => (
-                <code key={formula}>{formula}</code>
-              ))}
-            </div>
-          </div>
-          <div className="grammarWarnings">
-            <small>3 · ESEMPI COMMENTATI</small>
-            {unit.grammar.examples.map((example) => (
-              <div className="grammarExampleRule" key={example.en}>
-                <b lang="en">{example.en}</b>
-                <span>{example.it}.</span>
-                <ConceptText text={example.noteIt} terms={lessonTerms} />
-              </div>
-            ))}
-          </div>
         </section>
       )}
 
