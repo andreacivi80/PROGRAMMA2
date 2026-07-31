@@ -11,7 +11,13 @@ try {
     ["I did went home", "I did go home."],
     ["This is more better", "This is better."],
     ["There is apples", "There are apples."],
-    ["I need a apple", "I need an apple."],
+  ["I need a apple", "I need an apple."],
+  ["It is a hour", "It is an hour."],
+  ["She studies at an university", "She studies at a university."],
+  ["He finish work", "He finishes work."],
+  ["She study English", "She studies English."],
+  ["It have one problem", "It has one problem."],
+  ["He doesn't watches television", "He doesn't watch television."],
     ["It depend of much people", "It depends on many people."],
   ];
   const writingCases = cases.map(([input, expected]) => {

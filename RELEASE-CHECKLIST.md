@@ -1,13 +1,14 @@
-# English Coach 5.9 — stato verificato
+# English Coach 6.0 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 5.9, con data e identificativo visibili.
+- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 6.0, con data e identificativo visibili.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 - **VERIFICATO** — i nomi dell’archivio locale restano stabili tra le revisioni: una nuova pubblicazione sostituisce l’interfaccia, non i dati dell’utente.
+- **VERIFICATO** — l’attivazione di una nuova versione non ricarica forzatamente una sessione aperta: l’utente può terminare l’attività e riceve la nuova interfaccia alla successiva apertura o al refresh volontario.
 
 ## 2–4. Percorso, ripresa e livello
 
@@ -88,6 +89,7 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 - **VERIFICATO** — il backup include anche sessione, selezione, lettura ed esercizi supplementari in corso; continua ad accettare i vecchi backup.
 - **VERIFICATO** — le migrazioni riparano dati incompleti, mantengono i progressi delle espansioni precedenti e adattano la domanda corrente alle banche aggiornate.
 - **VERIFICATO** — risposta, feedback, dettato, parlato, scrittura ed extra aperti sopravvivono al refresh e all’attivazione di una nuova versione.
+- **VERIFICATO** — simulazione completa di backup, annullamento azzeramento, azzeramento confermato, rifiuto di un backup errato e ripristino di cronologia ed errori.
 - **RINVIATO CON MOTIVAZIONE** — una certificazione formale WCAG 2.2 AA richiede audit manuale con tecnologie assistive e dispositivi esterni.
 
 ## 21–22. Prestazioni e controllo
@@ -96,6 +98,8 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 - **VERIFICATO** — strumenti di compilazione aggiornati alla versione corretta e controllo di sicurezza senza vulnerabilità note.
 - **VERIFICATO** — 221 pulsanti, audio, stop, velocità, salti, ripassi, giochi, missioni e persistenza coperti dagli audit statici.
 - **VERIFICATO** — test automatici per 60 lezioni, 30 prove d’ingresso, profili CEFR, duplicati, banche esercizi e struttura UI.
+- **VERIFICATO** — 41 scenari di utilizzo concatenati simulano un’ora di percorso: primo accesso, livelli, viste, errori volontari, salti, indietro, refresh, chiusura, ripresa, preferenze, test d’ingresso, backup e quiz visivo.
+- **VERIFICATO** — cinque profili A1–C1 controllano crescita di durata, listening, lessico e lettura; nessuna domanda identica, opzione duplicata o risposta fuori intervallo.
 - **RINVIATO CON MOTIVAZIONE** — prove fisiche complete su ogni combinazione di microfono, screen reader e zoom richiedono la relativa matrice di dispositivi.
 
 ## 23–24. Vincoli finali

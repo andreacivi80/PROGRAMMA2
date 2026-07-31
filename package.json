@@ -1,6 +1,6 @@
 {
   "name": "english-coach-public",
-  "version": "5.9.0",
+  "version": "6.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -17,7 +17,9 @@
     "audit:accessibility": "node tools/accessibility-audit.mjs",
     "audit:language-labs": "node tools/language-lab-audit.mjs",
     "audit:release": "node tools/release-audit.mjs",
-    "test": "npm run audit:placement && npm run audit:ui && npm run audit:course && npm run audit:diversity && npm run audit:didactic && npm run audit:accessibility && npm run audit:language-labs && npm run audit:persistence && npm run audit:migrations && npm run audit:audio && npm run audit:release && npm run build"
+    "audit:personas": "node tools/persona-content-audit.mjs",
+    "audit:journey": "node tools/user-journey-audit.mjs",
+    "test": "npm run audit:placement && npm run audit:ui && npm run audit:course && npm run audit:diversity && npm run audit:personas && npm run audit:didactic && npm run audit:accessibility && npm run audit:language-labs && npm run audit:journey && npm run audit:persistence && npm run audit:migrations && npm run audit:audio && npm run audit:release && npm run build"
   },
   "dependencies": {
     "@types/react": "19.2.14",
@@ -27,5 +29,10 @@
     "react-dom": "19.2.6",
     "typescript": "5.9.3",
     "vite": "8.2.0"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "10.4.1",
+    "@testing-library/react": "16.3.2",
+    "happy-dom": "20.11.1"
   }
 }

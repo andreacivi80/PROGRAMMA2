@@ -52,9 +52,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "5.9";
+const APP_VERSION = "6.0";
 const BUILD_DATE = "31 luglio 2026";
-const BUILD_ID = "EC-5.9-0731";
+const BUILD_ID = "EC-6.0-0731";
 type View =
   | "home"
   | "path"

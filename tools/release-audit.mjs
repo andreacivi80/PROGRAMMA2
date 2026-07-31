@@ -7,6 +7,7 @@ const app = readFileSync("src/App.tsx", "utf8");
 const sw = readFileSync("public/sw.js", "utf8");
 const checklist = readFileSync("RELEASE-CHECKLIST.md", "utf8");
 const workflow = readFileSync(".github/workflows/deploy-pages.yml", "utf8");
+const main = readFileSync("src/main.tsx", "utf8");
 const tracked = execFileSync("git", ["ls-files"], { encoding: "utf8" }).split(/\r?\n/).filter(Boolean);
 const version = pkg.version.replace(/\.0$/, "");
 const stableKeys = [
@@ -25,6 +26,7 @@ const checks = {
   checklistAgrees: checklist.includes(`# English Coach ${version} — stato verificato`),
   progressKeysRemainStable: stableKeys.every(key => app.includes(key)),
   updateDoesNotClearStorage: !sw.includes("localStorage") && !sw.includes("indexedDB.deleteDatabase"),
+  updateDoesNotInterruptActiveExercise: !main.includes('addEventListener("controllerchange"') && !main.includes("location.replace(target)"),
   deployBuildsFreshArtifact: workflow.includes("npm ci") && workflow.includes("npm run build") && workflow.includes("path: dist"),
   onePublicSource: !tracked.some(path => /(^|\/)(dist|node_modules)(\/|$)/.test(path)),
   noTrackedBuildArchives: !tracked.some(path => /\.(zip|7z|rar)$/i.test(path)),
