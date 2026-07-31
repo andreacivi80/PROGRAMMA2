@@ -139,6 +139,63 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
   }
 }
 
+@media (width <= 620px) {
+  .app > header { height: 60px; padding: 7px 12px 5px; }
+  .brand { min-height: 46px; }
+  .brand small { display: none; }
+  .logo { width: 40px; height: 40px; border-radius: 12px; }
+  .screen { padding: 6px 12px 18px; }
+  .pageTitle { padding: 6px 2px 4px; }
+  .pageTitle h1 { margin-bottom: 3px; font-size: 28px; }
+  .pageTitle p { margin-bottom: 8px; font-size: 12px; line-height: 1.4; }
+  .hero { min-height: 158px; padding: 18px 17px; border-radius: 22px; }
+  .hero h1 { margin-bottom: 7px; font-size: 29px; }
+  .hero p { font-size: 12px; line-height: 1.4; }
+  .start { width: calc(100% - 24px); min-height: 52px; margin: -21px auto 10px; border-radius: 15px; }
+  .stats { gap: 6px; margin-bottom: 9px; }
+  .stats article { padding: 9px 4px; border-radius: 14px; }
+  .card,
+  .trainingChooser,
+  .themeResults,
+  .readingHub,
+  .visualQuizHub,
+  .skillsHub,
+  .skillSession { margin: 8px 0; padding: 14px; border-radius: 18px; }
+  .title h2 { margin-bottom: 10px; }
+  .adaptiveHome { width: calc(100% - 24px); margin: 8px auto; padding: 14px; border-radius: 19px; }
+  .adaptiveTitle h2 { margin-bottom: 8px; }
+  .adaptiveLevels { margin-bottom: 9px; }
+  .adaptiveTimes > button { padding: 9px 7px; gap: 5px; border-radius: 13px; }
+  .level { margin-top: 14px; }
+  .levelTitle { margin-bottom: 8px; }
+  .units { gap: 6px; }
+  .units button { min-height: 62px; padding: 8px 11px; border-radius: 15px; }
+  .themeGrid { gap: 6px; margin-bottom: 9px; }
+  .themeGrid > button { min-height: 84px; padding: 10px; border-radius: 15px; }
+  .readingCards > button { min-height: 72px; padding: 8px 10px; }
+  .lesson,
+  .readingView { padding: 0 10px 18px; }
+  .lessonTop,
+  .readingProgress { min-height: 58px; }
+  .lessonCard,
+  .readingPanel { min-height: 0; padding: 18px 15px; border-radius: 21px; }
+  .lessonCard > h1,
+  .readingPanel > h1 { font-size: 28px; }
+  .intro { margin-bottom: 14px; }
+  .formula,
+  .prompt { margin: 13px 0; padding: 14px; }
+  .examples { gap: 8px; }
+  .examples > div { padding: 13px; border-radius: 16px; }
+  .player,
+  .repeat { margin: 11px 0 14px; padding: 12px; border-radius: 17px; }
+  .continue { margin-top: 14px; }
+  .placementResult { margin-top: 12px; }
+  .smartReviewCard,
+  .recoveryPanel { margin: 9px 10px; padding: 17px 14px; border-radius: 20px; }
+  .errorNotebookPanel { padding: 5px 11px 18px; }
+  .errorFilters { margin: 8px 0 10px; }
+}
+
 .progressNextPanel {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -731,6 +788,49 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
   color: var(--muted);
   font-size: 12px;
 }
+
+.placementPanel .answers button.selected {
+  border-color: var(--green);
+  background: var(--mint);
+}
+
+.placementRecorded {
+  border: 1px solid #b9ddcf;
+  background: #f2f8f5;
+  color: var(--deep);
+}
+
+.placementMistakes {
+  margin: 14px 0;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: #fff;
+  text-align: left;
+  overflow: hidden;
+}
+
+.placementMistakes summary {
+  padding: 13px;
+  color: var(--deep);
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.placementMistakes > div {
+  max-height: 45dvh;
+  padding: 0 12px 12px;
+  overflow: auto;
+}
+
+.placementMistakes article {
+  display: grid;
+  gap: 5px;
+  padding: 11px;
+  border-top: 1px solid var(--line);
+}
+
+.placementMistakes small { color: var(--green); font-weight: 900; }
+.placementMistakes p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
 
 @media (width <= 520px) {
   .placementPanel,

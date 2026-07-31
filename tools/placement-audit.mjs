@@ -13,7 +13,7 @@ const blank = { writing: "", mediation: "", oral: "" };
 const through = (level) => Object.fromEntries(placementItems.map((item) => [item.id, ["A1", "A2", "B1", "B2", "C1"].indexOf(item.level) <= ["A1", "A2", "B1", "B2", "C1"].indexOf(level) ? item.answer : -1]));
 const expected = { A1: "A1", A2: "A2", B1: "B1", B2: "B2", C1: "C1" };
 for (const [profile, wanted] of Object.entries(expected)) {
-  const got = evaluatePlacement(through(profile), profile === "C1" ? evidence : blank).suggested;
+  const got = evaluatePlacement(through(profile), profile === "B2" || profile === "C1" ? evidence : blank).suggested;
   if (got !== wanted) throw new Error(`Profilo ${profile}: atteso ${wanted}, ottenuto ${got}`);
 }
 const lucky = Object.fromEntries(placementItems.map((item) => [item.id, item.level === "B2" || item.level === "C1" ? item.answer : -1]));

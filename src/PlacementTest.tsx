@@ -1,8 +1,16 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Cefr } from "./curriculum";
 import { evaluatePlacement, placementItems, placementLevels, type ProductionEvidence } from "./placementModel";
 
 const kindLabel = { grammar: "Grammatica", vocabulary: "Lessico", reading: "Comprensione scritta", listening: "Comprensione orale" };
+const draftKey = "english-coach-placement-draft-v2";
+type PlacementDraft = { index: number; answers: Record<string, number>; phase: "questions" | "production" | "result"; evidence: ProductionEvidence };
+const loadDraft = (): PlacementDraft | null => {
+  try {
+    const value = JSON.parse(sessionStorage.getItem(draftKey) ?? "null") as PlacementDraft | null;
+    return value && value.index >= 0 && value.index < placementItems.length ? value : null;
+  } catch { return null; }
+};
 
 function speak(text: string, lang = "en-GB", rate = 0.9) {
   speechSynthesis.cancel();
@@ -15,15 +23,22 @@ function speak(text: string, lang = "en-GB", rate = 0.9) {
 }
 
 export default function PlacementTest({ onClose, onChoose }: { onClose: () => void; onChoose: (level: Cefr) => void }) {
-  const [index, setIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, number>>({});
+  const initial = useMemo(loadDraft, []);
+  const [index, setIndex] = useState(initial?.index ?? 0);
+  const [answers, setAnswers] = useState<Record<string, number>>(initial?.answers ?? {});
   const [selected, setSelected] = useState<number | null>(null);
-  const [phase, setPhase] = useState<"questions" | "production" | "result">("questions");
-  const [evidence, setEvidence] = useState<ProductionEvidence>({ writing: "", mediation: "", oral: "" });
+  const [phase, setPhase] = useState<"questions" | "production" | "result">(initial?.phase ?? "questions");
+  const [evidence, setEvidence] = useState<ProductionEvidence>(initial?.evidence ?? { writing: "", mediation: "", oral: "" });
   const [recording, setRecording] = useState(false);
   const [speechMessage, setSpeechMessage] = useState("");
   const item = placementItems[index];
   const result = useMemo(() => evaluatePlacement(answers, evidence), [answers, evidence]);
+  const mistakes = useMemo(() => placementItems.filter((question) => answers[question.id] !== question.answer), [answers]);
+  useEffect(() => {
+    sessionStorage.setItem(draftKey, JSON.stringify({ index, answers, phase, evidence } satisfies PlacementDraft));
+  }, [index, answers, phase, evidence]);
+  const closeTest = () => { sessionStorage.removeItem(draftKey); speechSynthesis.cancel(); onClose(); };
+  const chooseLevel = (level: Cefr) => { sessionStorage.removeItem(draftKey); onChoose(level); };
   const next = () => {
     speechSynthesis.cancel();
     if (index + 1 < placementItems.length) {
@@ -76,18 +91,30 @@ export default function PlacementTest({ onClose, onChoose }: { onClose: () => vo
           La stima considera separatamente prerequisiti, grammatica, lessico, lettura, ascolto e produzione.
           {result.boundary ? ` Sei vicino anche al livello ${result.boundary}: puoi provarlo liberamente.` : " Il livello può sempre essere cambiato."}
         </p>
-        <button className="continue" onClick={() => onChoose(result.suggested)}>Inizia da {result.suggested} <b>→</b></button>
+        <details className="placementMistakes">
+          <summary>Rivedi i {mistakes.length} punti da consolidare</summary>
+          <div>
+            {mistakes.map((mistake) => (
+              <article key={mistake.id}>
+                <small>{mistake.level} · {kindLabel[mistake.kind]}</small>
+                <b>{mistake.prompt}</b>
+                <p><strong>Risposta:</strong> {mistake.options[mistake.answer]}. {mistake.explanation}</p>
+              </article>
+            ))}
+          </div>
+        </details>
+        <button className="continue" onClick={() => chooseLevel(result.suggested)}>Inizia da {result.suggested} <b>→</b></button>
         <div className="placementLevelChoices">
-          {placementLevels.map((level) => <button key={level} onClick={() => onChoose(level)}>{level}</button>)}
+          {placementLevels.map((level) => <button key={level} onClick={() => chooseLevel(level)}>{level}</button>)}
         </div>
-        <button className="showSolution" onClick={onClose}>Torna senza cambiare livello</button>
+        <button className="showSolution" onClick={closeTest}>Torna senza cambiare livello</button>
       </article>
     </main>
   );
 
   if (phase === "production") return (
     <main className="placementView">
-      <div className="lessonTop"><button type="button" aria-label="Chiudi il test" onClick={onClose}>×</button><div><i style={{ width: "100%" }} /></div><b>Produzione</b></div>
+      <div className="lessonTop"><button type="button" aria-label="Chiudi il test" onClick={closeTest}>×</button><div><i style={{ width: "100%" }} /></div><b>Produzione</b></div>
       <article className="placementPanel placementProduction">
         <span className="eyebrow">Ultima parte · scrivi con parole tue</span>
         <h1>Due brevi risposte per rendere più precisa la stima</h1>
@@ -115,7 +142,7 @@ export default function PlacementTest({ onClose, onChoose }: { onClose: () => vo
   return (
     <main className="placementView">
       <div className="lessonTop">
-        <button type="button" aria-label="Chiudi il test" onClick={() => { speechSynthesis.cancel(); onClose(); }}>×</button>
+        <button type="button" aria-label="Chiudi il test" onClick={closeTest}>×</button>
         <div><i style={{ width: `${((index + 1) / placementItems.length) * 100}%` }} /></div>
         <b>{index + 1}/{placementItems.length}</b>
       </div>
@@ -127,10 +154,10 @@ export default function PlacementTest({ onClose, onChoose }: { onClose: () => vo
         <div className="answers">
           {item.options.map((option, optionIndex) => {
             const revealed = selected !== null;
-            return <button key={option} disabled={revealed} className={revealed ? optionIndex === item.answer ? "right" : optionIndex === selected ? "wrong" : "dim" : ""} onClick={() => { setSelected(optionIndex); setAnswers((current) => ({ ...current, [item.id]: optionIndex })); }}><b>{String.fromCharCode(65 + optionIndex)}</b><span>{option}</span></button>;
+            return <button key={option} disabled={revealed} className={revealed ? optionIndex === selected ? "selected" : "dim" : ""} onClick={() => { setSelected(optionIndex); setAnswers((current) => ({ ...current, [item.id]: optionIndex })); }}><b>{String.fromCharCode(65 + optionIndex)}</b><span>{option}</span></button>;
           })}
         </div>
-        {selected !== null && <section className={`feedback ${selected === item.answer ? "good" : "bad"}`}><strong>{selected === item.answer ? "✓ Bene: competenza confermata" : "↗ Punto da consolidare"}</strong><p>{item.explanation}</p></section>}
+        {selected !== null && <section className="feedback placementRecorded"><strong>Risposta registrata</strong><p>La correzione completa sarà mostrata soltanto alla fine, così il test resta attendibile.</p></section>}
         <div className="placementActions">
           {selected === null ? <button className="showSolution" onClick={() => { setSelected(-1); setAnswers((current) => ({ ...current, [item.id]: -1 })); }}>Non lo so · salta</button> : <button className="continue" onClick={next}>{index + 1 < placementItems.length ? "Prossima prova" : "Passa alla produzione"}<b>→</b></button>}
         </div>

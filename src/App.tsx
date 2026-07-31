@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   curriculumIndex,
   mobileCurriculum,
@@ -7,8 +7,6 @@ import {
   type Choice,
   type MobileUnit,
 } from "./curriculum";
-import GrammarLesson from "./GrammarLesson";
-import ReviewLab from "./ReviewLab";
 import { readingPassages, type ReadingPassage } from "./readingLab";
 import {
   actionVisualSets,
@@ -17,7 +15,6 @@ import {
   phrasalVisualSets,
   type VisualSet,
 } from "./visualQuiz";
-import ThemePackLab from "./ThemePackLab";
 import ThemePackHub from "./ThemePackHub";
 import ConceptText from "./ConceptText";
 import {
@@ -29,9 +26,6 @@ import {
   type AudioRate,
 } from "./preferences";
 import { themePacks, type ThemePack } from "./themePacks";
-import WordGamesHub from "./WordGamesHub";
-import PlacementTest from "./PlacementTest";
-import SkillsLab from "./SkillsLab";
 import {
   applyDialogueVoice,
   dialogueRole,
@@ -47,9 +41,19 @@ import "./version29.css";
 import "./wordGames.css";
 import "./version33.css";
 
-const APP_VERSION = "4.9";
+const GrammarLesson = lazy(() => import("./GrammarLesson"));
+const ReviewLab = lazy(() => import("./ReviewLab"));
+const ThemePackLab = lazy(() => import("./ThemePackLab"));
+const WordGamesHub = lazy(() => import("./WordGamesHub"));
+const PlacementTest = lazy(() => import("./PlacementTest"));
+const SkillsLab = lazy(() => import("./SkillsLab"));
+const Deferred = ({ children }: { children: ReactNode }) => (
+  <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
+);
+
+const APP_VERSION = "5.0";
 const BUILD_DATE = "31 luglio 2026";
-const BUILD_ID = "EC-4.9-0731";
+const BUILD_ID = "EC-5.0-0731";
 type View =
   | "home"
   | "path"
@@ -3773,12 +3777,14 @@ export default function Home() {
                 themeResultsRef.current = node;
               }}
             >
-              <WordGamesHub
-                key={selectedLevel}
-                level={selectedLevel}
-                saved={progress.wordGames ?? {}}
-                onComplete={finishWordGame}
-              />
+              <Deferred>
+                <WordGamesHub
+                  key={selectedLevel}
+                  level={selectedLevel}
+                  saved={progress.wordGames ?? {}}
+                  onComplete={finishWordGame}
+                />
+              </Deferred>
             </div>
           ) : selectedTheme === "skills" ? (
             <div
@@ -3786,14 +3792,16 @@ export default function Home() {
                 themeResultsRef.current = node;
               }}
             >
-              <SkillsLab
-                key={selectedLevel}
-                level={selectedLevel}
-                onComplete={finishWordGame}
-                reviewItems={smartReviews
-                  .filter((review) => review.level === selectedLevel && !review.mastered)
-                  .map((review) => ({ prompt: review.prompt, answer: review.answer }))}
-              />
+              <Deferred>
+                <SkillsLab
+                  key={selectedLevel}
+                  level={selectedLevel}
+                  onComplete={finishWordGame}
+                  reviewItems={smartReviews
+                    .filter((review) => review.level === selectedLevel && !review.mastered)
+                    .map((review) => ({ prompt: review.prompt, answer: review.answer }))}
+                />
+              </Deferred>
             </div>
           ) : selectedTheme === "reading" ? (
             <section
@@ -4451,10 +4459,12 @@ export default function Home() {
         </div>
       )}
       {view === "placement" && (
-        <PlacementTest
-          onClose={() => { setView("home"); scrollTo(0, 0); }}
-          onChoose={(level) => completeOnboarding(level)}
-        />
+        <Deferred>
+          <PlacementTest
+            onClose={() => { setView("home"); scrollTo(0, 0); }}
+            onChoose={(level) => completeOnboarding(level)}
+          />
+        </Deferred>
       )}
       {view === "recoveryDrill" && (
         <div className="recoveryScreen">
@@ -4663,26 +4673,28 @@ export default function Home() {
         </div>
       )}
       {view === "themePack" && selectedPack && (
-        <ThemePackLab
-          key={selectedPack.id}
-          pack={selectedPack}
-          badge={
-            selectedPack.introducedIn === APP_VERSION
-              ? `NEW ${selectedPack.introducedIn}`
-              : `V ${selectedPack.introducedIn}`
-          }
-          previous={progress.themePacks?.[selectedPack.id]}
-          onMistake={(question, givenAnswer) =>
-            queueThemeMistake(selectedPack, question, givenAnswer)
-          }
-          onClose={() => {
-            speechSynthesis?.cancel();
-            setSelectedPack(null);
-            setView("topics");
-            scrollTo(0, 0);
-          }}
-          onComplete={finishThemePack}
-        />
+        <Deferred>
+          <ThemePackLab
+            key={selectedPack.id}
+            pack={selectedPack}
+            badge={
+              selectedPack.introducedIn === APP_VERSION
+                ? `NEW ${selectedPack.introducedIn}`
+                : `V ${selectedPack.introducedIn}`
+            }
+            previous={progress.themePacks?.[selectedPack.id]}
+            onMistake={(question, givenAnswer) =>
+              queueThemeMistake(selectedPack, question, givenAnswer)
+            }
+            onClose={() => {
+              speechSynthesis?.cancel();
+              setSelectedPack(null);
+              setView("topics");
+              scrollTo(0, 0);
+            }}
+            onComplete={finishThemePack}
+          />
+        </Deferred>
       )}
       {view === "review" &&
         reviewSpec &&
@@ -4695,7 +4707,7 @@ export default function Home() {
                 ? levelUnits
                 : levelUnits.slice(reviewSpec.end - 4, reviewSpec.end);
           return (
-            <ReviewLab
+            <Deferred><ReviewLab
               key={`${reviewSpec.level}-${reviewSpec.end}`}
               level={reviewSpec.level}
               units={reviewUnits}
@@ -4714,7 +4726,7 @@ export default function Home() {
                 setReviewSpec(null);
                 beginUnit(lesson);
               }}
-            />
+            /></Deferred>
           );
         })()}{" "}
       {view === "reading" && (
@@ -4989,7 +5001,7 @@ export default function Home() {
               </div>
             )}
             {phase === "grammar" && (
-              <GrammarLesson unit={unit} onContinue={nextPhase} />
+              <Deferred><GrammarLesson unit={unit} onContinue={nextPhase} /></Deferred>
             )}
             {phase === "examples" && (
               <>

@@ -79,16 +79,16 @@ export function evaluatePlacement(answers: Record<string, number>, evidence: Pro
     const right = band.filter((item) => answers[item.id] === item.answer).length;
     return [level, Math.round((right / band.length) * 100)];
   })) as Record<Cefr, number>;
+  const bonus = productionBonus(evidence);
   const gates: Record<Cefr, boolean> = {
     A1: bandScores.A1 >= 40,
     A2: bandScores.A1 >= 60 && bandScores.A2 >= 60,
     B1: bandScores.A1 >= 60 && bandScores.A2 >= 60 && bandScores.B1 >= 60,
-    B2: bandScores.A2 >= 60 && bandScores.B1 >= 60 && bandScores.B2 >= 60,
-    C1: bandScores.B1 >= 60 && bandScores.B2 >= 60 && bandScores.C1 >= 60,
+    B2: bandScores.A2 >= 60 && bandScores.B1 >= 60 && bandScores.B2 >= 60 && bonus >= 2,
+    C1: bandScores.B1 >= 60 && bandScores.B2 >= 60 && bandScores.C1 >= 60 && bonus >= 3,
   };
   let suggested: Cefr = "A1";
   for (const level of placementLevels) if (gates[level]) suggested = level;
-  const bonus = productionBonus(evidence);
   const currentIndex = placementLevels.indexOf(suggested);
   const next = placementLevels[currentIndex + 1];
   if (next && bonus >= 3 && bandScores[next] >= 50) suggested = next;
