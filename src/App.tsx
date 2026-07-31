@@ -15,7 +15,7 @@ import "./themePacks.css";
 import "./version29.css";
 import "./wordGames.css";
 
-const APP_VERSION="3.1";
+const APP_VERSION="3.2";
 type View="home"|"path"|"topics"|"lesson"|"progress"|"reading"|"review"|"themePack"; type Phase="grammar"|"examples"|"vocabulary"|"cloze"|"writing"|"listening"|"speaking"|"quiz"|"bonus"|"complete";
 type Result={score:number;attempts:number;minutes:number;completedAt?:string;writing?:string};
 type Progress={schemaVersion:number;deviceId:string;currentDay:number;streak:number;lastStudyDate?:string;days:Record<string,Result>;activity:Record<string,{minutes:number;score:number;completed:number}>;reading?:Record<string,{score:number;attempts:number;completedAt:string}>;reviews?:Record<string,{score:number;attempts:number;completedAt:string}>;themePacks?:Record<string,{score:number;attempts:number;completedAt:string}>;wordGames?:Record<string,{score:number;attempts:number;completedAt:string}>};
