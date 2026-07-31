@@ -33,10 +33,10 @@
 <form id="form" class="manual"><div class="field"><label id="codelabel" for="code">Codice articolo, barcode o foglio</label><input id="code" type="search" placeholder="" autocapitalize="characters" autocomplete="off"></div><div id="lotfield" class="field"><label for="lot">Lotto</label><input id="lot" type="search" placeholder="" autocapitalize="characters" autocomplete="off"></div><button id="searchbutton">Cerca e riconosci</button><label id="zerotoggle" class="zerotoggle"><input id="showZero" type="checkbox"><span><strong>Mostra anche giacenze zero</strong><small>Disattivato: conteggi e righe mostrano solo la giacenza reale.</small></span></label></form></section>
 <section id="message" class="message hidden"><span>!</span><div><strong id="msgtitle"></strong><p id="msgtext"></p></div></section>
 <section id="openPackingHome" class="card openhome hidden"><div class="openhomehead"><span class="opbadge">OP</span><div><small>RIPRENDI IL LAVORO</small><h2>Packing list ancora aperte</h2><p>Apri una lista condivisa senza avere il foglio o il barcode a portata di mano.</p></div></div><div id="openPacks" class="openpacks"><header><strong>FOGLI DA COMPLETARE</strong><button id="refreshOpenPacks">↻ Aggiorna</button></header><div id="openPackList" class="openpacklist"></div></div></section><section id="result" class="card hidden"><div class="fresh"><span><i></i>Dati live · aggiornamento ogni 15 s</span><time id="time"></time></div><button id="refreshTop" class="refreshtop">↻ Aggiorna dal gestionale</button><div class="item"><span class="cube">▦</span><div><p id="itemcode"></p><h2 id="name"></h2><p id="barcode" class="barcode hidden"></p></div></div><p id="description" class="desc"></p><div id="verifiedLot" class="verifiedlot hidden"><div><small>LOTTO VERIFICATO DAL BARCODE</small><strong id="verifiedLotNumber"></strong></div><span><small>Lotto fornitore</small><b id="verifiedExternalLot"></b><small>Scadenza</small><b id="verifiedExpiry"></b></span></div><div class="inventorysum"><div class="metric"><small>Ubicazioni reali</small><strong id="locations">0</strong></div><div class="metric"><small>Lotti interni reali</small><strong id="lots">0</strong></div></div><div class="total"><span id="totallabel">Giacenza totale</span><strong id="total"></strong></div><div class="resulttools"><label for="sortStocks">Ordina per</label><select id="sortStocks"><option value="priority">Priorità ubicazioni</option><option value="location">Ubicazione A–Z</option><option value="lotNew">Lotto più recente</option><option value="lotOld">Lotto meno recente</option><option value="expiry">Scadenza più vicina</option><option value="quantity">Quantità maggiore</option></select></div><div id="stocks" class="stocks"></div><button id="refresh" class="refresh">↻ Aggiorna dal gestionale</button></section><section id="production" class="card hidden"><div class="fresh"><span><i></i>Packing list live · dati Technics</span><time id="ptime"></time></div><button id="prefreshTop" class="refreshtop">↻ Aggiorna dal gestionale</button><div class="ophead"><span class="opbadge">OP</span><div><p id="opnumber"></p><h2 id="opname"></h2><small id="opbarcode"></small></div></div><div class="opmetrics"><div><small>Quantità produzione</small><strong id="oprequested"></strong></div><div><small>Lotto produzione</small><strong id="oplot"></strong></div><div><small>Scadenza</small><strong id="opexpiry"></strong></div></div><div id="packStatus" class="packstatus"><div><small>Avanzamento</small><strong id="packProgress">0 / 0</strong></div><div><small>Lotti con pacchi</small><strong id="packCount">0</strong></div></div><button id="scanMaterial" class="scanmaterial"><span>▦</span><div><strong>Scansiona materiale</strong><small>Confronta il pacco con questa packing list</small></div><b>›</b></button><div class="sectiontitle"><span>Lista materiali da prelevare</span><b id="opcount"></b></div><div id="packingRows" class="packingrows"></div><div class="packactions"><button id="savePacking">Salva lista</button><button id="sharePacking">Condividi</button><button id="previewPacking">Anteprima stampa</button><button id="confirmPacking">Chiudi packing list</button></div><p id="packingMsg" class="packingmsg hidden"></p><button id="prefresh" class="refresh">↻ Aggiorna distinta dal gestionale</button></section>
-<footer><span>Technics Mobile</span><span>Versione 1.2.14</span></footer></main>
+<footer><span>Technics Mobile</span><span>Versione 1.2.15</span></footer></main>
 <div id="closePackingDialog" class="closedialog hidden"><div class="closecard"><h3>Chiudi packing list</h3><p id="closePackingSummary"></p><table class="closetable"><thead><tr><th>Materiale</th><th>Previsto</th><th>Inserito</th><th>Mancante</th></tr></thead><tbody id="closePackingRows"></tbody></table><div class="closeactions"><button id="closePackingCancel">Annulla</button><button id="closePackingOk">OK, chiudi</button></div></div></div><div id="packageChoice" class="choiceoverlay hidden"><div class="choicecard"><header><div><small>PACCO DA REGISTRARE</small><strong id="choiceTitle"></strong></div><button id="closeChoice">×</button></header><p id="choiceInstruction">Scrivi il lotto esattamente come appare sull’etichetta. Solo una corrispondenza esatta con l’OP permette di registrare il pacco.</p><label class="choicelot"><span>LOTTO LETTO SULL’ETICHETTA</span><input id="choiceLot" type="search" inputmode="numeric" autocomplete="off" placeholder=""></label><div id="choiceOptions" class="choiceoptions"></div></div></div><div id="printPreview" class="printoverlay hidden"><div class="printbar"><button id="closePrint">← Chiudi</button><strong>Anteprima packing list</strong><button id="printPacking">Stampa</button></div><div id="printMessage" class="printmessage hidden"></div><div class="printstage"><article id="printContent" class="printsheet"></article></div></div><div id="camera" class="overlay hidden"><div class="camhead"><div><small>SCANSIONE</small><strong>Centra il codice</strong></div><button id="close">×</button></div><div class="video"><video id="preview" muted playsinline></video><div class="frame"><i></i></div></div><p id="camhint" class="hint">Tieni fermo il telefono: la lettura parte automaticamente.</p><div class="camactions"><button id="small" class="smallcode">⌕ Codice piccolo</button><button id="cancel" class="cancel">Annulla</button></div><input id="photo" class="hidden" type="file" accept="image/*" capture="environment"></div>
 <script type="module">
-const APP_VERSION="1.2.14";
+const APP_VERSION="1.2.15";
 const BRIDGE_URL="https://student-tarot-occultist.ngrok-free.dev";async function readJsonResponse(response){const text=await response.text();try{return JSON.parse(text)}catch{const error=new Error("Collegamento dati in ripristino automatico. Riprova tra pochi secondi.");error.status=response.status;throw error}}
 const scannerModules=Promise.all([import("https://cdn.jsdelivr.net/npm/@zxing/browser@0.2.1/+esm"),import("https://cdn.jsdelivr.net/npm/@zxing/library@0.23.0/+esm")]);
 const $=id=>document.getElementById(id);let controls=null,imageReader=null,nativeTimer=null,zoomTimer=null,lastCode="",lastKind="code",lastLot="",scanLocked=false,refreshTimer=null,busyLookup=false,busyProduction=false,nativeBusy=false,activeModule="inventory",currentItem=null,currentOrder=null,packingItems=[],scanPurpose="lookup",expectedMaterialCode="",packingConfirmed=false,packingSyncTimer=null,packingRevision=0,pendingMaterial=null,pendingBarcode="",stableScanValue="",stableScanCount=0,stableScanAt=0,awaitingBarcodeLot=false;
@@ -87,30 +87,38 @@ async function decodePhoto(file){if(!file)return;$("camhint").textContent="Anali
 window.__technicsTestScan=acceptScan;$("code").addEventListener("input",()=>{awaitingBarcodeLot=false;$("lot").value="";clearTimeout(refreshTimer);lastCode="";clear()});$("lot").addEventListener("input",()=>{if($("lot").value.trim()&&!awaitingBarcodeLot)$("code").value="";clearTimeout(refreshTimer);lastCode="";clear()});$("form").addEventListener("submit",e=>{e.preventDefault();const code=$("code").value.trim(),lot=$("lot").value.trim();if(code)return lookup(code,"code",lot);if(lot)return lookup(lot,"lot");message("Dato mancante","Inserisci un codice articolo, un barcode oppure un lotto.")});$("inventoryTab").onclick=()=>activateModule("inventory");$("productionTab").onclick=()=>activateModule("production");$("modeShortcut").onclick=()=>activateModule(activeModule==="production"?"inventory":"production");$("showZero").onchange=renderStocks;$("sortStocks").onchange=renderStocks;$("scan").onclick=()=>{scanPurpose="lookup";expectedMaterialCode="";camera()};$("scanMaterial").onclick=()=>startMaterialScan();$("packingRows").addEventListener("click",e=>{const b=e.target.closest("[data-scan-code]");if(b)startMaterialScan(decodeURIComponent(b.dataset.scanCode))});$("packingRows").addEventListener("change",async e=>{if(!e.target.matches("[data-used-code]"))return;const code=decodeURIComponent(e.target.dataset.usedCode),item=packingItems.find(x=>x.code===code);if(!item)return;item.used=Math.max(0,Number(e.target.value||0));packingConfirmed=false;persistPacking();renderPacking();try{applySharedSession(await packingApi("setUsed",{code,used:item.used}),true);showPackingMessage(`${code} · quantità usata condivisa.`)}catch(err){showPackingMessage(err.message||"Quantità salvata solo temporaneamente sul telefono.",true)}});$("choiceLot").oninput=()=>{if($("choiceLot").dataset.verified==="1")return;renderPackageChoices()};$("choiceOptions").onclick=e=>{const cancel=e.target.closest("[data-cancel-duplicate]");if(cancel)return renderPackageChoices();const confirm=e.target.closest("[data-confirm-duplicate]");if(confirm)return registerPackage(Number(confirm.dataset.confirmDuplicate),true);const b=e.target.closest("[data-choice-index]");if(b&&!b.disabled)registerPackage(Number(b.dataset.choiceIndex))};$("closeChoice").onclick=closePackageChoice;$("savePacking").onclick=savePackingList;$("sharePacking").onclick=sharePackingList;$("previewPacking").onclick=showPrintPreview;$("closePrint").onclick=()=>$("printPreview").classList.add("hidden");$("printPacking").onclick=printOnServer;$("confirmPacking").onclick=confirmPackingList;$("closePackingCancel").onclick=()=>$("closePackingDialog").classList.add("hidden");$("closePackingOk").onclick=closePackingWithOk;$("refreshOpenPacks").onclick=loadOpenPackingLists;$("openPackList").onclick=e=>{const b=e.target.closest("[data-open-op]");if(b)loadProduction(b.dataset.openOp)};$("close").onclick=stop;$("cancel").onclick=stop;$("small").onclick=()=>{controls?.stop();controls=null;clearInterval(nativeTimer);$("photo").click()};$("photo").onchange=e=>decodePhoto(e.target.files?.[0]);$("refresh").onclick=()=>refreshCurrent();$("refreshTop").onclick=()=>refreshCurrent();$("prefresh").onclick=()=>refreshCurrent();$("prefreshTop").onclick=()=>refreshCurrent();function network(){$("net").innerHTML=`<i></i>Sola lettura · ${navigator.onLine?"Online":"Senza rete"}`;$("net").classList.toggle("off",!navigator.onLine)}window.addEventListener("resize",()=>{if(!$("printPreview").classList.contains("hidden"))fitPrintPreview()});window.addEventListener("online",network);window.addEventListener("offline",network);network();setTimeout(checkAppUpdate,3000);setInterval(checkAppUpdate,30000);</script>
 <style id="print-v1214">.printmessage.printing{border-color:#9fc7b8;background:#edf7f2;color:#17483e}.printbar button:disabled{opacity:.8;cursor:wait}</style>
 <script>
-function showPrintPreviewV1214(){
-  showPrintPreview();
-  const footer=$("printContent").querySelector(".printfooter");
-  if(footer)footer.innerHTML=`<span>Stato <strong>${packingConfirmed?"CHIUSA":"APERTA"}</strong></span><span>Stampata il <strong>${new Date().toLocaleString("it-IT")}</strong></span>`;
-}
-async function printOnServerV1214(){
-  const box=$("printMessage"),button=$("printPacking");
+const byId1214=id=>document.getElementById(id);
+byId1214("previewPacking").addEventListener("click",()=>setTimeout(()=>{
+  const footer=byId1214("printContent").querySelector(".printfooter");
+  const status=[...byId1214("printContent").querySelectorAll(".printmeta strong")][2]?.textContent||"APERTA";
+  if(footer)footer.innerHTML=`<span>Stato <strong>${status}</strong></span><span>Stampata il <strong>${new Date().toLocaleString("it-IT")}</strong></span>`;
+},0));
+byId1214("printPacking").onclick=async()=>{
+  const box=byId1214("printMessage"),button=byId1214("printPacking");
+  const barcode=(byId1214("opbarcode").textContent.match(/Barcode\s+(\S+)/)||[])[1];
   box.classList.add("printing");
   box.classList.remove("hidden");
   box.textContent="Stampa in corso…";
   button.disabled=true;
   button.textContent="Invio…";
   try{
-    const r=await fetch(`${BRIDGE_URL}/api/packing/print`,{
+    if(!barcode)throw new Error("Barcode del foglio non disponibile.");
+    const r=await fetch("https://student-tarot-occultist.ngrok-free.dev/api/packing/print",{
       method:"POST",
       cache:"no-store",
       headers:{"Content-Type":"application/json","Cache-Control":"no-store","ngrok-skip-browser-warning":"1"},
-      body:JSON.stringify({opBarcode:currentOrder.barcode,deviceId})
-    }),p=await readJsonResponse(r);
+      body:JSON.stringify({opBarcode:barcode})
+    });
+    const text=await r.text();
+    let p;
+    try{p=JSON.parse(text)}catch{throw new Error("Collegamento dati in ripristino automatico. Riprova tra pochi secondi.")}
     if(!r.ok||!p.ok)throw new Error(p.error||"Stampa non riuscita.");
     box.textContent="Documento inviato alla stampante.";
     await new Promise(resolve=>setTimeout(resolve,700));
-    $("printPreview").classList.add("hidden");
-    showPackingMessage("Packing list inviata correttamente alla stampa.");
+    byId1214("printPreview").classList.add("hidden");
+    const message=byId1214("packingMsg");
+    message.textContent="Packing list inviata correttamente alla stampa.";
+    message.classList.remove("hidden","error");
   }catch(e){
     box.classList.remove("printing");
     box.textContent=e.message||"Stampa non riuscita.";
@@ -118,9 +126,7 @@ async function printOnServerV1214(){
     button.disabled=false;
     button.textContent="Stampa";
   }
-}
-$("previewPacking").onclick=showPrintPreviewV1214;
-$("printPacking").onclick=printOnServerV1214;
+};
 </script>
 </body></html>
 
