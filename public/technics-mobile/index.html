@@ -609,21 +609,22 @@ window.addEventListener("resize",fitCustomerName1221);
 })();
 </script>
 <style id="material-mismatch-v124">
-.materialmismatch{position:fixed;z-index:155;inset:0;display:grid;place-items:center;padding:18px;background:#351414b8}
-.materialmismatchcard{width:min(430px,100%);padding:20px;border:3px solid #c94e4e;border-radius:18px;background:#fff5f4;box-shadow:0 22px 60px #2c0c0c55}
+.materialmismatch{position:fixed!important;z-index:9999!important;inset:0!important;width:100vw;height:100dvh;display:grid;place-items:center;padding:max(20px,env(safe-area-inset-top)) 18px max(20px,env(safe-area-inset-bottom));overflow:auto;background:#7f1717f2}
+.materialmismatchcard{width:min(460px,100%);min-height:min(520px,calc(100dvh - 40px));display:flex;flex-direction:column;justify-content:center;padding:26px 22px;border:4px solid #e06767;border-radius:22px;background:#fff5f4;box-shadow:0 24px 80px #24000099}
 .materialmismatchcard .mismatchicon{width:48px;height:48px;display:grid;place-items:center;margin-bottom:12px;border-radius:50%;background:#c94e4e;color:#fff;font-size:28px;font-weight:950}
-.materialmismatchcard h3{margin:0;color:#9e3030;font:800 22px/1.08 Georgia,serif}
-.materialmismatchcard p{margin:9px 0 15px;color:#6d3d3d;font-size:12px;line-height:1.45}
-.materialmismatchcard button{width:100%;min-height:46px;border:0;border-radius:11px;background:#9e3030;color:#fff;font-size:12px;font-weight:900}
+.materialmismatchcard h3{margin:0;color:#9e3030;font:800 clamp(27px,7vw,36px)/1.05 Georgia,serif}
+.materialmismatchcard p{width:100%;margin:20px 0 28px;color:#5c2828;font-size:clamp(18px,5vw,24px);font-weight:850;line-height:1.32;letter-spacing:-.01em}
+.materialmismatchcard button{width:100%;min-height:58px;border:0;border-radius:14px;background:#9e3030;color:#fff;font-size:16px;font-weight:950}
 </style>
 <script id="material-mismatch-v124">
 (()=>{
-  document.body.insertAdjacentHTML("beforeend",`<div id="materialMismatch" class="materialmismatch hidden"><div class="materialmismatchcard"><div class="mismatchicon">!</div><h3>Materiale non presente nell’elenco</h3><p id="materialMismatchText"></p><button id="materialMismatchClose" type="button">Annulla</button></div></div>`);
+  document.body.insertAdjacentHTML("beforeend",`<div id="materialMismatch" class="materialmismatch hidden" role="alertdialog" aria-modal="true" aria-labelledby="materialMismatchTitle"><div class="materialmismatchcard"><div class="mismatchicon">!</div><h3 id="materialMismatchTitle">MATERIALE ERRATO<br>NON UTILIZZARE</h3><p id="materialMismatchText"></p><button id="materialMismatchClose" type="button">Ho capito · Annulla</button></div></div>`);
   const overlay=document.getElementById("materialMismatch");
   const showMismatch=text=>{
-    document.getElementById("materialMismatchText").textContent=text;
+    document.getElementById("materialMismatchText").textContent=`${text} Utilizzo vietato: avvisa subito il responsabile di reparto.`;
     overlay.classList.remove("hidden");
-    navigator.vibrate?.([180,70,180]);
+    navigator.vibrate?.([260,90,260,90,420]);
+    document.getElementById("materialMismatchClose").focus();
   };
   document.getElementById("materialMismatchClose").onclick=()=>overlay.classList.add("hidden");
   resolveMaterialScan=async function(barcode){
