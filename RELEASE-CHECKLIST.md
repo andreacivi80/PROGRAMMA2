@@ -1,65 +1,92 @@
-# English Coach 5.1 — verifica di rilascio
+# English Coach 5.2 — stato verificato
 
-## Percorso e contenuti
+Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
-- [x] Cinque livelli liberamente selezionabili: A1, A2, B1, B2 e C1.
-- [x] Dodici lezioni per livello, 60 lezioni complessive, con durata da 18 a 45 minuti.
-- [x] Riepiloghi intermedi ed esame completo multidisciplinare.
-- [x] Grammatica, esempi, lessico, cloze, scrittura, ascolto, parlato, quiz e pratica supplementare.
-- [x] Reading Lab con due testi e sei domande per livello.
-- [x] Phrasal verbs, verbi irregolari, false friends, slang, inglese sociale e linguaggio professionale.
-- [x] Temi ristorante, cucina, utensili, lavori, azioni, IRA, cosmetica, medical device e packaging.
-- [x] Accenti e varietà internazionali nei percorsi dedicati.
+## 1. Versione e consegna
 
-## Test d’ingresso
+- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 5.2, con data e identificativo visibili.
+- **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
+- **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 
-- [x] 30 prove oggettive distribuite in modo uniforme tra A1 e C1.
-- [x] Grammatica, vocabolario, lettura e ascolto presenti in ogni fascia.
-- [x] False friends, phrasal verbs, significati impliciti e ascolti a velocità differenti.
-- [x] Produzione scritta, mediazione italiano-inglese e produzione orale guidata.
-- [x] Prerequisiti obbligatori: le risposte avanzate isolate non permettono di saltare le basi.
-- [x] B2 e C1 richiedono anche evidenze produttive, non soltanto risposte chiuse.
-- [x] Correzioni nascoste durante la prova e resoconto degli errori alla fine.
-- [x] Simulazioni automatiche per profili A1, A2, B1, B2, C1 e risposte casuali avanzate.
-- [x] Ripresa automatica dopo un aggiornamento accidentale della pagina, senza finestra invasiva.
-- [x] Livello consigliato sempre modificabile liberamente.
+## 2–4. Percorso, ripresa e livello
 
-## Audio e pronuncia
+- **IMPLEMENTATO** — primo accesso, test facoltativo, livello manuale, obiettivo, durata e prima attività.
+- **VERIFICATO** — pagina, livello, tema, scroll, lezione, fase, domanda e testi in corso vengono conservati.
+- **IMPLEMENTATO** — home con continuazione, ripasso e scelta libera; allenamento su misura chiuso e percorso libero aperto.
+- **IMPLEMENTATO** — cinque livelli CEFR A1–C1 con 12 lezioni ciascuno; nessun livello numerico 1–50 ambiguo.
+- **IMPLEMENTATO** — tutti i livelli sono accessibili senza lucchetti e non avanzano dopo una singola risposta.
 
-- [x] 612 file audio locali per lezioni, esempi, vocabolario, ascolto e ripetizione.
-- [x] Avvio, pausa, ripresa, stop e velocità disponibili nelle attività audio previste.
-- [x] Arresto dell’audio quando si cambia attività, per evitare sovrapposizioni.
-- [x] Dialoghi separati per interlocutore e selezione di voci inglesi differenti quando disponibili.
-- [x] Testo guidato contenuto nel riquadro, senza spostare l’intera pagina.
-- [x] Parole non riconosciute riascoltabili singolarmente, anche lentamente.
-- [x] Registrazione visibile, tentativo ripetibile e riascolto della propria voce.
+## 5–6. Ripasso e quaderno degli errori
 
-## Esercizi e varietà
+- **IMPLEMENTATO** — elementi con tipo, livello, domanda, risposta, soluzione, tentativi, date, stato e prossimo ripasso.
+- **IMPLEMENTATO** — intervalli progressivi, riduzione dopo errore, consolidamento dopo risposte corrette e varianti dello stesso concetto.
+- **IMPLEMENTATO** — conteggio in home, ripasso odierno, ricerca e filtri per tipo, livello, data e stato.
+- **IMPLEMENTATO** — regola collegata, spiegazione, esempio nuovo, audio, riprova, “Ho capito” e storico.
 
-- [x] Banche da almeno 22 esercizi per ciascuna delle 60 unità.
-- [x] Nessun duplicato esatto o sovrapposizione ad alta similarità rilevata dall’audit.
-- [x] Pratica supplementare separata dalla lezione e rotazione delle domande già viste.
-- [x] Quiz visivi con 81 elementi, mosaici e posizioni variabili.
-- [x] Cruciverba, impiccato, ordine delle parole, abbinamenti, Milionario e Trivia.
-- [x] Shadowing, definizioni in inglese, minimal pairs, trova l’errore, famiglie di parole e dialoghi a scelta.
-- [x] Salto della singola domanda nelle attività verificabili.
-- [x] Spiegazione grammaticale associata alla correzione e recupero mirato degli errori.
+## 7–8. Contenuti e formattazione
 
-## Continuità e progressi
+- **VERIFICATO** — 60 lezioni, durata 18–45 minuti e almeno 22 elementi nella banca di ogni unità.
+- **VERIFICATO** — nessun duplicato esatto o ad alta similarità rilevato; risposte, spiegazioni, audio e identificativi controllati.
+- **IMPLEMENTATO** — grammatica, lessico, ascolto, lettura, scrittura, parlato, interazione, mediazione e verifiche.
+- **IMPLEMENTATO** — inglese evidenziato, concetti separati, feedback con testo e icona oltre al colore.
 
-- [x] Livello, pagina principale, tema, progressi e preferenze salvati localmente.
-- [x] Aggiornamento della pagina senza ritorno forzato a Oggi o a un livello diverso.
-- [x] Richiesta di ripresa mostrata solo aprendo una lezione realmente già iniziata.
-- [x] Diario degli errori, ripasso programmato, andamento settimanale e mensile.
-- [x] Indicatore di performance orientato al miglioramento.
-- [x] Esportazione dei dati e cancellazione completa con conferma.
+## 9. Missioni reali
 
-## Interfaccia e qualità
+- **IMPLEMENTATO** — 26 percorsi tematici con obiettivo, guida, lessico, scenario, comprensione, risposta libera, ripetizione orale e risultato.
+- **IMPLEMENTATO** — ristorante, cucina, social, lavoro, IRA, cosmetica, medical device, packaging, lingua e accenti.
+- **IMPLEMENTATO** — gli errori delle missioni entrano nel quaderno personale.
 
-- [x] Layout mobile con aree tattili adeguate e barra di navigazione persistente.
-- [x] Spazi verticali ridotti nelle schermate introduttive e nelle schede.
-- [x] Nessuna altezza vuota obbligatoria nelle lezioni brevi.
-- [x] Inglese evidenziato e concetti grammaticali separati visivamente.
-- [x] Nessun pulsante privo di gestore rilevato dall’audit.
-- [x] Caricamento differito delle sezioni più pesanti.
-- [x] Build TypeScript/Vite e quattro audit automatici eseguiti prima del rilascio.
+## 10. Giochi didattici
+
+- **IMPLEMENTATO** — abbinamenti, costruisci la frase, trova l’errore, dettato, parola mancante e minimal pairs.
+- **IMPLEMENTATO** — shadowing, dialogo a bivi, definizione in inglese, mediazione, famiglie di parole e sfida quotidiana.
+- **IMPLEMENTATO** — cruciverba, impiccato, Milionario e Trivia con livello selezionabile.
+
+## 11–12. Listening e pronuncia
+
+- **IMPLEMENTATO** — audio locale prioritario, sintesi vocale come alternativa, velocità, pausa, ripresa, stop e arresto al cambio attività.
+- **IMPLEMENTATO** — trascrizione contenuta e sincronizzata, segmenti riascoltabili, dettato e domande generali/dettagliate.
+- **IMPLEMENTATO** — scelta britannica/americana applicata anche al riconoscimento vocale.
+- **IMPLEMENTATO** — registrazione visibile, nuovo tentativo, riascolto della propria voce e parole non riconosciute riascoltabili.
+- **VERIFICATO** — l’interfaccia parla correttamente di “parole riconosciute”, non di analisi fonetica completa.
+- **RINVIATO CON MOTIVAZIONE** — fonemi, accento e ritmo specialistici richiedono un motore fonetico dedicato non disponibile offline.
+- **RINVIATO CON MOTIVAZIONE** — accenti regionali autentici e rumore ambientale richiedono registrazioni umane con licenze verificate; non vengono simulati falsamente.
+
+## 13. Writing Lab
+
+- **IMPLEMENTATO** — frase, testo libero, mail, reclamo, sintesi, opinione, confronto, mediazione e risposte professionali nei laboratori e nelle lezioni.
+- **IMPLEMENTATO** — controlli locali dichiarati esplicitamente come controlli di base.
+- **RINVIATO CON MOTIVAZIONE** — correzione completa di naturalezza e coerenza richiede un correttore linguistico/AI esterno; le verifiche locali non vengono presentate come equivalenti.
+
+## 14–15. Tempo ed esami
+
+- **IMPLEMENTATO** — scelte 5, 15, 30 minuti e sessione completa con composizione diversa e salvataggio del punto raggiunto.
+- **IMPLEMENTATO** — tempo realmente trascorso calcolato dall’inizio alla conclusione, non attribuito con valore fisso.
+- **IMPLEMENTATO** — esame per livello con grammatica, vocabolario, contesto, lettura, ascolto, scrittura, parlato e mediazione.
+- **IMPLEMENTATO** — rapporto 0–100%, confronto precedente, aree forti/deboli, consiglio e stampa/PDF.
+
+## 16–17. Dashboard e motivazione
+
+- **IMPLEMENTATO** — CEFR, sottolivello, tempo, giorni, attività, parole, ripassi, errori, competenze, settimana, mese ed ultimo esame.
+- **IMPLEMENTATO** — date locali, obiettivo settimanale, riepilogo, messaggi sobri e sospensione della serie.
+- **VERIFICATO** — nessuna classifica obbligatoria o penalizzazione aggressiva.
+
+## 18–20. Grafica, accessibilità e dati
+
+- **IMPLEMENTATO** — layout compatto, modalità chiara/scura, testo regolabile, focus visibile, riduzione animazioni e controlli tattili.
+- **VERIFICATO** — nessun pulsante privo di gestore; quiz visivi contenuti e nessun comando basato soltanto sul trascinamento.
+- **IMPLEMENTATO** — esportazione, importazione validata, migrazioni, azzeramento con conferma e salvataggio automatico.
+- **RINVIATO CON MOTIVAZIONE** — una certificazione formale WCAG 2.2 AA richiede audit manuale con tecnologie assistive e dispositivi esterni.
+
+## 21–22. Prestazioni e controllo
+
+- **IMPLEMENTATO** — sezioni pesanti caricate soltanto all’apertura; build locale esclusa dalla cartella sorgente finale.
+- **VERIFICATO** — 221 pulsanti, audio, stop, velocità, salti, ripassi, giochi, missioni e persistenza coperti dagli audit statici.
+- **VERIFICATO** — test automatici per 60 lezioni, 30 prove d’ingresso, profili CEFR, duplicati, banche esercizi e struttura UI.
+- **RINVIATO CON MOTIVAZIONE** — prove fisiche complete su ogni combinazione di microfono, screen reader e zoom richiedono la relativa matrice di dispositivi.
+
+## 23–24. Vincoli finali
+
+- **VERIFICATO** — nessun progresso viene azzerato e lo schema dati conserva le migrazioni precedenti.
+- **VERIFICATO** — nessun pulsante dimostrativo e nessun commento tecnico di servizio nell’interfaccia.
+- **VERIFICATO** — una sola versione pubblica, stesso link e versione sempre visibile nell’intestazione.

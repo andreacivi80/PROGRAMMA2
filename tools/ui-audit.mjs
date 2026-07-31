@@ -38,7 +38,7 @@ const grammarLesson=searchable(readFileSync("src/GrammarLesson.tsx","utf8"));
 const placement=searchable(readFileSync("src/PlacementTest.tsx","utf8"));
 const skills=searchable(readFileSync("src/SkillsLab.tsx","utf8"));
 const conceptText=searchable(readFileSync("src/ConceptText.tsx","utf8"));
-const css=readFileSync("src/styles.css","utf8")+readFileSync("src/themePacks.css","utf8")+readFileSync("src/version29.css","utf8")+readFileSync("src/version33.css","utf8")+readFileSync("src/wordGames.css","utf8");
+const css=readFileSync("src/styles.css","utf8")+readFileSync("src/themePacks.css","utf8")+readFileSync("src/lessonEnhancements.css","utf8")+readFileSync("src/appEnhancements.css","utf8")+readFileSync("src/wordGames.css","utf8");
 const checks={
  buttons,
  missingHandlers,
@@ -71,7 +71,7 @@ const checks={
   selectiveLabels:app.includes("showLabel=revealed.includes(tile.id)"),
   randomizedPositions:app.includes("shuffled([target,...shuffled(bank.filter"),
   noServiceCopy:!["BANCA ","Nuovo mosaico casuale","posizioni cambiano continuamente","81 immagini","intera banca della categoria"].some(text=>app.includes(text)),
-  compactPhoneView:css.includes("quiz visivo essenziale e compatto")&&css.includes("grid-template-columns:repeat(4,minmax(0,1fr))")
+  compactPhoneView:css.includes(".visualQuizHub{min-height:calc(100dvh")&&css.includes("grid-template-columns:repeat(4,minmax(0,1fr))")
  }, themeAudio:{
   listen:pack.includes("speak(pack.scenario.text,setScenarioWord)"),
   pause:pack.includes("speechSynthesis.pause()"),

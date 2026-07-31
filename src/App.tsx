@@ -37,9 +37,9 @@ import {
   supplementaryFingerprint,
 } from "./supplementaryQuiz";
 import "./themePacks.css";
-import "./version29.css";
+import "./lessonEnhancements.css";
 import "./wordGames.css";
-import "./version33.css";
+import "./appEnhancements.css";
 
 const GrammarLesson = lazy(() => import("./GrammarLesson"));
 const ReviewLab = lazy(() => import("./ReviewLab"));
@@ -51,9 +51,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "5.1";
+const APP_VERSION = "5.2";
 const BUILD_DATE = "31 luglio 2026";
-const BUILD_ID = "EC-5.1-0731";
+const BUILD_ID = "EC-5.2-0731";
 type View =
   | "home"
   | "path"
