@@ -1,7 +1,7 @@
 import type { MobileUnit } from "./curriculum";
 import { grammarGuides } from "./grammarGuides";
-import MixedText from "./MixedText";
 import GrammarVisual from "./GrammarVisual";
+import ConceptText from "./ConceptText";
 
 export default function GrammarLesson({
   unit,
@@ -27,13 +27,13 @@ export default function GrammarLesson({
 
       {guide ? (
         <section className="deepGuide primaryGuide">
-          <p className="deepOverview"><MixedText text={guide.overview} terms={lessonTerms} /></p>
+          <div className="deepOverview"><ConceptText text={guide.overview} terms={lessonTerms} /></div>
 
           {guide.sections.map((section, index) => (
             <article key={section.title}>
               <small>{index + 1} · APPROFONDIMENTO</small>
               <h3>{section.title}</h3>
-              <p><MixedText text={section.text} terms={lessonTerms} /></p>
+              <ConceptText text={section.text} terms={lessonTerms} />
               {section.examples?.map((example) => (
                 <div className="deepExample" key={example.en}>
                   <strong lang="en">{example.en}</strong>
@@ -58,7 +58,7 @@ export default function GrammarLesson({
               <div key={example.en}>
                 <strong lang="en">{example.en}</strong>
                 <span>{example.it}</span>
-                <p><MixedText text={example.noteIt} terms={lessonTerms} /></p>
+                <ConceptText text={example.noteIt} terms={lessonTerms} />
               </div>
             ))}
           </article>
@@ -80,7 +80,7 @@ export default function GrammarLesson({
               {unit.grammar.explanationIt.map((text, index) => (
                 <div key={text}>
                   <b>{index + 1}</b>
-                  <p><MixedText text={text} terms={lessonTerms} /></p>
+                  <ConceptText text={text} terms={lessonTerms} />
                 </div>
               ))}
             </div>
@@ -96,9 +96,11 @@ export default function GrammarLesson({
           <div className="grammarWarnings">
             <small>3 · ESEMPI COMMENTATI</small>
             {unit.grammar.examples.map((example) => (
-              <p key={example.en}>
-                <b lang="en">{example.en}</b> — <MixedText text={`${example.it}. ${example.noteIt}`} terms={lessonTerms} />
-              </p>
+              <div className="grammarExampleRule" key={example.en}>
+                <b lang="en">{example.en}</b>
+                <span>{example.it}.</span>
+                <ConceptText text={example.noteIt} terms={lessonTerms} />
+              </div>
             ))}
           </div>
         </section>

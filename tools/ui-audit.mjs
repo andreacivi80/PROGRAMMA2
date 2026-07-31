@@ -110,6 +110,10 @@ themeQuestions:pack.includes("Salta domanda")
   ,logicalHomeFlow:app.indexOf('className="adaptiveHome"')<app.indexOf('view==="home"&&<div className="screen"')
   ,singleQuestionSkip:app.includes('{!["cloze","listening","quiz","bonus"].includes(phase)&&<button className="skipStage"')
   ,containedSkip:css.includes(".lessonCard>.bottomSkip{position:static!important")&&css.includes(".readingSkip")&&css.includes("width:100%")
+  ,levelBeforeTime:app.indexOf("adaptiveLevels")<app.indexOf("adaptiveTimeTitle")
+  ,levelPersists:app.includes("english-coach-selection-v1")&&app.includes("savedLevel??selected.cefr")
+  ,pathFiltersLevel:app.includes("{([selectedLevel] as Cefr[]).map(level=>")
+  ,grammarConceptBreaks:grammarLesson.includes("<ConceptText")&&css.includes(".conceptText>p:not(:last-child)")
  },
  languageFocus:{
   themeEntry:app.includes("Verbi e false friends"),
