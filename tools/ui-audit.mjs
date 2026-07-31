@@ -95,11 +95,21 @@ themeQuestions:pack.includes("Salta domanda")
   savesLocally:app.includes("smartReview:{...(current.smartReview??{})"),
   resetAndBackup:app.includes("schemaVersion:8")&&app.includes("smartReview:imported.smartReview??{}")
  },
+ recoveryTraining:{
+  variableQuestions:app.includes("startRecovery=()=>")&&app.includes("shuffled(smartReviews.filter"),
+  focusedPool:app.includes("review=>!review.mastered")&&app.includes("recoveryQuiz"),
+  answerFeedback:app.includes("recoveryFeedback")&&app.includes("Rivediamola subito"),
+  canSkip:app.includes('className="recoverySkip"')&&app.includes("answerRecovery(-1)"),
+  updatesSchedule:app.includes("const answerRecovery=")&&app.includes("delays=[1,3,7,14]")
+ },
  learningClarity:{
   noServiceCopy:!["banca tecnica","algoritmo interno","posizioni cambiano continuamente","dettaglio di implementazione"].some(text=>app.toLowerCase().includes(text)),
   englishEmphasis:mixedText.includes("inlineEnglish")&&mixedText.includes("I'm afraid")&&grammarLesson.includes("terms={lessonTerms}"),
   visibleEnglishStyle:css.includes(".inlineEnglish")&&css.includes("text-decoration-color:#efc85e"),
   phoneReviewLayout:css.includes("@media(max-width:430px)")&&css.includes(".smartReviewChoices{grid-template-columns:1fr}")
+  ,logicalHomeFlow:app.indexOf('className="adaptiveHome"')<app.indexOf('view==="home"&&<div className="screen"')
+  ,singleQuestionSkip:app.includes('{!["cloze","listening","quiz","bonus"].includes(phase)&&<button className="skipStage"')
+  ,containedSkip:css.includes(".lessonCard>.bottomSkip{position:static!important")&&css.includes(".readingSkip")&&css.includes("width:100%")
  },
  languageFocus:{
   themeEntry:app.includes("Verbi e false friends"),
@@ -123,6 +133,7 @@ const failed=[
  ...Object.entries(checks.skipping).filter(([,value])=>!value).map(([name])=>`skipping:${name}`),
  ...Object.entries(checks.supplementaryPractice).filter(([,value])=>!value).map(([name])=>`supplementary:${name}`),
  ...Object.entries(checks.smartReview).filter(([,value])=>!value).map(([name])=>`smart-review:${name}`),
+ ...Object.entries(checks.recoveryTraining).filter(([,value])=>!value).map(([name])=>`recovery-training:${name}`),
  ...Object.entries(checks.learningClarity).filter(([,value])=>!value).map(([name])=>`learning-clarity:${name}`),
  ...Object.entries(checks.languageFocus).filter(([,value])=>!value).map(([name])=>`language-focus:${name}`),
  ...Object.entries(checks.responsive).filter(([,value])=>!value).map(([name])=>`responsive:${name}`)
