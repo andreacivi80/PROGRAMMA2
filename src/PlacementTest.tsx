@@ -1,124 +1,104 @@
 import { useMemo, useState } from "react";
 import type { Cefr } from "./curriculum";
+import { evaluatePlacement, placementItems, placementLevels, type ProductionEvidence } from "./placementModel";
 
-type Item = {
-  level: Cefr;
-  prompt: string;
-  options: string[];
-  answer: number;
-  explanation: string;
-};
+const kindLabel = { grammar: "Grammatica", vocabulary: "Lessico", reading: "Comprensione scritta", listening: "Comprensione orale" };
 
-const items: Item[] = [
-  { level: "A1", prompt: "I ___ from Italy.", options: ["am", "is", "are"], answer: 0, explanation: "Con I si usa am." },
-  { level: "A1", prompt: "She ___ coffee every morning.", options: ["drink", "drinks", "drinking"], answer: 1, explanation: "Alla terza persona il Present Simple richiede -s." },
-  { level: "A1", prompt: "___ you speak English?", options: ["Do", "Are", "Does"], answer: 0, explanation: "Con you la domanda al Present Simple usa do." },
-  { level: "A2", prompt: "We ___ to London last year.", options: ["go", "went", "have gone"], answer: 1, explanation: "Last year è un tempo passato concluso: Past Simple." },
-  { level: "A2", prompt: "This restaurant is ___ than the other one.", options: ["cheap", "cheaper", "cheapest"], answer: 1, explanation: "Il confronto tra due elementi usa il comparativo." },
-  { level: "A2", prompt: "If it rains, we ___ at home.", options: ["stay", "will stay", "stayed"], answer: 1, explanation: "Nel First Conditional: if + presente, will + verbo base." },
-  { level: "B1", prompt: "I ___ here since 2022.", options: ["work", "worked", "have worked"], answer: 2, explanation: "Since collega l'inizio passato alla situazione presente." },
-  { level: "B1", prompt: "The report ___ yesterday.", options: ["completed", "was completed", "has completing"], answer: 1, explanation: "La forma passiva richiede be + participio passato." },
-  { level: "B1", prompt: "If I had more time, I ___ another course.", options: ["take", "would take", "will take"], answer: 1, explanation: "Il Second Conditional usa would + verbo base." },
-  { level: "B2", prompt: "She denied ___ the confidential file.", options: ["to share", "sharing", "share"], answer: 1, explanation: "Deny è seguito dalla forma in -ing." },
-  { level: "B2", prompt: "The delay ___ by a technical failure.", options: ["may cause", "may have been caused", "must causing"], answer: 1, explanation: "Deduzione passata passiva: may have been + participio." },
-  { level: "B2", prompt: "Had we known earlier, we ___ differently.", options: ["would act", "would have acted", "acted"], answer: 1, explanation: "Inversione del Third Conditional." },
-  { level: "C1", prompt: "Rarely ___ such a convincing argument.", options: ["I heard", "have I heard", "I have hear"], answer: 1, explanation: "Dopo un avverbio negativo iniziale si usa l'inversione." },
-  { level: "C1", prompt: "The proposal is feasible, ___ several reservations.", options: ["notwithstanding", "although", "whereas of"], answer: 0, explanation: "Notwithstanding introduce una concessione formale davanti a un nome." },
-  { level: "C1", prompt: "Choose the most cautious claim.", options: ["This proves the policy works.", "The findings may lend support to the policy.", "The policy definitely succeeds."], answer: 1, explanation: "May lend support evita di presentare un risultato come prova definitiva." },
-];
+function speak(text: string, lang = "en-GB", rate = 0.9) {
+  speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = lang;
+  utterance.rate = rate;
+  const voices = speechSynthesis.getVoices();
+  utterance.voice = voices.find((voice) => voice.lang.toLowerCase() === lang.toLowerCase()) ?? voices.find((voice) => /^en-GB/i.test(voice.lang)) ?? voices.find((voice) => /^en/i.test(voice.lang)) ?? null;
+  speechSynthesis.speak(utterance);
+}
 
-const levels: Cefr[] = ["A1", "A2", "B1", "B2", "C1"];
-
-export default function PlacementTest({
-  onClose,
-  onChoose,
-}: {
-  onClose: () => void;
-  onChoose: (level: Cefr) => void;
-}) {
-  const [index, setIndex] = useState(0),
-    [answers, setAnswers] = useState<Record<number, number>>({}),
-    [selected, setSelected] = useState<number | null>(null),
-    [finished, setFinished] = useState(false);
-  const score = Object.entries(answers).reduce(
-      (sum, [key, value]) => sum + (items[Number(key)].answer === value ? 1 : 0),
-      0,
-    ),
-    suggested = useMemo<Cefr>(
-      () => (score >= 13 ? "C1" : score >= 10 ? "B2" : score >= 7 ? "B1" : score >= 4 ? "A2" : "A1"),
-      [score],
-    ),
-    item = items[index];
+export default function PlacementTest({ onClose, onChoose }: { onClose: () => void; onChoose: (level: Cefr) => void }) {
+  const [index, setIndex] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [selected, setSelected] = useState<number | null>(null);
+  const [phase, setPhase] = useState<"questions" | "production" | "result">("questions");
+  const [evidence, setEvidence] = useState<ProductionEvidence>({ writing: "", mediation: "", oral: "" });
+  const item = placementItems[index];
+  const result = useMemo(() => evaluatePlacement(answers, evidence), [answers, evidence]);
   const next = () => {
-    if (index + 1 < items.length) {
+    speechSynthesis.cancel();
+    if (index + 1 < placementItems.length) {
       setIndex((value) => value + 1);
-      setSelected(answers[index + 1] ?? null);
-    } else setFinished(true);
-    scrollTo(0, 0);
+      setSelected(null);
+    } else setPhase("production");
+    scrollTo({ top: 0, behavior: "smooth" });
   };
-  if (finished)
-    return (
-      <main className="placementView">
-        <article className="placementResult">
-          <span className="eyebrow">Valutazione orientativa</span>
-          <h1>Il punto di partenza consigliato è {suggested}</h1>
-          <strong>{Math.round((score / items.length) * 100)}%</strong>
-          <p>
-            Hai risposto correttamente a {score} domande su {items.length}. Non è
-            un esame: puoi accettare il consiglio oppure scegliere liberamente.
-          </p>
-          <button className="continue" onClick={() => onChoose(suggested)}>
-            Inizia da {suggested} <b>→</b>
-          </button>
-          <div className="placementLevelChoices">
-            {levels.map((level) => (
-              <button key={level} onClick={() => onChoose(level)}>{level}</button>
-            ))}
-          </div>
-          <button className="showSolution" onClick={onClose}>Torna senza cambiare livello</button>
-        </article>
-      </main>
-    );
+
+  if (phase === "result") return (
+    <main className="placementView">
+      <article className="placementResult">
+        <span className="eyebrow">Valutazione orientativa · attendibilità {result.confidence}</span>
+        <h1>Il punto di partenza consigliato è {result.suggested}</h1>
+        <strong>{result.totalPercent}% nelle prove oggettive</strong>
+        <div className="placementBands" aria-label="Risultati per livello">
+          {placementLevels.map((level) => <div key={level}><b>{level}</b><span>{result.bandScores[level]}%</span></div>)}
+        </div>
+        <p>
+          La stima considera separatamente prerequisiti, grammatica, lessico, lettura, ascolto e produzione.
+          {result.boundary ? ` Sei vicino anche al livello ${result.boundary}: puoi provarlo liberamente.` : " Il livello può sempre essere cambiato."}
+        </p>
+        <button className="continue" onClick={() => onChoose(result.suggested)}>Inizia da {result.suggested} <b>→</b></button>
+        <div className="placementLevelChoices">
+          {placementLevels.map((level) => <button key={level} onClick={() => onChoose(level)}>{level}</button>)}
+        </div>
+        <button className="showSolution" onClick={onClose}>Torna senza cambiare livello</button>
+      </article>
+    </main>
+  );
+
+  if (phase === "production") return (
+    <main className="placementView">
+      <div className="lessonTop"><button type="button" aria-label="Chiudi il test" onClick={onClose}>×</button><div><i style={{ width: "100%" }} /></div><b>Produzione</b></div>
+      <article className="placementPanel placementProduction">
+        <span className="eyebrow">Ultima parte · scrivi con parole tue</span>
+        <h1>Due brevi risposte per rendere più precisa la stima</h1>
+        <label>
+          <b>Presentati e racconta un’esperienza o un progetto. Spiega anche perché è stato importante. (circa 40–80 parole)</b>
+          <textarea value={evidence.writing} onChange={(event) => setEvidence((current) => ({ ...current, writing: event.target.value }))} placeholder="Write in English…" />
+        </label>
+        <label>
+          <b>Produzione orale: parla per circa 30 secondi di un problema che hai risolto. Poi incolla o scrivi qui ciò che hai detto.</b>
+          <textarea value={evidence.oral} onChange={(event) => setEvidence((current) => ({ ...current, oral: event.target.value }))} placeholder="What I said…" />
+        </label>
+        <label>
+          <b>Traduci il senso, senza seguire parola per parola: “Ieri sono andato a una riunione, ma sono arrivato tardi perché il treno era stato cancellato.”</b>
+          <textarea value={evidence.mediation} onChange={(event) => setEvidence((current) => ({ ...current, mediation: event.target.value }))} placeholder="Write in English…" />
+        </label>
+        <p className="placementNote">La valutazione locale controlla completezza e strutture riconoscibili; non sostituisce il giudizio di un insegnante.</p>
+        <button className="continue" disabled={!evidence.writing.trim() || !evidence.mediation.trim()} onClick={() => setPhase("result")}>Calcola il livello <b>→</b></button>
+        <button className="showSolution" onClick={() => setPhase("result")}>Non so rispondere · completa comunque</button>
+      </article>
+    </main>
+  );
+
   return (
     <main className="placementView">
       <div className="lessonTop">
-        <button type="button" aria-label="Chiudi il test" onClick={onClose}>×</button>
-        <div><i style={{ width: `${((index + 1) / items.length) * 100}%` }} /></div>
-        <b>{index + 1}/{items.length}</b>
+        <button type="button" aria-label="Chiudi il test" onClick={() => { speechSynthesis.cancel(); onClose(); }}>×</button>
+        <div><i style={{ width: `${((index + 1) / placementItems.length) * 100}%` }} /></div>
+        <b>{index + 1}/{placementItems.length}</b>
       </div>
       <article className="placementPanel">
-        <span className="eyebrow">Test iniziale · difficoltà progressiva</span>
+        <span className="eyebrow">{kindLabel[item.kind]} · livello crescente</span>
+        {item.passage && <section className="placementPassage"><b>Leggi il testo</b><p>{item.passage}</p></section>}
+        {item.audioText && <section className="placementListening"><button type="button" onClick={() => speak(item.audioText!, item.voiceLang, item.speechRate)}>▶ Ascolta in inglese</button><small>Ascolta il significato complessivo prima di rispondere.</small></section>}
         <h1>{item.prompt}</h1>
         <div className="answers">
           {item.options.map((option, optionIndex) => {
             const revealed = selected !== null;
-            return (
-              <button
-                key={option}
-                disabled={revealed}
-                className={revealed ? optionIndex === item.answer ? "right" : optionIndex === selected ? "wrong" : "dim" : ""}
-                onClick={() => {
-                  setSelected(optionIndex);
-                  setAnswers((current) => ({ ...current, [index]: optionIndex }));
-                }}
-              >
-                <b>{String.fromCharCode(65 + optionIndex)}</b><span>{option}</span>
-              </button>
-            );
+            return <button key={option} disabled={revealed} className={revealed ? optionIndex === item.answer ? "right" : optionIndex === selected ? "wrong" : "dim" : ""} onClick={() => { setSelected(optionIndex); setAnswers((current) => ({ ...current, [item.id]: optionIndex })); }}><b>{String.fromCharCode(65 + optionIndex)}</b><span>{option}</span></button>;
           })}
         </div>
-        {selected !== null && (
-          <section className={`feedback ${selected === item.answer ? "good" : "bad"}`}>
-            <strong>{selected === item.answer ? "✓ Risposta corretta" : "↗ Punto da rivedere"}</strong>
-            <p>{item.explanation}</p>
-          </section>
-        )}
+        {selected !== null && <section className={`feedback ${selected === item.answer ? "good" : "bad"}`}><strong>{selected === item.answer ? "✓ Bene: competenza confermata" : "↗ Punto da consolidare"}</strong><p>{item.explanation}</p></section>}
         <div className="placementActions">
-          {selected === null ? (
-            <button className="showSolution" onClick={() => { setSelected(-1); setAnswers((current) => ({ ...current, [index]: -1 })); }}>Non lo so · salta</button>
-          ) : (
-            <button className="continue" onClick={next}>{index + 1 < items.length ? "Prossima domanda" : "Vedi il livello"}<b>→</b></button>
-          )}
+          {selected === null ? <button className="showSolution" onClick={() => { setSelected(-1); setAnswers((current) => ({ ...current, [item.id]: -1 })); }}>Non lo so · salta</button> : <button className="continue" onClick={next}>{index + 1 < placementItems.length ? "Prossima prova" : "Passa alla produzione"}<b>→</b></button>}
         </div>
       </article>
     </main>

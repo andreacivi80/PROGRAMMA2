@@ -47,9 +47,9 @@ import "./version29.css";
 import "./wordGames.css";
 import "./version33.css";
 
-const APP_VERSION = "4.8";
+const APP_VERSION = "4.9";
 const BUILD_DATE = "31 luglio 2026";
-const BUILD_ID = "EC-4.8-0731";
+const BUILD_ID = "EC-4.9-0731";
 type View =
   | "home"
   | "path"
@@ -672,8 +672,7 @@ function AudioButton({
           ■ Stop
         </button>
       </div>
-      {src && (
-        <div className="speed" aria-label="Velocità audio">
+      <div className="speed" aria-label="Velocità audio">
           {([0.8, 1, 1.2] as const).map((value) => (
             <button
               type="button"
@@ -690,8 +689,7 @@ function AudioButton({
               {value.toFixed(value === 1 ? 0 : 1)}×
             </button>
           ))}
-        </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -1504,7 +1502,8 @@ export default function Home() {
     [writingNotes, setWritingNotes] = useState<string[] | null>(null),
     [writingSuggestion, setWritingSuggestion] = useState(""),
     [dictation, setDictation] = useState(""),
-    [dictationChecked, setDictationChecked] = useState(false);
+    [dictationChecked, setDictationChecked] = useState(false),
+    [recordedAudioUrl, setRecordedAudioUrl] = useState("");
   const themeResultsRef = useRef<HTMLElement | null>(null);
   const save = async (p: Progress) => {
     setSync("saving");
@@ -1767,13 +1766,18 @@ export default function Home() {
   const dictationParts = dictationChecked
       ? pronunciationDiff(unit.listening.transcript, dictation)
       : [],
+    listeningSegments = unit.listening.transcript
+      .split(/(?<=[.!?])\s+/)
+      .map((segment) => segment.trim())
+      .filter(Boolean)
+      .slice(0, 8),
     dictationScore = dictationChecked
       ? similarity(unit.listening.transcript, dictation)
       : 0,
     writingParts = writingSuggestion
       ? pronunciationDiff(writingSuggestion, writing)
       : [];
-  const playWord = (word: string) => {
+  const playWord = (word: string, rate = 0.85) => {
     const fallback = () => {
       if (typeof speechSynthesis === "undefined") return;
       const voices = speechSynthesis
@@ -1788,13 +1792,14 @@ export default function Home() {
       const utterance = new SpeechSynthesisUtterance(word);
       utterance.voice = voice;
       utterance.lang = voice.lang;
-      utterance.rate = 0.85;
+      utterance.rate = rate;
       speechSynthesis.speak(utterance);
     };
     const audio = new Audio(
       `${import.meta.env.BASE_URL}audio/words/${audioSlug(word)}.wav`,
     );
     audio.onerror = fallback;
+    audio.playbackRate = rate;
     void audio.play().catch(fallback);
   };
   const clear = () => {
@@ -2246,15 +2251,36 @@ export default function Home() {
       );
       return;
     }
+    let stream: MediaStream;
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach((track) => track.stop());
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     } catch {
       setSpoken(
         "Permesso microfono negato. Abilitalo nelle impostazioni del browser.",
       );
       return;
     }
+    let recorder: MediaRecorder | null = null;
+    const chunks: Blob[] = [];
+    if ("MediaRecorder" in window) {
+      recorder = new MediaRecorder(stream);
+      recorder.ondataavailable = (event) => {
+        if (event.data.size) chunks.push(event.data);
+      };
+      recorder.onstop = () => {
+        if (!chunks.length) return;
+        const nextUrl = URL.createObjectURL(new Blob(chunks, { type: recorder?.mimeType || "audio/webm" }));
+        setRecordedAudioUrl((previous) => {
+          if (previous) URL.revokeObjectURL(previous);
+          return nextUrl;
+        });
+      };
+      recorder.start();
+    }
+    const finishRecording = () => {
+      if (recorder?.state === "recording") recorder.stop();
+      stream.getTracks().forEach((track) => track.stop());
+    };
     const r = new R();
     r.lang = audioAccent;
     r.interimResults = true;
@@ -2298,6 +2324,7 @@ export default function Home() {
           "Non ho riconosciuto bene la frase. Riprova più lentamente.",
       );
       setRecording(false);
+      finishRecording();
     };
     r.onnomatch = () => {
       heard = true;
@@ -2313,12 +2340,14 @@ export default function Home() {
     r.onend = () => {
       window.clearTimeout(timeout);
       setRecording(false);
+      finishRecording();
       if (!heard)
         setSpoken(
           "Non ho ricevuto una trascrizione. Riprova con Chrome o Edge e parla dopo il segnale.",
         );
     };
     setSpoken("");
+    setRecordedAudioUrl("");
     setRecording(true);
     r.start();
   };
@@ -3761,6 +3790,9 @@ export default function Home() {
                 key={selectedLevel}
                 level={selectedLevel}
                 onComplete={finishWordGame}
+                reviewItems={smartReviews
+                  .filter((review) => review.level === selectedLevel && !review.mastered)
+                  .map((review) => ({ prompt: review.prompt, answer: review.answer }))}
               />
             </div>
           ) : selectedTheme === "reading" ? (
@@ -5189,6 +5221,15 @@ export default function Home() {
                     Puoi scrivere tutto o soltanto una parte. Non blocca le
                     domande.
                   </p>
+                  <div className="dictationSegments">
+                    <small>RIASCOLTA UN SOLO SEGMENTO</small>
+                    {listeningSegments.map((segment, segmentIndex) => (
+                      <div key={`${segment}-${segmentIndex}`}>
+                        <b>Parte {segmentIndex + 1}</b>
+                        <AudioButton text={segment} label="Ascolta" />
+                      </div>
+                    ))}
+                  </div>
                   <textarea
                     lang="en"
                     spellCheck={false}
@@ -5290,13 +5331,25 @@ export default function Home() {
                     </span>
                   </div>
                 )}
+                {recordedAudioUrl && !recording && (
+                  <div className="ownVoicePlayback">
+                    <small>LA TUA REGISTRAZIONE</small>
+                    <audio controls src={recordedAudioUrl} />
+                    <span>Riascolta ritmo, pause e chiarezza prima di riprovare.</span>
+                  </div>
+                )}
                 {spoken && (
                   <div className="speech">
                     <small>HO CAPITO</small>
                     <p lang="en">“{spoken}”</p>
                     {!speechIsError && (
                       <>
-                        <b>{speechScore}% di parole riconosciute</b>
+                        <b>{speechScore}% di parole e ordine riconosciuti</b>
+                        <em className="speechScope">
+                          Questo valore non è un’analisi dei fonemi: indica
+                          quanto il riconoscimento vocale ha identificato la
+                          frase nell’ordine atteso.
+                        </em>
                         <div className="pronunciationCompare">
                           <small>FRASE CORRETTA</small>
                           <p lang="en">
@@ -5340,12 +5393,17 @@ export default function Home() {
                         {speechParts.some((x) => !x.ok && x.expected) && (
                           <div className="retryWords">
                             <small>DA RIPETERE</small>
-                            <b>
+                            <div>
                               {speechParts
                                 .filter((x) => !x.ok && x.expected)
-                                .map((x) => x.expected)
-                                .join(" · ")}
-                            </b>
+                                .map((x, wordIndex) => (
+                                  <span key={`${x.expected}-${wordIndex}`}>
+                                    <b lang="en">{x.expected}</b>
+                                    <button type="button" onClick={() => playWord(x.expected!)}>▶ normale</button>
+                                    <button type="button" onClick={() => playWord(x.expected!, 0.6)}>◷ lenta</button>
+                                  </span>
+                                ))}
+                            </div>
                           </div>
                         )}
                         <button className="retrySpeech" onClick={record}>

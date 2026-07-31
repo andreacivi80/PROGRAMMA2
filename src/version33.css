@@ -183,6 +183,34 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
   .progressNextPanel > div:last-child { min-width: 0; }
 }
 
+.ownVoicePlayback,
+.dictationSegments {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 15px;
+  background: var(--paper);
+}
+.ownVoicePlayback audio { width: 100%; }
+.dictationSegments > div {
+  display: grid;
+  grid-template-columns: 70px minmax(0,1fr);
+  align-items: center;
+  gap: 8px;
+}
+.dictationSegments .audioControl { margin: 0; }
+.dictationSegments .audioActions { min-width: 0; }
+.retryWords > div { display: grid; gap: 7px; margin-top: 8px; }
+.retryWords span { display: grid; grid-template-columns: minmax(80px,1fr) auto auto; gap: 6px; align-items: center; }
+.retryWords button { min-height: 38px; padding: 7px 9px; border-radius: 10px; }
+.speechScope { display: block; margin-top: 8px; line-height: 1.45; }
+
+@media (max-width: 430px) {
+  .dictationSegments > div { grid-template-columns: 1fr; }
+  .retryWords span { grid-template-columns: 1fr 1fr; }
+  .retryWords span b { grid-column: 1 / -1; }
+}
+
 .openExam,
 .missionOpenTask { display: grid; gap: 14px; }
 .openExam textarea,
@@ -598,6 +626,97 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
   border-radius: 12px;
   background: #fff;
   font-weight: 900;
+}
+
+.placementPassage,
+.placementListening {
+  margin: 12px 0 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--soft);
+}
+
+.placementPassage b {
+  color: var(--green);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.placementPassage p {
+  margin: 8px 0 0;
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+.placementListening {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.placementListening button {
+  min-height: 44px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--green);
+  color: #fff;
+  font-weight: 900;
+}
+
+.placementListening small,
+.placementNote {
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.placementProduction label {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0;
+  line-height: 1.45;
+}
+
+.placementProduction textarea {
+  width: 100%;
+  min-height: 105px;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  resize: vertical;
+}
+
+.placementBands {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin: 10px 0 16px;
+}
+
+.placementBands div {
+  display: grid;
+  gap: 3px;
+  padding: 9px 4px;
+  border-radius: 11px;
+  background: var(--soft);
+}
+
+.placementBands span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (width <= 520px) {
+  .placementPanel,
+  .placementResult { padding: 18px 15px; border-radius: 20px; }
+  .placementPanel > h1,
+  .placementResult > h1 { margin: 10px 0 14px; font-size: 26px; }
+  .placementListening { align-items: stretch; flex-direction: column; }
+  .placementBands { gap: 4px; }
+  .placementBands div { padding: 7px 2px; }
 }
 
 .skillsHub,

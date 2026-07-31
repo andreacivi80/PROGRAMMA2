@@ -58,7 +58,7 @@ const checks={
   millionaire:readFileSync("src/WordGamesHub.tsx","utf8").includes("English Millionaire"),
   trivia:readFileSync("src/WordGamesHub.tsx","utf8").includes("Trivia Quest"),
   levelFilter:app.includes("themeSupportsLevel")&&app.includes("compactLevelPicker"),
-  placementTest:placement.includes("Test iniziale")&&placement.includes("Valutazione orientativa")&&app.includes("english-coach-onboarding-v1"),
+  placementTest:placement.includes("Comprensione scritta")&&placement.includes("Valutazione orientativa")&&placement.includes("Produzione orale")&&app.includes("english-coach-onboarding-v1"),
   findError:skills.includes("Trova l’errore"),
   minimalPairs:skills.includes("Minimal pairs"),
   mediation:skills.includes("SFIDA DI MEDIAZIONE"),

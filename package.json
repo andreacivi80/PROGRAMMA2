@@ -1,11 +1,16 @@
 {
   "name": "english-coach-public",
-  "version": "4.8.0",
+  "version": "4.9.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build"
+    "build": "tsc -b && vite build",
+    "audit:placement": "node tools/placement-audit.mjs",
+    "audit:ui": "node tools/ui-audit.mjs",
+    "audit:course": "node tools/course-audit.mjs",
+    "audit:diversity": "node tools/exercise-diversity-audit.mjs",
+    "test": "npm run audit:placement && npm run audit:ui && npm run audit:course && npm run audit:diversity && npm run build"
   },
   "dependencies": {
     "@vitejs/plugin-react": "6.0.2",
