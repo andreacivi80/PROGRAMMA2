@@ -1,12 +1,13 @@
-# English Coach 5.8 — stato verificato
+# English Coach 5.9 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 5.8, con data e identificativo visibili.
+- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 5.9, con data e identificativo visibili.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
+- **VERIFICATO** — i nomi dell’archivio locale restano stabili tra le revisioni: una nuova pubblicazione sostituisce l’interfaccia, non i dati dell’utente.
 
 ## 2–4. Percorso, ripresa e livello
 
@@ -92,6 +93,7 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 ## 21–22. Prestazioni e controllo
 
 - **IMPLEMENTATO** — sezioni pesanti caricate soltanto all’apertura; build locale esclusa dalla cartella sorgente finale.
+- **VERIFICATO** — strumenti di compilazione aggiornati alla versione corretta e controllo di sicurezza senza vulnerabilità note.
 - **VERIFICATO** — 221 pulsanti, audio, stop, velocità, salti, ripassi, giochi, missioni e persistenza coperti dagli audit statici.
 - **VERIFICATO** — test automatici per 60 lezioni, 30 prove d’ingresso, profili CEFR, duplicati, banche esercizi e struttura UI.
 - **RINVIATO CON MOTIVAZIONE** — prove fisiche complete su ogni combinazione di microfono, screen reader e zoom richiedono la relativa matrice di dispositivi.
