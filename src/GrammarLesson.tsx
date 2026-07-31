@@ -27,7 +27,9 @@ export default function GrammarLesson({
 
       {guide ? (
         <section className="deepGuide primaryGuide">
-          <div className="deepOverview"><ConceptText text={guide.overview} terms={lessonTerms} /></div>
+          <div className="deepOverview">
+            <ConceptText text={guide.overview} terms={lessonTerms} />
+          </div>
 
           {guide.sections.map((section, index) => (
             <article key={section.title}>

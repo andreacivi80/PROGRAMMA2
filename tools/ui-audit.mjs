@@ -20,15 +20,22 @@ for(const file of files){
  visit(source);
 }
 
-const app=readFileSync("src/App.tsx","utf8");
-const pack=readFileSync("src/ThemePackLab.tsx","utf8");
-const authentic=readFileSync("src/AuthenticAudio.tsx","utf8");
-const review=readFileSync("src/ReviewLab.tsx","utf8");
-const speechVoices=readFileSync("src/speechVoices.ts","utf8");
-const supplementary=readFileSync("src/supplementaryQuiz.ts","utf8");
-const languageFocus=readFileSync("src/languageFocusPacks.ts","utf8");
-const mixedText=readFileSync("src/MixedText.tsx","utf8");
-const grammarLesson=readFileSync("src/GrammarLesson.tsx","utf8");
+const compact=value=>value.replace(/\s+/g,"");
+const searchable=value=>({
+ includes:needle=>value.includes(needle)||compact(value).includes(compact(needle)),
+ indexOf:needle=>{const raw=value.indexOf(needle);return raw>=0?raw:compact(value).indexOf(compact(needle))},
+ toLowerCase:()=>searchable(value.toLowerCase())
+});
+const app=searchable(readFileSync("src/App.tsx","utf8"));
+const pack=searchable(readFileSync("src/ThemePackLab.tsx","utf8"));
+const authentic=searchable(readFileSync("src/AuthenticAudio.tsx","utf8"));
+const review=searchable(readFileSync("src/ReviewLab.tsx","utf8"));
+const speechVoices=searchable(readFileSync("src/speechVoices.ts","utf8"));
+const supplementary=searchable(readFileSync("src/supplementaryQuiz.ts","utf8"));
+const languageFocus=searchable(readFileSync("src/languageFocusPacks.ts","utf8"));
+const mixedText=searchable(readFileSync("src/MixedText.tsx","utf8"));
+const grammarLesson=searchable(readFileSync("src/GrammarLesson.tsx","utf8"));
+const conceptText=searchable(readFileSync("src/ConceptText.tsx","utf8"));
 const css=readFileSync("src/styles.css","utf8")+readFileSync("src/themePacks.css","utf8")+readFileSync("src/version29.css","utf8")+readFileSync("src/version33.css","utf8")+readFileSync("src/wordGames.css","utf8");
 const checks={
  buttons,
@@ -38,7 +45,7 @@ const checks={
   pause:app.includes("const pause=()=>"),
   resume:app.includes("const resume=()=>"),
   stopResets:app.includes("audioRef.current.currentTime=0")&&app.includes("audio.currentTime=0"),
-  speeds:[`${"[.8,1,1.2]"}`].every(value=>app.includes(value)),
+  speeds:app.includes("[0.8, 1, 1.2]"),
   stopsOnNavigation:app.includes("useEffect(()=>()=>stopActiveAudio?.(),[view,phase,unit.id])")
  },
  games:{
@@ -48,7 +55,7 @@ const checks={
   matching:readFileSync("src/WordGamesHub.tsx","utf8").includes("Match the Meaning"),
   millionaire:readFileSync("src/WordGamesHub.tsx","utf8").includes("English Millionaire"),
   trivia:readFileSync("src/WordGamesHub.tsx","utf8").includes("Trivia Quest"),
-  levelFilter:app.includes("themeSupportsLevel")&&app.includes("topicLevelFilter")
+  levelFilter:app.includes("themeSupportsLevel")&&app.includes("compactLevelPicker")
  },
  visualQuiz:{
   fullCategoryBank:app.includes("visualTiles(sets)"),
@@ -97,7 +104,7 @@ themeQuestions:pack.includes("Salta domanda")
  },
  recoveryTraining:{
   variableQuestions:app.includes("startRecovery=()=>")&&app.includes("shuffled(smartReviews.filter"),
-  focusedPool:app.includes("review=>!review.mastered")&&app.includes("recoveryQuiz"),
+  focusedPool:app.includes(".filter((review) => !review.mastered)")&&app.includes("recoveryQuiz"),
   answerFeedback:app.includes("recoveryFeedback")&&app.includes("Rivediamola subito"),
   canSkip:app.includes('className="recoverySkip"')&&app.includes("answerRecovery(-1)"),
   updatesSchedule:app.includes("const answerRecovery=")&&app.includes("delays=[1,3,7,14]")
@@ -107,13 +114,18 @@ themeQuestions:pack.includes("Salta domanda")
   englishEmphasis:mixedText.includes("inlineEnglish")&&mixedText.includes("I'm afraid")&&grammarLesson.includes("terms={lessonTerms}"),
   visibleEnglishStyle:css.includes(".inlineEnglish")&&css.includes("text-decoration-color:#efc85e"),
   phoneReviewLayout:css.includes("@media(max-width:430px)")&&css.includes(".smartReviewChoices{grid-template-columns:1fr}")
-  ,logicalHomeFlow:app.indexOf('className="adaptiveHome"')<app.indexOf('view==="home"&&<div className="screen"')
-  ,singleQuestionSkip:app.includes('{!["cloze","listening","quiz","bonus"].includes(phase)&&<button className="skipStage"')
+  ,logicalHomeFlow:app.includes('className="homeChoice adaptiveChoice"')&&app.includes('className="homeChoice freeChoice"')
+  ,singleQuestionSkip:app.includes('!["cloze","listening","quiz","bonus"].includes(phase)')&&app.includes('className="skipStage"')
   ,containedSkip:css.includes(".lessonCard>.bottomSkip{position:static!important")&&css.includes(".readingSkip")&&css.includes("width:100%")
   ,levelBeforeTime:app.indexOf("adaptiveLevels")<app.indexOf("adaptiveTimeTitle")
   ,levelPersists:app.includes("english-coach-selection-v1")&&app.includes("savedLevel??selected.cefr")
-  ,pathFiltersLevel:app.includes("{([selectedLevel] as Cefr[]).map(level=>")
+  ,pathFiltersLevel:app.includes("([selectedLevel] as Cefr[]).map((level)")
   ,grammarConceptBreaks:grammarLesson.includes("<ConceptText")&&css.includes(".conceptText>p:not(:last-child)")
+  ,conceptBreaksEverywhere:app.includes("<ConceptText text={data.explanationIt}")&&app.includes("<ConceptText text={question.review.explanation}")&&review.includes("<ConceptText text={question.explanationIt}")&&pack.includes("<ConceptText text={item.explanationIt}")
+  ,conceptPunctuation:conceptText.includes('replace(/;$/, \".\")')&&conceptText.includes('/[.!?…]$/.test(sentence)')
+  ,readingOneAtATime:app.includes("slice(readingQuestionIndex,readingQuestionIndex+1)")&&app.includes("setReadingQuestionIndex")
+  ,compactLevelPicker:app.includes('className="compactLevelPicker"')&&css.includes(".compactLevelPicker>summary")
+  ,mainViewPersists:app.includes("english-coach-view-v1")&&app.includes("initialMainView")
  },
  languageFocus:{
   themeEntry:app.includes("Verbi e false friends"),
