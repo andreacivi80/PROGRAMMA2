@@ -604,7 +604,7 @@ window.addEventListener("resize",fitCustomerName1221);
 </style>
 <script id="closed-packing-runtime-v1232">
 (()=>{
-  const bridge="http://127.0.0.1:8788";
+  const bridge=(window.TECHNICS_BRIDGES||["https://student-tarot-occultist.ngrok-free.dev"])[0];
   const byId=id=>document.getElementById(id);
   const escape=value=>{const node=document.createElement("div");node.textContent=String(value??"");return node.innerHTML};
   const card=(session,closed)=>`<button class="openpack ${closed?"closedpack":""}" data-runtime-op="${escape(session.opBarcode)}"><span class="openpackcodes"><strong class="opref">OP ${escape(session.number||session.opBarcode)}</strong><strong class="ovref">OV ${escape(session.ovNumber||"non collegato")}</strong><b>${escape(session.articleCode||"—")}</b></span><em>${escape(session.articleName||"Foglio di confezionamento")}</em><small class="openpackmeta"><b>LOTTO ${escape(session.lot||"—")}</b><span class="openpackcustomer">${escape(session.customer||"Cliente non indicato")}</span></small><i>${closed?"Apri · stampa o riapri ›":"Apri packing list ›"}</i></button>`;
@@ -746,26 +746,6 @@ window.addEventListener("resize",fitCustomerName1221);
 .closedpacklist .openpackcodes b{background:#80682c}
 .closedpacklist .openpack i{color:#765d1d}
 </style>
-<script id="hotfix-search-closed-runtime-v131">
-/* Carica e rende entrambe le raccolte restituite dal ponte: aperte e chiuse recenti. */
-loadOpenPackingLists=async function(){
-  if(activeModule!=="production")return;
-  const renderRow=(x,closed=false)=>`<button class="openpack" data-open-op="${esc(x.opBarcode)}" data-pack-state="${closed?"closed":"open"}"><span class="openpackcodes"><strong>OP ${esc(x.number||x.opBarcode)}</strong><b>${esc(x.articleCode||"—")}</b></span><em>${esc(x.articleName||"Foglio di confezionamento")}</em><small><b>LOTTO ${esc(x.lot||"—")}</b>${x.customer?` · ${esc(x.customer)}`:""}</small><i>${closed?"Apri per stampare o riaprire":"Apri packing list"} ›</i></button>`;
-  try{
-    const r=await fetch(`${BRIDGE_URL}/api/packing/open?fresh=${Date.now()}`,{cache:"no-store",headers:{"Cache-Control":"no-store","ngrok-skip-browser-warning":"1"}}),p=await readJsonResponse(r);
-    if(!r.ok||!p.ok)throw new Error(p.error||"Elenco non disponibile.");
-    const opened=p.sessions||[],closed=p.closedSessions||[];
-    $("openPackList").innerHTML=opened.length?opened.map(x=>renderRow(x,false)).join(""):`<div class="openempty">Nessuna packing list aperta in questo momento.</div>`;
-    $("closedPackList").innerHTML=closed.length?closed.map(x=>renderRow(x,true)).join(""):`<div class="openempty">Nessuna packing list chiusa negli ultimi 7 giorni.</div>`;
-    $("openPackingHome").classList.toggle("hidden",Boolean(currentOrder));
-  }catch(e){
-    $("openPackList").innerHTML=`<div class="openempty">Elenco temporaneamente non disponibile. Premi Aggiorna.</div>`;
-    $("closedPackList").innerHTML=`<div class="openempty">Elenco chiuse temporaneamente non disponibile.</div>`;
-    $("openPackingHome").classList.toggle("hidden",Boolean(currentOrder));
-  }
-};
-$("closedPackList").onclick=e=>{const b=e.target.closest("[data-open-op]");if(b)loadProduction(b.dataset.openOp)};
-</script>
 </body></html>
 
 
