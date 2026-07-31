@@ -205,7 +205,7 @@ window.__technicsTestScan=acceptScan;$("code").addEventListener("input",()=>{awa
 .printmessage.printing{border-color:#9fc7b8;background:#edf7f2;color:#17483e}.printbar button:disabled{opacity:.8;cursor:wait}
 .printconfirmcard{max-width:430px;text-align:center}.printconfirmicon{display:grid;place-items:center;width:68px;height:68px;margin:0 auto 14px;border-radius:22px;background:#dff1ea;color:#0f4c3e;font-size:34px;font-weight:900}.printconfirmcard h3{margin:0 0 8px}.printconfirmcard p{font-size:18px;line-height:1.35}
 .printingveil{position:fixed;inset:0;z-index:90;display:grid;place-items:center;background:rgba(5,34,27,.88);backdrop-filter:blur(5px)}.printingcard{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:250px;padding:30px 26px;border-radius:26px;background:#fff;color:#0f4c3e;box-shadow:0 24px 70px #0006;text-align:center}.printingcard strong{font-size:24px}.printingcard small{font-size:14px;color:#60766f}.printspinner{width:46px;height:46px;border:5px solid #d5e9e2;border-top-color:#0f5949;border-radius:50%;animation:printspin .75s linear infinite}@keyframes printspin{to{transform:rotate(360deg)}}
-.serverpreviewhost{width:794px;min-height:1123px;padding:0!important;background:transparent!important;box-shadow:none!important}.serverprintpages{display:flex;flex-direction:column;gap:22px}.serverprintpage{display:block;width:794px;height:auto;background:#fff;box-shadow:0 10px 35px #102a2440}.serverpreviewloading{display:grid;place-items:center;width:794px;height:1123px;background:#fff;color:#174f42;font-size:22px;font-weight:800}.serverpreviewerror{padding:40px;background:#fff;color:#9d3d37;font-size:18px;font-weight:800}
+.serverpreviewhost{width:794px;min-height:1123px;margin:0 auto;padding:0!important;background:transparent!important;box-shadow:none!important;transform-origin:top center;box-sizing:border-box}.serverprintpages{display:flex;flex-direction:column;align-items:center;gap:22px}.serverprintpage{display:block;width:794px;height:auto;margin:0 auto;background:#fff;box-shadow:0 10px 35px #102a2440}.serverpreviewloading{display:grid;place-items:center;width:794px;height:1123px;background:#fff;color:#174f42;font-size:22px;font-weight:800}.serverpreviewerror{padding:40px;background:#fff;color:#9d3d37;font-size:18px;font-weight:800}
 </style>
 <script>
 const byId1214=id=>document.getElementById(id);
@@ -342,6 +342,23 @@ function bindPackingPrint1217(){
 }
 setTimeout(bindPackingPrint1217,0);
 window.addEventListener("load",bindPackingPrint1217,{once:true});
+
+function centerServerPrintPreview1222(){
+  const stage=byId1214("printPreview").querySelector(".printstage");
+  if(!stage)return;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    stage.scrollLeft=Math.max(0,(stage.scrollWidth-stage.clientWidth)/2);
+  }));
+}
+const centerPreviewObserver1222=new MutationObserver(centerServerPrintPreview1222);
+centerPreviewObserver1222.observe(byId1214("printContent"),{childList:true,subtree:true});
+byId1214("printContent").addEventListener("load",centerServerPrintPreview1222,true);
+byId1214("previewPacking").addEventListener("click",()=>{
+  setTimeout(centerServerPrintPreview1222,80);
+  setTimeout(centerServerPrintPreview1222,800);
+});
+window.addEventListener("resize",centerServerPrintPreview1222);
+window.addEventListener("orientationchange",()=>setTimeout(centerServerPrintPreview1222,180));
 
 function normalizeLotUsageLabels1219(){
   document.querySelectorAll(".lotusedfield span").forEach(label=>{
