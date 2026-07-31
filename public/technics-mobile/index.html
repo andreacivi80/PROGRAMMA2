@@ -74,12 +74,16 @@
 <style id="packing-allocation-row-v1222">
 #production .lotusage{grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:3px 7px;padding:6px 8px}
 #production .lotusage>strong{grid-column:1;font-family:Georgia,serif!important;font-size:13px!important;font-weight:900!important;letter-spacing:.025em;white-space:nowrap}
-#production .lotusage>small{grid-column:2;min-width:0;display:block;padding:0!important;overflow:hidden;color:#d9f2e8!important;font-family:Inter,system-ui,sans-serif!important;font-size:12px!important;font-weight:850!important;text-overflow:ellipsis;white-space:nowrap}
+#production .lotusage>small{grid-column:2;min-width:0;display:block;padding:0 0 0 7px!important;overflow:hidden;color:#d9f2e8!important;font-family:Inter,system-ui,sans-serif!important;font-size:12px!important;font-weight:850!important;text-overflow:ellipsis;white-space:nowrap}
 #production .lotusage>small span{color:inherit;font-size:inherit;font-weight:inherit}
 #production .lotusage .lotpacks{grid-column:3;color:#fff;font-size:12px;font-weight:900}
 #production .lotusedfield{grid-column:1/-1;grid-template-columns:1fr minmax(84px,112px);gap:6px;margin:0;padding:3px 5px}
 #production .lotusedfield span{font-size:7px}
 #production .lotusedfield input{height:24px;font-size:13px}
+#production .ophead{grid-template-columns:1fr;gap:0;margin-bottom:7px}
+#production .ophead>.opbadge{display:none!important}
+#production #opnumber{margin-bottom:2px;font-size:16px;font-weight:950;letter-spacing:.015em}
+#production #opname{max-width:100%;margin:0;overflow-wrap:normal;word-break:normal;text-wrap:balance}
 </style>
 <style id="open-packing-customer-v1222">
 .openpack{gap:2px 7px!important;padding:8px 9px!important}
@@ -229,6 +233,32 @@ window.__technicsTestScan=acceptScan;$("code").addEventListener("input",()=>{awa
       byId("lot").value=saved.lot||"";
       setTimeout(()=>byId("form").requestSubmit(),120);
     }
+  });
+})();
+</script>
+<script id="packing-title-fit-v1222">
+(()=>{
+  const fit=()=>{
+    const title=document.getElementById("opname");
+    if(!title||!title.textContent.trim())return;
+    title.style.whiteSpace="nowrap";
+    title.style.fontSize="18px";
+    let size=18;
+    while(size>12&&title.scrollWidth>title.clientWidth){
+      size-=.5;
+      title.style.fontSize=`${size}px`;
+    }
+    if(title.scrollWidth>title.clientWidth){
+      title.style.whiteSpace="normal";
+      title.style.fontSize="13px";
+      title.style.lineHeight="1.18";
+    }
+  };
+  document.addEventListener("DOMContentLoaded",()=>{
+    const title=document.getElementById("opname");
+    new MutationObserver(fit).observe(title,{childList:true,subtree:true});
+    window.addEventListener("resize",fit);
+    fit();
   });
 })();
 </script>
