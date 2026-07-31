@@ -80,12 +80,16 @@ export function evaluatePlacement(answers: Record<string, number>, evidence: Pro
     return [level, Math.round((right / band.length) * 100)];
   })) as Record<Cefr, number>;
   const bonus = productionBonus(evidence);
+  const writingWords = evidence.writing.trim().split(/\s+/).filter(Boolean).length;
+  const oralWords = evidence.oral.trim().split(/\s+/).filter(Boolean).length;
+  const productiveB2 = writingWords >= 30 && oralWords >= 15;
+  const productiveC1 = writingWords >= 35 && oralWords >= 20 && /\b(although|however|whereas|nevertheless|despite|therefore)\b/i.test(`${evidence.writing} ${evidence.oral}`);
   const gates: Record<Cefr, boolean> = {
     A1: bandScores.A1 >= 40,
     A2: bandScores.A1 >= 60 && bandScores.A2 >= 60,
     B1: bandScores.A1 >= 60 && bandScores.A2 >= 60 && bandScores.B1 >= 60,
-    B2: bandScores.A2 >= 60 && bandScores.B1 >= 60 && bandScores.B2 >= 60 && bonus >= 2,
-    C1: bandScores.B1 >= 60 && bandScores.B2 >= 60 && bandScores.C1 >= 60 && bonus >= 3,
+    B2: bandScores.A2 >= 60 && bandScores.B1 >= 60 && bandScores.B2 >= 60 && bonus >= 2 && productiveB2,
+    C1: bandScores.B1 >= 60 && bandScores.B2 >= 60 && bandScores.C1 >= 60 && bonus >= 3 && productiveC1,
   };
   let suggested: Cefr = "A1";
   for (const level of placementLevels) if (gates[level]) suggested = level;

@@ -18,6 +18,8 @@ for (const [profile, wanted] of Object.entries(expected)) {
 }
 const lucky = Object.fromEntries(placementItems.map((item) => [item.id, item.level === "B2" || item.level === "C1" ? item.answer : -1]));
 if (evaluatePlacement(lucky, blank).suggested !== "A1") throw new Error("Risposte alte casuali hanno superato i prerequisiti");
+if (evaluatePlacement(through("B2"), blank).suggested !== "B1") throw new Error("B2 assegnato senza produzione scritta e orale");
+if (evaluatePlacement(through("C1"), blank).suggested !== "B1") throw new Error("C1 assegnato senza produzione scritta e orale");
 if (placementItems.length < 30) throw new Error("Il test deve avere almeno 30 prove oggettive");
 for (const level of ["A1", "A2", "B1", "B2", "C1"]) {
   const kinds = new Set(placementItems.filter((item) => item.level === level).map((item) => item.kind));
