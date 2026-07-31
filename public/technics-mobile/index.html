@@ -111,12 +111,26 @@ async function loadServerPrintPreview1217(){
     const text=await r.text();
     let payload;
     try{payload=JSON.parse(text)}catch{throw new Error("Anteprima momentaneamente non disponibile. Riprova tra pochi secondi.")}
-    if(!r.ok||!payload.ok||!payload.previewId||!Number(payload.pageCount))throw new Error(payload.error||"Anteprima non generata.");
+    if(!r.ok||!payload.ok||!payload.previewId)throw new Error(payload.error||"Anteprima non avviata.");
+    let previewStatus=null;
+    for(let attempt=0;attempt<50;attempt++){
+      const statusResponse=await fetch(`https://student-tarot-occultist.ngrok-free.dev/api/packing/print-preview-status?id=${encodeURIComponent(payload.previewId)}`,{
+        cache:"no-store",
+        headers:{"Cache-Control":"no-store","ngrok-skip-browser-warning":"1"}
+      });
+      const statusText=await statusResponse.text();
+      let statusPayload;
+      try{statusPayload=JSON.parse(statusText)}catch{throw new Error("Controllo anteprima momentaneamente non disponibile.")}
+      if(!statusResponse.ok||!statusPayload.ok)throw new Error(statusPayload.error||"Anteprima non generata.");
+      if(statusPayload.ready){previewStatus=statusPayload;break}
+      await new Promise(resolve=>setTimeout(resolve,700));
+    }
+    if(!previewStatus||!Number(previewStatus.pageCount))throw new Error("Tempo di preparazione anteprima superato. Riprova.");
     printPreviewObjectUrls1217.forEach(url=>URL.revokeObjectURL(url));
     printPreviewObjectUrls1217=[];
     const pages=document.createElement("div");
     pages.className="serverprintpages";
-    for(let index=0;index<Number(payload.pageCount);index++){
+    for(let index=0;index<Number(previewStatus.pageCount);index++){
       const imageResponse=await fetch(`https://student-tarot-occultist.ngrok-free.dev/api/packing/print-preview-image?id=${encodeURIComponent(payload.previewId)}&page=${index+1}`,{
         cache:"no-store",
         headers:{"Cache-Control":"no-store","ngrok-skip-browser-warning":"1"}
@@ -127,7 +141,7 @@ async function loadServerPrintPreview1217(){
       const image=document.createElement("img");
       image.className="serverprintpage";
       image.src=imageUrl;
-      image.alt=`Anteprima A4 · pagina ${index+1} di ${payload.pageCount}`;
+      image.alt=`Anteprima A4 · pagina ${index+1} di ${previewStatus.pageCount}`;
       pages.appendChild(image);
     }
     host.replaceChildren(pages);
