@@ -83,7 +83,10 @@
 #production .ophead{grid-template-columns:1fr;gap:0;margin-bottom:7px}
 #production .ophead>.opbadge{display:none!important}
 #production #opnumber{margin-bottom:2px;font-size:16px;font-weight:950;letter-spacing:.015em}
-#production #opname{max-width:100%;margin:0;overflow-wrap:normal;word-break:normal;text-wrap:balance}
+#production #opname{max-width:100%;margin:0;overflow:hidden;overflow-wrap:normal;word-break:normal;text-wrap:balance}
+#production .packtop{min-width:0}
+#production .packcode{min-width:0;max-width:72%;overflow-wrap:anywhere;word-break:normal}
+#production .packdesc{max-width:100%;overflow:hidden;white-space:normal;overflow-wrap:break-word;word-break:normal;text-wrap:pretty}
 </style>
 <style id="open-packing-customer-v1222">
 .openpack{gap:2px 7px!important;padding:8px 9px!important}
@@ -105,6 +108,16 @@
 #production .packdetected strong{font-size:14px}
 #production .packdetected span{display:none!important}
 </style>
+<style id="resume-mask-v123">
+html.resume-production .shell{visibility:hidden}
+html.resume-production body:after{content:"Riapro packing list…";position:fixed;z-index:120;inset:0;display:grid;place-items:center;background:#eef5f1;color:#17483e;font:900 16px Inter,system-ui,sans-serif}
+</style>
+<script id="resume-mask-start-v123">
+try{
+  const saved=JSON.parse(localStorage.getItem("technics-mobile-view-v1222")||"null");
+  if(saved?.mode==="production")document.documentElement.classList.add("resume-production");
+}catch{}
+</script>
 <main class="shell">
 <style id="auto-route-v1213">.modules{display:none!important}.modeshortcut{width:100%;min-height:37px;display:flex;align-items:center;justify-content:center;gap:7px;margin:0 0 7px;border:1px solid #c8dbd2;border-radius:11px;background:#ffffffb8;color:#315f54;font-size:9px;font-weight:900;letter-spacing:.04em}.modeshortcut span{width:21px;height:21px;display:grid;place-items:center;border-radius:7px;background:#dceee6;font-size:12px}.modeshortcut.active{border-color:#315f54;background:#edf6f2;color:#17483e}.hero{padding-top:4px}.shell{padding-bottom:58px}footer{width:min(620px,100%);position:fixed;z-index:8;left:50%;bottom:0;transform:translateX(-50%);padding:10px 18px max(10px,env(safe-area-inset-bottom));border-top:1px solid #dce5e0;background:#f5f7f4eF;box-shadow:0 -6px 20px #17332d12;backdrop-filter:blur(10px)}</style>
 <header class="top"><div class="brand"><span class="logo">T</span><div><strong>Technics</strong><small>MOBILE</small></div></div><span id="net" class="status"><i></i>Online</span></header><nav class="modules" aria-label="Sezioni"><button id="inventoryTab" class="active" type="button">Inventario<small>Articoli, lotti e ubicazioni</small></button><button id="productionTab" type="button">Foglio confezionamento<small>Esploso ordine di produzione</small></button></nav><button id="modeShortcut" class="modeshortcut" type="button"><span>☷</span><b>Packing list aperte</b></button>
@@ -217,14 +230,17 @@ window.__technicsTestScan=acceptScan;$("code").addEventListener("input",()=>{awa
   document.addEventListener("DOMContentLoaded",()=>{
     let saved=null;
     try{saved=JSON.parse(localStorage.getItem(key)||"null")}catch{}
-    const observer=new MutationObserver(save);
+    const reveal=()=>document.documentElement.classList.remove("resume-production");
+    const ready=()=>!byId("production").classList.contains("hidden")||!byId("openPackingHome").classList.contains("hidden");
+    const observer=new MutationObserver(()=>{save();if(ready())reveal()});
     observer.observe(byId("production"),{attributes:true,attributeFilter:["class"]});
     observer.observe(byId("openPackingHome"),{attributes:true,attributeFilter:["class"]});
     observer.observe(byId("opbarcode"),{childList:true,subtree:true});
     byId("modeShortcut").addEventListener("click",()=>setTimeout(save,0));
     byId("form").addEventListener("submit",()=>setTimeout(save,0));
     window.addEventListener("pagehide",save);
-    if(!saved)return;
+    setTimeout(reveal,10000);
+    if(!saved){reveal();return}
     if(saved.mode==="production"){
       if(!byId("modeShortcut").classList.contains("active"))byId("modeShortcut").click();
       if(saved.op)setTimeout(()=>{byId("code").value=saved.op;byId("form").requestSubmit()},120);
@@ -243,12 +259,19 @@ window.__technicsTestScan=acceptScan;$("code").addEventListener("input",()=>{awa
     if(!title||!title.textContent.trim())return;
     title.style.whiteSpace="nowrap";
     title.style.fontSize="18px";
+    title.style.lineHeight="1.12";
     let size=18;
-    while(size>12&&title.scrollWidth>title.clientWidth){
+    const contentWidth=()=>{
+      const range=document.createRange();
+      range.selectNodeContents(title);
+      return range.getBoundingClientRect().width;
+    };
+    const available=Math.max(0,title.clientWidth-12);
+    while(size>12&&contentWidth()>available){
       size-=.5;
       title.style.fontSize=`${size}px`;
     }
-    if(title.scrollWidth>title.clientWidth){
+    if(contentWidth()>available){
       title.style.whiteSpace="normal";
       title.style.fontSize="13px";
       title.style.lineHeight="1.18";
@@ -257,7 +280,10 @@ window.__technicsTestScan=acceptScan;$("code").addEventListener("input",()=>{awa
   document.addEventListener("DOMContentLoaded",()=>{
     const title=document.getElementById("opname");
     new MutationObserver(fit).observe(title,{childList:true,subtree:true});
+    new ResizeObserver(fit).observe(title.parentElement);
     window.addEventListener("resize",fit);
+    window.addEventListener("load",fit,{once:true});
+    document.fonts?.ready?.then(fit);
     fit();
   });
 })();
