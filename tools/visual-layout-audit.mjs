@@ -42,10 +42,10 @@ const connect = async () => {
   await call("Page.navigate", { url: base });
   await wait(1500);
 };
-const seed = async (view, checkpoint = null) => {
+const seed = async (view, checkpoint = null, selection = { level: "A1", lessonId: "a1-be-introductions", theme: "food" }) => {
   const now = new Date().toISOString();
   const progress = { schemaVersion: 14, deviceId: "visual-audit", currentDay: 3, streak: 2, weeklyGoal: 3, days: { 1: { score: 82, attempts: 1, minutes: 18, writing: "I am learning English every day.", completedAt: now } }, activity: {}, reading: {}, reviews: {}, themePacks: {}, wordGames: {}, lessonFeedback: {}, smartReview: {}, learningGoal: "Conversazione quotidiana", savedPhrases: [], weeklyChallenges: {}, monthlyChecks: {} };
-  await evaluate(`localStorage.clear(); sessionStorage.clear(); localStorage.setItem("english-coach-onboarding-v1","done"); localStorage.setItem("english-coach-view-v1",${JSON.stringify(view)}); localStorage.setItem("english-coach-selection-v1",${JSON.stringify(JSON.stringify({ level: "A1", lessonId: "a1-be-introductions", theme: "food" }))}); localStorage.setItem("english-coach-progress-v2",${JSON.stringify(JSON.stringify(progress))}); ${checkpoint ? `localStorage.setItem("english-coach-checkpoints-v1",${JSON.stringify(JSON.stringify({ [checkpoint.unitId]: checkpoint }))});` : ""} location.reload();`);
+  await evaluate(`localStorage.clear(); sessionStorage.clear(); localStorage.setItem("english-coach-onboarding-v1","done"); localStorage.setItem("english-coach-view-v1",${JSON.stringify(view)}); localStorage.setItem("english-coach-selection-v1",${JSON.stringify(JSON.stringify(selection))}); localStorage.setItem("english-coach-progress-v2",${JSON.stringify(JSON.stringify(progress))}); ${checkpoint ? `localStorage.setItem("english-coach-checkpoints-v1",${JSON.stringify(JSON.stringify({ [checkpoint.unitId]: checkpoint }))});` : ""} location.reload();`);
   await wait(1800);
 };
 const setViewport = async (width, height, mobile) => {
@@ -78,6 +78,8 @@ try {
     await setViewport(viewport.width, viewport.height, viewport.mobile);
     await wait(500);
     results.push(await inspect(`${viewport.name}-home`));
+    const studyBadge = await evaluate(`(()=>{const node=document.querySelector(".smartStudyHome>summary>b");if(!node)return null;const original=node.textContent;node.textContent="Vocabolario";const style=getComputedStyle(node),result={text:node.textContent?.trim(),whiteSpace:style.whiteSpace,overflowing:node.scrollWidth>node.clientWidth};node.textContent=original;return result})()`);
+    results.push({ label: `${viewport.name}-study-badge`, ...studyBadge });
     if (viewport.name === "phone") await screenshot("phone-home");
     await evaluate(`localStorage.setItem("english-coach-view-v1","path");location.reload()`); await wait(1400);
     results.push(await inspect(`${viewport.name}-path`));
@@ -99,13 +101,25 @@ try {
     await seed("lesson", { ...checkpoint, phase: "listening" }); await wait(900);
     results.push(await inspect(`${viewport.name}-listening`));
     if (viewport.name === "phone") await screenshot("phone-listening");
+    const b2Checkpoint = { unitId: "b2-inference-compromise", phase: "grammar", item: 0, writing: "", points: { yes: 0, all: 0 }, updatedAt: new Date().toISOString() };
+    await seed("lesson", b2Checkpoint, { level: "B2", lessonId: "b2-inference-compromise", theme: "language" }); await wait(900);
+    const repeatedGrammarBlocks = await evaluate(`(()=>{const texts=[...document.querySelectorAll(".deepOverview p,.deepGuide article p")].map(node=>node.textContent.trim().toLocaleLowerCase("it").replace(/\\s+/g," ")).filter(text=>text.length>40);return [...new Set(texts.filter((text,index)=>texts.indexOf(text)!==index))]})()`);
+    results.push({ label: `${viewport.name}-b2-grammar-content`, repeatedBlocks: repeatedGrammarBlocks });
+    results.push(await inspect(`${viewport.name}-b2-grammar-layout`));
+    if (viewport.name === "phone") await screenshot("phone-b2-grammar");
     await evaluate(`localStorage.setItem("english-coach-view-v1","topics");localStorage.setItem("english-coach-selection-v1",${JSON.stringify(JSON.stringify({ level: "B2", lessonId: "b2-uk-us-english", theme: "varieties" }))});location.reload()`); await wait(1500);
     results.push(await inspect(`${viewport.name}-topics`));
     const varietyLabel = await evaluate(`(()=>{const node=[...document.querySelectorAll(".themeGrid>button>b")].find(item=>item.textContent?.includes("UK"));if(!node)return null;const style=getComputedStyle(node);return{text:node.textContent?.trim(),whiteSpace:style.whiteSpace,wordBreak:style.wordBreak,overflowing:node.scrollWidth>node.clientWidth}})()`);
     results.push({ label: `${viewport.name}-uk-us-label`, ...varietyLabel });
+    await evaluate(`(()=>{const input=document.querySelector(".themeSearch input");const setter=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,"value").set;setter.call(input,"britannico");input.dispatchEvent(new Event("input",{bubbles:true}))})()`); await wait(250);
+    const filteredThemes = await evaluate(`document.querySelectorAll(".themeGrid>button").length`);
+    results.push({ label: `${viewport.name}-theme-search`, resultCount: filteredThemes });
+    await evaluate(`(()=>{const input=document.querySelector(".themeSearch input");const setter=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,"value").set;setter.call(input,"");input.dispatchEvent(new Event("input",{bubbles:true}))})()`); await wait(250);
+    await evaluate(`(()=>{const buttons=[...document.querySelectorAll(".themeGrid>button")];for(let round=0;round<4;round+=1)for(const button of buttons)button.click()})()`); await wait(600);
+    results.push(await inspect(`${viewport.name}-rapid-theme-navigation`));
     if (viewport.name === "phone") { await evaluate(`([...document.querySelectorAll(".themeGrid>button>b")].find(item=>item.textContent?.includes("UK")))?.scrollIntoView({block:"center"})`); await wait(200); await screenshot("phone-topics"); }
   }
-  const failures = results.flatMap(result => [result.horizontalOverflow ? `${result.label}: horizontal overflow` : null, result.overlaps?.length ? `${result.label}: ${result.overlaps.length} control overlaps` : null, result.changed?.length ? `${result.label}: ${result.changed.length} controls resized` : null, result.label?.endsWith("uk-us-label") && (result.text !== "UK US" || result.whiteSpace !== "nowrap" || result.overflowing) ? `${result.label}: label wrapped or overflowed` : null].filter(Boolean));
+  const failures = results.flatMap(result => [result.horizontalOverflow ? `${result.label}: horizontal overflow` : null, result.overlaps?.length ? `${result.label}: ${result.overlaps.length} control overlaps` : null, result.changed?.length ? `${result.label}: ${result.changed.length} controls resized` : null, result.label?.endsWith("study-badge") && (result.whiteSpace !== "nowrap" || result.overflowing) ? `${result.label}: study label wrapped or overflowed` : null, result.label?.endsWith("b2-grammar-content") && result.repeatedBlocks?.length ? `${result.label}: repeated grammar blocks` : null, result.label?.endsWith("uk-us-label") && (result.text !== "UK US" || result.whiteSpace !== "nowrap" || result.overflowing) ? `${result.label}: label wrapped or overflowed` : null, result.label?.endsWith("theme-search") && result.resultCount !== 1 ? `${result.label}: unexpected filter result` : null].filter(Boolean));
   console.log(JSON.stringify({ simulatedMinutes: 60, screenshots: shots, results, failures }, null, 2));
   if (failures.length) process.exitCode = 1;
 } finally {

@@ -26,6 +26,23 @@ export default function GrammarLesson({
     ...englishSources,
     ...sourceWords,
   ];
+  const seenExamples = new Set<string>(),
+    exampleKey = (en: string, it: string) => `${en} ${it}`.toLocaleLowerCase().replace(/\s+/g, " ").trim(),
+    guideSections = guide.sections.map((section) => ({
+      ...section,
+      examples: section.examples?.filter((example) => {
+        const key = exampleKey(example.en, example.it);
+        if (seenExamples.has(key)) return false;
+        seenExamples.add(key);
+        return true;
+      }),
+    })),
+    commentedExamples = unit.grammar.examples.filter((example) => {
+      const key = exampleKey(example.en, example.it);
+      if (seenExamples.has(key)) return false;
+      seenExamples.add(key);
+      return true;
+    });
 
   return (
     <>
@@ -41,7 +58,7 @@ export default function GrammarLesson({
             <ConceptText text={guide.overview} terms={lessonTerms} />
           </div>
 
-          {guide.sections.map((section, index) => (
+          {guideSections.map((section, index) => (
             <article key={section.title}>
               <small>{index + 1} · APPROFONDIMENTO</small>
               <h3>{section.title}</h3>
@@ -64,16 +81,18 @@ export default function GrammarLesson({
             </div>
           </article>
 
-          <article className="commentedExamples">
-            <small>ESEMPI COMMENTATI</small>
-            {unit.grammar.examples.map((example) => (
-              <div key={example.en}>
-                <strong lang="en">{example.en}</strong>
-                <span>{example.it}</span>
-                <ConceptText text={example.noteIt} terms={lessonTerms} />
-              </div>
-            ))}
-          </article>
+          {commentedExamples.length > 0 && (
+            <article className="commentedExamples">
+              <small>ESEMPI COMMENTATI</small>
+              {commentedExamples.map((example) => (
+                <div key={example.en}>
+                  <strong lang="en">{example.en}</strong>
+                  <span>{example.it}</span>
+                  <ConceptText text={example.noteIt} terms={lessonTerms} />
+                </div>
+              ))}
+            </article>
+          )}
 
           <aside className="translationWarning">
             <b>Non tradurre parola per parola</b>

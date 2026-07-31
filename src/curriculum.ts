@@ -23,6 +23,14 @@ export function detailedChoice(choice: Choice): Choice {
   };
 }
 
+export function rotateChoice(choice: Choice, offset: number): Choice {
+  const target = ((offset % choice.options.length) + choice.options.length) % choice.options.length;
+  const shift = (target - choice.answer + choice.options.length) % choice.options.length;
+  if (shift === 0) return choice;
+  const options = choice.options.map((_, index) => choice.options[(index - shift + choice.options.length) % choice.options.length]);
+  return { ...choice, options, answer: (choice.answer + shift) % choice.options.length };
+}
+
 export type MobileUnit = {
   id: string;
   day: number;
@@ -454,7 +462,7 @@ const coreCurriculum: MobileUnit[] = [
   ),
 
   U("b2-inference-compromise", 23, "B2", "Inferenza e compromesso",
-    ["A B2 devi capire anche ciò che è implicito.", "Not exactly transparent è una critica indiretta; short-sighted indica una scelta poco lungimirante.", "On condition that introduce una condizione formale per un compromesso."],
+    ["In questa lezione impari a riconoscere idee implicite: il parlante non le dice direttamente, ma le fa capire attraverso il tono e le parole scelte.", "Not exactly transparent è una critica indiretta; short-sighted indica una scelta poco lungimirante.", "On condition that introduce una condizione formale per un compromesso."],
     ["support X on condition that Y.", "I can see why ..., but ...", "I could get behind that = potrei sostenerlo."],
     [["Rejecting it seems short-sighted.", "Respingerlo sembra poco lungimirante.", "Valutazione critica."], ["The council was not exactly transparent.", "Il comune non è stato proprio trasparente.", "Critica attenuata."], ["I could get behind that.", "Potrei sostenere questa idea.", "Accordo."]],
     [["compromise", "compromesso", "We reached a compromise."], ["transparent", "trasparente", "The process was transparent."], ["concern", "preoccupazione", "Address the concern."], ["support", "sostenere", "Support the proposal."], ["put on hold", "sospendere", "The project was put on hold."]],
@@ -507,15 +515,10 @@ export const mobileCurriculum: MobileUnit[] = orderedCurriculum.map((unit, index
     grammar: {
       ...unit.grammar,
       explanationIt: unit.grammar.explanationIt.map(punctuate),
-      examples: unit.grammar.examples.map((example) => {
-        const note = punctuate(example.noteIt);
-        return {
-          ...example,
-          noteIt: note.length >= 24
-            ? note
-            : `${note} Osserva la forma nella frase «${example.en}» e confrontala con lo schema della lezione.`,
-        };
-      }),
+      examples: unit.grammar.examples.map((example) => ({
+        ...example,
+        noteIt: punctuate(example.noteIt),
+      })),
     },
     writing: {
       ...unit.writing,
@@ -524,8 +527,8 @@ export const mobileCurriculum: MobileUnit[] = orderedCurriculum.map((unit, index
         hintIt: `${punctuate(exercise.hintIt)} La forma attesa è «${exercise.answers[0]}»: rileggi la frase completa e controlla la posizione della parola.`,
       })),
     },
-    listening: { ...unit.listening, questions: unit.listening.questions.map(detailedChoice) },
-    quickCheck: unit.quickCheck.map(detailedChoice),
+    listening: { ...unit.listening, questions: unit.listening.questions.map((choice, choiceIndex) => rotateChoice(detailedChoice(choice), index + choiceIndex)) },
+    quickCheck: unit.quickCheck.map((choice, choiceIndex) => rotateChoice(detailedChoice(choice), index + choiceIndex + 1)),
   };
 });
 

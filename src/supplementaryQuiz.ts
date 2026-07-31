@@ -89,9 +89,9 @@ export function supplementaryBankFor(unit: MobileUnit): Choice[] {
       explanationIt: `${example.en} ${example.noteIt}`,
     });
     bank.push({
-      prompt: `Dalla frase alla regola · Quale schema spiega meglio “${example.en}”?`,
-      ...optionsFor(unit.grammar.formulas[index % unit.grammar.formulas.length], unit.grammar.formulas),
-      explanationIt: `${unit.grammar.formulas[index % unit.grammar.formulas.length]} ${example.noteIt}`,
+      prompt: `Dalla frase alla spiegazione · Quale osservazione descrive meglio “${example.en}”?`,
+      ...optionsFor(example.noteIt, unit.grammar.examples.map(item => item.noteIt)),
+      explanationIt: `${example.noteIt} La frase corretta è: ${example.en}`,
     });
   });
 

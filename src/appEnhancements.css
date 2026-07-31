@@ -1220,8 +1220,28 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
   word-break: keep-all;
 }
 
-:is(button, h1, h2, h3, p, small, strong, span, label, summary, li, blockquote) {
+:is(button, h1, h2, h3, p, small, strong, b, span, label, summary, li, blockquote, em) {
   hyphens: none;
   overflow-wrap: normal;
   word-break: normal;
 }
+
+.smartStudyHome > summary > b {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.themeSearch {
+  min-height: 46px;
+  display: grid;
+  grid-template-columns: 30px 1fr auto;
+  align-items: center;
+  margin: -5px 4px 12px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: #fff;
+}
+.themeSearch > span { color: var(--green); text-align: center; font-size: 20px; }
+.themeSearch input { min-width: 0; height: 44px; border: 0; outline: 0; background: transparent; color: var(--ink); }
+.themeSearch button { width: 36px; height: 36px; border: 0; border-radius: 11px; background: #efede6; color: var(--muted); font-size: 20px; }

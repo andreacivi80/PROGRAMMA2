@@ -1,10 +1,10 @@
-# English Coach 6.5 — stato verificato
+# English Coach 6.6 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 6.5, con data e identificativo visibili.
+- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 6.6, con data e identificativo visibili.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 - **VERIFICATO** — i nomi dell’archivio locale restano stabili tra le revisioni: una nuova pubblicazione sostituisce l’interfaccia, non i dati dell’utente.
@@ -115,8 +115,10 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 
 - **IMPLEMENTATO** — sezioni pesanti caricate soltanto all’apertura; build locale esclusa dalla cartella sorgente finale.
 - **VERIFICATO** — strumenti di compilazione aggiornati alla versione corretta e controllo di sicurezza senza vulnerabilità note.
-- **VERIFICATO** — 221 pulsanti, audio, stop, velocità, salti, ripassi, giochi, missioni e persistenza coperti dagli audit statici.
+- **VERIFICATO** — 248 pulsanti, audio, stop, velocità, salti, ripassi, giochi, missioni e persistenza coperti dagli audit statici.
 - **VERIFICATO** — test automatici per 60 lezioni, 30 prove d’ingresso, profili CEFR, duplicati, banche esercizi e struttura UI.
+- **VERIFICATO** — 1.846 risposte controllate per indice corretto, coerenza con spiegazione o testo sorgente, alternative duplicate e distribuzione della posizione corretta.
+- **VERIFICATO** — scansione integrale di 526 schermate reali: otto fasi di ciascuna delle 60 lezioni, tutte le viste principali e tutti i 26 percorsi tematici, senza sovrapposizioni, parole spezzate o contenuti fuori bordo.
 - **VERIFICATO** — il test d’ingresso usa 3 alternative in A1–A2, 4 in B1–B2 e 5 in C1, con soglie separate di lettura/ascolto e produzione avanzata obbligatoria per B2/C1.
 - **VERIFICATO** — profili di confine, abilità sbilanciate e 500 compilazioni casuali non ottengono un livello alto senza i prerequisiti.
 - **VERIFICATO** — 41 scenari di utilizzo concatenati simulano un’ora di percorso: primo accesso, livelli, viste, errori volontari, salti, indietro, refresh, chiusura, ripresa, preferenze, test d’ingresso, backup e quiz visivo.

@@ -55,9 +55,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "6.5";
+const APP_VERSION = "6.6";
 const BUILD_DATE = "31 luglio 2026";
-const BUILD_ID = "EC-6.5-0731";
+const BUILD_ID = "EC-6.6-0731";
 type View =
   | "home"
   | "path"
@@ -1343,7 +1343,7 @@ function GuidedListening({ unit, src }: { unit: MobileUnit; src: string }) {
                 ? "Pausa"
                 : status === "paused"
                   ? "Riprendi"
-                  : "Riproduci dialogo"}
+                  : "Ascolta"}
           </button>
           <button
             type="button"
@@ -1723,6 +1723,7 @@ export default function Home() {
   const [selectedLevel, setSelectedLevel] = useState<Cefr>("A1"),
     [selectedLessonId, setSelectedLessonId] = useState(mobileCurriculum[0].id),
     [selectedTheme, setSelectedTheme] = useState<ThemeId>("food"),
+    [themeSearch, setThemeSearch] = useState(""),
     [audioAccent, setAudioAccent] = useState<AudioAccent>(getAudioAccent),
     [audioRate, setAudioRate] = useState<AudioRate>(getAudioRate),
     [errorSearch, setErrorSearch] = useState(""),
@@ -3769,9 +3770,29 @@ export default function Home() {
               ))}
             </div>
           </details>
+          <div className="themeSearch">
+            <span aria-hidden="true">⌕</span>
+            <input
+              type="search"
+              aria-label="Cerca nei temi"
+              placeholder="Cerca un tema"
+              value={themeSearch}
+              onChange={(event) => setThemeSearch(event.target.value)}
+            />
+            {themeSearch && (
+              <button type="button" aria-label="Cancella ricerca" onClick={() => setThemeSearch("")}>
+                ×
+              </button>
+            )}
+          </div>
           <div className="themeGrid">
             {themes
               .filter((theme) => themeSupportsLevel(theme.id, selectedLevel))
+              .filter((theme) =>
+                `${theme.title} ${theme.description}`
+                  .toLocaleLowerCase("it")
+                  .includes(themeSearch.trim().toLocaleLowerCase("it")),
+              )
               .map((theme) => (
                 <button
                   key={theme.id}
