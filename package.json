@@ -1,6 +1,6 @@
 {
   "name": "english-coach-public",
-  "version": "5.3.0",
+  "version": "5.4.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,7 +11,8 @@
     "audit:course": "node tools/course-audit.mjs",
     "audit:diversity": "node tools/exercise-diversity-audit.mjs",
     "audit:persistence": "node tools/persistence-audit.mjs",
-    "test": "npm run audit:placement && npm run audit:ui && npm run audit:course && npm run audit:diversity && npm run audit:persistence && npm run build"
+    "audit:audio": "node tools/audio-audit.mjs",
+    "test": "npm run audit:placement && npm run audit:ui && npm run audit:course && npm run audit:diversity && npm run audit:persistence && npm run audit:audio && npm run build"
   },
   "dependencies": {
     "@vitejs/plugin-react": "6.0.2",

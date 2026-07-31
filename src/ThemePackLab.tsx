@@ -5,6 +5,7 @@ import AuthenticAudio from "./AuthenticAudio";
 import MixedText from "./MixedText";
 import ConceptText from "./ConceptText";
 import { accentComprehension } from "./accentComprehension";
+import { getAudioAccent } from "./preferences";
 import {
   applyDialogueVoice,
   dialogueRole,
@@ -264,7 +265,7 @@ export default function ThemePackLab({
       (window as typeof window & { webkitSpeechRecognition?: new () => any }).webkitSpeechRecognition;
     if (!Ctor) { setSpoken("Riconoscimento vocale non disponibile."); return; }
     const recognition = new Ctor();
-    recognition.lang = "en-GB"; recognition.interimResults = false; recognition.continuous = false;
+    recognition.lang = getAudioAccent(); recognition.interimResults = false; recognition.continuous = false;
     recognition.onresult = (event: any) => setSpoken(event.results?.[0]?.[0]?.transcript ?? "");
     recognition.onerror = () => { setSpoken("Voce non riconosciuta. Riprova o salta."); setRecording(false); };
     recognition.onend = () => setRecording(false); setRecording(true); recognition.start();

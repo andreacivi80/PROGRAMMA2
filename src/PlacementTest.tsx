@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Cefr } from "./curriculum";
 import { evaluatePlacement, placementItems, placementLevels, type ProductionEvidence } from "./placementModel";
+import { getAudioAccent } from "./preferences";
 
 const kindLabel = { grammar: "Grammatica", vocabulary: "Lessico", reading: "Comprensione scritta", listening: "Comprensione orale" };
 const draftKey = "english-coach-placement-draft-v2";
@@ -58,7 +59,7 @@ export default function PlacementTest({ onClose, onChoose }: { onClose: () => vo
       return;
     }
     const recognition = new Recognition();
-    recognition.lang = "en-GB";
+    recognition.lang = getAudioAccent();
     recognition.interimResults = true;
     recognition.continuous = false;
     setRecording(true);

@@ -51,9 +51,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "5.3";
+const APP_VERSION = "5.4";
 const BUILD_DATE = "31 luglio 2026";
-const BUILD_ID = "EC-5.3-0731";
+const BUILD_ID = "EC-5.4-0731";
 type View =
   | "home"
   | "path"
@@ -741,9 +741,11 @@ function playVisualAudio(word: string, browserOnly = false) {
     const voices = speechSynthesis
         .getVoices()
         .filter((v) => /^en(?:-|$)/i.test(v.lang)),
+      preferredAccent = getAudioAccent(),
       voice =
-        voices.find((v) => /^en-US/i.test(v.lang)) ??
+        voices.find((v) => v.lang.startsWith(preferredAccent)) ??
         voices.find((v) => /^en-GB/i.test(v.lang)) ??
+        voices.find((v) => /^en-US/i.test(v.lang)) ??
         voices[0];
     if (!voice) return;
     const utterance = new SpeechSynthesisUtterance(word);
@@ -1808,9 +1810,11 @@ export default function Home() {
       const voices = speechSynthesis
           .getVoices()
           .filter((v) => /^en(?:-|$)/i.test(v.lang)),
+        preferredAccent = getAudioAccent(),
         voice =
-          voices.find((v) => /^en-US/i.test(v.lang)) ??
+          voices.find((v) => v.lang.startsWith(preferredAccent)) ??
           voices.find((v) => /^en-GB/i.test(v.lang)) ??
+          voices.find((v) => /^en-US/i.test(v.lang)) ??
           voices[0];
       if (!voice) return;
       speechSynthesis.cancel();

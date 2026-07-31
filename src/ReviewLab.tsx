@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import type { Choice, MobileUnit } from "./curriculum";
 import { readingPassages } from "./readingLab";
 import ConceptText from "./ConceptText";
+import { getAudioAccent } from "./preferences";
 
 type ReviewArea =
   | "Grammatica"
@@ -119,7 +120,7 @@ function speak(text: string) {
   if (!("speechSynthesis" in window)) return;
   speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-GB";
+  utterance.lang = getAudioAccent();
   utterance.rate = 0.92;
   speechSynthesis.speak(utterance);
 }
@@ -178,7 +179,7 @@ export default function ReviewLab({ level, units, final, onClose, onComplete, on
     const Ctor = (window as typeof window & { SpeechRecognition?: new () => any; webkitSpeechRecognition?: new () => any }).SpeechRecognition ??
       (window as typeof window & { webkitSpeechRecognition?: new () => any }).webkitSpeechRecognition;
     if (!Ctor) { setSpoken("Riconoscimento vocale non disponibile in questo browser."); return; }
-    const recognition = new Ctor(); recognition.lang = "en-GB"; recognition.interimResults = false; recognition.continuous = false;
+    const recognition = new Ctor(); recognition.lang = getAudioAccent(); recognition.interimResults = false; recognition.continuous = false;
     recognition.onresult = (event: any) => setSpoken(event.results?.[0]?.[0]?.transcript ?? "");
     recognition.onerror = () => { setSpoken("Voce non riconosciuta. Puoi riprovare o saltare."); setRecording(false); };
     recognition.onend = () => setRecording(false); setRecording(true); recognition.start();

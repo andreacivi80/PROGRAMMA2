@@ -1,10 +1,10 @@
-# English Coach 5.3 — stato verificato
+# English Coach 5.4 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 5.2, con data e identificativo visibili.
+- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 5.4, con data e identificativo visibili.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 
@@ -47,6 +47,7 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 - **IMPLEMENTATO** — audio locale prioritario, sintesi vocale come alternativa, velocità, pausa, ripresa, stop e arresto al cambio attività.
 - **IMPLEMENTATO** — trascrizione contenuta e sincronizzata, segmenti riascoltabili, dettato e domande generali/dettagliate.
 - **IMPLEMENTATO** — scelta britannica/americana applicata anche al riconoscimento vocale.
+- **VERIFICATO** — 1.744 file WAV controllati automaticamente: intestazione valida, dimensione utile e nessun audio richiesto mancante.
 - **IMPLEMENTATO** — registrazione visibile, nuovo tentativo, riascolto della propria voce e parole non riconosciute riascoltabili.
 - **VERIFICATO** — l’interfaccia parla correttamente di “parole riconosciute”, non di analisi fonetica completa.
 - **RINVIATO CON MOTIVAZIONE** — fonemi, accento e ritmo specialistici richiedono un motore fonetico dedicato non disponibile offline.
