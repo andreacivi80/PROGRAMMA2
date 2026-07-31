@@ -1,4 +1,4 @@
-const CACHE = "english-coach-v42";
+const CACHE = "english-coach-v43";
 const BASE = "/PROGRAMMA2/";
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.add(BASE)));

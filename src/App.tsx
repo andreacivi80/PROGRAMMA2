@@ -45,7 +45,9 @@ import "./version29.css";
 import "./wordGames.css";
 import "./version33.css";
 
-const APP_VERSION = "4.2";
+const APP_VERSION = "4.3";
+const BUILD_DATE = "31 luglio 2026";
+const BUILD_ID = "EC-4.3-0731";
 type View =
   | "home"
   | "path"
@@ -1437,7 +1439,8 @@ export default function Home() {
     [audioAccent, setAudioAccent] = useState<AudioAccent>(getAudioAccent),
     [audioRate, setAudioRate] = useState<AudioRate>(getAudioRate),
     [errorSearch, setErrorSearch] = useState(""),
-    [errorKind, setErrorKind] = useState<ReviewKind | "Tutti">("Tutti");
+    [errorKind, setErrorKind] = useState<ReviewKind | "Tutti">("Tutti"),
+    [sessionMinutes, setSessionMinutes] = useState<5 | 15 | 30 | null>(null);
   const themeResultsRef = useRef<HTMLElement | null>(null);
   const save = async (p: Progress) => {
     setSync("saving");
@@ -1642,6 +1645,12 @@ export default function Home() {
   const finalQuiz = useMemo(() => finalQuizFor(unit), [unit]),
     listeningQuiz = useMemo(() => listeningQuizFor(unit), [unit]),
     activeBonus = bonusQuiz.slice(0, bonusMinutes);
+  const activeStages: Phase[] =
+    sessionMinutes === 5
+      ? ["examples", "cloze", "speaking", "quiz"]
+      : sessionMinutes === 15
+        ? ["grammar", "vocabulary", "cloze", "listening", "speaking", "quiz"]
+        : stages;
   const practiceCloze = useMemo(() => practiceFor(unit), [unit]);
   const speechIsError =
       /^(Il riconoscimento|Permesso|Non ho|Ho sentito|Microfono|Il servizio)/.test(
@@ -1701,10 +1710,15 @@ export default function Home() {
     setDictation("");
     setDictationChecked(false);
   };
-  const beginUnit = (u: MobileUnit, checkpoint?: SessionCheckpoint) => {
+  const beginUnit = (
+    u: MobileUnit,
+    checkpoint?: SessionCheckpoint,
+    target: 5 | 15 | 30 | null = sessionMinutes,
+  ) => {
+    const firstPhase: Phase = target === 5 ? "examples" : "grammar";
     stopActiveAudio?.();
     setUnit(u);
-    setPhase(checkpoint?.phase ?? "grammar");
+    setPhase(checkpoint?.phase ?? firstPhase);
     setItem(checkpoint?.item ?? 0);
     setInput("");
     setChecked(null);
@@ -1731,7 +1745,8 @@ export default function Home() {
     delete all[unitId];
     localStorage.setItem("english-coach-checkpoints-v1", JSON.stringify(all));
   };
-  const open = (u: MobileUnit) => {
+  const open = (u: MobileUnit, target: 5 | 15 | 30 | null = null) => {
+    setSessionMinutes(target);
     let checkpoint: SessionCheckpoint | undefined;
     try {
       checkpoint = JSON.parse(
@@ -1749,7 +1764,7 @@ export default function Home() {
       return;
     }
     if (checkpoint) removeCheckpoint(u.id);
-    beginUnit(u);
+    beginUnit(u, undefined, target);
   };
   const chooseLevel = (level: Cefr) => {
     setSelectedLevel(level);
@@ -1767,7 +1782,7 @@ export default function Home() {
     );
   };
   const nextPhase = () => {
-    setPhase(stages[stages.indexOf(phase) + 1] ?? "complete");
+    setPhase(activeStages[activeStages.indexOf(phase) + 1] ?? "complete");
     clear();
     scrollTo(0, 0);
   };
@@ -1778,13 +1793,13 @@ export default function Home() {
       scrollTo(0, 0);
       return;
     }
-    const index = stages.indexOf(phase);
+    const index = activeStages.indexOf(phase);
     if (index <= 0) {
       setView("home");
       scrollTo(0, 0);
       return;
     }
-    setPhase(stages[index - 1]);
+    setPhase(activeStages[index - 1]);
     clear();
     scrollTo(0, 0);
   };
@@ -2379,9 +2394,15 @@ export default function Home() {
         mobileCurriculum.find((candidate) => candidate.cefr === selectedLevel)!
       );
     },
-    adaptiveOptions = ([20, 30, 40] as const).map((minutes) => ({
+    adaptiveOptions = ([5, 15, 30] as const).map((minutes) => ({
       minutes,
       lesson: lessonForTime(minutes),
+      detail:
+        minutes === 5
+          ? "Ripasso, frase e pronuncia"
+          : minutes === 15
+            ? "Regola, pratica, ascolto e voce"
+            : "Percorso completo con scrittura",
     }));
   const weekKeys = Array.from({ length: 7 }, (_, index) => {
       const date = new Date();
@@ -2719,7 +2740,7 @@ export default function Home() {
                 <button
                   type="button"
                   key={option.minutes}
-                  onClick={() => open(option.lesson)}
+                  onClick={() => open(option.lesson, option.minutes)}
                 >
                   <b>
                     {option.minutes}
@@ -2727,12 +2748,21 @@ export default function Home() {
                   </b>
                   <span>
                     <strong>{option.lesson.title}</strong>
-                    <small>
-                      {option.lesson.minutes} min · {option.lesson.cefr}
-                    </small>
+                    <small>{option.detail}</small>
                   </span>
                 </button>
               ))}
+              <button
+                type="button"
+                className="fullSessionChoice"
+                onClick={() => open(lessonForTime(40))}
+              >
+                <b>∞</b>
+                <span>
+                  <strong>Sessione completa</strong>
+                  <small>Tutte le attività · {lessonForTime(40).minutes} min</small>
+                </span>
+              </button>
             </div>
           </section>
         </details>
@@ -3732,6 +3762,18 @@ export default function Home() {
               </button>
             </div>
           </section>
+          <details className="buildInfo">
+            <summary>Versione e aggiornamenti</summary>
+            <div>
+              <strong>English Coach {APP_VERSION}</strong>
+              <small>{BUILD_DATE} · {BUILD_ID}</small>
+              <p>
+                Nuovi allenamenti da 5, 15 e 30 minuti, sessione completa e
+                quaderno personale degli errori. I progressi precedenti sono
+                conservati automaticamente.
+              </p>
+            </div>
+          </details>
         </div>
       )}
       {view === "errors" && (
@@ -4376,7 +4418,7 @@ export default function Home() {
             <div>
               <i
                 style={{
-                  width: `${phase === "complete" || phase === "bonus" ? 100 : ((stages.indexOf(phase) + 1) / stages.length) * 100}%`,
+                  width: `${phase === "complete" || phase === "bonus" ? 100 : ((activeStages.indexOf(phase) + 1) / activeStages.length) * 100}%`,
                 }}
               />
             </div>
