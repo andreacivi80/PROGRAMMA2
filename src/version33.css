@@ -139,6 +139,261 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
   }
 }
 
+.examBreakdown {
+  width: 100%;
+  margin: 14px 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.examBreakdown article {
+  padding: 12px 8px;
+  display: grid;
+  gap: 5px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  text-align: center;
+}
+
+.examBreakdown small {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.examBreakdown strong {
+  color: var(--green);
+  font-size: 21px;
+}
+
+.examDecision {
+  width: 100%;
+  margin: 12px 0;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--mint);
+  text-align: left;
+}
+
+.examDecision h2 {
+  margin-bottom: 7px;
+  font-size: 17px;
+}
+
+.examDecision p {
+  margin-bottom: 8px;
+  color: var(--deep);
+  font-size: 12px;
+}
+
+.examDecision b {
+  color: var(--green);
+  font-size: 11px;
+}
+
+.printReport {
+  width: 100%;
+  min-height: 50px;
+  margin-bottom: 8px;
+  border: 1px solid var(--green);
+  border-radius: 15px;
+  background: #fff;
+  color: var(--green);
+  font-weight: 900;
+}
+
+.questionArea {
+  display: inline-block;
+  margin: 0 0 9px;
+  padding: 4px 7px;
+  border-radius: 99px;
+  background: var(--mint);
+  color: var(--green);
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.monthlyPanel {
+  margin: 12px 0;
+  padding: 18px;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--card);
+}
+
+.monthlyPanel h2 {
+  margin-bottom: 5px;
+  font-size: 19px;
+}
+
+.monthlyPanel p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.monthlyPanel > div:not(:first-child) {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
+.monthlyPanel > div:not(:first-child) strong {
+  font-size: 24px;
+}
+
+.monthlyPanel > div:not(:first-child) small {
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.displayPreferencePanel {
+  margin: 12px 0;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--card);
+}
+
+.displayPreferencePanel h2 {
+  margin-bottom: 5px;
+}
+
+.displayPreferencePanel p {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.displayPreferenceRow {
+  margin-top: 9px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 7px;
+  align-items: center;
+}
+
+.displayPreferenceRow strong {
+  font-size: 11px;
+}
+
+.displayPreferenceRow button {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.displayPreferenceRow button.active {
+  border-color: var(--green);
+  background: var(--green);
+  color: #fff;
+}
+
+.app.text-large {
+  font-size: 112%;
+}
+
+.app.mode-dark {
+  --ink: #eef7f3;
+  --muted: #aec0b8;
+  --paper: #10231e;
+  --card: #18332b;
+  --line: #315047;
+  --mint: #21483d;
+  --deep: #dff5eb;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.mode-dark :is(.screen, .lesson, .placementView, .errorNotebookView, .reviewView, .themePackView) {
+  background: var(--paper);
+}
+
+.mode-dark :is(.card, .metrics article, .monthlyPanel, .weeklyGoalPanel, .audioPreferencePanel, .displayPreferencePanel, .masteryPanel, .recovery, .buildInfo, .errorCards > section, .placementPanel, .placementResult, .skillsHub, .skillSession) {
+  border-color: var(--line);
+  background: var(--card);
+  color: var(--ink);
+}
+
+.mode-dark :is(.card, .metrics article, .monthlyPanel, .weeklyGoalPanel, .audioPreferencePanel, .displayPreferencePanel, .masteryPanel, .recovery, .buildInfo) :is(h1, h2, h3, strong, b, span, label) {
+  color: var(--ink);
+}
+
+.mode-dark :is(.card, .metrics article, .monthlyPanel, .weeklyGoalPanel, .audioPreferencePanel, .displayPreferencePanel, .masteryPanel, .recovery, .buildInfo) :is(p, small) {
+  color: var(--muted);
+}
+
+.mode-dark :is(button, input, textarea, select, .examples > div, .vocabularyList article, .errorCards > section, .attemptHistory, .examBreakdown article) {
+  color: var(--ink);
+}
+
+.mode-dark :is(.answers button, .themeGrid > button, .skillsCards button, .pairChoices button, .dialogueChoices button, .displayPreferenceRow button, .placementLevelChoices button, .printReport) {
+  background: #1d3b32;
+}
+
+.mode-dark :is(.audioPreferenceRow button, .weeklyGoalButtons button, .masteryGrid article, .recovery input, .recovery textarea, .errorSearch input, .errorAdvancedFilters select) {
+  border-color: var(--line);
+  background: #1d3b32;
+  color: var(--ink);
+}
+
+.mode-dark :is(.audioPreferenceRow button.active, .weeklyGoalButtons button.active, .displayPreferenceRow button.active) {
+  background: #2a8d70;
+  color: #fff;
+}
+
+.app.mode-dark > nav {
+  border-color: var(--line);
+  background: #173129f2 !important;
+}
+
+.app.mode-dark > nav button {
+  color: #a9c0b7;
+}
+
+.app.mode-dark > nav button.active {
+  color: #7be0bf;
+}
+
+.mode-dark .masteryHeading > b {
+  color: #6c5316 !important;
+}
+
+@media (max-width: 430px) {
+  .monthlyPanel {
+    grid-template-columns: 1fr 1fr;
+  }
+  .monthlyPanel > div:first-child {
+    grid-column: 1 / -1;
+  }
+  .examBreakdown {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  body {
+    background: #fff !important;
+  }
+  .reviewTop,
+  .reviewResult > button,
+  .app > nav {
+    display: none !important;
+  }
+  .reviewResult {
+    box-shadow: none !important;
+    border: 0 !important;
+  }
+}
+
 .welcomeSheet {
   text-align: left;
 }

@@ -134,10 +134,14 @@ themeQuestions:pack.includes("Salta domanda")
   ,readingOneAtATime:app.includes("slice(readingQuestionIndex,readingQuestionIndex+1)")&&app.includes("setReadingQuestionIndex")
   ,compactLevelPicker:app.includes('className="compactLevelPicker"')&&css.includes(".compactLevelPicker>summary")
   ,mainViewPersists:app.includes("english-coach-view-v1")&&app.includes("initialMainView")
+  ,resumeOnlyOnLessonOpen:(readFileSync("src/App.tsx","utf8").match(/setResumePrompt\(\{ unit: u, checkpoint \}\)/g)||[]).length===1
   ,themePersists:app.includes("theme: selectedTheme")&&app.includes("setSelectedTheme(savedTheme)")
   ,freePathStartsOpen:app.includes('className="homeChoice freeChoice" open')
   ,audioPreferences:app.includes("saveAudioAccent")&&app.includes("saveAudioRate")&&app.includes("r.lang = audioAccent")
   ,errorNotebook:app.includes("I miei errori")&&app.includes("filteredErrors")&&app.includes("wrongCount")&&app.includes("correctStreak")&&app.includes("Riprova")
+  ,monthlyDashboard:app.includes("monthlyMinutes")&&app.includes("elementi consolidati")
+  ,displayPreferences:app.includes("english-coach-color-mode")&&app.includes("english-coach-text-size")
+  ,printableFinalReport:review.includes("window.print()")&&review.includes("examBreakdown")&&review.includes("previousScore")
  },
  languageFocus:{
   themeEntry:app.includes("Verbi e false friends"),

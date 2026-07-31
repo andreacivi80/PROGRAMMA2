@@ -47,9 +47,9 @@ import "./version29.css";
 import "./wordGames.css";
 import "./version33.css";
 
-const APP_VERSION = "4.5";
+const APP_VERSION = "4.6";
 const BUILD_DATE = "31 luglio 2026";
-const BUILD_ID = "EC-4.5-0731";
+const BUILD_ID = "EC-4.6-0731";
 type View =
   | "home"
   | "path"
@@ -1483,6 +1483,16 @@ export default function Home() {
         !localStorage.getItem("english-coach-selection-v1"),
     ),
     [learningGoal, setLearningGoal] = useState("Conversazione quotidiana"),
+    [colorMode, setColorMode] = useState<"light" | "dark">(
+      () =>
+        (localStorage.getItem("english-coach-color-mode") as "light" | "dark") ||
+        "light",
+    ),
+    [textSize, setTextSize] = useState<"normal" | "large">(
+      () =>
+        (localStorage.getItem("english-coach-text-size") as "normal" | "large") ||
+        "normal",
+    ),
     [writingNotes, setWritingNotes] = useState<string[] | null>(null),
     [writingSuggestion, setWritingSuggestion] = useState(""),
     [dictation, setDictation] = useState(""),
@@ -1609,18 +1619,6 @@ export default function Home() {
     setSelectedLevel(savedLevel ?? selected.cefr);
     setSelectedLessonId(savedChoiceId ?? selected.id);
     if (savedTheme) setSelectedTheme(savedTheme);
-    try {
-      const checkpoints = Object.values(
-          JSON.parse(
-            localStorage.getItem("english-coach-checkpoints-v1") || "{}",
-          ) as Record<string, SessionCheckpoint>,
-        ).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)),
-        latest = checkpoints[0],
-        savedUnit = latest
-          ? mobileCurriculum.find((candidate) => candidate.id === latest.unitId)
-          : undefined;
-      if (latest && savedUnit) setResumePrompt({ unit: savedUnit, checkpoint: latest });
-    } catch {}
     setSync("offline");
   }, []);
   useEffect(() => {
@@ -2545,6 +2543,16 @@ export default function Home() {
       return date.toISOString().slice(0, 10);
     }),
     weeklyActive = weekKeys.filter((key) => progress.activity[key]).length,
+    totalMinutes = Object.values(progress.activity).reduce(
+      (sum, day) => sum + day.minutes,
+      0,
+    ),
+    monthPrefix = dateKey().slice(0, 7),
+    monthActivity = Object.entries(progress.activity).filter(([key]) =>
+      key.startsWith(monthPrefix),
+    ),
+    monthlyMinutes = monthActivity.reduce((sum, [, day]) => sum + day.minutes, 0),
+    monthlyActive = monthActivity.length,
     setWeeklyGoal = (goal: number) => {
       const updated = { ...progress, weeklyGoal: goal };
       setProgress(updated);
@@ -2753,7 +2761,7 @@ export default function Home() {
       (readingCorrect / reading.questions.length) * 100,
     );
   return (
-    <main className="app">
+    <main className={`app mode-${colorMode} text-${textSize}`}>
       <header>
         <button className="brand" onClick={() => setView("home")}>
           <span className="logo">EC</span>
@@ -3737,6 +3745,11 @@ export default function Home() {
           <Gauge value={performance} />
           <div className="metrics">
             <article>
+              <span>Livello</span>
+              <b>{selectedLevel}</b>
+              <small>livello selezionato</small>
+            </article>
+            <article>
               <span>Media</span>
               <b>{average ? `${average}%` : "—"}</b>
               <small>attività completate</small>
@@ -3750,6 +3763,11 @@ export default function Home() {
               <span>Letture</span>
               <b>{Object.keys(progress.reading ?? {}).length}</b>
               <small>testi completati</small>
+            </article>
+            <article>
+              <span>Tempo reale</span>
+              <b>{totalMinutes} min</b>
+              <small>studio completato</small>
             </article>
           </div>
           <section className="card">
@@ -3779,6 +3797,21 @@ export default function Home() {
                   </div>
                 );
               })}
+            </div>
+          </section>
+          <section className="monthlyPanel">
+            <div>
+              <span className="eyebrow">Questo mese</span>
+              <h2>{monthlyActive} giorni attivi</h2>
+              <p>{monthlyMinutes} minuti di studio reale registrati.</p>
+            </div>
+            <div>
+              <strong>{smartReviews.filter((review) => review.mastered).length}</strong>
+              <small>elementi consolidati</small>
+            </div>
+            <div>
+              <strong>{smartReviews.filter((review) => !review.mastered).length}</strong>
+              <small>elementi da rinforzare</small>
             </div>
           </section>
           <section className="weeklyGoalPanel">
@@ -3858,6 +3891,23 @@ export default function Home() {
                   </button>
                 ))}
               </div>
+            </div>
+          </section>
+          <section className="displayPreferencePanel">
+            <div>
+              <span className="eyebrow">Leggibilità</span>
+              <h2>Aspetto del programma</h2>
+              <p>Le preferenze restano salvate su questo dispositivo.</p>
+            </div>
+            <div className="displayPreferenceRow">
+              <strong>Colori</strong>
+              <button className={colorMode === "light" ? "active" : ""} onClick={() => { setColorMode("light"); localStorage.setItem("english-coach-color-mode", "light"); }}>Chiaro</button>
+              <button className={colorMode === "dark" ? "active" : ""} onClick={() => { setColorMode("dark"); localStorage.setItem("english-coach-color-mode", "dark"); }}>Scuro</button>
+            </div>
+            <div className="displayPreferenceRow">
+              <strong>Testo</strong>
+              <button className={textSize === "normal" ? "active" : ""} onClick={() => { setTextSize("normal"); localStorage.setItem("english-coach-text-size", "normal"); }}>Normale</button>
+              <button className={textSize === "large" ? "active" : ""} onClick={() => { setTextSize("large"); localStorage.setItem("english-coach-text-size", "large"); }}>Più grande</button>
             </div>
           </section>
           <section className="masteryPanel">
@@ -3965,8 +4015,8 @@ export default function Home() {
               <strong>English Coach {APP_VERSION}</strong>
               <small>{BUILD_DATE} · {BUILD_ID}</small>
               <p>
-                Test iniziale progressivo, ripresa completa delle sessioni,
-                calendario locale e quaderno errori con filtri e storico. I
+                Dashboard mensile, rapporto finale stampabile, modalità scura,
+                testo regolabile, test iniziale e laboratori pratici. I
                 progressi precedenti sono conservati automaticamente.
               </p>
             </div>
@@ -4417,6 +4467,10 @@ export default function Home() {
               level={reviewSpec.level}
               units={reviewUnits}
               final={reviewSpec.end === 12}
+              previousScore={
+                progress.reviews?.[reviewId(reviewSpec.level, reviewSpec.end)]
+                  ?.score
+              }
               onClose={() => {
                 setView("path");
                 setReviewSpec(null);

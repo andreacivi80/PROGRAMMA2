@@ -2,7 +2,8 @@ import { useMemo, useState } from "react";
 import type { Choice, MobileUnit } from "./curriculum";
 import ConceptText from "./ConceptText";
 
-type ReviewQuestion = Choice & { unitId: string; unitTitle: string };
+type ReviewArea = "Grammatica" | "Vocabolario" | "Uso nel contesto";
+type ReviewQuestion = Choice & { unitId: string; unitTitle: string; area: ReviewArea };
 type Props = {
   level: string;
   units: MobileUnit[];
@@ -10,6 +11,7 @@ type Props = {
   onClose: () => void;
   onComplete: (score: number) => void;
   onOpenUnit: (unit: MobileUnit) => void;
+  previousScore?: number;
 };
 const shuffle = <T,>(values: T[]) =>
   [...values].sort(() => Math.random() - 0.5);
@@ -40,6 +42,7 @@ function randomChoice(choice: Choice, unit: MobileUnit): ReviewQuestion {
     answer,
     unitId: unit.id,
     unitTitle: unit.title,
+    area: "Uso nel contesto",
   };
 }
 function buildBank(units: MobileUnit[], target: number): ReviewQuestion[] {
@@ -62,6 +65,7 @@ function buildBank(units: MobileUnit[], target: number): ReviewQuestion[] {
         explanationIt: `${word.en} significa «${word.it}». Esempio: ${word.example}`,
         unitId: unit.id,
         unitTitle: unit.title,
+        area: "Vocabolario",
       });
     });
     unit.grammar.examples.forEach((example) => {
@@ -75,6 +79,7 @@ function buildBank(units: MobileUnit[], target: number): ReviewQuestion[] {
         explanationIt: example.noteIt,
         unitId: unit.id,
         unitTitle: unit.title,
+        area: "Grammatica",
       });
     });
     unit.writing.cloze.forEach((item) => {
@@ -86,6 +91,7 @@ function buildBank(units: MobileUnit[], target: number): ReviewQuestion[] {
         explanationIt: item.hintIt,
         unitId: unit.id,
         unitTitle: unit.title,
+        area: "Uso nel contesto",
       });
     });
   });
@@ -106,12 +112,18 @@ export default function ReviewLab({
   onClose,
   onComplete,
   onOpenUnit,
+  previousScore,
 }: Props) {
   const [run, setRun] = useState(0),
     [index, setIndex] = useState(0),
     [pick, setPick] = useState<number | null>(null),
     [correct, setCorrect] = useState(0),
     [weak, setWeak] = useState<Record<string, number>>({}),
+    [areas, setAreas] = useState<Record<ReviewArea, { yes: number; all: number }>>({
+      Grammatica: { yes: 0, all: 0 },
+      Vocabolario: { yes: 0, all: 0 },
+      "Uso nel contesto": { yes: 0, all: 0 },
+    }),
     [finished, setFinished] = useState(false),
     target = final ? 30 : 20;
   const questions = useMemo(
@@ -127,6 +139,13 @@ export default function ReviewLab({
   const answer = (option: number) => {
     if (pick !== null) return;
     setPick(option);
+    setAreas((values) => ({
+      ...values,
+      [question.area]: {
+        yes: values[question.area].yes + (option === question.answer ? 1 : 0),
+        all: values[question.area].all + 1,
+      },
+    }));
     if (option === question.answer) setCorrect((value) => value + 1);
     else
       setWeak((values) => ({
@@ -151,6 +170,11 @@ export default function ReviewLab({
     setPick(null);
     setCorrect(0);
     setWeak({});
+    setAreas({
+      Grammatica: { yes: 0, all: 0 },
+      Vocabolario: { yes: 0, all: 0 },
+      "Uso nel contesto": { yes: 0, all: 0 },
+    });
     setFinished(false);
     scrollTo(0, 0);
   };
@@ -177,6 +201,34 @@ export default function ReviewLab({
             Questo risultato serve a scegliere il prossimo passo, non è un
             giudizio.
           </p>
+          {final && (
+            <>
+              <div className="examBreakdown">
+                {(Object.entries(areas) as [ReviewArea, { yes: number; all: number }][]).map(([area, value]) => (
+                  <article key={area}>
+                    <small>{area}</small>
+                    <strong>{value.all ? Math.round((value.yes / value.all) * 100) : 0}%</strong>
+                  </article>
+                ))}
+              </div>
+              <section className="examDecision">
+                <h2>Indicazione per il prossimo passo</h2>
+                <p>
+                  {percent >= 80
+                    ? "La verifica di grammatica e vocabolario è solida. Prima del passaggio definitivo completa anche reading, listening, writing e speaking del livello."
+                    : "Consolida la sessione consigliata e ripeti la prova con nuove domande. Il livello non viene cambiato automaticamente."}
+                </p>
+                {previousScore !== undefined && (
+                  <b>
+                    Rispetto al tentativo precedente: {percent - previousScore >= 0 ? "+" : ""}{percent - previousScore} punti.
+                  </b>
+                )}
+              </section>
+              <button className="printReport" onClick={() => window.print()}>
+                Stampa o salva il rapporto in PDF
+              </button>
+            </>
+          )}
           {weakUnit && (
             <article>
               <small>SESSIONE CONSIGLIATA</small>
@@ -227,6 +279,7 @@ export default function ReviewLab({
         </p>
         <article className="reviewQuestion">
           <small>DA · {question.unitTitle}</small>
+          <em className="questionArea">{question.area}</em>
           <h2>{question.prompt}</h2>
           <div>
             {question.options.map((option, optionIndex) => {
