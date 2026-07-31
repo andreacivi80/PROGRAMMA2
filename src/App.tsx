@@ -45,9 +45,9 @@ import "./version29.css";
 import "./wordGames.css";
 import "./version33.css";
 
-const APP_VERSION = "4.3";
+const APP_VERSION = "4.4";
 const BUILD_DATE = "31 luglio 2026";
-const BUILD_ID = "EC-4.3-0731";
+const BUILD_ID = "EC-4.4-0731";
 type View =
   | "home"
   | "path"
@@ -78,7 +78,21 @@ type Result = {
   completedAt?: string;
   writing?: string;
 };
-type ReviewKind = "Grammatica" | "Vocabolario" | "Ascolto" | "Pronuncia";
+type ReviewKind =
+  | "Grammatica"
+  | "Vocabolario"
+  | "Phrasal verbs"
+  | "Ascolto"
+  | "Pronuncia"
+  | "Lettura"
+  | "Scrittura";
+type ReviewAttempt = {
+  at: string;
+  givenAnswer: string;
+  correct: boolean;
+  hintUsed?: boolean;
+  confidence?: "Bassa" | "Media" | "Alta";
+};
 type SmartReviewItem = {
   id: string;
   unitId: string;
@@ -96,6 +110,9 @@ type SmartReviewItem = {
   correctStreak?: number;
   lastAttemptAt?: string;
   status?: "Nuovo" | "Da ripassare" | "In consolidamento" | "Acquisito";
+  attempts?: ReviewAttempt[];
+  hintUsed?: boolean;
+  confidence?: "Bassa" | "Media" | "Alta";
 };
 type RecoveryQuestion = {
   review: SmartReviewItem;
@@ -138,6 +155,9 @@ type SessionCheckpoint = {
   item: number;
   writing: string;
   points: { yes: number; all: number };
+  input?: string;
+  dictation?: string;
+  sessionMinutes?: 5 | 15 | 30 | null;
   updatedAt: string;
 };
 type RecAlternative = { transcript: string; confidence: number };
@@ -388,11 +408,12 @@ function trainingMenu(level: Cefr): TrainingMenuItem[] {
   });
   return items;
 }
-const dateKey = () => new Date().toISOString().slice(0, 10);
+const dateKey = (date = new Date()) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 const futureDate = (days: number) => {
   const date = new Date();
   date.setDate(date.getDate() + days);
-  return date.toISOString().slice(0, 10);
+  return dateKey(date);
 };
 const reviewKey = (unitId: string, kind: ReviewKind, prompt: string) =>
   `${unitId}:${kind}:${prompt
@@ -400,7 +421,7 @@ const reviewKey = (unitId: string, kind: ReviewKind, prompt: string) =>
     .replace(/[^\p{L}\p{N}]+/gu, "-")
     .slice(0, 80)}`;
 const fresh = (id: string): Progress => ({
-  schemaVersion: 10,
+  schemaVersion: 11,
   deviceId: id,
   currentDay: 1,
   streak: 0,
@@ -1440,7 +1461,15 @@ export default function Home() {
     [audioRate, setAudioRate] = useState<AudioRate>(getAudioRate),
     [errorSearch, setErrorSearch] = useState(""),
     [errorKind, setErrorKind] = useState<ReviewKind | "Tutti">("Tutti"),
-    [sessionMinutes, setSessionMinutes] = useState<5 | 15 | 30 | null>(null);
+    [errorLevel, setErrorLevel] = useState<Cefr | "Tutti">("Tutti"),
+    [errorStatus, setErrorStatus] = useState<
+      SmartReviewItem["status"] | "Tutti"
+    >("Tutti"),
+    [sessionMinutes, setSessionMinutes] = useState<5 | 15 | 30 | null>(null),
+    [writingNotes, setWritingNotes] = useState<string[] | null>(null),
+    [writingSuggestion, setWritingSuggestion] = useState(""),
+    [dictation, setDictation] = useState(""),
+    [dictationChecked, setDictationChecked] = useState(false);
   const themeResultsRef = useRef<HTMLElement | null>(null);
   const save = async (p: Progress) => {
     setSync("saving");
@@ -1525,6 +1554,15 @@ export default function Home() {
         );
         raw.schemaVersion = 10;
       }
+      if ((raw.schemaVersion ?? 1) < 11) {
+        raw.smartReview = Object.fromEntries(
+          Object.entries(raw.smartReview ?? {}).map(([id, item]) => {
+            const review = item as SmartReviewItem;
+            return [id, { ...review, attempts: review.attempts ?? [] }];
+          }),
+        );
+        raw.schemaVersion = 11;
+      }
       p = { ...p, ...raw, deviceId: id };
     } catch {}
     setProgress(p);
@@ -1554,6 +1592,18 @@ export default function Home() {
     setSelectedLevel(savedLevel ?? selected.cefr);
     setSelectedLessonId(savedChoiceId ?? selected.id);
     if (savedTheme) setSelectedTheme(savedTheme);
+    try {
+      const checkpoints = Object.values(
+          JSON.parse(
+            localStorage.getItem("english-coach-checkpoints-v1") || "{}",
+          ) as Record<string, SessionCheckpoint>,
+        ).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)),
+        latest = checkpoints[0],
+        savedUnit = latest
+          ? mobileCurriculum.find((candidate) => candidate.id === latest.unitId)
+          : undefined;
+      if (latest && savedUnit) setResumePrompt({ unit: savedUnit, checkpoint: latest });
+    } catch {}
     setSync("offline");
   }, []);
   useEffect(() => {
@@ -1587,7 +1637,6 @@ export default function Home() {
   useEffect(() => {
     if (
       view !== "lesson" ||
-      phase === "grammar" ||
       phase === "complete" ||
       phase === "bonus"
     )
@@ -1604,10 +1653,13 @@ export default function Home() {
       item,
       writing,
       points,
+      input,
+      dictation,
+      sessionMinutes,
       updatedAt: new Date().toISOString(),
     };
     localStorage.setItem("english-coach-checkpoints-v1", JSON.stringify(all));
-  }, [view, unit.id, phase, item, writing, points]);
+  }, [view, unit.id, phase, item, writing, points, input, dictation, sessionMinutes]);
   useEffect(() => {
     if (!recording) {
       setRecordingSeconds(0);
@@ -1620,10 +1672,6 @@ export default function Home() {
     return () => window.clearInterval(timer);
   }, [recording]);
   useEffect(() => () => stopActiveAudio?.(), [view, phase, unit.id]);
-  const [writingNotes, setWritingNotes] = useState<string[] | null>(null),
-    [writingSuggestion, setWritingSuggestion] = useState(""),
-    [dictation, setDictation] = useState(""),
-    [dictationChecked, setDictationChecked] = useState(false);
   const completed = progress ? Object.keys(progress.days).length : 0,
     average = useMemo(
       () =>
@@ -1717,14 +1765,15 @@ export default function Home() {
   ) => {
     const firstPhase: Phase = target === 5 ? "examples" : "grammar";
     stopActiveAudio?.();
+    setSessionMinutes(target);
     setUnit(u);
     setPhase(checkpoint?.phase ?? firstPhase);
     setItem(checkpoint?.item ?? 0);
-    setInput("");
+    setInput(checkpoint?.input ?? "");
     setChecked(null);
     setAnswered(null);
     setSpoken("");
-    setDictation("");
+    setDictation(checkpoint?.dictation ?? "");
     setDictationChecked(false);
     setWriting(checkpoint?.writing ?? progress?.days[u.day]?.writing ?? "");
     setPoints(checkpoint?.points ?? { yes: 0, all: 0 });
@@ -1814,6 +1863,7 @@ export default function Home() {
       if (!current) return current;
       const id = reviewKey(unit.id, kind, prompt),
         previous = current.smartReview?.[id],
+        now = new Date().toISOString(),
         entry: SmartReviewItem = {
           id,
           unitId: unit.id,
@@ -1829,8 +1879,12 @@ export default function Home() {
           givenAnswer,
           wrongCount: (previous?.wrongCount ?? 0) + 1,
           correctStreak: 0,
-          lastAttemptAt: new Date().toISOString(),
+          lastAttemptAt: now,
           status: previous ? "Da ripassare" : "Nuovo",
+          attempts: [
+            ...(previous?.attempts ?? []),
+            { at: now, givenAnswer, correct: false },
+          ].slice(-30),
         },
         updated = {
           ...current,
@@ -1848,6 +1902,8 @@ export default function Home() {
       queueReview(
         phase === "listening"
           ? "Ascolto"
+          : /phrasal/i.test(unit.title)
+            ? "Phrasal verbs"
           : phase === "bonus"
             ? "Vocabolario"
             : "Grammatica",
@@ -1878,6 +1934,7 @@ export default function Home() {
         exercise.prompt,
         exercise.answers[0],
         exercise.hintIt,
+        input || "Campo lasciato vuoto",
       );
   };
   const finish = async () => {
@@ -2109,6 +2166,14 @@ export default function Home() {
       notes.push(
         `Non vedo errori tra quelli controllabili offline. Struttura da confrontare: ${target}`,
       );
+    if (corrected !== t)
+      queueReview(
+        "Scrittura",
+        unit.writing.productionPromptIt,
+        corrected,
+        notes.join(" "),
+        t,
+      );
     setWritingSuggestion(corrected);
     setWritingNotes(notes);
   };
@@ -2280,9 +2345,44 @@ export default function Home() {
         0,
       ),
       score = Math.round((correct / reading.questions.length) * 100),
-      previous = progress.reading?.[reading.id];
+      previous = progress.reading?.[reading.id],
+      now = new Date().toISOString(),
+      readingReviews = { ...(progress.smartReview ?? {}) };
+    reading.questions.forEach((question, index) => {
+      const selected = readingAnswers[index];
+      if (selected === question.answer) return;
+      const id = reviewKey(reading.id, "Lettura", question.prompt),
+        old = readingReviews[id],
+        givenAnswer =
+          selected === -1 || selected === undefined
+            ? "Domanda saltata"
+            : question.options[selected];
+      readingReviews[id] = {
+        id,
+        unitId: reading.id,
+        unitTitle: reading.title,
+        level: reading.level,
+        kind: "Lettura",
+        prompt: question.prompt,
+        answer: question.options[question.answer],
+        explanation: question.explanationIt,
+        dueAt: dateKey(),
+        step: 0,
+        mastered: false,
+        givenAnswer,
+        wrongCount: (old?.wrongCount ?? 0) + 1,
+        correctStreak: 0,
+        lastAttemptAt: now,
+        status: old ? "Da ripassare" : "Nuovo",
+        attempts: [
+          ...(old?.attempts ?? []),
+          { at: now, givenAnswer, correct: false },
+        ].slice(-30),
+      };
+    });
     const updated: Progress = {
       ...progress,
+      smartReview: readingReviews,
       reading: {
         ...(progress.reading ?? {}),
         [reading.id]: {
@@ -2322,7 +2422,7 @@ export default function Home() {
           ...fresh(deviceId()),
           ...imported,
           deviceId: deviceId(),
-          schemaVersion: 10,
+          schemaVersion: 11,
           smartReview: imported.smartReview ?? {},
           weeklyGoal: imported.weeklyGoal ?? 3,
         };
@@ -2353,6 +2453,13 @@ export default function Home() {
     activeSmartReview = dueSmartReviews[smartReviewIndex];
   const filteredErrors = smartReviews
     .filter((review) => errorKind === "Tutti" || review.kind === errorKind)
+    .filter((review) => errorLevel === "Tutti" || review.level === errorLevel)
+    .filter(
+      (review) =>
+        errorStatus === "Tutti" ||
+        (review.status ?? (review.mastered ? "Acquisito" : "Da ripassare")) ===
+          errorStatus,
+    )
     .filter((review) =>
       `${review.prompt} ${review.answer} ${review.explanation} ${review.unitTitle}`
         .toLowerCase()
@@ -2493,18 +2600,28 @@ export default function Home() {
   };
   const answerSmartReview = async (remembered: boolean) => {
     if (!activeSmartReview) return;
-    const delays = [1, 3, 7, 14],
+    const delays = [1, 3, 7, 14, 30],
       nextStep = remembered ? activeSmartReview.step + 1 : 0,
-      mastered = remembered && activeSmartReview.step >= delays.length,
+      nextStreak = remembered
+        ? (activeSmartReview.correctStreak ?? 0) + 1
+        : 0,
+      mastered = remembered && nextStreak > delays.length,
+      now = new Date().toISOString(),
       updatedItem: SmartReviewItem = {
         ...activeSmartReview,
         step: nextStep,
         mastered,
-        correctStreak: remembered
-          ? (activeSmartReview.correctStreak ?? 0) + 1
-          : 0,
+        correctStreak: nextStreak,
         wrongCount: (activeSmartReview.wrongCount ?? 0) + (remembered ? 0 : 1),
-        lastAttemptAt: new Date().toISOString(),
+        lastAttemptAt: now,
+        attempts: [
+          ...(activeSmartReview.attempts ?? []),
+          {
+            at: now,
+            givenAnswer: remembered ? "Ricordato" : "Da rivedere",
+            correct: remembered,
+          },
+        ].slice(-30),
         status: mastered
           ? "Acquisito"
           : remembered
@@ -2512,7 +2629,11 @@ export default function Home() {
             : "Da ripassare",
         dueAt: mastered
           ? futureDate(3650)
-          : futureDate(remembered ? delays[activeSmartReview.step] : 1),
+          : futureDate(
+              remembered
+                ? delays[Math.min(activeSmartReview.step, delays.length - 1)]
+                : 1,
+            ),
       },
       updated: Progress = {
         ...progress,
@@ -2536,6 +2657,8 @@ export default function Home() {
   const openErrors = () => {
     setErrorSearch("");
     setErrorKind("Tutti");
+    setErrorLevel("Tutti");
+    setErrorStatus("Tutti");
     setView("errors");
     scrollTo(0, 0);
   };
@@ -2568,18 +2691,15 @@ export default function Home() {
     scrollTo(0, 0);
   };
   const understandError = async (review: SmartReviewItem) => {
-    const streak = (review.correctStreak ?? 0) + 1,
-      mastered = streak >= 3,
-      updated: Progress = {
+    const updated: Progress = {
         ...progress,
         smartReview: {
           ...(progress.smartReview ?? {}),
           [review.id]: {
             ...review,
-            correctStreak: streak,
-            mastered,
-            status: mastered ? "Acquisito" : "In consolidamento",
-            dueAt: futureDate(mastered ? 30 : 3),
+            mastered: false,
+            status: "In consolidamento",
+            dueAt: futureDate(1),
             lastAttemptAt: new Date().toISOString(),
           },
         },
@@ -2637,9 +2757,14 @@ export default function Home() {
             <div className="confirmActions">
               <button
                 className="primary"
-                onClick={() =>
-                  beginUnit(resumePrompt.unit, resumePrompt.checkpoint)
-                }
+                onClick={() => {
+                  setSessionMinutes(resumePrompt.checkpoint.sessionMinutes ?? null);
+                  beginUnit(
+                    resumePrompt.unit,
+                    resumePrompt.checkpoint,
+                    resumePrompt.checkpoint.sessionMinutes ?? null,
+                  );
+                }}
               >
                 Riprendi dal punto interrotto
               </button>
@@ -3768,9 +3893,9 @@ export default function Home() {
               <strong>English Coach {APP_VERSION}</strong>
               <small>{BUILD_DATE} · {BUILD_ID}</small>
               <p>
-                Nuovi allenamenti da 5, 15 e 30 minuti, sessione completa e
-                quaderno personale degli errori. I progressi precedenti sono
-                conservati automaticamente.
+                Ripresa delle sessioni più completa, calendario locale e
+                quaderno errori con nuovi filtri e storico dei tentativi. I
+                progressi precedenti sono conservati automaticamente.
               </p>
             </div>
           </details>
@@ -3816,8 +3941,11 @@ export default function Home() {
                   "Tutti",
                   "Grammatica",
                   "Vocabolario",
+                  "Phrasal verbs",
                   "Ascolto",
                   "Pronuncia",
+                  "Lettura",
+                  "Scrittura",
                 ] as const
               ).map((kind) => (
                 <button
@@ -3830,6 +3958,43 @@ export default function Home() {
                   {kind}
                 </button>
               ))}
+            </div>
+            <div className="errorAdvancedFilters">
+              <label>
+                Livello
+                <select
+                  value={errorLevel}
+                  onChange={(event) =>
+                    setErrorLevel(event.target.value as Cefr | "Tutti")
+                  }
+                >
+                  <option>Tutti</option>
+                  {(["A1", "A2", "B1", "B2", "C1"] as const).map((level) => (
+                    <option key={level}>{level}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Stato
+                <select
+                  value={errorStatus}
+                  onChange={(event) =>
+                    setErrorStatus(
+                      event.target.value as SmartReviewItem["status"] | "Tutti",
+                    )
+                  }
+                >
+                  {[
+                    "Tutti",
+                    "Nuovo",
+                    "Da ripassare",
+                    "In consolidamento",
+                    "Acquisito",
+                  ].map((status) => (
+                    <option key={status}>{status}</option>
+                  ))}
+                </select>
+              </label>
             </div>
             {filteredErrors.length ? (
               <div className="errorCards">
@@ -3872,6 +4037,24 @@ export default function Home() {
                           <b>{source.grammar.formulas[0]}</b>
                         </aside>
                       )}
+                      {!!review.attempts?.length && (
+                        <details className="attemptHistory">
+                          <summary>
+                            Storico tentativi ({review.attempts.length})
+                          </summary>
+                          <ol>
+                            {[...review.attempts].reverse().slice(0, 10).map((attempt) => (
+                              <li key={`${attempt.at}-${attempt.givenAnswer}`}>
+                                <span>{attempt.correct ? "✓" : "↗"}</span>
+                                <b>{attempt.givenAnswer}</b>
+                                <small>
+                                  {new Date(attempt.at).toLocaleString("it-IT")}
+                                </small>
+                              </li>
+                            ))}
+                          </ol>
+                        </details>
+                      )}
                       <footer>
                         <small>
                           {review.wrongCount ?? 1} errori ·{" "}
@@ -3887,7 +4070,7 @@ export default function Home() {
                             className="showSolution"
                             onClick={() => understandError(review)}
                           >
-                            Ho capito
+                            Ho capito · riproponi domani
                           </button>
                           <button
                             type="button"

@@ -97,10 +97,10 @@ themeQuestions:pack.includes("Salta domanda")
   storesErrors:app.includes("smartReview?:Record<string,SmartReviewItem>")&&app.includes("queueReview"),
   storesSkipped:app.includes('skipStage=()=>{if(phase==="cloze")')&&app.includes('queueReview("Ascolto"'),
   pronunciation:app.includes('speechScore<75')&&app.includes('queueReview("Pronuncia"'),
-  schedule:app.includes("const delays=[1,3,7,14]"),
+  schedule:app.includes("const delays=[1,3,7,14,30]"),
   dueToday:app.includes("Da ripassare oggi")&&app.includes('view==="smartReview"'),
   savesLocally:app.includes("smartReview:{...(current.smartReview??{})"),
-  resetAndBackup:app.includes("schemaVersion:10")&&app.includes("smartReview:imported.smartReview??{}")
+  resetAndBackup:app.includes("schemaVersion:11")&&app.includes("smartReview:imported.smartReview??{}")
  },
  recoveryTraining:{
   variableQuestions:app.includes("startRecovery=()=>")&&app.includes("shuffled(smartReviews.filter"),
