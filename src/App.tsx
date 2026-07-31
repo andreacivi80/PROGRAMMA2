@@ -51,9 +51,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "5.4";
+const APP_VERSION = "5.5";
 const BUILD_DATE = "31 luglio 2026";
-const BUILD_ID = "EC-5.4-0731";
+const BUILD_ID = "EC-5.5-0731";
 type View =
   | "home"
   | "path"
@@ -164,8 +164,17 @@ type SessionCheckpoint = {
   writing: string;
   points: { yes: number; all: number };
   input?: string;
+  checked?: boolean | null;
+  answered?: boolean | null;
   dictation?: string;
+  dictationChecked?: boolean;
+  spoken?: string;
+  writingNotes?: string[] | null;
+  writingSuggestion?: string;
   sessionMinutes?: 5 | 15 | 30 | null;
+  bonusMinutes?: number;
+  bonusQuiz?: Choice[];
+  bonusDone?: boolean;
   startedAt?: number;
   updatedAt: string;
 };
@@ -450,7 +459,77 @@ const fresh = (id: string): Progress => ({
   wordGames: {},
   smartReview: {},
 });
-const validCode = (v: string) => /^[A-Za-z0-9+/=]{20,200000}$/.test(v.trim());
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  Boolean(value) && typeof value === "object" && !Array.isArray(value);
+export function normalizeProgress(value: unknown, id: string): Progress {
+  const raw: Record<string, any> = isRecord(value)
+    ? JSON.parse(JSON.stringify(value))
+    : {};
+  const shiftAfter = (threshold: number, amount: number) => {
+    const shifted: Record<string, Result> = {};
+    Object.entries(isRecord(raw.days) ? raw.days : {}).forEach(
+      ([day, result]) => {
+        const oldDay = Number(day);
+        if (Number.isFinite(oldDay))
+          shifted[String(oldDay > threshold ? oldDay + amount : oldDay)] =
+            result as Result;
+      },
+    );
+    raw.days = shifted;
+    const current = Number(raw.currentDay ?? 1);
+    raw.currentDay = current > threshold ? current + amount : current;
+  };
+  if ((Number(raw.schemaVersion) || 1) < 2) shiftAfter(6, 6);
+  if ((Number(raw.schemaVersion) || 1) < 3) shiftAfter(18, 6);
+  if ((Number(raw.schemaVersion) || 1) < 4) shiftAfter(30, 6);
+  raw.days = isRecord(raw.days) ? raw.days : {};
+  raw.activity = isRecord(raw.activity) ? raw.activity : {};
+  raw.reading = isRecord(raw.reading) ? raw.reading : {};
+  raw.reviews = isRecord(raw.reviews) ? raw.reviews : {};
+  raw.themePacks = isRecord(raw.themePacks) ? raw.themePacks : {};
+  raw.wordGames = isRecord(raw.wordGames) ? raw.wordGames : {};
+  raw.smartReview = isRecord(raw.smartReview) ? raw.smartReview : {};
+  raw.smartReview = Object.fromEntries(
+    Object.entries(raw.smartReview).map(([key, item]) => {
+      const review = (isRecord(item) ? item : {}) as SmartReviewItem;
+      return [
+        key,
+        {
+          ...review,
+          wrongCount: Math.max(0, Number(review.wrongCount ?? 1) || 0),
+          correctStreak: Math.max(
+            0,
+            Number(review.correctStreak ?? review.step ?? 0) || 0,
+          ),
+          attempts: Array.isArray(review.attempts)
+            ? review.attempts.slice(-30)
+            : [],
+          status:
+            review.status ??
+            (review.mastered
+              ? "Acquisito"
+              : review.step
+                ? "In consolidamento"
+                : "Da ripassare"),
+        },
+      ];
+    }),
+  );
+  const currentDay = Number(raw.currentDay ?? 1);
+  return {
+    ...fresh(id),
+    ...raw,
+    schemaVersion: 12,
+    deviceId: id,
+    currentDay: Math.min(
+      mobileCurriculum.length,
+      Math.max(1, Number.isFinite(currentDay) ? Math.round(currentDay) : 1),
+    ),
+    streak: Math.max(0, Number(raw.streak ?? 0) || 0),
+    weeklyGoal: Math.min(7, Math.max(1, Number(raw.weeklyGoal ?? 3) || 3)),
+  } as Progress;
+}
+const validCode = (v: string) => /^[A-Za-z0-9+/=]{20,2000000}$/.test(v.trim());
 function deviceId() {
   const k = "english-coach-device-id",
     old = localStorage.getItem(k);
@@ -461,24 +540,43 @@ function deviceId() {
   localStorage.setItem(k, id);
   return id;
 }
+function readStoredJson(key: string, fallback: unknown) {
+  try {
+    return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+  } catch {
+    return fallback;
+  }
+}
 function encodeProgress(value: Progress) {
-  const bytes = new TextEncoder().encode(JSON.stringify(value));
+  const savedState = typeof window === "undefined"
+    ? {}
+    : {
+        checkpoints: readStoredJson("english-coach-checkpoints-v1", {}),
+        selection: readStoredJson("english-coach-selection-v1", {}),
+        view: localStorage.getItem("english-coach-view-v1"),
+        readingDraft: readStoredJson("english-coach-reading-draft-v1", null),
+        supplementarySeen: readStoredJson("english-coach-supplementary-seen-v1", {}),
+      };
+  const bytes = new TextEncoder().encode(
+    JSON.stringify({ backupVersion: 2, progress: value, state: savedState }),
+  );
   let binary = "";
   bytes.forEach((byte) => (binary += String.fromCharCode(byte)));
   return btoa(binary);
 }
-function decodeProgress(value: string): Progress {
+function decodeProgress(value: string): { progress: Progress; state?: Record<string, unknown> } {
   const binary = atob(value.trim()),
     bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0)),
-    parsed = JSON.parse(new TextDecoder().decode(bytes));
+    parsed = JSON.parse(new TextDecoder().decode(bytes)),
+    progress = isRecord(parsed) && parsed.backupVersion === 2 ? parsed.progress : parsed,
+    state = isRecord(parsed) && parsed.backupVersion === 2 && isRecord(parsed.state) ? parsed.state : undefined;
   if (
-    !parsed ||
-    typeof parsed !== "object" ||
-    typeof parsed.days !== "object" ||
-    typeof parsed.activity !== "object"
+    !isRecord(progress) ||
+    !isRecord(progress.days) ||
+    !isRecord(progress.activity)
   )
     throw new Error("invalid");
-  return parsed as Progress;
+  return { progress: progress as Progress, state };
 }
 function similarity(a: string, b: string) {
   const words = (s: string) =>
@@ -1425,13 +1523,68 @@ function initialMainView(): View {
   if (saved === "placement" && sessionStorage.getItem("english-coach-placement-draft-v2")) return "placement";
   return saved === "path" || saved === "topics" || saved === "progress" || saved === "errors" ? saved : "home";
 }
+export function normalizeCheckpoint(value: unknown): { unit: MobileUnit; checkpoint: SessionCheckpoint } | null {
+  if (!isRecord(value) || typeof value.unitId !== "string") return null;
+  const unit = mobileCurriculum.find((entry) => entry.id === value.unitId);
+  if (!unit) return null;
+  const allowedPhases: Phase[] = [...stages, "bonus", "complete"],
+    phase = allowedPhases.includes(value.phase as Phase)
+      ? (value.phase as Phase)
+      : "grammar",
+    bonusQuiz = Array.isArray(value.bonusQuiz) ? (value.bonusQuiz as Choice[]) : [],
+    counts: Record<Phase, number> = {
+      grammar: 1,
+      examples: unit.grammar.examples.length,
+      vocabulary: unit.vocabulary.length,
+      cloze: practiceFor(unit).length,
+      writing: 1,
+      listening: listeningQuizFor(unit).length,
+      speaking: 1,
+      quiz: finalQuizFor(unit).length,
+      bonus: Math.max(1, bonusQuiz.length),
+      complete: 1,
+    },
+    rawItem = Number(value.item ?? 0),
+    item = Math.min(
+      Math.max(0, counts[phase] - 1),
+      Math.max(0, Number.isFinite(rawItem) ? Math.round(rawItem) : 0),
+    ),
+    rawPoints = isRecord(value.points) ? value.points : {},
+    sessionMinutes = value.sessionMinutes === 5 || value.sessionMinutes === 15 || value.sessionMinutes === 30 ? value.sessionMinutes : null;
+  return {
+    unit,
+    checkpoint: {
+      unitId: unit.id,
+      phase,
+      item,
+      writing: typeof value.writing === "string" ? value.writing : "",
+      points: {
+        yes: Math.max(0, Number(rawPoints.yes ?? 0) || 0),
+        all: Math.max(0, Number(rawPoints.all ?? 0) || 0),
+      },
+      input: typeof value.input === "string" ? value.input : "",
+      checked: typeof value.checked === "boolean" ? value.checked : null,
+      answered: typeof value.answered === "boolean" ? value.answered : null,
+      dictation: typeof value.dictation === "string" ? value.dictation : "",
+      dictationChecked: Boolean(value.dictationChecked),
+      spoken: typeof value.spoken === "string" ? value.spoken : "",
+      writingNotes: Array.isArray(value.writingNotes) ? value.writingNotes.filter(note => typeof note === "string") : null,
+      writingSuggestion: typeof value.writingSuggestion === "string" ? value.writingSuggestion : "",
+      sessionMinutes,
+      bonusMinutes: Math.max(0, Number(value.bonusMinutes ?? 0) || 0),
+      bonusQuiz,
+      bonusDone: Boolean(value.bonusDone),
+      startedAt: Number.isFinite(Number(value.startedAt)) ? Number(value.startedAt) : Date.now(),
+      updatedAt: typeof value.updatedAt === "string" && !Number.isNaN(Date.parse(value.updatedAt)) ? value.updatedAt : new Date().toISOString(),
+    },
+  };
+}
 function loadLatestCheckpoint(): { unit: MobileUnit; checkpoint: SessionCheckpoint } | null {
   if (typeof window === "undefined") return null;
   try {
     const all = Object.values(JSON.parse(localStorage.getItem("english-coach-checkpoints-v1") || "{}") as Record<string, SessionCheckpoint>);
-    const checkpoint = all.sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))[0];
-    const unit = checkpoint && mobileCurriculum.find((entry) => entry.id === checkpoint.unitId);
-    return checkpoint && unit ? { unit, checkpoint } : null;
+    const latest = all.map(normalizeCheckpoint).filter((entry): entry is { unit: MobileUnit; checkpoint: SessionCheckpoint } => Boolean(entry)).sort((a, b) => Date.parse(b.checkpoint.updatedAt) - Date.parse(a.checkpoint.updatedAt))[0];
+    return latest ?? null;
   } catch { return null; }
 }
 type ReadingDraft = { id: string; step: "text" | "questions" | "result"; answers: Record<number, number>; questionIndex: number };
@@ -1451,16 +1604,16 @@ export default function Home() {
     [phase, setPhase] = useState<Phase>(initialSession?.checkpoint.phase ?? "grammar"),
     [item, setItem] = useState(initialSession?.checkpoint.item ?? 0),
     [input, setInput] = useState(initialSession?.checkpoint.input ?? ""),
-    [checked, setChecked] = useState<boolean | null>(null),
+    [checked, setChecked] = useState<boolean | null>(initialSession?.checkpoint.checked ?? null),
     [writing, setWriting] = useState(initialSession?.checkpoint.writing ?? ""),
-    [answered, setAnswered] = useState<boolean | null>(null),
+    [answered, setAnswered] = useState<boolean | null>(initialSession?.checkpoint.answered ?? null),
     [points, setPoints] = useState(initialSession?.checkpoint.points ?? { yes: 0, all: 0 }),
-    [spoken, setSpoken] = useState(""),
+    [spoken, setSpoken] = useState(initialSession?.checkpoint.spoken ?? ""),
     [recording, setRecording] = useState(false),
     [recordingSeconds, setRecordingSeconds] = useState(0),
-    [bonusMinutes, setBonusMinutes] = useState(0),
-    [bonusQuiz, setBonusQuiz] = useState<Choice[]>([]),
-    [bonusDone, setBonusDone] = useState(false),
+    [bonusMinutes, setBonusMinutes] = useState(initialSession?.checkpoint.bonusMinutes ?? 0),
+    [bonusQuiz, setBonusQuiz] = useState<Choice[]>(initialSession?.checkpoint.bonusQuiz ?? []),
+    [bonusDone, setBonusDone] = useState(initialSession?.checkpoint.bonusDone ?? false),
     [sync, setSync] = useState<"saved" | "saving" | "offline">("saved"),
     [recover, setRecover] = useState(""),
     [recoverMsg, setRecoverMsg] = useState(""),
@@ -1526,12 +1679,13 @@ export default function Home() {
         (localStorage.getItem("english-coach-text-size") as "normal" | "large") ||
         "normal",
     ),
-    [writingNotes, setWritingNotes] = useState<string[] | null>(null),
-    [writingSuggestion, setWritingSuggestion] = useState(""),
+    [writingNotes, setWritingNotes] = useState<string[] | null>(initialSession?.checkpoint.writingNotes ?? null),
+    [writingSuggestion, setWritingSuggestion] = useState(initialSession?.checkpoint.writingSuggestion ?? ""),
     [dictation, setDictation] = useState(initialSession?.checkpoint.dictation ?? ""),
-    [dictationChecked, setDictationChecked] = useState(false),
+    [dictationChecked, setDictationChecked] = useState(initialSession?.checkpoint.dictationChecked ?? false),
     [recordedAudioUrl, setRecordedAudioUrl] = useState("");
-  const themeResultsRef = useRef<HTMLElement | null>(null);
+  const themeResultsRef = useRef<HTMLElement | null>(null),
+    finishingRef = useRef(false);
   const save = async (p: Progress) => {
     setSync("saving");
     localStorage.setItem("english-coach-progress-v2", JSON.stringify(p));
@@ -1546,88 +1700,7 @@ export default function Home() {
       const raw = JSON.parse(
         localStorage.getItem("english-coach-progress-v2") || "{}",
       );
-      const shiftAfter = (threshold: number, amount: number) => {
-        const shifted: Record<string, Result> = {};
-        Object.entries(raw.days ?? {}).forEach(([day, result]) => {
-          const oldDay = Number(day);
-          shifted[String(oldDay > threshold ? oldDay + amount : oldDay)] =
-            result as Result;
-        });
-        raw.days = shifted;
-        raw.currentDay =
-          Number(raw.currentDay ?? 1) > threshold
-            ? Number(raw.currentDay) + amount
-            : Number(raw.currentDay ?? 1);
-      };
-      if ((raw.schemaVersion ?? 1) < 2) {
-        shiftAfter(6, 6);
-        raw.schemaVersion = 2;
-      }
-      if ((raw.schemaVersion ?? 1) < 3) {
-        shiftAfter(18, 6);
-        raw.schemaVersion = 3;
-      }
-      if ((raw.schemaVersion ?? 1) < 4) {
-        shiftAfter(30, 6);
-        raw.schemaVersion = 4;
-      }
-      if ((raw.schemaVersion ?? 1) < 5) {
-        raw.reviews = raw.reviews ?? {};
-        raw.schemaVersion = 5;
-      }
-      if ((raw.schemaVersion ?? 1) < 6) {
-        raw.themePacks = raw.themePacks ?? {};
-        raw.schemaVersion = 6;
-      }
-      if ((raw.schemaVersion ?? 1) < 7) {
-        raw.wordGames = raw.wordGames ?? {};
-        raw.schemaVersion = 7;
-      }
-      if ((raw.schemaVersion ?? 1) < 8) {
-        raw.smartReview = raw.smartReview ?? {};
-        raw.schemaVersion = 8;
-      }
-      if ((raw.schemaVersion ?? 1) < 9) {
-        raw.weeklyGoal = raw.weeklyGoal ?? 3;
-        raw.schemaVersion = 9;
-      }
-      if ((raw.schemaVersion ?? 1) < 10) {
-        raw.smartReview = Object.fromEntries(
-          Object.entries(raw.smartReview ?? {}).map(([id, item]) => {
-            const review = item as SmartReviewItem;
-            return [
-              id,
-              {
-                ...review,
-                wrongCount: review.wrongCount ?? 1,
-                correctStreak: review.correctStreak ?? review.step ?? 0,
-                status:
-                  review.status ??
-                  (review.mastered
-                    ? "Acquisito"
-                    : review.step
-                      ? "In consolidamento"
-                      : "Da ripassare"),
-              },
-            ];
-          }),
-        );
-        raw.schemaVersion = 10;
-      }
-      if ((raw.schemaVersion ?? 1) < 11) {
-        raw.smartReview = Object.fromEntries(
-          Object.entries(raw.smartReview ?? {}).map(([id, item]) => {
-            const review = item as SmartReviewItem;
-            return [id, { ...review, attempts: review.attempts ?? [] }];
-          }),
-        );
-        raw.schemaVersion = 11;
-      }
-      if ((raw.schemaVersion ?? 1) < 12) {
-        raw.streakPausedUntil = raw.streakPausedUntil ?? undefined;
-        raw.schemaVersion = 12;
-      }
-      p = { ...p, ...raw, deviceId: id };
+      p = normalizeProgress(raw, id);
     } catch {}
     setProgress(p);
     let savedLevel: Cefr | undefined,
@@ -1705,11 +1778,7 @@ export default function Home() {
     if (first) setSelectedTheme(first.id);
   }, [view, selectedLevel, selectedTheme]);
   useEffect(() => {
-    if (
-      view !== "lesson" ||
-      phase === "complete" ||
-      phase === "bonus"
-    )
+    if (view !== "lesson" || phase === "complete")
       return;
     let all: Record<string, SessionCheckpoint> = {};
     try {
@@ -1724,13 +1793,22 @@ export default function Home() {
       writing,
       points,
       input,
+      checked,
+      answered,
       dictation,
+      dictationChecked,
+      spoken,
+      writingNotes,
+      writingSuggestion,
       sessionMinutes,
+      bonusMinutes,
+      bonusQuiz,
+      bonusDone,
       startedAt: started.current,
       updatedAt: new Date().toISOString(),
     };
     localStorage.setItem("english-coach-checkpoints-v1", JSON.stringify(all));
-  }, [view, unit.id, phase, item, writing, points, input, dictation, sessionMinutes]);
+  }, [view, unit.id, phase, item, writing, points, input, checked, answered, dictation, dictationChecked, spoken, writingNotes, writingSuggestion, sessionMinutes, bonusMinutes, bonusQuiz, bonusDone]);
   useEffect(() => {
     if (view !== "reading") return;
     localStorage.setItem("english-coach-reading-draft-v1", JSON.stringify({ id: reading.id, step: readingStep, answers: readingAnswers, questionIndex: readingQuestionIndex } satisfies ReadingDraft));
@@ -1853,15 +1931,19 @@ export default function Home() {
     setPhase(checkpoint?.phase ?? firstPhase);
     setItem(checkpoint?.item ?? 0);
     setInput(checkpoint?.input ?? "");
-    setChecked(null);
-    setAnswered(null);
-    setSpoken("");
+    setChecked(checkpoint?.checked ?? null);
+    setAnswered(checkpoint?.answered ?? null);
+    setSpoken(checkpoint?.spoken ?? "");
     setDictation(checkpoint?.dictation ?? "");
-    setDictationChecked(false);
+    setDictationChecked(checkpoint?.dictationChecked ?? false);
     setWriting(checkpoint?.writing ?? progress?.days[u.day]?.writing ?? "");
+    setWritingNotes(checkpoint?.writingNotes ?? null);
+    setWritingSuggestion(checkpoint?.writingSuggestion ?? "");
     setPoints(checkpoint?.points ?? { yes: 0, all: 0 });
-    setBonusQuiz([]);
-    setBonusMinutes(0);
+    setBonusQuiz(checkpoint?.bonusQuiz ?? []);
+    setBonusMinutes(checkpoint?.bonusMinutes ?? 0);
+    setBonusDone(checkpoint?.bonusDone ?? false);
+    finishingRef.current = false;
     started.current = checkpoint?.startedAt ?? Date.now();
     setResumePrompt(null);
     setView("lesson");
@@ -1881,9 +1963,10 @@ export default function Home() {
     setSessionMinutes(target);
     let checkpoint: SessionCheckpoint | undefined;
     try {
-      checkpoint = JSON.parse(
+      const saved = JSON.parse(
         localStorage.getItem("english-coach-checkpoints-v1") || "{}",
       )[u.id];
+      checkpoint = normalizeCheckpoint(saved)?.checkpoint;
     } catch {}
     if (
       checkpoint &&
@@ -2031,7 +2114,8 @@ export default function Home() {
       );
   };
   const finish = async () => {
-    if (!progress) return;
+    if (!progress || finishingRef.current) return;
+    finishingRef.current = true;
     const score = points.all ? Math.round((points.yes / points.all) * 100) : 0,
       today = dateKey(),
       y = new Date();
@@ -2556,6 +2640,10 @@ export default function Home() {
     localStorage.removeItem("english-coach-onboarding-v1");
     localStorage.removeItem("english-coach-reading-draft-v1");
     localStorage.removeItem("english-coach-view-v1");
+    localStorage.removeItem("english-coach-supplementary-seen-v1");
+    Object.keys(localStorage)
+      .filter((key) => key.startsWith("english-coach-scroll-"))
+      .forEach((key) => localStorage.removeItem(key));
     sessionStorage.removeItem("english-coach-placement-draft-v2");
     setSelectedLevel("A1");
     setSelectedLessonId(mobileCurriculum[0].id);
@@ -2574,18 +2662,24 @@ export default function Home() {
     }
     try {
       const imported = decodeProgress(recover),
-        restored = {
-          ...fresh(deviceId()),
-          ...imported,
-          deviceId: deviceId(),
-          schemaVersion: 12,
-          smartReview: imported.smartReview ?? {},
-          weeklyGoal: imported.weeklyGoal ?? 3,
-        };
+        restored = normalizeProgress(imported.progress, deviceId()),
+        state = imported.state;
+      if (state) {
+        if (isRecord(state.checkpoints))
+          localStorage.setItem("english-coach-checkpoints-v1", JSON.stringify(state.checkpoints));
+        if (isRecord(state.selection))
+          localStorage.setItem("english-coach-selection-v1", JSON.stringify(state.selection));
+        if (typeof state.view === "string" && ["home", "path", "topics", "progress", "errors", "lesson", "reading"].includes(state.view))
+          localStorage.setItem("english-coach-view-v1", state.view);
+        if (isRecord(state.readingDraft))
+          localStorage.setItem("english-coach-reading-draft-v1", JSON.stringify(state.readingDraft));
+        if (isRecord(state.supplementarySeen))
+          localStorage.setItem("english-coach-supplementary-seen-v1", JSON.stringify(state.supplementarySeen));
+      }
       setProgress(restored);
       await save(restored);
       setRecover("");
-      setRecoverMsg("Backup ripristinato correttamente su questo dispositivo.");
+      setRecoverMsg("Backup ripristinato: progressi e attività in corso sono disponibili su questo dispositivo.");
     } catch {
       setRecoverMsg(
         "Non riesco a leggere questo backup. Verifica di aver copiato tutto il codice.",

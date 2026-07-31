@@ -1,10 +1,10 @@
-# English Coach 5.4 — stato verificato
+# English Coach 5.5 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 5.4, con data e identificativo visibili.
+- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 5.5, con data e identificativo visibili.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 
@@ -77,6 +77,9 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 - **IMPLEMENTATO** — layout compatto, modalità chiara/scura, testo regolabile, focus visibile, riduzione animazioni e controlli tattili.
 - **VERIFICATO** — nessun pulsante privo di gestore; quiz visivi contenuti e nessun comando basato soltanto sul trascinamento.
 - **IMPLEMENTATO** — esportazione, importazione validata, migrazioni, azzeramento con conferma e salvataggio automatico.
+- **VERIFICATO** — il backup include anche sessione, selezione, lettura ed esercizi supplementari in corso; continua ad accettare i vecchi backup.
+- **VERIFICATO** — le migrazioni riparano dati incompleti, mantengono i progressi delle espansioni precedenti e adattano la domanda corrente alle banche aggiornate.
+- **VERIFICATO** — risposta, feedback, dettato, parlato, scrittura ed extra aperti sopravvivono al refresh e all’attivazione di una nuova versione.
 - **RINVIATO CON MOTIVAZIONE** — una certificazione formale WCAG 2.2 AA richiede audit manuale con tecnologie assistive e dispositivi esterni.
 
 ## 21–22. Prestazioni e controllo

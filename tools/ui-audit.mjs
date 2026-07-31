@@ -108,7 +108,7 @@ themeQuestions:pack.includes("Salta domanda")
   schedule:app.includes("const delays=[1,3,7,14,30]"),
   dueToday:app.includes("Da ripassare oggi")&&app.includes('view==="smartReview"'),
   savesLocally:app.includes("smartReview:{...(current.smartReview??{})"),
-  resetAndBackup:app.includes("schemaVersion:12")&&app.includes("smartReview:imported.smartReview??{}")
+  resetAndBackup:app.includes("schemaVersion:12")&&app.includes("normalizeProgress(imported.progress,deviceId())")&&app.includes("english-coach-supplementary-seen-v1")
  },
  recoveryTraining:{
   variableQuestions:app.includes("startRecovery=()=>")&&app.includes("shuffled(smartReviews.filter"),
