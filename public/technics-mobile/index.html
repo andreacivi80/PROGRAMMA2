@@ -167,6 +167,40 @@ loadOpenPackingLists=async function(){if(activeModule!=="production")return;try{
 showProduction=function(o){currentOrder=o;currentItem=null;packingRevision=0;activateModule("production",true);$("message").classList.add("hidden");$("production").classList.remove("hidden");$("openPackingHome").classList.add("hidden");$("prefreshTop").classList.add("productionrefresh");$("prefreshTop").textContent="↻ Aggiorna";let client=$("opclient");if(!client){const box=document.createElement("div");box.className="opclient";box.innerHTML="<small>Cliente</small><strong id=\"opclient\">—</strong>";$("production").querySelector(".opmetrics").prepend(box);client=$("opclient")}client.textContent=o.customer||"—";$("opnumber").textContent=`OP ${o.number} · ${o.articleCode}`;$("opname").textContent=o.articleName;$("opbarcode").textContent=`Barcode ${o.barcode}${o.barcodeVerification?.verified?" · doppio controllo ✓":""}`;$("oprequested").textContent=q(o.requestedQuantity,o.unit);$("oplot").textContent=o.lot||"—";$("opexpiry").textContent=d(o.expiry);$("ptime").textContent=new Intl.DateTimeFormat("it-IT",{hour:"2-digit",minute:"2-digit",second:"2-digit"}).format(new Date(o.readAt));buildPackingItems(o);$("opcount").textContent=packingItems.length+" codici";renderPacking();startPackingSync();scheduleRefresh()};
 $("packingRows").addEventListener("change",async e=>{const input=e.target.closest("[data-lot-used-code]");if(!input)return;const code=decodeURIComponent(input.dataset.lotUsedCode),item=packingItems.find(x=>x.code===code),allocation=item?.allocations?.[Number(input.dataset.lotUsedIndex)];if(!item||!allocation)return;allocation.used=Math.max(0,Number(input.value||0));item.used=item.allocations.reduce((sum,a)=>sum+Number(a.used||0),0);packingConfirmed=false;try{applySharedSession(await packingApi("setLotUsed",{code,lot:allocation.lot,location:allocation.location,used:allocation.used}),true);showPackingMessage(`${code} · lotto ${allocation.lot} · numero usato condiviso.`)}catch(err){showPackingMessage(err.message||"Quantità per lotto non salvata.",true);loadSharedPacking(true)}});
 window.__technicsTestScan=acceptScan;$("code").addEventListener("input",()=>{awaitingBarcodeLot=false;$("lot").value="";clearTimeout(refreshTimer);lastCode="";clear()});$("lot").addEventListener("input",()=>{if($("lot").value.trim()&&!awaitingBarcodeLot)$("code").value="";clearTimeout(refreshTimer);lastCode="";clear()});$("form").addEventListener("submit",e=>{e.preventDefault();const code=$("code").value.trim(),lot=$("lot").value.trim();if(code)return lookup(code,"code",lot);if(lot)return lookup(lot,"lot");message("Dato mancante","Inserisci un codice articolo, un barcode oppure un lotto.")});$("inventoryTab").onclick=()=>activateModule("inventory");$("productionTab").onclick=()=>activateModule("production");$("modeShortcut").onclick=()=>activateModule(activeModule==="production"?"inventory":"production");$("showZero").onchange=renderStocks;$("sortStocks").onchange=renderStocks;$("scan").onclick=()=>{scanPurpose="lookup";expectedMaterialCode="";camera()};$("scanMaterial").onclick=()=>startMaterialScan();$("packingRows").addEventListener("click",e=>{const b=e.target.closest("[data-scan-code]");if(b)startMaterialScan(decodeURIComponent(b.dataset.scanCode))});$("packingRows").addEventListener("change",async e=>{if(!e.target.matches("[data-used-code]"))return;const code=decodeURIComponent(e.target.dataset.usedCode),item=packingItems.find(x=>x.code===code);if(!item)return;item.used=Math.max(0,Number(e.target.value||0));packingConfirmed=false;persistPacking();renderPacking();try{applySharedSession(await packingApi("setUsed",{code,used:item.used}),true);showPackingMessage(`${code} · quantità usata condivisa.`)}catch(err){showPackingMessage(err.message||"Quantità salvata solo temporaneamente sul telefono.",true)}});$("choiceLot").oninput=()=>{if($("choiceLot").dataset.verified==="1")return;renderPackageChoices()};$("choiceOptions").onclick=e=>{const cancel=e.target.closest("[data-cancel-duplicate]");if(cancel)return renderPackageChoices();const confirm=e.target.closest("[data-confirm-duplicate]");if(confirm)return registerPackage(Number(confirm.dataset.confirmDuplicate),true);const b=e.target.closest("[data-choice-index]");if(b&&!b.disabled)registerPackage(Number(b.dataset.choiceIndex))};$("closeChoice").onclick=closePackageChoice;$("savePacking").onclick=savePackingList;$("sharePacking").onclick=sharePackingList;$("previewPacking").onclick=showPrintPreview;$("closePrint").onclick=()=>$("printPreview").classList.add("hidden");$("printPacking").onclick=printOnServer;$("confirmPacking").onclick=confirmPackingList;$("closePackingCancel").onclick=()=>$("closePackingDialog").classList.add("hidden");$("closePackingOk").onclick=closePackingWithOk;$("refreshOpenPacks").onclick=loadOpenPackingLists;$("openPackList").onclick=e=>{const b=e.target.closest("[data-open-op]");if(b)loadProduction(b.dataset.openOp)};$("close").onclick=stop;$("cancel").onclick=stop;$("small").onclick=()=>{controls?.stop();controls=null;clearInterval(nativeTimer);$("photo").click()};$("photo").onchange=e=>decodePhoto(e.target.files?.[0]);$("refresh").onclick=()=>refreshCurrent();$("refreshTop").onclick=()=>refreshCurrent();$("prefresh").onclick=()=>refreshCurrent();$("prefreshTop").onclick=()=>refreshCurrent();function network(){$("net").innerHTML=`<i></i>Sola lettura · ${navigator.onLine?"Online":"Senza rete"}`;$("net").classList.toggle("off",!navigator.onLine)}window.addEventListener("resize",()=>{if(!$("printPreview").classList.contains("hidden"))fitPrintPreview()});window.addEventListener("online",network);window.addEventListener("offline",network);network();setTimeout(checkAppUpdate,3000);setInterval(checkAppUpdate,30000);</script>
+<script id="view-resume-v1222">
+(()=>{
+  const key="technics-mobile-view-v1222";
+  const byId=id=>document.getElementById(id);
+  const save=()=>{
+    const productionVisible=!byId("production").classList.contains("hidden");
+    const productionHome=!byId("openPackingHome").classList.contains("hidden");
+    const mode=productionVisible||productionHome||byId("modeShortcut").classList.contains("active")?"production":"inventory";
+    const barcode=(byId("opbarcode").textContent.match(/\d{8,14}/)||[])[0]||"";
+    const state={mode,op:productionVisible?barcode:"",code:byId("code").value.trim(),lot:byId("lot").value.trim()};
+    try{localStorage.setItem(key,JSON.stringify(state))}catch{}
+  };
+  document.addEventListener("DOMContentLoaded",()=>{
+    let saved=null;
+    try{saved=JSON.parse(localStorage.getItem(key)||"null")}catch{}
+    const observer=new MutationObserver(save);
+    observer.observe(byId("production"),{attributes:true,attributeFilter:["class"]});
+    observer.observe(byId("openPackingHome"),{attributes:true,attributeFilter:["class"]});
+    observer.observe(byId("opbarcode"),{childList:true,subtree:true});
+    byId("modeShortcut").addEventListener("click",()=>setTimeout(save,0));
+    byId("form").addEventListener("submit",()=>setTimeout(save,0));
+    window.addEventListener("pagehide",save);
+    if(!saved)return;
+    if(saved.mode==="production"){
+      if(!byId("modeShortcut").classList.contains("active"))byId("modeShortcut").click();
+      if(saved.op)setTimeout(()=>{byId("code").value=saved.op;byId("form").requestSubmit()},120);
+    }else if(saved.code||saved.lot){
+      byId("code").value=saved.code||"";
+      byId("lot").value=saved.lot||"";
+      setTimeout(()=>byId("form").requestSubmit(),120);
+    }
+  });
+})();
+</script>
 <style id="print-v1216">
 .printmessage.printing{border-color:#9fc7b8;background:#edf7f2;color:#17483e}.printbar button:disabled{opacity:.8;cursor:wait}
 .printconfirmcard{max-width:430px;text-align:center}.printconfirmicon{display:grid;place-items:center;width:68px;height:68px;margin:0 auto 14px;border-radius:22px;background:#dff1ea;color:#0f4c3e;font-size:34px;font-weight:900}.printconfirmcard h3{margin:0 0 8px}.printconfirmcard p{font-size:18px;line-height:1.35}
