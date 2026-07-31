@@ -408,7 +408,11 @@ function centerServerPrintPreview1222(){
   const stage=byId1214("printPreview").querySelector(".printstage");
   if(!stage)return;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    stage.scrollLeft=Math.max(0,(stage.scrollWidth-stage.clientWidth)/2);
+    const page=stage.querySelector(".serverprintpage,.serverpreviewloading,.serverpreviewerror");
+    if(!page)return;
+    const stageRect=stage.getBoundingClientRect(),pageRect=page.getBoundingClientRect();
+    const delta=((pageRect.left+pageRect.right)-(stageRect.left+stageRect.right))/2;
+    stage.scrollLeft=Math.max(0,stage.scrollLeft+delta);
   }));
 }
 const centerPreviewObserver1222=new MutationObserver(centerServerPrintPreview1222);
