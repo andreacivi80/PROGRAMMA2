@@ -1,0 +1,87 @@
+import React from "react";
+import { Window } from "happy-dom";
+import { createServer } from "vite";
+
+const window = new Window({ url: "https://andreacivi80.github.io/PROGRAMMA2/", width: 390, height: 844 });
+for (const [name, value] of Object.entries({ window, document: window.document, navigator: window.navigator, history: window.history, location: window.location, localStorage: window.localStorage, sessionStorage: window.sessionStorage, HTMLElement: window.HTMLElement, HTMLMediaElement: window.HTMLMediaElement, Node: window.Node, Event: window.Event, MouseEvent: window.MouseEvent, KeyboardEvent: window.KeyboardEvent, getComputedStyle: window.getComputedStyle.bind(window), scrollTo: () => undefined, requestAnimationFrame: callback => setTimeout(callback, 0), cancelAnimationFrame: clearTimeout })) Object.defineProperty(globalThis, name, { configurable: true, writable: true, value });
+window.scrollTo = () => undefined;
+window.HTMLElement.prototype.scrollIntoView = () => undefined;
+window.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} });
+window.URL.createObjectURL = () => "blob:audit";
+window.URL.revokeObjectURL = () => undefined;
+Object.defineProperty(window, "speechSynthesis", { value: { speaking: false, paused: false, getVoices: () => [], speak: utterance => utterance.onstart?.(), cancel() {}, pause() {}, resume() {} } });
+globalThis.speechSynthesis = window.speechSynthesis;
+globalThis.SpeechSynthesisUtterance = class { constructor(text) { this.text = text; this.rate = 1; this.lang = ""; } };
+globalThis.Audio = class { constructor(src) { this.src = src; this.currentTime = 0; this.playbackRate = 1; } play() { this.onloadedmetadata?.(); return Promise.resolve(); } pause() {} load() {} };
+const { render, fireEvent, screen, cleanup, within, waitFor } = await import("@testing-library/react");
+const server = await createServer({ server: { middlewareMode: true }, appType: "custom", logLevel: "silent" });
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+const checks = {};
+const check = (name, ok, detail = "") => { checks[name] = { ok: Boolean(ok), detail }; };
+const storedBase = overrides => ({ schemaVersion: 14, deviceId: "persona-audit", currentDay: 3, streak: 2, weeklyGoal: 3, days: {}, activity: {}, reading: {}, reviews: {}, themePacks: {}, wordGames: {}, lessonFeedback: {}, learningGoal: "Conversazione quotidiana", savedPhrases: [], weeklyChallenges: {}, monthlyChecks: {}, smartReview: {}, ...overrides });
+const prepare = (progress, lessonId, view = "home", checkpoint = null) => {
+  localStorage.clear(); sessionStorage.clear();
+  localStorage.setItem("english-coach-onboarding-v1", "done");
+  localStorage.setItem("english-coach-view-v1", view);
+  localStorage.setItem("english-coach-selection-v1", JSON.stringify({ level: "A1", lessonId, theme: "food" }));
+  localStorage.setItem("english-coach-progress-v2", JSON.stringify(progress));
+  if (checkpoint) localStorage.setItem("english-coach-checkpoints-v1", JSON.stringify({ [checkpoint.unitId]: checkpoint }));
+};
+
+try {
+  const { default: App } = await server.ssrLoadModule("/src/App.tsx");
+  const { mobileCurriculum } = await server.ssrLoadModule("/src/curriculum.ts");
+  const first = mobileCurriculum[0], second = mobileCurriculum[1], third = mobileCurriculum[2], now = new Date().toISOString();
+  prepare(storedBase({ days: { 1: { score: 94, attempts: 1, minutes: 18, writing: "I am ready because I practise every day.", completedAt: now }, 2: { score: 92, attempts: 1, minutes: 18, writing: "I have a book and the book is useful.", completedAt: now } } }), third.id);
+  let mounted = render(React.createElement(App)); await wait(50);
+  fireEvent.click(document.querySelector(".smartStudyHome>summary"));
+  await waitFor(() => screen.getByText(/Il tuo allenamento, non uno standard/), { timeout: 4000 });
+  check("successful-learner-is-cleared-to-advance", Boolean(screen.getByText(new RegExp(`Puoi proseguire con ${third.title}`, "i"))));
+  check("successful-learner-sees-balanced-six-skill-profile", document.querySelectorAll(".skillProfile article").length === 6);
+  fireEvent.click(screen.getByRole("button", { name: "Continua il percorso" }));
+  await waitFor(() => screen.getByRole("heading", { name: third.title }), { timeout: 4000 });
+  check("successful-learner-opens-next-unfinished-lesson", Boolean(screen.getByRole("heading", { name: third.title })) && Boolean(screen.getByText("Grammatica")));
+  mounted.unmount();
+
+  const error = { id: "repeat-be", unitId: first.id, unitTitle: first.title, level: "A1", kind: "Grammatica", prompt: "I ___ ready.", answer: "am", explanation: "Con I usa am.", dueAt: new Date().toISOString().slice(0, 10), step: 0, mastered: false, givenAnswer: "is", wrongCount: 5, correctStreak: 0, status: "Da ripassare", attempts: Array.from({ length: 5 }, (_, index) => ({ at: new Date(Date.now() - index * 1000).toISOString(), givenAnswer: "is", correct: false })) };
+  prepare(storedBase({ days: { 1: { score: 35, attempts: 2, minutes: 18, writing: "I is ready", completedAt: now }, 2: { score: 31, attempts: 2, minutes: 18, writing: "She have book", completedAt: now } }, smartReview: { [error.id]: error } }), third.id);
+  mounted = render(React.createElement(App)); await wait(50);
+  fireEvent.click(document.querySelector(".smartStudyHome>summary")); await wait(50);
+  check("struggling-learner-is-routed-to-previous-prerequisite", Boolean(screen.getByText(new RegExp(`Prima: ${second.title}`, "i"))));
+  check("struggling-learner-sees-specific-reason", Boolean(screen.getByText(/conviene consolidare la base/i)));
+  check("repeated-error-is-grouped-not-hidden", screen.getAllByText(/Tempi e forme verbali/).length > 0);
+  fireEvent.click(screen.getByRole("button", { name: "Rinforza prima questo" }));
+  await waitFor(() => screen.getByRole("heading", { name: second.title }), { timeout: 4000 });
+  check("prerequisite-button-opens-the-correct-earlier-lesson", Boolean(screen.getByRole("heading", { name: second.title })) && Boolean(screen.getByText("Grammatica")));
+  fireEvent.click(screen.getByRole("button", { name: /Chiudi la lezione/ })); await wait(20);
+  fireEvent.click(document.querySelector(".smartStudyHome>summary")); await wait(30);
+  fireEvent.click(screen.getByRole("button", { name: /Allenamento rapido intelligente/ })); await wait(30);
+  check("five-minute-mode-prioritises-open-error", Boolean(screen.getByText("I ___ ready.")) && Boolean(screen.getByText(/Grammatica · 1 di 1/)));
+  let recoveryOptions = [...document.querySelectorAll(".recoveryOptions button")];
+  fireEvent.click(recoveryOptions.find(button => button.querySelector("span")?.textContent.trim().toLowerCase() !== "am") ?? recoveryOptions[0]); await wait(30);
+  check("wrong-retry-reveals-explanation-and-immediate-retry", Boolean(document.querySelector(".recoveryFeedback.review")) && Boolean(screen.getByRole("button", { name: /Riprova la stessa domanda/ })));
+  let storedAfterError = JSON.parse(localStorage.getItem("english-coach-progress-v2"));
+  check("continued-errors-are-counted-for-diagnosis", storedAfterError.smartReview[error.id].wrongCount === 6 && storedAfterError.smartReview[error.id].correctStreak === 0);
+  fireEvent.click(screen.getByRole("button", { name: /Riprova la stessa domanda/ }));
+  recoveryOptions = [...document.querySelectorAll(".recoveryOptions button")];
+  fireEvent.click(recoveryOptions.find(button => button.querySelector("span")?.textContent.trim().toLowerCase() === "am")); await wait(30);
+  const storedAfterSuccess = JSON.parse(localStorage.getItem("english-coach-progress-v2"));
+  check("a-correct-retry-registers-visible-improvement", Boolean(document.querySelector(".recoveryFeedback.good")) && storedAfterSuccess.smartReview[error.id].correctStreak === 1);
+  mounted.unmount();
+
+  const checkpoint = { unitId: first.id, phase: "listening", item: 0, writing: "", points: { yes: 1, all: 2 }, updatedAt: now };
+  prepare(storedBase({ currentDay: 1 }), first.id, "lesson", checkpoint);
+  mounted = render(React.createElement(App)); await wait(60);
+  check("listening-shows-three-ordered-difficulty-modes", ["1 · Con aiuto", "2 · Naturale", "3 · Riassumi"].every(label => Boolean(screen.getByRole("button", { name: label }))));
+  fireEvent.click(screen.getByRole("button", { name: "3 · Riassumi" })); await wait(10);
+  check("summary-mode-hides-help-and-asks-for-meaning", Boolean(screen.getByPlaceholderText(/Che cosa sta succedendo/)) && !document.querySelector(".guidedTranscript")?.hasAttribute("open"));
+  fireEvent.change(screen.getByPlaceholderText(/Che cosa sta succedendo/), { target: { value: "Anna meets Tom and explains that she is a designer from Milan." } });
+  fireEvent.click(screen.getByRole("button", { name: /Controlla gli elementi riconosciuti/ })); await wait(20);
+  check("summary-mode-provides-recovery-guidance", Boolean(document.querySelector(".listeningSummary [role=status]") || document.body.textContent.match(/Hai riconosciuto|confrontala con il testo/)));
+  cleanup();
+} finally {
+  await server.close();
+}
+const failed = Object.entries(checks).filter(([, result]) => !result.ok).map(([name]) => name);
+console.log(JSON.stringify({ simulatedMinutes: 60, cycle: 3, personas: ["successful", "struggling"], scenarios: Object.keys(checks).length, checks, failed }, null, 2));
+if (failed.length) process.exitCode = 1;

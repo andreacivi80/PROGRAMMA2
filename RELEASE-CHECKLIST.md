@@ -1,10 +1,10 @@
-# English Coach 6.2 — stato verificato
+# English Coach 6.3 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 6.2, con data e identificativo visibili.
+- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 6.3, con data e identificativo visibili.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 - **VERIFICATO** — i nomi dell’archivio locale restano stabili tra le revisioni: una nuova pubblicazione sostituisce l’interfaccia, non i dati dell’utente.
@@ -78,6 +78,15 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 
 - **IMPLEMENTATO** — CEFR, sottolivello, tempo, giorni, attività, parole, ripassi, errori, competenze, settimana, mese ed ultimo esame.
 - **IMPLEMENTATO** — date locali, obiettivo settimanale, riepilogo, messaggi sobri e sospensione della serie.
+
+## 18. Studio adattivo e simulazione studenti
+
+- **IMPLEMENTATO** — profilo separato per grammatica, vocabolario, ascolto, pronuncia, lettura e scrittura; l’andamento non dipende da un solo voto complessivo.
+- **IMPLEMENTATO** — ordine dei prerequisiti esplicito: chi possiede le basi prosegue, chi ha una lacuna critica viene indirizzato alla lezione precedente pertinente.
+- **IMPLEMENTATO** — gli errori ricorrenti sono raggruppati per causa e restano nei ripassi finché più conferme corrette non mostrano un consolidamento reale.
+- **IMPLEMENTATO** — dopo una risposta errata sono disponibili regola, soluzione, strategia e ripetizione immediata della stessa domanda; errore e successiva conferma vengono registrati separatamente.
+- **IMPLEMENTATO** — piano quotidiano 40/30/20/10, modalità intelligente da 5 minuti, obiettivo personale, quaderno delle frasi, sfida settimanale e controllo mensile comparabile.
+- **VERIFICATO** — simulazione mobile di 60 minuti con studente forte e studente in difficoltà: avanzamento, ritorno al prerequisito, ripetizione, conteggio degli errori e miglioramento risultano coerenti.
 - **VERIFICATO** — nessuna classifica obbligatoria o penalizzazione aggressiva.
 
 ## 18–20. Grafica, accessibilità e dati

@@ -37,6 +37,7 @@ import {
   supplementaryFingerprint,
 } from "./supplementaryQuiz";
 import { analyzeLocalWriting } from "./languageAnalysis";
+import { buildErrorClusters, buildSkillProfile } from "./learningIntelligence";
 import "./themePacks.css";
 import "./lessonEnhancements.css";
 import "./wordGames.css";
@@ -49,13 +50,14 @@ const WordGamesHub = lazy(() => import("./WordGamesHub"));
 const PlacementTest = lazy(() => import("./PlacementTest"));
 const SkillsLab = lazy(() => import("./SkillsLab"));
 const StoryPath = lazy(() => import("./StoryPath"));
+const LearningCoach = lazy(() => import("./LearningCoach"));
 const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "6.2";
+const APP_VERSION = "6.3";
 const BUILD_DATE = "31 luglio 2026";
-const BUILD_ID = "EC-6.2-0731";
+const BUILD_ID = "EC-6.3-0731";
 type View =
   | "home"
   | "path"
@@ -161,6 +163,10 @@ type Progress = {
     string,
     { rating: "easy" | "right" | "hard"; at: string; score: number }
   >;
+  learningGoal?: string;
+  savedPhrases?: { id: string; en: string; it?: string; source: string; savedAt: string }[];
+  weeklyChallenges?: Record<string, { response: string; completedAt: string }>;
+  monthlyChecks?: Record<string, { score: number; completedAt: string }>;
   smartReview?: Record<string, SmartReviewItem>;
 };
 type SessionCheckpoint = {
@@ -448,6 +454,11 @@ function trainingMenu(level: Cefr): TrainingMenuItem[] {
 }
 const dateKey = (date = new Date()) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+const weekKey = (date = new Date()) => {
+  const start = new Date(date.getFullYear(), 0, 1),
+    day = Math.ceil(((date.getTime() - start.getTime()) / 86400000 + start.getDay() + 1) / 7);
+  return `${date.getFullYear()}-W${String(day).padStart(2, "0")}`;
+};
 const futureDate = (days: number) => {
   const date = new Date();
   date.setDate(date.getDate() + days);
@@ -459,7 +470,7 @@ const reviewKey = (unitId: string, kind: ReviewKind, prompt: string) =>
     .replace(/[^\p{L}\p{N}]+/gu, "-")
     .slice(0, 80)}`;
 const fresh = (id: string): Progress => ({
-  schemaVersion: 13,
+  schemaVersion: 14,
   deviceId: id,
   currentDay: 1,
   streak: 0,
@@ -471,6 +482,10 @@ const fresh = (id: string): Progress => ({
   themePacks: {},
   wordGames: {},
   lessonFeedback: {},
+  learningGoal: "Conversazione quotidiana",
+  savedPhrases: [],
+  weeklyChallenges: {},
+  monthlyChecks: {},
   smartReview: {},
 });
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -503,6 +518,11 @@ export function normalizeProgress(value: unknown, id: string): Progress {
   raw.themePacks = isRecord(raw.themePacks) ? raw.themePacks : {};
   raw.wordGames = isRecord(raw.wordGames) ? raw.wordGames : {};
   raw.lessonFeedback = isRecord(raw.lessonFeedback) ? raw.lessonFeedback : {};
+  raw.savedPhrases = Array.isArray(raw.savedPhrases)
+    ? raw.savedPhrases.filter((item: unknown) => isRecord(item) && typeof item.en === "string").slice(-200)
+    : [];
+  raw.weeklyChallenges = isRecord(raw.weeklyChallenges) ? raw.weeklyChallenges : {};
+  raw.monthlyChecks = isRecord(raw.monthlyChecks) ? raw.monthlyChecks : {};
   raw.smartReview = isRecord(raw.smartReview) ? raw.smartReview : {};
   raw.smartReview = Object.fromEntries(
     Object.entries(raw.smartReview).map(([key, item]) => {
@@ -534,7 +554,7 @@ export function normalizeProgress(value: unknown, id: string): Progress {
   return {
     ...fresh(id),
     ...raw,
-    schemaVersion: 13,
+    schemaVersion: 14,
     deviceId: id,
     currentDay: Math.min(
       mobileCurriculum.length,
@@ -1089,6 +1109,11 @@ function GuidedListening({ unit, src }: { unit: MobileUnit; src: string }) {
     [rate, setRate] = useState<AudioRate>(getAudioRate),
     [current, setCurrent] = useState(0),
     [duration, setDuration] = useState(0),
+    [listeningMode, setListeningMode] = useState<"assist" | "natural" | "summary">(
+      unit.cefr === "A1" || unit.cefr === "A2" ? "assist" : "natural",
+    ),
+    [summary, setSummary] = useState(""),
+    [summaryChecked, setSummaryChecked] = useState(false),
     [transcriptOpen, setTranscriptOpen] = useState(
       unit.cefr === "A1" || unit.cefr === "A2",
     );
@@ -1279,6 +1304,29 @@ function GuidedListening({ unit, src }: { unit: MobileUnit; src: string }) {
         }
         onEnded={stop}
       />
+      <div className="listeningModes" aria-label="Modalità di ascolto">
+        {([
+          ["assist", "1 · Con aiuto"],
+          ["natural", "2 · Naturale"],
+          ["summary", "3 · Riassumi"],
+        ] as const).map(([mode, label]) => (
+          <button
+            type="button"
+            key={mode}
+            className={listeningMode === mode ? "active" : ""}
+            aria-pressed={listeningMode === mode}
+            onClick={() => {
+              stop();
+              setListeningMode(mode);
+              setTranscriptOpen(mode === "assist");
+              setRate(mode === "assist" ? 0.8 : 1);
+              setSummaryChecked(false);
+            }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
       <small className="audioLength">
         ◷ Durata audio ·{" "}
         {estimated
@@ -1363,6 +1411,20 @@ function GuidedListening({ unit, src }: { unit: MobileUnit; src: string }) {
           ))}
         </div>
       </details>
+      {listeningMode === "summary" && (
+        <section className="listeningSummary">
+          <label>
+            Scrivi il significato generale in inglese o in italiano
+            <textarea value={summary} onChange={(event) => { setSummary(event.target.value); setSummaryChecked(false); }} placeholder="Che cosa sta succedendo? Qual è il punto principale?" />
+          </label>
+          <button type="button" disabled={summary.trim().split(/\s+/).length < 5} onClick={() => setSummaryChecked(true)}>Controlla gli elementi riconosciuti</button>
+          {summaryChecked && (() => {
+            const source = [...unit.vocabulary.map((word) => word.en), ...unit.listening.transcript.toLowerCase().match(/\b[a-z]{6,}\b/g) ?? []],
+              found = [...new Set(source.map((word) => word.toLowerCase()))].filter((word) => summary.toLowerCase().includes(word)).slice(0, 8);
+            return <div role="status"><strong>{found.length >= 2 ? "Hai riconosciuto diversi elementi centrali." : "Hai espresso un’idea: ora confrontala con il testo."}</strong><p>{found.length ? `Parole o concetti ritrovati: ${found.join(", ")}.` : "Riapri il testo sincronizzato e cerca soggetto, azione e risultato."}</p></div>;
+          })()}
+        </section>
+      )}
     </div>
   );
 }
@@ -1719,6 +1781,7 @@ export default function Home() {
       p = normalizeProgress(raw, id);
     } catch {}
     setProgress(p);
+    setLearningGoal(p.learningGoal ?? "Conversazione quotidiana");
     let savedLevel: Cefr | undefined,
       savedChoiceId: string | undefined,
       savedTheme: ThemeId | undefined;
@@ -2016,6 +2079,12 @@ export default function Home() {
       "english-coach-onboarding-v1",
       JSON.stringify({ completedAt: new Date().toISOString(), learningGoal }),
     );
+    setProgress((current) => {
+      if (!current) return current;
+      const updated = { ...current, learningGoal };
+      void save(updated);
+      return updated;
+    });
     setWelcomeOpen(false);
     setView("home");
     scrollTo(0, 0);
@@ -2777,10 +2846,10 @@ export default function Home() {
     setProgress(updated);
     void save(updated);
   };
-  const startRecovery = () => {
+  const startRecovery = (count = 10) => {
     const open = shuffled(
         smartReviews.filter((review) => !review.mastered),
-      ).slice(0, 10),
+      ).slice(0, count),
       pool = [
         ...new Set([
           ...smartReviews.map((review) => review.answer),
@@ -2821,10 +2890,28 @@ export default function Home() {
         delays = [1, 3, 7, 14],
         step = remembered ? previous.step + 1 : 0,
         mastered = remembered && previous.step >= delays.length,
-        item = {
+        now = new Date().toISOString(),
+        nextStreak = remembered ? (previous.correctStreak ?? 0) + 1 : 0,
+        item: SmartReviewItem = {
           ...previous,
           step,
           mastered,
+          correctStreak: nextStreak,
+          wrongCount: (previous.wrongCount ?? 0) + (remembered ? 0 : 1),
+          lastAttemptAt: now,
+          attempts: [
+            ...(previous.attempts ?? []),
+            {
+              at: now,
+              givenAnswer: choice < 0 ? "Domanda saltata" : question.options[choice],
+              correct: remembered,
+            },
+          ].slice(-30),
+          status: mastered
+            ? "Acquisito"
+            : remembered
+              ? "In consolidamento"
+              : "Da ripassare",
           dueAt: mastered
             ? futureDate(3650)
             : futureDate(remembered ? delays[previous.step] : 1),
@@ -2962,6 +3049,63 @@ export default function Home() {
     setProgress(updated);
     await save(updated);
   };
+  const learningSkills = buildSkillProfile(progress, selectedLevel, mobileCurriculum),
+    learningClusters = buildErrorClusters(progress),
+    weakestLearningSkill = learningSkills.slice().sort((a, b) => a.score - b.score)[0],
+    nextLearningUnit = lessonForTime(30),
+    levelLearningUnits = mobileCurriculum.filter((candidate) => candidate.cefr === selectedLevel),
+    nextLearningIndex = Math.max(0, levelLearningUnits.findIndex((candidate) => candidate.id === nextLearningUnit.id)),
+    prerequisiteUnit = levelLearningUnits[Math.max(0, nextLearningIndex - 1)] ?? nextLearningUnit,
+    prerequisiteRequired = weakestLearningSkill.score < 45 && nextLearningIndex > 0,
+    updateLearningGoal = (goal: string) => {
+      const updated = { ...progress, learningGoal: goal };
+      setLearningGoal(goal);
+      setProgress(updated);
+      void save(updated);
+    },
+    savePhrase = (en: string, it: string | undefined, source: string) => {
+      const normalized = en.trim().toLowerCase(),
+        existing = (progress.savedPhrases ?? []).find((phrase) => phrase.en.trim().toLowerCase() === normalized);
+      if (existing) return;
+      const phrase = { id: `phrase-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, en: en.trim(), it, source, savedAt: new Date().toISOString() },
+        updated = { ...progress, savedPhrases: [...(progress.savedPhrases ?? []), phrase].slice(-200) };
+      setProgress(updated);
+      void save(updated);
+    },
+    removePhrase = (id: string) => {
+      const updated = { ...progress, savedPhrases: (progress.savedPhrases ?? []).filter((phrase) => phrase.id !== id) };
+      setProgress(updated);
+      void save(updated);
+    },
+    completeMonthlyCheck = (score: number) => {
+      const updated = { ...progress, monthlyChecks: { ...(progress.monthlyChecks ?? {}), [dateKey().slice(0, 7)]: { score, completedAt: new Date().toISOString() } } };
+      setProgress(updated);
+      void save(updated);
+    },
+    completeWeeklyChallenge = (response: string) => {
+      const updated = { ...progress, weeklyChallenges: { ...(progress.weeklyChallenges ?? {}), [weekKey()]: { response, completedAt: new Date().toISOString() } } };
+      setProgress(updated);
+      void save(updated);
+    },
+    startMicroSession = () => {
+      const openReviews = smartReviews.filter((review) => !review.mastered);
+      if (openReviews.length) startRecovery(Math.min(4, openReviews.length));
+      else open(lessonForTime(5), 5);
+    },
+    startLearningReview = () => {
+      if (dueSmartReviews.length) openSmartReview();
+      else if (smartReviews.some((review) => !review.mastered)) startRecovery(6);
+      else open(lessonForTime(15), 15);
+    },
+    startLearningReading = () => {
+      const passage = readingPassages.find((entry) => entry.level === selectedLevel && !progress.reading?.[entry.id]) ?? readingPassages.find((entry) => entry.level === selectedLevel)!;
+      openReading(passage);
+    },
+    openLearningSimulation = () => {
+      setSelectedTheme("skills");
+      setView("topics");
+      scrollTo(0, 0);
+    };
   const current =
     mobileCurriculum.find((x) => x.day === progress.currentDay) ??
     mobileCurriculum.at(-1)!;
@@ -3006,6 +3150,7 @@ export default function Home() {
                 <option>Viaggi e situazioni reali</option>
                 <option>Inglese per il lavoro</option>
                 <option>Grammatica e certificazioni</option>
+                <option>Inglese tecnico e ricerca</option>
               </select>
             </label>
             <div className="confirmActions">
@@ -3181,6 +3326,38 @@ export default function Home() {
               </button>
             </div>
           </section>
+        </details>
+      )}
+      {view === "home" && (
+        <details className="smartStudyHome">
+          <summary><span>Studio intelligente</span><b>{learningSkills.slice().sort((a, b) => a.score - b.score)[0].skill}</b></summary>
+          <Deferred>
+            <LearningCoach
+              level={selectedLevel}
+              goal={progress.learningGoal ?? learningGoal}
+              skills={learningSkills}
+              clusters={learningClusters}
+              phrases={progress.savedPhrases ?? []}
+              monthly={progress.monthlyChecks ?? {}}
+              weeklyDone={Boolean(progress.weeklyChallenges?.[weekKey()])}
+              prerequisite={{
+                required: prerequisiteRequired,
+                first: prerequisiteUnit.title,
+                then: nextLearningUnit.title,
+                reason: `${weakestLearningSkill.skill} è al ${weakestLearningSkill.score}%: conviene consolidare la base prima di aumentare la difficoltà.`,
+              }}
+              onGoal={updateLearningGoal}
+              onMicro={startMicroSession}
+              onNew={() => open(nextLearningUnit, 30)}
+              onPrerequisite={() => open(prerequisiteUnit, 15)}
+              onReview={startLearningReview}
+              onReading={startLearningReading}
+              onSimulation={openLearningSimulation}
+              onRemovePhrase={removePhrase}
+              onMonthly={completeMonthlyCheck}
+              onWeekly={completeWeeklyChallenge}
+            />
+          </Deferred>
         </details>
       )}
       {view === "home" && (
@@ -4263,7 +4440,7 @@ export default function Home() {
               <button
                 type="button"
                 className="recoveryStart"
-                onClick={startRecovery}
+                onClick={() => startRecovery()}
               >
                 Allenamento di recupero <b>→</b>
               </button>
@@ -4665,7 +4842,25 @@ export default function Home() {
                           Risposta: <b lang="en">{question.review.answer}</b>
                         </p>
                         <ConceptText text={question.review.explanation} />
+                        {!correct && (
+                          <div className="recoveryStrategy">
+                            <strong>Un passo alla volta.</strong>
+                            <span>Leggi la regola, osserva la risposta corretta e riprova subito: la domanda resterà qui.</span>
+                            {(question.review.wrongCount ?? 0) >= 3 && (
+                              <span>Questo punto è ricorrente: continuerà a comparire nei ripassi finché non avrai dato più conferme corrette.</span>
+                            )}
+                          </div>
+                        )}
                       </section>
+                      {!correct && (
+                        <button
+                          type="button"
+                          className="retryRecovery"
+                          onClick={() => setRecoveryPick(null)}
+                        >
+                          Riprova la stessa domanda
+                        </button>
+                      )}
                       <button
                         type="button"
                         className="continue"
@@ -5112,6 +5307,9 @@ export default function Home() {
                       <strong lang="en">{x.en}</strong>
                       <span>{x.it}</span>
                       <p>{x.noteIt}</p>
+                      <button type="button" className="savePhrase" onClick={() => savePhrase(x.en, x.it, unit.title)}>
+                        {(progress.savedPhrases ?? []).some((phrase) => phrase.en === x.en) ? "✓ Salvata" : "+ Salva frase"}
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -5138,6 +5336,9 @@ export default function Home() {
                         <strong lang="en">{x.en}</strong>
                         <span>{x.it}</span>
                         <p lang="en">{x.example}</p>
+                        <button type="button" className="savePhrase" onClick={() => savePhrase(x.example, `${x.en} · ${x.it}`, unit.title)}>
+                          {(progress.savedPhrases ?? []).some((phrase) => phrase.en === x.example) ? "✓ Salvata" : "+ Salva frase"}
+                        </button>
                       </div>
                     </article>
                   ))}
