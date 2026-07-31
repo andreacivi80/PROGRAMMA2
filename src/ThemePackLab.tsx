@@ -17,6 +17,7 @@ type Props = {
   previous?: { score: number; attempts: number };
   onClose: () => void;
   onComplete: (score: number) => void;
+  onMistake?: (item: Choice, givenAnswer: string) => void;
 };
 type QuizItem = Choice & { id: string };
 const shuffle = <T,>(items: T[]) => [...items].sort(() => Math.random() - 0.5);
@@ -168,19 +169,30 @@ export default function ThemePackLab({
   previous,
   onClose,
   onComplete,
+  onMistake,
 }: Props) {
-  const [phase, setPhase] = useState<"learn" | "scenario" | "quiz" | "result">(
+  const [phase, setPhase] = useState<"learn" | "scenario" | "quiz" | "response" | "repeat" | "result">(
     "learn",
   );
   const [quiz, setQuiz] = useState(() => buildQuiz(pack)),
     [index, setIndex] = useState(0),
     [selected, setSelected] = useState<number | null>(null),
     [correct, setCorrect] = useState(0),
-    [scenarioWord, setScenarioWord] = useState(-1);
+    [scenarioWord, setScenarioWord] = useState(-1),
+    [freeResponse, setFreeResponse] = useState(""),
+    [spoken, setSpoken] = useState(""),
+    [recording, setRecording] = useState(false);
   const reported = useRef(false),
     scenarioRef = useRef<HTMLDivElement | null>(null),
     item = quiz[index],
-    score = Math.round((correct / quiz.length) * 100);
+    score = Math.round((correct / quiz.length) * 100),
+    responseWords = freeResponse.trim().split(/\s+/).filter(Boolean).length,
+    responseScore = Math.min(100, Math.round((responseWords / (pack.level === "A1" ? 15 : 30)) * 80) + (pack.vocabulary.some((word) => freeResponse.toLowerCase().includes(word.en.toLowerCase())) ? 20 : 0)),
+    target = pack.vocabulary[0]?.example ?? pack.scenario.text.split(/[.!?]/)[0],
+    targetWords = target.toLowerCase().replace(/[^a-z' ]/g, " ").split(/\s+/).filter(Boolean),
+    spokenWords = spoken.toLowerCase().replace(/[^a-z' ]/g, " ").split(/\s+/).filter(Boolean),
+    speechScore = spoken ? Math.round((targetWords.filter((word) => spokenWords.includes(word)).length / Math.max(1, targetWords.length)) * 100) : 0,
+    finalScore = Math.round(score * 0.7 + responseScore * 0.15 + speechScore * 0.15);
   const levelTone = useMemo(
       () => `level-${pack.level.toLowerCase()}`,
       [pack.level],
@@ -217,6 +229,8 @@ export default function ThemePackLab({
     setIndex(0);
     setSelected(null);
     setCorrect(0);
+    setFreeResponse("");
+    setSpoken("");
     reported.current = false;
     setPhase("quiz");
     scrollTo(0, 0);
@@ -227,12 +241,7 @@ export default function ThemePackLab({
       setSelected(null);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
-      const finalScore = Math.round((correct / quiz.length) * 100);
-      if (!reported.current) {
-        reported.current = true;
-        onComplete(finalScore);
-      }
-      setPhase("result");
+      setPhase("response");
       scrollTo(0, 0);
     }
   };
@@ -240,9 +249,27 @@ export default function ThemePackLab({
     if (selected !== null) return;
     setSelected(choice);
     if (choice === item.answer) setCorrect((value) => value + 1);
+    else onMistake?.(item, item.options[choice]);
   };
-  const shownScore =
-    phase === "result" ? Math.round((correct / quiz.length) * 100) : score;
+  const finishMission = () => {
+    if (!reported.current) {
+      reported.current = true;
+      onComplete(finalScore);
+    }
+    setPhase("result");
+    scrollTo(0, 0);
+  };
+  const recordResponse = () => {
+    const Ctor = (window as typeof window & { SpeechRecognition?: new () => any; webkitSpeechRecognition?: new () => any }).SpeechRecognition ??
+      (window as typeof window & { webkitSpeechRecognition?: new () => any }).webkitSpeechRecognition;
+    if (!Ctor) { setSpoken("Riconoscimento vocale non disponibile."); return; }
+    const recognition = new Ctor();
+    recognition.lang = "en-GB"; recognition.interimResults = false; recognition.continuous = false;
+    recognition.onresult = (event: any) => setSpoken(event.results?.[0]?.[0]?.transcript ?? "");
+    recognition.onerror = () => { setSpoken("Voce non riconosciuta. Riprova o salta."); setRecording(false); };
+    recognition.onend = () => setRecording(false); setRecording(true); recognition.start();
+  };
+  const shownScore = phase === "result" ? finalScore : score;
   return (
     <main className={`themePackView ${levelTone}`}>
       <header className="themePackTop">
@@ -266,6 +293,10 @@ export default function ThemePackLab({
                     ? "50%"
                     : phase === "quiz"
                       ? `${50 + ((index + 1) / quiz.length) * 45}%`
+                      : phase === "response"
+                        ? "88%"
+                        : phase === "repeat"
+                          ? "95%"
                       : "100%",
             }}
           />
@@ -527,6 +558,62 @@ export default function ThemePackLab({
             </div>
           </>
         )}
+        {phase === "response" && (
+          <section className="missionOpenTask">
+            <span className="eyebrow">Usa ciò che hai imparato</span>
+            <h1>Risposta libera</h1>
+            <p>
+              Riassumi in inglese la situazione e spiega che cosa diresti o
+              faresti. Non tradurre parola per parola.
+            </p>
+            <textarea
+              lang="en"
+              rows={8}
+              value={freeResponse}
+              onChange={(event) => setFreeResponse(event.target.value)}
+              placeholder="Write your response in English…"
+            />
+            <div className="missionScoreLine">
+              <b>{responseWords} parole</b>
+              <span>Completezza stimata: {responseScore}%</span>
+            </div>
+            <button
+              type="button"
+              className="continue"
+              disabled={responseWords < 5}
+              onClick={() => { setPhase("repeat"); scrollTo(0, 0); }}
+            >
+              Continua con la risposta orale <b>→</b>
+            </button>
+          </section>
+        )}
+        {phase === "repeat" && (
+          <section className="missionOpenTask">
+            <span className="eyebrow">Ascolta e rispondi</span>
+            <h1>Ripetizione e interazione</h1>
+            <p>Ascolta il modello, poi pronuncialo con la tua voce.</p>
+            <blockquote lang="en">{target}</blockquote>
+            <div className="missionAudioActions">
+              <button type="button" onClick={() => speak(target)}>▶ Ascolta il modello</button>
+              <button type="button" className={recording ? "recording" : ""} disabled={recording} onClick={recordResponse}>
+                {recording ? "● Sto ascoltando…" : "Parla in inglese"}
+              </button>
+            </div>
+            {spoken && (
+              <div className="missionSpeechResult">
+                <small>PAROLE RICONOSCIUTE</small>
+                <p lang="en">{spoken}</p>
+                <b>{speechScore}%</b>
+              </div>
+            )}
+            <div className="themeQuizNav">
+              <button type="button" className="showSolution" onClick={finishMission}>Salta prova orale</button>
+              <button type="button" className="continue" disabled={!spoken || spoken.startsWith("Riconoscimento") || spoken.startsWith("Voce non")} onClick={finishMission}>
+                Concludi la missione <b>→</b>
+              </button>
+            </div>
+          </section>
+        )}
         {phase === "result" && (
           <div className="themePackResult">
             <span>{shownScore >= 80 ? "✓" : "↗"}</span>
@@ -546,6 +633,11 @@ export default function ThemePackLab({
                   ? "Rileggi gli esempi meno immediati e prova un nuovo ordine di domande."
                   : "Nessun problema: ripeti ascolto e vocaboli, poi il quiz cambierà ordine e alternative."}
             </p>
+            <div className="missionBreakdown">
+              <span><small>Comprensione e lessico</small><b>{score}%</b></span>
+              <span><small>Risposta libera</small><b>{responseScore}%</b></span>
+              <span><small>Parole riconosciute</small><b>{speechScore}%</b></span>
+            </div>
             <div>
               <button type="button" className="continue" onClick={startQuiz}>
                 Riprova con quiz diversi <b>↻</b>

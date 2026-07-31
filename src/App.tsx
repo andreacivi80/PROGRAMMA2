@@ -47,9 +47,9 @@ import "./version29.css";
 import "./wordGames.css";
 import "./version33.css";
 
-const APP_VERSION = "4.7";
+const APP_VERSION = "4.8";
 const BUILD_DATE = "31 luglio 2026";
-const BUILD_ID = "EC-4.7-0731";
+const BUILD_ID = "EC-4.8-0731";
 type View =
   | "home"
   | "path"
@@ -2380,6 +2380,39 @@ export default function Home() {
     setProgress(updated);
     await save(updated);
   };
+  const queueThemeMistake = (pack: ThemePack, question: Choice, givenAnswer: string) => {
+    setProgress((current) => {
+      if (!current) return current;
+      const kind: ReviewKind = /significa|parola|verb/i.test(question.prompt)
+          ? "Vocabolario"
+          : "Ascolto",
+        id = reviewKey(pack.id, kind, question.prompt),
+        previous = current.smartReview?.[id],
+        now = new Date().toISOString(),
+        entry: SmartReviewItem = {
+          id,
+          unitId: pack.id,
+          unitTitle: pack.title,
+          level: pack.level,
+          kind,
+          prompt: question.prompt,
+          answer: question.options[question.answer],
+          explanation: question.explanationIt,
+          dueAt: dateKey(),
+          step: 0,
+          mastered: false,
+          givenAnswer,
+          wrongCount: (previous?.wrongCount ?? 0) + 1,
+          correctStreak: 0,
+          lastAttemptAt: now,
+          status: previous ? "Da ripassare" : "Nuovo",
+          attempts: [...(previous?.attempts ?? []), { at: now, givenAnswer, correct: false }].slice(-30),
+        },
+        updated = { ...current, smartReview: { ...(current.smartReview ?? {}), [id]: entry } };
+      void save(updated);
+      return updated;
+    });
+  };
   const finishWordGame = async (id: string, score: number) => {
     if (!progress) return;
     const previous = progress.wordGames?.[id],
@@ -4152,10 +4185,9 @@ export default function Home() {
               <strong>English Coach {APP_VERSION}</strong>
               <small>{BUILD_DATE} · {BUILD_ID}</small>
               <p>
-                Ripristino dello scorrimento e delle sezioni principali,
-                dashboard estesa, filtro temporale degli errori, nuovi esempi
-                ascoltabili e descrizione trasparente dei controlli di
-                scrittura. I progressi precedenti sono conservati.
+                Esame finale multidisciplinare con lettura, ascolto, scrittura,
+                mediazione e risposta orale. Le missioni tematiche ora includono
+                risposta libera, ripetizione e salvataggio degli errori.
               </p>
             </div>
           </details>
@@ -4608,6 +4640,9 @@ export default function Home() {
               : `V ${selectedPack.introducedIn}`
           }
           previous={progress.themePacks?.[selectedPack.id]}
+          onMistake={(question, givenAnswer) =>
+            queueThemeMistake(selectedPack, question, givenAnswer)
+          }
           onClose={() => {
             speechSynthesis?.cancel();
             setSelectedPack(null);

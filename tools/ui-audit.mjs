@@ -142,6 +142,8 @@ themeQuestions:pack.includes("Salta domanda")
   ,monthlyDashboard:app.includes("monthlyMinutes")&&app.includes("elementi consolidati")
   ,displayPreferences:app.includes("english-coach-color-mode")&&app.includes("english-coach-text-size")
   ,printableFinalReport:review.includes("window.print()")&&review.includes("examBreakdown")&&review.includes("previousScore")
+  ,multidisciplinaryExam:["Lettura","Ascolto","Scrittura","Interazione","Mediazione"].every(area=>review.includes(`\"${area}\"`))&&review.includes("SpeechRecognition")
+  ,completeThemeMission:pack.includes('phase === "response"')&&pack.includes('phase === "repeat"')&&pack.includes("onMistake")
  },
  languageFocus:{
   themeEntry:app.includes("Verbi e false friends"),

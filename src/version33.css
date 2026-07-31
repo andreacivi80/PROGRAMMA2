@@ -183,6 +183,47 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
   .progressNextPanel > div:last-child { min-width: 0; }
 }
 
+.openExam,
+.missionOpenTask { display: grid; gap: 14px; }
+.openExam textarea,
+.missionOpenTask textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px;
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.55;
+}
+.openExam blockquote,
+.missionOpenTask blockquote {
+  margin: 0;
+  padding: 16px;
+  border-left: 5px solid var(--blue);
+  border-radius: 8px 16px 16px 8px;
+  background: color-mix(in srgb, var(--blue) 9%, var(--paper));
+  color: var(--deep);
+  font-size: 1.08rem;
+  font-weight: 800;
+}
+.examReading { margin: 12px 0; padding: 12px; border-radius: 14px; background: var(--paper); }
+.examReading p { line-height: 1.65; }
+.examListen { min-height: 48px; margin: 10px 0; border-radius: 14px; background: var(--green); color: #fff; }
+.missionAudioActions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.missionAudioActions button { min-height: 52px; border-radius: 15px; }
+.missionScoreLine,
+.missionSpeechResult { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 12px; border-radius: 14px; background: var(--mint); }
+.missionSpeechResult { display: grid; }
+.missionBreakdown { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; width: 100%; }
+.missionBreakdown span { display: grid; gap: 4px; padding: 12px; border-radius: 13px; background: var(--paper); }
+
+@media (max-width: 520px) {
+  .missionAudioActions,
+  .missionBreakdown { grid-template-columns: 1fr; }
+}
+
 .examBreakdown {
   width: 100%;
   margin: 14px 0;
