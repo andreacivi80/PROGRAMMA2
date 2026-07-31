@@ -652,6 +652,11 @@ window.addEventListener("resize",fitCustomerName1221);
   showProduction=function(order){
     originalShowProduction(order);
     try{
+      for(let index=localStorage.length-1;index>=0;index--){
+        const storedKey=localStorage.key(index)||"";
+        if(storedKey.startsWith("technics-packing-"))localStorage.removeItem(storedKey);
+      }
+      localStorage.removeItem(key+"-order");
       localStorage.setItem(key+"-order",JSON.stringify(order));
       localStorage.setItem(key,JSON.stringify({
         mode:"production",
