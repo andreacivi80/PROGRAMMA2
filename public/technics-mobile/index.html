@@ -665,7 +665,10 @@ window.addEventListener("resize",fitCustomerName1221);
         lot:"",
         scrollY:window.scrollY
       }));
-    }catch{}
+      document.documentElement.dataset.resumeSnapshot="saved";
+    }catch(error){
+      document.documentElement.dataset.resumeSnapshot="error-"+String(error?.name||"unknown");
+    }
   };
 })();
 </script>
