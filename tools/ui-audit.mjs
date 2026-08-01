@@ -65,7 +65,10 @@ const checks={
   minimalPairs:skills.includes("Minimal pairs"),
   mediation:skills.includes("SFIDA DI MEDIAZIONE"),
   wordFamilies:skills.includes("FAMIGLIE DI PAROLE"),
-  branchingDialogue:skills.includes("DIALOGO A BIVI")
+  branchingDialogue:skills.includes("DIALOGO A BIVI"),
+  guidedDictation:skills.includes("DETTATO MIRATO") && skills.includes("Maiuscole e punteggiatura non riducono"),
+  guidedParaphrase:skills.includes("PARAFRASI GUIDATA") && skills.includes("Il modello non è l’unica risposta possibile"),
+  dialogueReconstruction:skills.includes("COERENZA DEL DIALOGO") && skills.includes("non continua correttamente")
  },
  visualQuiz:{
   fullCategoryBank:app.includes("visualTiles(sets)"),
@@ -118,7 +121,7 @@ themeQuestions:pack.includes("Salta domanda")
   credibleOptions:app.includes("review.options?.length")&&app.includes("...source.quickCheck")&&app.includes("meaningMistakes(review.answer)")&&!app.includes("mobileCurriculum.flatMap((candidate)"),
   answerFeedback:app.includes("recoveryFeedback")&&app.includes("Rivediamola subito"),
   canSkip:app.includes('className="recoverySkip"')&&app.includes("answerRecovery(-1)"),
-  updatesSchedule:app.includes("const answerRecovery=")&&app.includes("delays=[1,3,7,14]")
+  updatesSchedule:app.includes("const answerRecovery=")&&app.includes("delays=[1,3,7,14,30]")
  },
  learningClarity:{
   noServiceCopy:!["banca tecnica","algoritmo interno","posizioni cambiano continuamente","dettaglio di implementazione"].some(text=>app.toLowerCase().includes(text)),
