@@ -26,7 +26,8 @@ const searchable=value=>({
  indexOf:needle=>{const raw=value.indexOf(needle);return raw>=0?raw:compact(value).indexOf(compact(needle))},
  toLowerCase:()=>searchable(value.toLowerCase())
 });
-const app=searchable(readFileSync("src/App.tsx","utf8"));
+const appSource=readFileSync("src/App.tsx","utf8");
+const app=searchable(appSource);
 const pack=searchable(readFileSync("src/ThemePackLab.tsx","utf8"));
 const authentic=searchable(readFileSync("src/AuthenticAudio.tsx","utf8"));
 const review=searchable(readFileSync("src/ReviewLab.tsx","utf8"));
@@ -107,7 +108,7 @@ themeQuestions:pack.includes("Salta domanda")
   storesSkipped:app.includes('skipStage=()=>{if(phase==="cloze")')&&app.includes('queueReview("Ascolto"'),
   pronunciation:app.includes('speechScore<75')&&app.includes('queueReview("Pronuncia"'),
   schedule:app.includes("const delays=[1,3,7,14,30]"),
-  dueToday:app.includes("Da ripassare oggi")&&app.includes('view==="smartReview"'),
+  dueToday:app.includes("Ripasso pronto")&&app.includes("Inizia il ripasso")&&app.includes('view==="smartReview"'),
   savesLocally:app.includes("smartReview:{...(current.smartReview??{})"),
   resetAndBackup:app.includes("schemaVersion: 14")&&app.includes("normalizeProgress(imported.progress,deviceId())")&&app.includes("english-coach-supplementary-seen-v1")
  },
@@ -123,17 +124,20 @@ themeQuestions:pack.includes("Salta domanda")
   englishEmphasis:mixedText.includes("inlineEnglish")&&mixedText.includes("I'm afraid")&&grammarLesson.includes("terms={lessonTerms}"),
   visibleEnglishStyle:css.includes(".inlineEnglish")&&css.includes("text-decoration-color:#efc85e"),
   phoneReviewLayout:css.includes("@media(max-width:430px)")&&css.includes(".smartReviewChoices{grid-template-columns:1fr}")
-  ,logicalHomeFlow:app.includes('className="homeChoice adaptiveChoice"')&&app.includes('className="homeChoice freeChoice"')
+  ,logicalHomeFlow:app.indexOf("dailyFocusHome")<app.indexOf('className="homeChoice adaptiveChoice"')&&app.includes('className="homeChoice freeChoice"')
+  ,singleDailyRecommendation:(appSource.match(/className={`dailyFocusHome/g)||[]).length===1
+  ,customDurationToggle:app.includes("Scegli la durata")&&app.includes("setAdaptiveOpen(open)")&&app.includes('aria-expanded={adaptiveOpen}')
+  ,scheduledReviewMerged:!app.includes('className={`smartReviewHome')&&app.includes("nextReviewNote")
   ,singleQuestionSkip:app.includes('!["cloze","listening","quiz","bonus"].includes(phase)')&&app.includes('className="skipStage"')
   ,containedSkip:css.includes(".lessonCard>.bottomSkip{position:static!important")&&css.includes(".readingSkip")&&css.includes("width:100%")
-  ,levelBeforeTime:app.indexOf("adaptiveLevels")<app.indexOf("adaptiveTimeTitle")
+  ,levelBeforeTime:app.indexOf("dailyLevelPicker")<app.indexOf("adaptiveTimeTitle")
   ,levelPersists:app.includes("english-coach-selection-v1")&&app.includes("savedLevel??selected.cefr")
   ,pathFiltersLevel:app.includes("([selectedLevel] as Cefr[]).map((level)")
   ,grammarConceptBreaks:grammarLesson.includes("<ConceptText")&&css.includes(".conceptText>p:not(:last-child)")
   ,conceptBreaksEverywhere:app.includes("<ConceptText text={data.explanationIt}")&&app.includes("<ConceptText text={question.review.explanation}")&&review.includes("<ConceptText text={question.explanationIt}")&&pack.includes("<ConceptText text={item.explanationIt}")
   ,conceptPunctuation:conceptText.includes('replace(/;$/, \".\")')&&conceptText.includes('/[.!?…]$/.test(sentence)')
   ,readingOneAtATime:app.includes("slice(readingQuestionIndex,readingQuestionIndex+1)")&&app.includes("setReadingQuestionIndex")
-  ,compactLevelPicker:app.includes('className="compactLevelPicker"')&&css.includes(".compactLevelPicker>summary")
+  ,compactLevelPicker:app.includes('className="dailyLevelPicker"')&&css.includes(".dailyLevelPicker > summary")
   ,mainViewPersists:app.includes("english-coach-view-v1")&&app.includes("initialMainView")
   ,resumeOnlyOnLessonOpen:(readFileSync("src/App.tsx","utf8").match(/setResumePrompt\(\{ unit: u, checkpoint \}\)/g)||[]).length===1
   ,themePersists:app.includes("theme: selectedTheme")&&app.includes("setSelectedTheme(savedTheme)")

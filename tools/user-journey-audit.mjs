@@ -67,6 +67,17 @@ try {
   await sleep(20);
   check("manual-onboarding-reaches-home", !screen.queryByRole("dialog") && screen.getAllByText("Percorso libero").length >= 1);
 
+  const dailyFocus = document.querySelector(".dailyFocusHome");
+  check("home-shows-one-primary-daily-focus", document.querySelectorAll(".dailyFocusHome").length === 1 && Boolean(dailyFocus?.querySelector(".dailyFocusStart")));
+  fireEvent.click(dailyFocus.querySelector(".dailyLevelPicker>summary")); await sleep(10);
+  fireEvent.click(within(dailyFocus).getByRole("button", { name: "B1" })); await sleep(20);
+  check("daily-level-change-is-saved", JSON.parse(localStorage.getItem("english-coach-selection-v1") || "{}").level === "B1");
+  const durationButton = within(dailyFocus).getByRole("button", { name: "Scegli la durata" });
+  fireEvent.click(durationButton); await sleep(10);
+  check("daily-duration-opens-custom-training", document.querySelector("details.adaptiveChoice")?.open === true && durationButton.getAttribute("aria-expanded") === "true");
+  fireEvent.click(within(dailyFocus).getByRole("button", { name: "Chiudi durate" })); await sleep(10);
+  check("daily-duration-closes-without-navigation", document.querySelector("details.adaptiveChoice")?.open === false && Boolean(document.querySelector(".dailyFocusHome")));
+
   const freePath = document.querySelector("details.freeChoice");
   const b1 = within(freePath).getByRole("button", { name: "B1" });
   fireEvent.click(b1); await sleep(20);
@@ -106,6 +117,7 @@ try {
 
   fireEvent.click(screen.getByRole("button", { name: /Chiudi la lezione/ })); await sleep(20);
   check("closing-lesson-returns-home-without-popup", !screen.queryByText("Vuoi continuare?") && Boolean(document.querySelector("details.freeChoice")));
+  check("due-error-becomes-primary-home-action", Boolean(document.querySelector(".dailyFocusHome.dailyReview")) && Boolean(screen.getByRole("button", { name: /Inizia il ripasso/ })));
   const homePath = document.querySelector("details.freeChoice");
   fireEvent.click(within(homePath).getByRole("button", { name: /Inizia questa sessione/ })); await sleep(20);
   check("reopening-interrupted-lesson-offers-choice", Boolean(screen.getByText("Vuoi continuare?")));

@@ -59,9 +59,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "6.8";
+const APP_VERSION = "6.9";
 const BUILD_DATE = "1 agosto 2026";
-const BUILD_ID = "EC-6.8-0801";
+const BUILD_ID = "EC-6.9-0801";
 type View =
   | "home"
   | "path"
@@ -3024,6 +3024,35 @@ export default function Home() {
     nextLearningIndex = Math.max(0, levelLearningUnits.findIndex((candidate) => candidate.id === nextLearningUnit.id)),
     prerequisiteUnit = levelLearningUnits[Math.max(0, nextLearningIndex - 1)] ?? nextLearningUnit,
     prerequisiteRequired = weakestLearningSkill.score < 45 && nextLearningIndex > 0,
+    dailyFocus = dueSmartReviews.length > 0
+      ? {
+          tone: "dailyReview",
+          eyebrow: "Ripasso pronto",
+          title: dueSmartReviews.length === 1 ? "Rinforza un punto importante" : `Rinforza ${dueSmartReviews.length} punti importanti`,
+          detail: `Focus: ${dueSmartReviews[0]?.kind ?? weakestLearningSkill.skill}. Riparti dagli errori utili senza rifare tutta la lezione.`,
+          meta: "10 min",
+          action: "Inizia il ripasso",
+          run: openSmartReview,
+        }
+      : prerequisiteRequired
+        ? {
+            tone: "dailySupport",
+            eyebrow: "Passo consigliato",
+            title: `Consolida ${prerequisiteUnit.title}`,
+            detail: `Focus: ${weakestLearningSkill.skill}. Una sessione breve prepara il passaggio a ${nextLearningUnit.title}.`,
+            meta: "15 min",
+            action: "Rinforza la base",
+            run: () => open(prerequisiteUnit, 15),
+          }
+        : {
+            tone: "dailyContinue",
+            eyebrow: completed > 0 ? "Continua il percorso" : "Il tuo primo passo",
+            title: nextLearningUnit.title,
+            detail: `Livello ${selectedLevel}. Regola, pratica, ascolto e produzione in una sessione guidata.`,
+            meta: "15 min",
+            action: completed > 0 ? "Continua da qui" : "Inizia la sessione",
+            run: () => open(nextLearningUnit, 15),
+          },
     updateLearningGoal = (goal: string) => {
       const updated = { ...progress, learningGoal: goal };
       setLearningGoal(goal);
@@ -3207,6 +3236,60 @@ export default function Home() {
         </div>
       )}
       {view === "home" && (
+        <section className={`dailyFocusHome ${dailyFocus.tone}`} aria-labelledby="daily-focus-title">
+          <div className="dailyFocusHeading">
+            <span className="eyebrow">{dailyFocus.eyebrow}</span>
+            <details className="dailyLevelPicker">
+              <summary>
+                Livello <b>{selectedLevel}</b><span>Cambia</span>
+              </summary>
+              <div>
+                {(["A1", "A2", "B1", "B2", "C1"] as const).map((level) => (
+                  <button
+                    type="button"
+                    key={level}
+                    className={selectedLevel === level ? "active" : ""}
+                    onClick={(event) => {
+                      chooseLevel(level);
+                      event.currentTarget.closest("details")?.removeAttribute("open");
+                    }}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </div>
+            </details>
+          </div>
+          <div className="dailyFocusCopy">
+            <h1 id="daily-focus-title">{dailyFocus.title}</h1>
+            <p>{dailyFocus.detail}</p>
+          </div>
+          <div className="dailyFocusActions">
+            <button type="button" className="dailyFocusStart" onClick={dailyFocus.run}>
+              <span><strong>{dailyFocus.action}</strong><small>{dailyFocus.meta}</small></span>
+              <b>→</b>
+            </button>
+            <button
+              type="button"
+              className="dailyFocusCustom"
+              aria-expanded={adaptiveOpen}
+              onClick={() => {
+                const open = !adaptiveOpen;
+                setAdaptiveOpen(open);
+                localStorage.setItem("english-coach-adaptive-open", String(open));
+              }}
+            >
+              {adaptiveOpen ? "Chiudi durate" : "Scegli la durata"}
+            </button>
+          </div>
+          {dueSmartReviews.length === 0 && nextSmartReview && (
+            <small className="nextReviewNote">
+              Prossimo ripasso: {new Date(`${nextSmartReview.dueAt}T12:00:00`).toLocaleDateString("it-IT", { day: "numeric", month: "long" })}.
+            </small>
+          )}
+        </section>
+      )}
+      {view === "home" && (
         <details
           className="homeChoice adaptiveChoice"
           open={adaptiveOpen}
@@ -3221,29 +3304,6 @@ export default function Home() {
             <b>{selectedLevel}</b>
           </summary>
           <section className="adaptiveHome">
-            <details className="compactLevelPicker">
-              <summary>
-                Livello <b>{selectedLevel}</b>
-                <span>Cambia</span>
-              </summary>
-              <div>
-                {(["A1", "A2", "B1", "B2", "C1"] as const).map((level) => (
-                  <button
-                    type="button"
-                    key={level}
-                    className={selectedLevel === level ? "active" : ""}
-                    onClick={(event) => {
-                      chooseLevel(level);
-                      event.currentTarget
-                        .closest("details")
-                        ?.removeAttribute("open");
-                    }}
-                  >
-                    {level}
-                  </button>
-                ))}
-              </div>
-            </details>
             <h3 className="adaptiveTimeTitle">Quanto tempo hai oggi?</h3>
             {dueSmartReviews.length > 0 && (
               <button
@@ -3333,38 +3393,6 @@ export default function Home() {
           </button>
         </div>
       )}
-      {view === "home" &&
-        smartReviews.some((review) => !review.mastered) &&
-        dueSmartReviews.length === 0 && (
-          <section
-            className={`smartReviewHome ${dueSmartReviews.length ? "due" : ""}`}
-          >
-            <div>
-              <span className="eyebrow">Ripasso intelligente</span>
-              <h2>
-                {dueSmartReviews.length
-                  ? "Da ripassare oggi"
-                  : smartReviews.some((review) => !review.mastered)
-                    ? "Ripasso programmato"
-                    : "Il tuo ripasso personale"}
-              </h2>
-              <p>
-                {dueSmartReviews.length
-                  ? dueSmartReviews.length === 1
-                    ? "1 punto è pronto per essere rinforzato."
-                    : `${dueSmartReviews.length} punti sono pronti per essere rinforzati.`
-                  : nextSmartReview
-                    ? `Prossimo ripasso il ${new Date(`${nextSmartReview.dueAt}T12:00:00`).toLocaleDateString("it-IT", { day: "numeric", month: "long" })}.`
-                    : "Gli esercizi da rinforzare compariranno qui automaticamente."}
-              </p>
-            </div>
-            {dueSmartReviews.length > 0 && (
-              <button type="button" onClick={openSmartReview}>
-                Inizia il ripasso <b>→</b>
-              </button>
-            )}
-          </section>
-        )}
       {view === "home" && (
         <div className="screen">
           <details
@@ -3380,33 +3408,17 @@ export default function Home() {
               <span>Percorso libero</span>
               <b>{selectedLevel}</b>
             </summary>
-            <section className="hero compactHero">
-              <div>
-                <span className="eyebrow">Percorso libero</span>
-                <h1>Da dove vuoi iniziare?</h1>
-                <p>
-                  Scegli un livello, una lezione o il riepilogo collocato nel
-                  punto giusto del percorso.
-                </p>
-              </div>
-              <aside>
-                <b>
-                  {completed}/{mobileCurriculum.length}
-                </b>
-                <small>completati</small>
-              </aside>
-            </section>
             <section
               className="trainingChooser"
               aria-label="Scegli il tuo allenamento"
             >
-              <div className="choiceStep">
-                <b>1</b>
+              <header className="freeChoiceIntro">
                 <span>
-                  <strong>Scegli il livello</strong>
-                  <small>Puoi cambiarlo in qualsiasi momento</small>
+                  <strong>Scegli liberamente</strong>
+                  <small>{completed}/{mobileCurriculum.length} attività completate</small>
                 </span>
-              </div>
+                <b>{selectedLevel}</b>
+              </header>
               <div className="levelButtons">
                 {(["A1", "A2", "B1", "B2", "C1"] as const).map((level) => (
                   <button
@@ -3418,15 +3430,6 @@ export default function Home() {
                     {level}
                   </button>
                 ))}
-              </div>
-              <div className="choiceStep">
-                <b>2</b>
-                <span>
-                  <strong>Scegli la sessione</strong>
-                  <small>
-                    I riepiloghi compaiono subito dopo le sessioni 4, 8 e 12
-                  </small>
-                </span>
               </div>
               <select
                 aria-label="Numero della sessione"

@@ -1,10 +1,10 @@
-# English Coach 6.8 — stato verificato
+# English Coach 6.9 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 6.8, con data e identificativo visibili.
+- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 6.9, con data e identificativo visibili.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 - **VERIFICATO** — i nomi dell’archivio locale restano stabili tra le revisioni: una nuova pubblicazione sostituisce l’interfaccia, non i dati dell’utente.
@@ -15,6 +15,9 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 - **IMPLEMENTATO** — primo accesso, test facoltativo, livello manuale, obiettivo, durata e prima attività.
 - **VERIFICATO** — pagina, livello, tema, scroll, lezione, fase, domanda e testi in corso vengono conservati.
 - **IMPLEMENTATO** — home con continuazione, ripasso e scelta libera; allenamento su misura chiuso e percorso libero aperto.
+- **IMPLEMENTATO** — la home propone una sola azione prioritaria: ripasso dovuto, prerequisito da consolidare oppure prima lezione incompleta del livello salvato.
+- **VERIFICATO** — il livello si modifica prima della durata; la scelta viene salvata e il pannello 5/15/30 minuti si apre e si chiude senza cambiare pagina.
+- **VERIFICATO** — dopo un errore registrato la proposta principale diventa immediatamente un ripasso mirato; la home mobile misura 1.088 px contro i 1.116 px della V6.8.
 - **IMPLEMENTATO** — cinque livelli CEFR A1–C1 con 12 lezioni ciascuno; nessun livello numerico 1–50 ambiguo.
 - **IMPLEMENTATO** — tutti i livelli sono accessibili senza lucchetti e non avanzano dopo una singola risposta.
 
