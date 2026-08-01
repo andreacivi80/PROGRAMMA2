@@ -1158,8 +1158,8 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
 .examples .audioStop { min-height: 42px; border-radius: 11px; }
 .examples .audioStop { width: 54px; padding-inline: 5px; }
 .examples .audioStop:disabled { display: none; }
-.examples .speed { grid-template-columns: repeat(3, 36px); justify-self: end; }
-.examples .speed button { min-width: 36px; min-height: 40px; font-size: 11px; }
+.examples .speed { grid-template-columns: repeat(3, 44px); justify-self: end; }
+.examples .speed button { min-width: 44px; min-height: 44px; font-size: 11px; }
 .examples .savePhrase { min-height: 40px !important; font-size: 11px !important; }
 .lessonActions :is(.backStage, .skipStage) { min-height: 42px; }
 .themeGrid small { font-size: 11px; line-height: 1.35; }
@@ -1284,8 +1284,8 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
 .guidedPlayer .audioStop { min-height: 42px; border-radius: 11px; }
 .guidedPlayer .audioStop { width: 54px; padding-inline: 5px; }
 .guidedPlayer .audioStop:disabled { display: none; }
-.guidedPlayer .speed { grid-template-columns: repeat(3, 36px); justify-self: end; }
-.guidedPlayer .speed button { min-width: 36px; min-height: 40px; font-size: 11px; }
+.guidedPlayer .speed { grid-template-columns: repeat(3, 44px); justify-self: end; }
+.guidedPlayer .speed button { min-width: 44px; min-height: 44px; font-size: 11px; }
 .listeningModes button { min-height: 42px; font-size: 11px; }
 .dictationLab > summary { min-height: 40px; display: flex; align-items: center; }
 
@@ -1296,16 +1296,17 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
   .dailyFocusStart, .dailyFocusCustom { min-height: 46px; }
   .dailyFocusCustom { padding-inline: 8px; font-size: 10px; }
   .dailyLevelPicker > div { width: 220px; }
-  .examples > div > .audioControl { grid-template-columns: minmax(0, 1fr) auto; }
+  .examples > div > .audioControl { grid-template-columns: 1fr; }
   .examples .audioActions { grid-template-columns: minmax(88px, 1fr) 50px; }
   .examples .audioStop { width: 50px; }
-  .examples .speed { grid-template-columns: repeat(3, 34px); }
-  .examples .speed button { min-width: 34px; }
+  .examples .speed { grid-template-columns: repeat(3, 44px); justify-self: start; }
+  .examples .speed button { min-width: 44px; }
   .homeQuickRow { width: calc(100% - 20px); }
   .guidedPlayer .audioActions { grid-template-columns: minmax(90px, 1fr) 50px; }
   .guidedPlayer .audioStop { width: 50px; }
-  .guidedPlayer .speed { grid-template-columns: repeat(3, 34px); }
-  .guidedPlayer .speed button { min-width: 34px; }
+  .guidedPlayer .audioControl { grid-template-columns: 1fr; }
+  .guidedPlayer .speed { grid-template-columns: repeat(3, 44px); justify-self: start; }
+  .guidedPlayer .speed button { min-width: 44px; }
 }
 .themeGrid > button > b {
   white-space: nowrap;
