@@ -59,9 +59,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "7.9";
+const APP_VERSION = "8.0";
 const BUILD_DATE = "1 agosto 2026";
-const BUILD_ID = "EC-7.9-0801";
+const BUILD_ID = "EC-8.0-0801";
 type View =
   | "start"
   | "home"
@@ -3959,7 +3959,7 @@ export default function Home() {
                 saved={progress.themePacks ?? {}}
                 onOpen={openThemePack}
               />
-              <section className="themeResults linkedLessons">
+              {unitsForTheme("work").some((unit) => unit.cefr === selectedLevel) && <section className="themeResults linkedLessons">
                 <div className="themeHeading">
                   <span>
                     <small>ALTRE LEZIONI PROFESSIONALI</small>
@@ -3979,7 +3979,7 @@ export default function Home() {
                       </button>;
                     })}
                 </div>
-              </section>
+              </section>}
             </div>
           ) : selectedTheme === "food" ? (
             <div
