@@ -113,8 +113,9 @@ themeQuestions:pack.includes("Salta domanda")
   resetAndBackup:app.includes("schemaVersion: 14")&&app.includes("normalizeProgress(imported.progress,deviceId())")&&app.includes("english-coach-supplementary-seen-v1")
  },
  recoveryTraining:{
-  variableQuestions:app.includes("startRecovery=(count=10)")&&app.includes("shuffled(smartReviews.filter"),
+  variableQuestions:app.includes("startRecovery=(count=10,candidates:SmartReviewItem[]=smartReviews)")&&app.includes("shuffled(candidates.filter"),
   focusedPool:app.includes(".filter((review) => !review.mastered)")&&app.includes("recoveryQuiz"),
+  credibleOptions:app.includes("review.options?.length")&&app.includes("...source.quickCheck")&&app.includes("meaningMistakes(review.answer)")&&!app.includes("mobileCurriculum.flatMap((candidate)"),
   answerFeedback:app.includes("recoveryFeedback")&&app.includes("Rivediamola subito"),
   canSkip:app.includes('className="recoverySkip"')&&app.includes("answerRecovery(-1)"),
   updatesSchedule:app.includes("const answerRecovery=")&&app.includes("delays=[1,3,7,14]")

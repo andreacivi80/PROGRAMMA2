@@ -1,10 +1,10 @@
-# English Coach 6.9 — stato verificato
+# English Coach 7.0 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 6.9, con data e identificativo visibili.
+- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 7.0, con data e identificativo visibili.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 - **VERIFICATO** — i nomi dell’archivio locale restano stabili tra le revisioni: una nuova pubblicazione sostituisce l’interfaccia, non i dati dell’utente.
@@ -12,7 +12,8 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 
 ## 2–4. Percorso, ripresa e livello
 
-- **IMPLEMENTATO** — primo accesso, test facoltativo, livello manuale, obiettivo, durata e prima attività.
+- **IMPLEMENTATO** — il primo accesso mostra soltanto “Primi passi”, con test da 30 domande oppure scelta manuale di livello e obiettivo; non propone ripassi prima dell’avvio.
+- **VERIFICATO** — dopo il test o la scelta manuale “Primi passi” scompare e restano Oggi, Percorso, Temi e Progressi; l’azzeramento completo riapre correttamente l’ingresso iniziale.
 - **VERIFICATO** — pagina, livello, tema, scroll, lezione, fase, domanda e testi in corso vengono conservati.
 - **IMPLEMENTATO** — home con continuazione, ripasso e scelta libera; allenamento su misura chiuso e percorso libero aperto.
 - **IMPLEMENTATO** — la home propone una sola azione prioritaria: ripasso dovuto, prerequisito da consolidare oppure prima lezione incompleta del livello salvato.
@@ -27,6 +28,7 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 - **IMPLEMENTATO** — intervalli progressivi, riduzione dopo errore, consolidamento dopo risposte corrette e varianti dello stesso concetto.
 - **IMPLEMENTATO** — conteggio in home, ripasso odierno, ricerca e filtri per tipo, livello, data e stato.
 - **IMPLEMENTATO** — regola collegata, spiegazione, esempio nuovo, audio, riprova, “Ho capito” e storico.
+- **VERIFICATO** — il recupero conserva le opzioni della domanda originale e non costruisce più alternative pescando casualmente dall’intero corso; se non esiste una variante credibile, non inventa una domanda.
 
 ## 7–8. Contenuti e formattazione
 

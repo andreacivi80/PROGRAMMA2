@@ -1312,6 +1312,55 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
   word-break: keep-all;
 }
 
+.app > nav.mainNav { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.app > nav.startNav { grid-template-columns: minmax(0, 1fr); }
+.app > nav.startNav button { grid-template-columns: auto auto; justify-content: center; gap: 8px; font-size: 12px; }
+.app > nav button { min-width: 0; padding-inline: 2px; }
+.firstStepsScreen { display: grid; gap: 10px; }
+.firstStepsHero {
+  padding: 22px;
+  overflow: hidden;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 91% 12%, #f1cf6f66, transparent 29%),
+    linear-gradient(135deg, #123f34, #216b58);
+  color: #fff;
+  box-shadow: 0 14px 34px #17382f24;
+}
+.firstStepsHero .eyebrow { color: #cceadf; }
+.firstStepsHero h1 { max-width: 430px; margin-bottom: 8px; font-size: clamp(29px, 7vw, 40px); line-height: 1.04; }
+.firstStepsHero p { max-width: 470px; margin: 0; color: #e1f0ea; font-size: 13px; line-height: 1.5; }
+.firstStepsCard {
+  padding: 15px;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 21px;
+  background: var(--card);
+  box-shadow: 0 8px 24px #2536300b;
+}
+.firstStepsCard > div { min-width: 0; }
+.firstStepsCard .stepNumber { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 13px; background: var(--mint); color: var(--green); font: 900 15px var(--font-display); }
+.firstStepsCard .eyebrow { margin: 2px 0 4px; font-size: 9px; }
+.firstStepsCard h2 { margin-bottom: 5px; font-size: 20px; }
+.firstStepsCard p { margin-bottom: 12px; color: var(--muted); font-size: 11px; line-height: 1.45; }
+.firstStepsPrimary,
+.firstStepsSecondary { width: 100%; min-height: 48px; border-radius: 14px; font-weight: 900; }
+.firstStepsPrimary { padding: 8px 12px; display: flex; align-items: center; gap: 10px; border: 0; background: var(--coral); color: #fff; text-align: left; }
+.firstStepsPrimary span { flex: 1; display: grid; gap: 1px; }
+.firstStepsPrimary small { color: #ffffffcc; font-size: 9px; }
+.firstStepsPrimary > b { font-size: 19px; }
+.firstStepsSecondary { margin-top: 10px; border: 0; background: var(--green); color: #fff; }
+.firstStepsSecondary b { margin-left: 8px; }
+.firstLevelButtons { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
+.firstLevelButtons button { min-width: 0; min-height: 44px; padding: 4px; border: 1px solid var(--line); border-radius: 11px; background: #f2f1eb; font-weight: 900; }
+.firstLevelButtons button.active { border-color: var(--green); background: var(--green); color: #fff; }
+.firstGoal { margin-top: 10px; display: grid; gap: 5px; color: var(--muted); font-size: 10px; font-weight: 850; }
+.firstGoal select { width: 100%; min-height: 44px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 11px; background: #fff; color: var(--ink); }
+.homeStudyRow { grid-template-columns: 1fr; }
+.homeStudyRow .smartStudyHome { grid-column: 1; }
+
 :is(button, h1, h2, h3, p, small, strong, b, span, label, summary, li, blockquote, em) {
   hyphens: none;
   overflow-wrap: normal;

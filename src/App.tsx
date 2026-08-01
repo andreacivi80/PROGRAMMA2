@@ -59,10 +59,11 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "6.9";
+const APP_VERSION = "7.0";
 const BUILD_DATE = "1 agosto 2026";
-const BUILD_ID = "EC-6.9-0801";
+const BUILD_ID = "EC-7.0-0801";
 type View =
+  | "start"
   | "home"
   | "path"
   | "topics"
@@ -107,6 +108,7 @@ type ReviewAttempt = {
   correct: boolean;
   hintUsed?: boolean;
   confidence?: "Bassa" | "Media" | "Alta";
+  options?: string[];
 };
 type SmartReviewItem = {
   id: string;
@@ -128,6 +130,7 @@ type SmartReviewItem = {
   attempts?: ReviewAttempt[];
   hintUsed?: boolean;
   confidence?: "Bassa" | "Media" | "Alta";
+  options?: string[];
 };
 type RecoveryQuestion = {
   review: SmartReviewItem;
@@ -1561,10 +1564,15 @@ function Gauge({ value }: { value: number }) {
 function initialMainView(): View {
   if (typeof window === "undefined") return "home";
   const saved = localStorage.getItem("english-coach-view-v1");
+  if (saved === "placement" && sessionStorage.getItem("english-coach-placement-draft-v2")) return "placement";
+  const hasStarted = Boolean(
+    localStorage.getItem("english-coach-onboarding-v1") ||
+      localStorage.getItem("english-coach-selection-v1"),
+  );
+  if (!hasStarted) return "start";
   if (saved === "lesson" && loadLatestCheckpoint()) return "lesson";
   if (saved === "reading" && localStorage.getItem("english-coach-reading-draft-v1")) return "reading";
-  if (saved === "placement" && sessionStorage.getItem("english-coach-placement-draft-v2")) return "placement";
-  return saved === "path" || saved === "topics" || saved === "progress" || saved === "errors" ? saved : "home";
+  return saved === "start" || saved === "path" || saved === "topics" || saved === "progress" || saved === "errors" ? saved : "home";
 }
 export function normalizeCheckpoint(value: unknown): { unit: MobileUnit; checkpoint: SessionCheckpoint } | null {
   if (!isRecord(value) || typeof value.unitId !== "string") return null;
@@ -1705,13 +1713,15 @@ export default function Home() {
     [freePathOpen, setFreePathOpen] = useState(
       () => localStorage.getItem("english-coach-free-open") !== "false",
     ),
-    [sessionMinutes, setSessionMinutes] = useState<5 | 15 | 30 | null>(initialSession?.checkpoint.sessionMinutes ?? null),
-    [welcomeOpen, setWelcomeOpen] = useState(
+    [onboardingComplete, setOnboardingComplete] = useState(
       () =>
         typeof window !== "undefined" &&
-        !localStorage.getItem("english-coach-onboarding-v1") &&
-        !localStorage.getItem("english-coach-selection-v1"),
+        Boolean(
+          localStorage.getItem("english-coach-onboarding-v1") ||
+            localStorage.getItem("english-coach-selection-v1"),
+        ),
     ),
+    [sessionMinutes, setSessionMinutes] = useState<5 | 15 | 30 | null>(initialSession?.checkpoint.sessionMinutes ?? null),
     [learningGoal, setLearningGoal] = useState("Conversazione quotidiana"),
     [colorMode, setColorMode] = useState<"light" | "dark">(
       () =>
@@ -1778,7 +1788,7 @@ export default function Home() {
     setSync("offline");
   }, []);
   useEffect(() => {
-    if (!progress) return;
+    if (!progress || !onboardingComplete) return;
     localStorage.setItem(
       "english-coach-selection-v1",
       JSON.stringify({
@@ -1787,13 +1797,13 @@ export default function Home() {
         theme: selectedTheme,
       }),
     );
-  }, [progress, selectedLevel, selectedLessonId, selectedTheme]);
+  }, [progress, selectedLevel, selectedLessonId, selectedTheme, onboardingComplete]);
   useEffect(() => {
-    if (["home", "path", "topics", "progress", "errors", "lesson", "reading", "placement"].includes(view))
+    if (["start", "home", "path", "topics", "progress", "errors", "lesson", "reading", "placement"].includes(view))
       localStorage.setItem("english-coach-view-v1", view);
   }, [view]);
   useEffect(() => {
-    if (!progress || !["home", "path", "topics", "progress"].includes(view)) return;
+    if (!progress || !["start", "home", "path", "topics", "progress"].includes(view)) return;
     const key = `english-coach-scroll-${view}`;
     const restore = window.setTimeout(() => {
       const saved = Number(localStorage.getItem(key) ?? 0);
@@ -2052,7 +2062,7 @@ export default function Home() {
       void save(updated);
       return updated;
     });
-    setWelcomeOpen(false);
+    setOnboardingComplete(true);
     setView("home");
     scrollTo(0, 0);
   };
@@ -2095,6 +2105,7 @@ export default function Home() {
     answer: string,
     explanation: string,
     givenAnswer = "Domanda saltata o risposta non corretta",
+    sourceOptions: string[] = [],
   ) => {
     setProgress((current) => {
       if (!current) return current;
@@ -2118,9 +2129,21 @@ export default function Home() {
           correctStreak: 0,
           lastAttemptAt: now,
           status: previous ? "Da ripassare" : "Nuovo",
+          options:
+            sourceOptions.length >= 3 && sourceOptions.includes(answer)
+              ? sourceOptions
+              : previous?.options,
           attempts: [
             ...(previous?.attempts ?? []),
-            { at: now, givenAnswer, correct: false },
+            {
+              at: now,
+              givenAnswer,
+              correct: false,
+              options:
+                sourceOptions.length >= 3 && sourceOptions.includes(answer)
+                  ? sourceOptions
+                  : undefined,
+            },
           ].slice(-30),
         },
         updated = {
@@ -2148,6 +2171,7 @@ export default function Home() {
         data.options[data.answer],
         data.explanationIt,
         givenAnswer,
+        data.options,
       );
   };
   const advance = (n: number) =>
@@ -2265,6 +2289,8 @@ export default function Home() {
         question.prompt,
         question.options[question.answer],
         question.explanationIt,
+        "Domanda saltata o risposta non corretta",
+        question.options,
       );
     if (item + 1 < activeBonus.length) {
       setItem((value) => value + 1);
@@ -2300,6 +2326,8 @@ export default function Home() {
         question.prompt,
         question.options[question.answer],
         question.explanationIt,
+        "Domanda saltata o risposta non corretta",
+        question.options,
       );
       skipCurrentQuestion(listeningQuiz.length, nextPhase);
       return;
@@ -2311,6 +2339,8 @@ export default function Home() {
         question.prompt,
         question.options[question.answer],
         question.explanationIt,
+        "Domanda saltata o risposta non corretta",
+        question.options,
       );
       skipCurrentQuestion(finalQuiz.length, finish);
       return;
@@ -2527,7 +2557,8 @@ export default function Home() {
           correctStreak: 0,
           lastAttemptAt: now,
           status: previous ? "Da ripassare" : "Nuovo",
-          attempts: [...(previous?.attempts ?? []), { at: now, givenAnswer, correct: false }].slice(-30),
+          options: question.options,
+          attempts: [...(previous?.attempts ?? []), { at: now, givenAnswer, correct: false, options: question.options }].slice(-30),
         },
         updated = { ...current, smartReview: { ...(current.smartReview ?? {}), [id]: entry } };
       void save(updated);
@@ -2589,9 +2620,10 @@ export default function Home() {
         correctStreak: 0,
         lastAttemptAt: now,
         status: old ? "Da ripassare" : "Nuovo",
+        options: question.options,
         attempts: [
           ...(old?.attempts ?? []),
-          { at: now, givenAnswer, correct: false },
+          { at: now, givenAnswer, correct: false, options: question.options },
         ].slice(-30),
       };
     });
@@ -2626,10 +2658,11 @@ export default function Home() {
     sessionStorage.removeItem("english-coach-placement-draft-v2");
     setSelectedLevel("A1");
     setSelectedLessonId(mobileCurriculum[0].id);
+    setOnboardingComplete(false);
     setProgress(clean);
     await save(clean);
     setResetConfirm(false);
-    setView("home");
+    setView("start");
     scrollTo(0, 0);
   };
   const recoverProgress = async () => {
@@ -2813,29 +2846,47 @@ export default function Home() {
     setProgress(updated);
     void save(updated);
   };
-  const startRecovery = (count = 10) => {
-    const open = shuffled(
-        smartReviews.filter((review) => !review.mastered),
-      ).slice(0, count),
-      pool = [
-        ...new Set([
-          ...smartReviews.map((review) => review.answer),
-          ...mobileCurriculum.flatMap((candidate) =>
-            candidate.vocabulary.map((word) => word.en),
+  const startRecovery = (count = 10, candidates: SmartReviewItem[] = smartReviews) => {
+    const open = shuffled(candidates.filter((review) => !review.mastered)),
+      quiz = open.flatMap((review) => {
+        const source = mobileCurriculum.find((candidate) => candidate.id === review.unitId),
+          authored = source
+            ? [
+                ...source.quickCheck,
+                ...listeningQuizFor(source),
+                ...finalQuizFor(source),
+                ...supplementaryBankFor(source),
+              ]
+            : [],
+          exact = authored.find(
+            (question) =>
+              question.options[question.answer] === review.answer &&
+              question.prompt.trim().toLocaleLowerCase("it") === review.prompt.trim().toLocaleLowerCase("it"),
           ),
-          ...mobileCurriculum.flatMap((candidate) =>
-            candidate.grammar.examples.map((example) => example.en),
+          stored = review.options?.length && review.options.includes(review.answer)
+            ? { options: review.options, answer: review.options.indexOf(review.answer) }
+            : null,
+          generated = tryOptionsFor(
+            review.answer,
+            [
+              ...meaningMistakes(review.answer),
+              ...plausibleClozeDistractors(review.answer),
+              ...(review.givenAnswer && !/saltata|non registrata|non corretta/i.test(review.givenAnswer)
+                ? [review.givenAnswer]
+                : []),
+            ],
+            optionCountForLevel(review.level),
           ),
-        ]),
-      ],
-      quiz = open.map((review) => {
-        const alternatives = shuffled(
-            pool.filter((answer) => answer !== review.answer),
-          ).slice(0, 2),
-          options = shuffled([review.answer, ...alternatives]),
-          answer = options.indexOf(review.answer);
-        return { review, options, answer };
-      });
+          choice = stored ?? (exact ? { options: exact.options, answer: exact.answer } : generated);
+        if (!choice) return [];
+        const correct = choice.options[choice.answer], options = shuffled(choice.options);
+        return [{ review, options, answer: options.indexOf(correct) }];
+      }).slice(0, count);
+    if (!quiz.length) {
+      setView("errors");
+      scrollTo(0, 0);
+      return;
+    }
     setRecoveryQuiz(quiz);
     setRecoveryIndex(0);
     setRecoveryPick(null);
@@ -3133,33 +3184,6 @@ export default function Home() {
           {sync === "saving" ? "Salvataggio…" : "Salvato qui"}
         </span>
       </header>
-      {welcomeOpen && (
-        <div className="confirmBackdrop" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
-          <section className="confirmSheet welcomeSheet">
-            <span className="eyebrow">Benvenuto in English Coach</span>
-            <h2 id="welcome-title">Da dove vuoi partire?</h2>
-            <p>Scegli il tuo obiettivo. Potrai modificarlo senza perdere i progressi.</p>
-            <label className="welcomeGoal">
-              Obiettivo principale
-              <select value={learningGoal} onChange={(event) => setLearningGoal(event.target.value)}>
-                <option>Conversazione quotidiana</option>
-                <option>Viaggi e situazioni reali</option>
-                <option>Inglese per il lavoro</option>
-                <option>Grammatica e certificazioni</option>
-                <option>Inglese tecnico e ricerca</option>
-              </select>
-            </label>
-            <div className="confirmActions">
-              <button autoFocus className="primary" onClick={() => { setWelcomeOpen(false); setView("placement"); }}>
-                Fai il test iniziale
-              </button>
-              <button onClick={() => completeOnboarding()}>
-                Conosco già il mio livello
-              </button>
-            </div>
-          </section>
-        </div>
-      )}
       {resumePrompt && (
         <div
           className="confirmBackdrop"
@@ -3230,6 +3254,67 @@ export default function Home() {
                 onClick={() => setResetConfirm(false)}
               >
                 No, conserva i dati
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+      {view === "start" && (
+        <div className="screen firstStepsScreen">
+          <section className="firstStepsHero" aria-labelledby="first-steps-title">
+            <span className="eyebrow">Primi passi</span>
+            <h1 id="first-steps-title">Inizia dal livello giusto</h1>
+            <p>
+              Se è la prima volta, fai la valutazione. Se conosci già il tuo
+              livello, selezionalo e comincia subito.
+            </p>
+          </section>
+          <section className="firstStepsCard placementStartCard">
+            <span className="stepNumber">1</span>
+            <div>
+              <span className="eyebrow">Scelta consigliata</span>
+              <h2>Valuta il tuo livello</h2>
+              <p>
+                30 domande progressive di grammatica, lessico, ascolto e
+                comprensione per proporti un punto di partenza attendibile.
+              </p>
+              <button type="button" className="firstStepsPrimary" onClick={() => setView("placement")}>
+                <span><strong>Inizia il test</strong><small>Circa 15 minuti</small></span>
+                <b>→</b>
+              </button>
+            </div>
+          </section>
+          <section className="firstStepsCard knownLevelCard">
+            <span className="stepNumber">2</span>
+            <div>
+              <span className="eyebrow">Partenza diretta</span>
+              <h2>Conosco già il mio livello</h2>
+              <p>Scegli il livello che vuoi allenare. Potrai cambiarlo in ogni momento.</p>
+              <div className="firstLevelButtons" aria-label="Scegli il livello iniziale">
+                {(["A1", "A2", "B1", "B2", "C1"] as const).map((level) => (
+                  <button
+                    type="button"
+                    key={level}
+                    className={selectedLevel === level ? "active" : ""}
+                    aria-pressed={selectedLevel === level}
+                    onClick={() => chooseLevel(level)}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </div>
+              <label className="firstGoal">
+                Il tuo obiettivo
+                <select value={learningGoal} onChange={(event) => setLearningGoal(event.target.value)}>
+                  <option>Conversazione quotidiana</option>
+                  <option>Viaggi e situazioni reali</option>
+                  <option>Inglese per il lavoro</option>
+                  <option>Grammatica e certificazioni</option>
+                  <option>Inglese tecnico e ricerca</option>
+                </select>
+              </label>
+              <button type="button" className="firstStepsSecondary" onClick={() => completeOnboarding(selectedLevel)}>
+                Inizia dal livello {selectedLevel} <b>→</b>
               </button>
             </div>
           </section>
@@ -3356,7 +3441,7 @@ export default function Home() {
         </details>
       )}
       {view === "home" && (
-        <div className="homeQuickRow">
+        <div className="homeQuickRow homeStudyRow">
           <details className="smartStudyHome">
             <summary><span>Studio intelligente</span><b>{learningSkills.slice().sort((a, b) => a.score - b.score)[0].skill}</b></summary>
             <Deferred>
@@ -3387,10 +3472,6 @@ export default function Home() {
               />
             </Deferred>
           </details>
-          <button type="button" className="placementEntry" onClick={() => setView("placement")}>
-            <span><strong>Valuta il tuo livello</strong><small>30 domande</small></span>
-            <b>→</b>
-          </button>
         </div>
       )}
       {view === "home" && (
@@ -4716,7 +4797,7 @@ export default function Home() {
       {view === "placement" && (
         <Deferred>
           <PlacementTest
-            onClose={() => { setView("home"); scrollTo(0, 0); }}
+            onClose={() => { setView("start"); scrollTo(0, 0); }}
             onChoose={(level) => completeOnboarding(level)}
           />
         </Deferred>
@@ -5894,7 +5975,16 @@ export default function Home() {
         view !== "errors" &&
         view !== "placement" &&
         view !== "themePack" && (
-          <nav aria-label="Navigazione principale">
+          <nav className={onboardingComplete ? "mainNav" : "startNav"} aria-label="Navigazione principale">
+            {!onboardingComplete ? (
+              <button
+                className="active"
+                aria-current="page"
+                onClick={() => setView("start")}
+              >
+                <b aria-hidden="true">◎</b>Primi passi
+              </button>
+            ) : <>
             <button
               className={view === "home" ? "active" : ""}
               aria-current={view === "home" ? "page" : undefined}
@@ -5923,6 +6013,7 @@ export default function Home() {
             >
               <b aria-hidden="true">↗</b>Progressi
             </button>
+            </>}
           </nav>
         )}
     </main>

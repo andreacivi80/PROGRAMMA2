@@ -15,9 +15,9 @@ const checks = {
   largeTextReflows: css.includes(".app.text-large .audioControl") && css.includes(".app.text-large :is(.adaptiveLevels, .compactLevelPicker > div)"),
   completeDarkSurfaces: [".lessonCard", ".readingPanel", ".themePackPanel", ".reviewPanel", ".deepGuide article"].every(selector => css.includes(selector)),
   liveSaveStatus: app.includes('role="status" aria-live="polite"'),
-  labelledNavigation: app.includes('<nav aria-label="Navigazione principale">') && app.includes("aria-current="),
+  labelledNavigation: app.includes('aria-label="Navigazione principale"') && app.includes("aria-current="),
   decorativeNavIconsHidden: ["⌂", "◇", "✦", "↗"].every(icon => app.includes(`<b aria-hidden="true">${icon}</b>`)),
-  labelledDialogs: app.includes('role="dialog" aria-modal="true" aria-labelledby="welcome-title"') && app.includes('role="alertdialog"') && app.includes("autoFocus"),
+  labelledDialogs: app.includes('role="dialog"') && app.includes('aria-modal="true"') && app.includes('aria-labelledby="resume-title"') && app.includes('role="alertdialog"') && app.includes("autoFocus"),
   escapeClosesOverlays: app.includes('event.key !== "Escape"') && app.includes('window.addEventListener("keydown", closeOverlay)'),
   skipButtonsContained: css.includes(".themeQuizNav,.reviewNav") && css.includes("grid-template-columns:1fr") && css.includes(".lessonCard>.bottomSkip{position:static!important"),
 };

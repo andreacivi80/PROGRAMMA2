@@ -64,6 +64,13 @@ const inspect = async label => evaluate(`(() => {
 })()`);
 const buttonRects = () => evaluate(`Object.fromEntries([...document.querySelectorAll("button")].filter(b=>b.offsetParent!==null).map(b=>{const r=b.getBoundingClientRect();return [(b.innerText||b.ariaLabel||"").trim(),[Math.round(r.width),Math.round(r.height)]]}))`);
 const clickText = text => evaluate(`(()=>{const b=[...document.querySelectorAll("button")].find(x=>(x.innerText||x.ariaLabel||"").includes(${JSON.stringify(text)}));if(!b)return false;b.click();return true})()`);
+const waitForSelector = async selector => {
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    if (await evaluate(`Boolean(document.querySelector(${JSON.stringify(selector)}))`)) return true;
+    await wait(200);
+  }
+  return false;
+};
 const screenshot = async name => {
   const result = await call("Page.captureScreenshot", { format: "png", captureBeyondViewport: false });
   const path = join(shots, `${name}.png`); await writeFile(path, Buffer.from(result.result.data, "base64")); return path;
@@ -74,6 +81,12 @@ try {
   await connect();
   for (const viewport of [{ name: "phone", width: 390, height: 844, mobile: true }, { name: "desktop", width: 1440, height: 900, mobile: false }]) {
     await setViewport(viewport.width, viewport.height, viewport.mobile);
+    await evaluate(`localStorage.clear(); sessionStorage.clear(); location.reload()`);
+    await waitForSelector(".firstStepsScreen");
+    results.push(await inspect(`${viewport.name}-first-steps`));
+    const onboardingGate = await evaluate(`({firstSteps:Boolean(document.querySelector(".firstStepsScreen")),startOnly:Boolean(document.querySelector("nav.startNav")),todayVisible:[...document.querySelectorAll("nav button")].some(button=>button.textContent.includes("Oggi")),reviewVisible:document.body.innerText.includes("Ripasso pronto")})`);
+    results.push({ label: `${viewport.name}-onboarding-gate`, ...onboardingGate });
+    if (viewport.name === "phone") await screenshot("phone-first-steps");
     await seed("home");
     await setViewport(viewport.width, viewport.height, viewport.mobile);
     await wait(500);
@@ -130,7 +143,7 @@ try {
     results.push(await inspect(`${viewport.name}-rapid-theme-navigation`));
     if (viewport.name === "phone") { await evaluate(`([...document.querySelectorAll(".themeGrid>button>b")].find(item=>item.textContent?.includes("UK")))?.scrollIntoView({block:"center"})`); await wait(200); await screenshot("phone-topics"); }
   }
-  const failures = results.flatMap(result => [result.horizontalOverflow ? `${result.label}: horizontal overflow` : null, result.overlaps?.length ? `${result.label}: ${result.overlaps.length} control overlaps` : null, result.changed?.length ? `${result.label}: ${result.changed.length} controls resized` : null, typeof result.controls === "number" && result.controls === 0 ? `${result.label}: expected interactive screen is empty` : null, result.label?.endsWith("study-badge") && (result.whiteSpace !== "nowrap" || result.overflowing || result.title !== "Studio intelligente" || result.titleWhiteSpace !== "nowrap" || result.titleOverflowing || result.titleLines !== 1) ? `${result.label}: study title or skill label wrapped/overflowed` : null, result.label?.endsWith("b1-highlight-context") && (!result.highlights?.length || result.falseHighlights?.length) ? `${result.label}: English highlights missing or Italian text highlighted` : null, result.label?.endsWith("b2-grammar-content") && result.repeatedBlocks?.length ? `${result.label}: repeated grammar blocks` : null, result.label?.endsWith("b2-mixed-ready") && !result.ready ? `${result.label}: grammar did not render` : null, result.label?.endsWith("uk-us-label") && (result.text !== "UK US" || result.whiteSpace !== "nowrap" || result.overflowing) ? `${result.label}: label wrapped or overflowed` : null, result.label?.endsWith("theme-search") && result.resultCount !== 1 ? `${result.label}: unexpected filter result` : null].filter(Boolean));
+  const failures = results.flatMap(result => [result.horizontalOverflow ? `${result.label}: horizontal overflow` : null, result.overlaps?.length ? `${result.label}: ${result.overlaps.length} control overlaps` : null, result.changed?.length ? `${result.label}: ${result.changed.length} controls resized` : null, typeof result.controls === "number" && result.controls === 0 ? `${result.label}: expected interactive screen is empty` : null, result.label?.endsWith("onboarding-gate") && (!result.firstSteps || !result.startOnly || result.todayVisible || result.reviewVisible) ? `${result.label}: first-use gate is not isolated` : null, result.label?.endsWith("study-badge") && (result.whiteSpace !== "nowrap" || result.overflowing || result.title !== "Studio intelligente" || result.titleWhiteSpace !== "nowrap" || result.titleOverflowing || result.titleLines !== 1) ? `${result.label}: study title or skill label wrapped/overflowed` : null, result.label?.endsWith("b1-highlight-context") && (!result.highlights?.length || result.falseHighlights?.length) ? `${result.label}: English highlights missing or Italian text highlighted` : null, result.label?.endsWith("b2-grammar-content") && result.repeatedBlocks?.length ? `${result.label}: repeated grammar blocks` : null, result.label?.endsWith("b2-mixed-ready") && !result.ready ? `${result.label}: grammar did not render` : null, result.label?.endsWith("uk-us-label") && (result.text !== "UK US" || result.whiteSpace !== "nowrap" || result.overflowing) ? `${result.label}: label wrapped or overflowed` : null, result.label?.endsWith("theme-search") && result.resultCount !== 1 ? `${result.label}: unexpected filter result` : null].filter(Boolean));
   console.log(JSON.stringify({ simulatedMinutes: 60, screenshots: shots, results, failures }, null, 2));
   if (failures.length) process.exitCode = 1;
 } finally {

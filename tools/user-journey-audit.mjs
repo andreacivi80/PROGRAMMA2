@@ -62,10 +62,22 @@ try {
 
   localStorage.clear(); sessionStorage.clear();
   let mounted = await renderApp(App);
-  check("fresh-user-sees-one-onboarding", screen.getAllByRole("dialog").length === 1 && screen.getByText("Da dove vuoi partire?"));
-  fireEvent.click(screen.getByRole("button", { name: "Conosco già il mio livello" }));
+  check(
+    "fresh-user-sees-first-steps-only",
+    Boolean(screen.getByRole("heading", { name: "Inizia dal livello giusto" })) &&
+      Boolean(screen.getByRole("button", { name: "Primi passi" })) &&
+      !screen.queryByRole("button", { name: /Oggi/ }) &&
+      !screen.queryByText("Ripasso pronto"),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "B1" }));
+  fireEvent.click(screen.getByRole("button", { name: /Inizia dal livello B1/ }));
   await sleep(20);
-  check("manual-onboarding-reaches-home", !screen.queryByRole("dialog") && screen.getAllByText("Percorso libero").length >= 1);
+  check(
+    "manual-onboarding-reaches-home-and-disappears",
+    screen.getAllByText("Percorso libero").length >= 1 &&
+      !screen.queryByRole("button", { name: "Primi passi" }) &&
+      Boolean(screen.getByRole("button", { name: /Oggi/ })),
+  );
 
   const dailyFocus = document.querySelector(".dailyFocusHome");
   check("home-shows-one-primary-daily-focus", document.querySelectorAll(".dailyFocusHome").length === 1 && Boolean(dailyFocus?.querySelector(".dailyFocusStart")));
@@ -143,6 +155,8 @@ try {
   fireEvent.click(screen.getByRole("button", { name: "Sì, cancella tutto" })); await sleep(30);
   const cleared = JSON.parse(localStorage.getItem("english-coach-progress-v2") || "{}");
   check("confirmed-reset-clears-learning-history", Object.keys(cleared.smartReview || {}).length === 0 && Object.keys(cleared.days || {}).length === 0);
+  check("reset-returns-to-first-steps", Boolean(screen.getByRole("heading", { name: "Inizia dal livello giusto" })) && !screen.queryByRole("button", { name: /Progressi/ }));
+  fireEvent.click(screen.getByRole("button", { name: /Inizia dal livello A1/ })); await sleep(20);
   fireEvent.click(screen.getByRole("button", { name: /Progressi/ })); await sleep(20);
   const restoreBox = screen.getByRole("textbox", { name: /Ripristina su questo dispositivo/ });
   fireEvent.change(restoreBox, { target: { value: "codice volutamente non valido" } });
@@ -161,8 +175,10 @@ try {
   fireEvent.click(screen.getByRole("button", { name: "1.2×" })); await sleep(10);
   check("audio-preferences-are-saved", localStorage.getItem("english-coach-audio-accent-v1") === "en-US" && localStorage.getItem("english-coach-audio-rate-v1") === "1.2");
 
-  fireEvent.click(within(screen.getByRole("navigation", { name: "Navigazione principale" })).getByRole("button", { name: "Oggi" })); await sleep(10);
-  fireEvent.click(screen.getByRole("button", { name: /Valuta il tuo livello/ }));
+  mounted.unmount();
+  localStorage.clear(); sessionStorage.clear();
+  mounted = await renderApp(App);
+  fireEvent.click(screen.getByRole("button", { name: /Inizia il test/ }));
   await waitFor(() => screen.getByText("1/30"), { timeout: 4000 });
   check("placement-really-starts-with-thirty-items", Boolean(screen.getByText("1/30")));
   for (let index = 0; index < 30; index++) {

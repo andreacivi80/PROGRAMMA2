@@ -26,7 +26,7 @@ try {
   const { mobileCurriculum } = await server.ssrLoadModule("/src/curriculum.ts");
   localStorage.clear(); sessionStorage.clear();
   let mounted = render(React.createElement(App)); await wait(40);
-  fireEvent.click(screen.getByRole("button", { name: "Conosco già il mio livello" })); await wait(20);
+  fireEvent.click(screen.getByRole("button", { name: /Inizia dal livello A1/ })); await wait(20);
   const adaptiveButtons = [...document.querySelectorAll(".adaptiveTimes button")];
   check("new-a1-user-never-jumps-to-later-lesson", adaptiveButtons.length === 4 && adaptiveButtons.every(button => button.textContent.includes(mobileCurriculum[0].title)), adaptiveButtons.map(button => button.textContent).join(" | "));
   check("time-changes-depth-not-curriculum-order", adaptiveButtons.slice(0, 3).map(button => button.textContent).join(" ").includes("5min") && adaptiveButtons.slice(0, 3).map(button => button.textContent).join(" ").includes("30min"));
