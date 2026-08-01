@@ -1,10 +1,10 @@
-# English Coach 7.3 — stato verificato
+# English Coach 7.4 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 7.3, con data e identificativo visibili.
+- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 7.4, con data e identificativo visibili.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 - **VERIFICATO** — i nomi dell’archivio locale restano stabili tra le revisioni: una nuova pubblicazione sostituisce l’interfaccia, non i dati dell’utente.

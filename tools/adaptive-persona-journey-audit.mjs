@@ -1,6 +1,7 @@
 import React from "react";
 import { Window } from "happy-dom";
 import { createServer } from "vite";
+import { readFileSync } from "node:fs";
 
 const window = new Window({ url: "https://andreacivi80.github.io/PROGRAMMA2/", width: 390, height: 844 });
 for (const [name, value] of Object.entries({ window, document: window.document, navigator: window.navigator, history: window.history, location: window.location, localStorage: window.localStorage, sessionStorage: window.sessionStorage, HTMLElement: window.HTMLElement, HTMLMediaElement: window.HTMLMediaElement, Node: window.Node, Event: window.Event, MouseEvent: window.MouseEvent, KeyboardEvent: window.KeyboardEvent, getComputedStyle: window.getComputedStyle.bind(window), scrollTo: () => undefined, requestAnimationFrame: callback => setTimeout(callback, 0), cancelAnimationFrame: clearTimeout })) Object.defineProperty(globalThis, name, { configurable: true, writable: true, value });
@@ -18,6 +19,9 @@ const server = await createServer({ server: { middlewareMode: true }, appType: "
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 const checks = {};
 const check = (name, ok, detail = "") => { checks[name] = { ok: Boolean(ok), detail }; };
+const adaptiveSource = readFileSync("src/App.tsx", "utf8");
+check("review-priority-uses-errors-overdue-and-streak", adaptiveSource.includes("overdueDays * 4") && adaptiveSource.includes("wrongCount ?? 1") && adaptiveSource.includes("correctStreak ?? 0"));
+check("all-review-paths-use-thirty-day-consolidation", (adaptiveSource.match(/\[1, 3, 7, 14, 30\]/g) ?? []).length >= 2);
 const storedBase = overrides => ({ schemaVersion: 14, deviceId: "persona-audit", currentDay: 3, streak: 2, weeklyGoal: 3, days: {}, activity: {}, reading: {}, reviews: {}, themePacks: {}, wordGames: {}, lessonFeedback: {}, learningGoal: "Conversazione quotidiana", savedPhrases: [], weeklyChallenges: {}, monthlyChecks: {}, smartReview: {}, ...overrides });
 const prepare = (progress, lessonId, view = "home", checkpoint = null) => {
   localStorage.clear(); sessionStorage.clear();

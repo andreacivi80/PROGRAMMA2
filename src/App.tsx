@@ -59,9 +59,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "7.3";
+const APP_VERSION = "7.4";
 const BUILD_DATE = "1 agosto 2026";
-const BUILD_ID = "EC-7.3-0801";
+const BUILD_ID = "EC-7.4-0801";
 type View =
   | "start"
   | "home"
@@ -469,6 +469,10 @@ function trainingMenu(level: Cefr): TrainingMenuItem[] {
 }
 const dateKey = (date = new Date()) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+const reviewPriority = (review: SmartReviewItem) => {
+  const overdueDays = Math.max(0, Math.floor((Date.now() - new Date(`${review.dueAt}T12:00:00`).getTime()) / 86400000));
+  return overdueDays * 4 + (review.wrongCount ?? 1) * 3 - (review.correctStreak ?? 0) * 2 + (review.step === 0 ? 4 : 0);
+};
 const weekKey = (date = new Date()) => {
   const start = new Date(date.getFullYear(), 0, 1),
     day = Math.ceil(((date.getTime() - start.getTime()) / 86400000 + start.getDay() + 1) / 7);
@@ -2716,7 +2720,7 @@ export default function Home() {
   const smartReviews = Object.values(progress.smartReview ?? {}),
     dueSmartReviews = smartReviews
       .filter((review) => !review.mastered && review.dueAt <= dateKey())
-      .sort((a, b) => a.dueAt.localeCompare(b.dueAt)),
+      .sort((a, b) => reviewPriority(b) - reviewPriority(a) || a.dueAt.localeCompare(b.dueAt)),
     nextSmartReview = smartReviews
       .filter((review) => !review.mastered && review.dueAt > dateKey())
       .sort((a, b) => a.dueAt.localeCompare(b.dueAt))[0],
@@ -2913,7 +2917,7 @@ export default function Home() {
       if (!current) return current;
       const previous =
           current.smartReview?.[question.review.id] ?? question.review,
-        delays = [1, 3, 7, 14],
+        delays = [1, 3, 7, 14, 30],
         step = remembered ? previous.step + 1 : 0,
         mastered = remembered && previous.step >= delays.length,
         now = new Date().toISOString(),
