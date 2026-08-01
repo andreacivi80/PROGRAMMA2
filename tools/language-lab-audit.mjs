@@ -27,6 +27,7 @@ try {
   const clean = analyzeLocalWriting("I work from home.", "subject + verb");
   const app = readFileSync("src/App.tsx", "utf8").replace(/\s+/g, " ");
   const css = readFileSync("src/appEnhancements.css", "utf8").replace(/\s+/g, " ");
+  const skills = readFileSync("src/SkillsLab.tsx", "utf8").replace(/\s+/g, " ");
   const checks = {
     writingCases: writingCases.every(test => test.ok),
     honestCleanResult: clean.corrected === "I work from home." && clean.notes[0]?.includes("controllabili offline"),
@@ -39,6 +40,9 @@ try {
     ownVoicePlayback: app.includes("LA TUA REGISTRAZIONE") && app.includes("Riascolta ritmo, pause e chiarezza"),
     recordingIsVisible: app.includes('role="status" aria-live="assertive"') && app.includes("Registrazione in corso"),
     actionsReflowOnPhone: css.includes(".writingReviewActions { grid-template-columns: 1fr; }"),
+    wordFamiliesUsePlausibleAlternatives: skills.includes("Confronto linguistico") && !skills.includes('["schedule",answer,"unrelated"]'),
+    dailyReviewUsesActiveRecall: skills.includes("RICHIAMO ATTIVO") && skills.includes("La ricordavo correttamente") && !skills.includes('"Rivedi la regola"'),
+    branchingDialogueUsesNuancedChoices: skills.includes("understate the implementation cost") && skills.includes("Promette un risultato non ancora verificato"),
   };
   const failed = [...writingCases.filter(test => !test.ok).map(test => `writing:${test.input}`), ...Object.entries(checks).filter(([, ok]) => !ok).map(([name]) => name)];
   console.log(JSON.stringify({ writingCases, clean, checks, failed }, null, 2));
