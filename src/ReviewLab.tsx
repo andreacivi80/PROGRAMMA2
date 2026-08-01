@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
-import type { Choice, MobileUnit } from "./curriculum";
+import { optionCountForLevel, type Choice, type MobileUnit } from "./curriculum";
 import { readingPassages } from "./readingLab";
+import { plausibleClozeDistractors, tryOptionsFor } from "./supplementaryQuiz";
 import ConceptText from "./ConceptText";
 import { getAudioAccent } from "./preferences";
 
@@ -55,13 +56,6 @@ function textSimilarity(expected: string, received: string) {
   }, 0);
   return Math.round((hits / Math.max(1, Math.max(a.length, b.length))) * 100);
 }
-function optionsFor(correct: string, pool: string[]) {
-  const wrong = shuffle([...new Set(pool.filter((value) => value && value !== correct))]).slice(0, 2),
-    answer = Math.floor(Math.random() * 3), options = [...wrong];
-  while (options.length < 2) options.push(options.length ? "Un’altra forma" : "Nessuna delle precedenti");
-  options.splice(answer, 0, correct);
-  return { options, answer };
-}
 function randomChoice(choice: Choice, unit: MobileUnit, area: ReviewArea, extra: Partial<ReviewQuestion> = {}): ReviewQuestion {
   const entries = shuffle(choice.options.map((value, index) => ({ value, ok: index === choice.answer })));
   return {
@@ -74,24 +68,15 @@ function randomChoice(choice: Choice, unit: MobileUnit, area: ReviewArea, extra:
     ...extra,
   };
 }
-function buildBank(units: MobileUnit[], target: number, final: boolean): ReviewQuestion[] {
-  const vocab = units.flatMap((unit) => unit.vocabulary),
-    examples = units.flatMap((unit) => unit.grammar.examples),
-    clozeAnswers = units.flatMap((unit) => unit.writing.cloze.flatMap((item) => item.answers)),
-    bank: ReviewQuestion[] = [];
+export function buildReviewBank(units: MobileUnit[], target: number, final: boolean): ReviewQuestion[] {
+  const bank: ReviewQuestion[] = [];
   units.forEach((unit) => {
+    const optionCount = optionCountForLevel(unit.cefr);
+    const nearbyClozeAnswers = unit.writing.cloze.flatMap((item) => item.answers);
     unit.quickCheck.forEach((choice) => bank.push(randomChoice(choice, unit, "Uso nel contesto")));
-    unit.vocabulary.forEach((word) => {
-      const built = optionsFor(word.en, vocab.map((item) => item.en));
-      bank.push({ prompt: `Come si dice «${word.it}»?`, ...built, explanationIt: `${word.en} significa «${word.it}». Esempio: ${word.example}`, unitId: unit.id, unitTitle: unit.title, area: "Vocabolario" });
-    });
-    unit.grammar.examples.forEach((example) => {
-      const built = optionsFor(example.en, examples.map((item) => item.en));
-      bank.push({ prompt: `Scegli l’inglese corretto per «${example.it}».`, ...built, explanationIt: example.noteIt, unitId: unit.id, unitTitle: unit.title, area: "Grammatica" });
-    });
     unit.writing.cloze.forEach((item) => {
-      const correct = item.answers[0], built = optionsFor(correct, clozeAnswers);
-      bank.push({ prompt: item.prompt, ...built, explanationIt: item.hintIt, unitId: unit.id, unitTitle: unit.title, area: "Uso nel contesto" });
+      const correct = item.answers[0], built = tryOptionsFor(correct, plausibleClozeDistractors(correct, nearbyClozeAnswers), optionCount);
+      if (built) bank.push({ prompt: item.prompt, ...built, explanationIt: `${item.hintIt} La risposta corretta è «${correct}».`, unitId: unit.id, unitTitle: unit.title, area: "Uso nel contesto" });
     });
     if (final)
       unit.listening.questions.forEach((choice) =>
@@ -135,7 +120,7 @@ export default function ReviewLab({ level, units, final, onClose, onComplete, on
     [spoken, setSpoken] = useState(""), [recording, setRecording] = useState(false),
     [finalPercent, setFinalPercent] = useState(0);
   const target = final ? 24 : 20;
-  const questions = useMemo(() => buildBank(units, target, final), [units, target, final, run]),
+  const questions = useMemo(() => buildReviewBank(units, target, final), [units, target, final, run]),
     question = questions[index],
     quizPercent = Math.round((correct / Math.max(1, questions.length)) * 100),
     weakUnit = units.find((unit) => unit.id === Object.entries(weak).sort((a, b) => b[1] - a[1])[0]?.[0]),

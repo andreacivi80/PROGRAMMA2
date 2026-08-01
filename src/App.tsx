@@ -3,6 +3,7 @@ import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } 
 import {
   curriculumIndex,
   mobileCurriculum,
+  optionCountForLevel,
   type Cefr,
   type Choice,
   type MobileUnit,
@@ -33,6 +34,9 @@ import {
 } from "./speechVoices";
 import {
   buildSupplementaryQuiz,
+  meaningMistakes,
+  plausibleClozeDistractors,
+  tryOptionsFor,
   supplementaryBankFor,
   supplementaryFingerprint,
 } from "./supplementaryQuiz";
@@ -55,9 +59,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "6.7";
+const APP_VERSION = "6.8";
 const BUILD_DATE = "1 agosto 2026";
-const BUILD_ID = "EC-6.7-0801";
+const BUILD_ID = "EC-6.8-0801";
 type View =
   | "home"
   | "path"
@@ -1494,68 +1498,30 @@ function Question({
     </div>
   );
 }
-function makeChoice(
-  prompt: string,
-  correct: string,
-  pool: string[],
-  explanationIt: string,
-  seed = 0,
-): Choice {
-  const wrong = [
-    ...new Set(pool.filter((value) => value && value !== correct)),
-  ].slice(0, 2);
-  while (wrong.length < 2)
-    wrong.push(wrong.length ? "Un’altra forma" : "Nessuna delle precedenti");
-  const answer = Math.abs(seed) % 3,
-    options = [...wrong];
-  options.splice(answer, 0, correct);
-  return { prompt, options, answer, explanationIt };
-}
-function finalQuizFor(unit: MobileUnit): Choice[] {
-  const words = unit.vocabulary,
-    examples = unit.grammar.examples;
+export function finalQuizFor(unit: MobileUnit): Choice[] {
+  const optionCount = optionCountForLevel(unit.cefr),
+    nearbyAnswers = unit.writing.cloze.flatMap((item) => item.answers),
+    contextualCloze = unit.writing.cloze.flatMap((item) => {
+      const built = tryOptionsFor(item.answers[0], plausibleClozeDistractors(item.answers[0], nearbyAnswers), optionCount);
+      return built ? [{ prompt: item.prompt, ...built, explanationIt: `${item.hintIt} La risposta corretta è «${item.answers[0]}».` }] : [];
+    }).slice(0, 2);
   return [
     ...unit.quickCheck.slice(0, 2),
-    makeChoice(
-      `Come si dice «${words[0].it}»?`,
-      words[0].en,
-      words.map((x) => x.en),
-      `La parola corretta è ${words[0].en}.`,
-      unit.day,
-    ),
-    makeChoice(
-      `Come si dice «${words[1].it}»?`,
-      words[1].en,
-      words.map((x) => x.en),
-      `La parola corretta è ${words[1].en}.`,
-      unit.day + 1,
-    ),
-    makeChoice(
-      `Quale frase significa «${examples[0].it}»?`,
-      examples[0].en,
-      examples.map((x) => x.en),
-      examples[0].noteIt,
-      unit.day + 2,
-    ),
-    unit.listening.questions[0],
+    ...contextualCloze,
+    ...unit.listening.questions.slice(0, 2),
   ].slice(0, 6);
 }
-function listeningQuizFor(unit: MobileUnit): Choice[] {
+export function listeningQuizFor(unit: MobileUnit): Choice[] {
   const heard = unit.listening.transcript
       .split(/(?<=[.!?])\s+/)
       .filter((x) => x.trim().length > 8),
-    other = [...unit.grammar.examples.map((x) => x.en), unit.speaking.target];
+    optionCount = optionCountForLevel(unit.cefr);
   const recognition = heard
     .slice(0, 2)
-    .map((sentence, index) =>
-      makeChoice(
-        "Quale frase hai sentito nel dialogo?",
-        sentence,
-        [...other, ...heard.filter((x) => x !== sentence)],
-        `Nel dialogo viene detto: “${sentence}”`,
-        unit.day + index,
-      ),
-    );
+    .flatMap((sentence) => {
+      const built = tryOptionsFor(sentence, meaningMistakes(sentence), optionCount);
+      return built ? [{ prompt: "Quale frase hai sentito nel dialogo?", ...built, explanationIt: `Nel dialogo viene detto: “${sentence}”` }] : [];
+    });
   return [
     ...unit.listening.questions,
     ...recognition,

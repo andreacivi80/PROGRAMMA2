@@ -36,18 +36,8 @@ export function optionCountForLevel(level: Cefr) {
 }
 
 export function expandChoiceForLevel(choice: Choice, level: Cefr, candidates: string[], offset: number): Choice {
-  const target = optionCountForLevel(level), correct = choice.options[choice.answer];
-  const options = [...choice.options];
-  const known = new Set(options.map(option => option.trim().toLocaleLowerCase("en")));
-  [...new Set(candidates.map(option => option.trim()).filter(Boolean))]
-    .filter(option => !known.has(option.toLocaleLowerCase("en")))
-    .sort((left, right) => Math.abs(left.length - correct.length) - Math.abs(right.length - correct.length))
-    .forEach(option => {
-      if (options.length >= target) return;
-      options.push(option);
-      known.add(option.toLocaleLowerCase("en"));
-    });
-  return rotateChoice({ ...choice, options, answer: options.indexOf(correct) }, offset);
+  void level; void candidates;
+  return rotateChoice(choice, offset);
 }
 
 export type MobileUnit = {

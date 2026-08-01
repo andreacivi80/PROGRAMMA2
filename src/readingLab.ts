@@ -1,4 +1,4 @@
-import { detailedChoice, expandChoiceForLevel, rotateChoice, type Cefr, type Choice } from "./curriculum";
+import { detailedChoice, rotateChoice, type Cefr, type Choice } from "./curriculum";
 
 export type ReadingPassage = {
   id: string;
@@ -207,8 +207,44 @@ export const readingPassages:ReadingPassage[]=[
       q("What is the passage’s central argument?",["Only average temperature matters","Emergency response should replace planning","Heat policy should combine data, immediate protection, structural change and resident experience"],2,"La conclusione integra protezione rapida, redesign urbano e partecipazione.")
     ]
   }];
-let readingExpansionIndex = 0;
+const readingExtraDistractors: Record<string, string[][]> = {
+  "reading-b1-library": [
+    ["She wanted to start a book club"], ["With 50 rented items"], ["The council reduced its support"],
+    ["It extends every loan automatically"], ["Money saved by tool manufacturers"], ["The project should become a private shop"],
+  ],
+  "reading-b2-workweek": [
+    ["Employees' annual leave"], ["A weekly email digest"], ["They handled only internal requests"],
+    ["Some employees extended their breaks"], ["The trial included several hospitals"], ["A shorter week succeeds without management changes"],
+  ],
+  "reading-c1-automation": [
+    ["It removes all discretion from design", "It gives every applicant the same resources"],
+    ["Access depends solely on device ownership", "Digital skill is identical across users"],
+    ["When staff can overturn any automated result", "When automated decisions include full reasons"],
+    ["Transparent versus hidden criteria", "Online versus face-to-face services"],
+    ["Total number of staff", "Average website loading time"],
+    ["Use only human review for every routine case", "Prioritise speed over appeal rights"],
+  ],
+  "reading-b1-repair-cafe": [
+    ["Return only after the object is collected"], ["There was a damaged bulb"], ["To guarantee every repair succeeds"],
+    ["All electrical devices"], ["She volunteered as an electrician"], ["Free repairs should replace professional businesses"],
+  ],
+  "reading-b2-tourism": [
+    ["Limit tourism to cruise passengers"], ["To advertise property sales"], ["Occasional room rental"],
+    ["It guarantees higher summer prices"], ["Tourists may avoid the centre entirely"], ["Total tourism revenue alone"],
+  ],
+  "reading-c1-urban-heat": [
+    ["Different stations use incompatible scales", "Airport data are never available"],
+    ["By giving every district identical funding", "By locating all jobs outside the city"],
+    ["Mobile sensors cannot measure night temperatures", "Permission always guarantees representative sampling"],
+    ["Mature trees require no maintenance", "Shade increases energy use"],
+    ["It ranks only by total population", "It gives equal weight to every district"],
+    ["Heat policy should rely exclusively on satellite averages", "Long-term redesign makes emergency protection unnecessary"],
+  ],
+};
 readingPassages.forEach(passage => {
-  const pool = passage.questions.flatMap(question => question.options);
-  passage.questions = passage.questions.map(question => expandChoiceForLevel(question, passage.level, pool, readingExpansionIndex++));
+  const target = passage.level === "C1" ? 5 : passage.level === "B1" || passage.level === "B2" ? 4 : 3;
+  passage.questions = passage.questions.map((question, index) => {
+    const options = [...question.options, ...(readingExtraDistractors[passage.id]?.[index] ?? [])].slice(0, target);
+    return { ...question, options };
+  });
 });

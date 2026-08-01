@@ -1,6 +1,6 @@
 {
   "name": "english-coach-public",
-  "version": "6.7.0",
+  "version": "6.8.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -16,6 +16,7 @@
     "audit:didactic": "node tools/didactic-audit.mjs",
     "audit:editorial": "node tools/editorial-audit.mjs",
     "audit:answers": "node tools/answer-integrity-audit.mjs",
+    "audit:credibility": "node tools/question-credibility-audit.mjs",
     "audit:accessibility": "node tools/accessibility-audit.mjs",
     "audit:language-labs": "node tools/language-lab-audit.mjs",
     "audit:release": "node tools/release-audit.mjs",
@@ -27,7 +28,7 @@
     "audit:visual": "node tools/visual-layout-audit.mjs",
     "audit:crawl": "node tools/full-app-crawl-audit.mjs",
     "audit:cefr": "node tools/cefr-boundary-audit.mjs",
-    "test": "npm run audit:placement && npm run audit:ui && npm run audit:course && npm run audit:diversity && npm run audit:personas && npm run audit:cefr && npm run audit:didactic && npm run audit:editorial && npm run audit:answers && npm run audit:accessibility && npm run audit:language-labs && npm run audit:learning && npm run audit:journey && npm run audit:journey2 && npm run audit:journey3 && npm run audit:persistence && npm run audit:migrations && npm run audit:audio && npm run audit:release && npm run build"
+    "test": "npm run audit:placement && npm run audit:ui && npm run audit:course && npm run audit:diversity && npm run audit:personas && npm run audit:cefr && npm run audit:didactic && npm run audit:editorial && npm run audit:answers && npm run audit:credibility && npm run audit:accessibility && npm run audit:language-labs && npm run audit:learning && npm run audit:journey && npm run audit:journey2 && npm run audit:journey3 && npm run audit:persistence && npm run audit:migrations && npm run audit:audio && npm run audit:release && npm run build"
   },
   "dependencies": {
     "@types/react": "19.2.14",

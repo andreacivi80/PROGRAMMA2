@@ -1,10 +1,10 @@
-# English Coach 6.7 — stato verificato
+# English Coach 6.8 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 6.7, con data e identificativo visibili.
+- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 6.8, con data e identificativo visibili.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 - **VERIFICATO** — i nomi dell’archivio locale restano stabili tra le revisioni: una nuova pubblicazione sostituisce l’interfaccia, non i dati dell’utente.
@@ -27,7 +27,7 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 
 ## 7–8. Contenuti e formattazione
 
-- **VERIFICATO** — 60 lezioni, durata 18–45 minuti e almeno 22 elementi nella banca di ogni unità.
+- **VERIFICATO** — 60 lezioni, durata 18–45 minuti e almeno 15 esercizi supplementari credibili nella banca di ogni unità.
 - **VERIFICATO** — nessun duplicato esatto o ad alta similarità rilevato; risposte, spiegazioni, audio e identificativi controllati.
 - **IMPLEMENTATO** — grammatica, lessico, ascolto, lettura, scrittura, parlato, interazione, mediazione e verifiche.
 - **IMPLEMENTATO** — inglese evidenziato, concetti separati, feedback con testo e icona oltre al colore.
@@ -35,7 +35,7 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 - **VERIFICATO** — la schermata B1 del Present Perfect controlla esplicitamente che “ancora in corso”, “rapporto tra i parlanti” e “rileggi la frase in tre passaggi” restino testo italiano normale.
 - **IMPLEMENTATO** — le formule non sono ripetute nella spiegazione: compaiono una sola volta nello schema rapido dedicato.
 - **VERIFICATO** — tutte le 60 lezioni hanno una guida grammaticale di almeno cinque sezioni con uso, costruzione, confronto con l’italiano, errori frequenti e applicazione nel contesto.
-- **VERIFICATO** — 1.846 domande tra percorso, letture, temi ed extra hanno opzioni valide e una spiegazione completa mostrata dopo risposte corrette o da rivedere.
+- **VERIFICATO** — 1.415 domande tra percorso, letture, temi ed extra hanno indice, opzioni e spiegazione coerenti; le verifiche avanzate provano fino a 15.460 generazioni casuali senza alternative estranee o riempitive.
 
 ## 9. Missioni reali
 
@@ -121,7 +121,8 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 - **VERIFICATO** — strumenti di compilazione aggiornati alla versione corretta e controllo di sicurezza senza vulnerabilità note.
 - **VERIFICATO** — 248 pulsanti, audio, stop, velocità, salti, ripassi, giochi, missioni e persistenza coperti dagli audit statici.
 - **VERIFICATO** — test automatici per 60 lezioni, 30 prove d’ingresso, profili CEFR, duplicati, banche esercizi e struttura UI.
-- **VERIFICATO** — 1.846 risposte controllate per indice corretto, coerenza con spiegazione o testo sorgente, alternative duplicate e distribuzione della posizione corretta.
+- **VERIFICATO** — 1.415 risposte controllate per indice corretto, coerenza con spiegazione o testo sorgente, alternative duplicate e distribuzione della posizione corretta.
+- **VERIFICATO** — il generatore non crea più domande di traduzione con parole casuali: cloze, riconoscimento e correzione usano alternative grammaticali o semantiche riferite alla stessa frase; se non esistono almeno tre alternative valide, la domanda non viene generata.
 - **VERIFICATO** — scansione integrale di 526 schermate reali: otto fasi di ciascuna delle 60 lezioni, tutte le viste principali e tutti i 26 percorsi tematici, senza sovrapposizioni, parole spezzate o contenuti fuori bordo.
 - **VERIFICATO** — il test d’ingresso usa 3 alternative in A1–A2, 4 in B1–B2 e 5 in C1, con soglie separate di lettura/ascolto e produzione avanzata obbligatoria per B2/C1.
 - **VERIFICATO** — profili di confine, abilità sbilanciate e 500 compilazioni casuali non ottengono un livello alto senza i prerequisiti.

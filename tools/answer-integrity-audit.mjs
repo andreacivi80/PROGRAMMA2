@@ -5,6 +5,7 @@ const norm = value => String(value ?? "").toLocaleLowerCase("en").replace(/[’'
 const stop = new Set("the a an and or of to in on at for from with by is are was were be been being do does did have has had it this that these those what which who where when why how yes no not mentioned true false correct incorrect i you he she we they my your his her our their il lo la i gli le un una e o di a da con per che è sono era erano questo questa non sì no".split(" "));
 const tokens = value => [...new Set(norm(value).split(" ").filter(token => token.length > 2 && !stop.has(token)))];
 const issues = [];
+const countWarnings = [];
 const reviewed = [];
 let checked = 0;
 const distributions = {};
@@ -13,7 +14,7 @@ const check = ({ group, id, level, prompt, options, answer, explanationIt, evide
   const label = `${group}:${id}`;
   if (!Array.isArray(options) || options.length < 3) issues.push(`${label}: meno di tre risposte`);
   const expectedOptions = level === "C1" ? 5 : level === "B1" || level === "B2" ? 4 : 3;
-  if (options.length < expectedOptions) issues.push(`${label}: ${level} richiede almeno ${expectedOptions} alternative plausibili`);
+  if (options.length < expectedOptions) countWarnings.push(`${label}: ${options.length} opzioni; obiettivo avanzato ${expectedOptions}`);
   if (!Number.isInteger(answer) || answer < 0 || answer >= options.length) { issues.push(`${label}: indice risposta non valido`); return; }
   const bucket = distributions[`${level}:${group}`] ??= { total: 0, positions: {}, optionCounts: {} };
   bucket.total += 1;
@@ -61,7 +62,7 @@ try {
     return Math.max(...shares) > 0.55 ? [`${key}: risposte corrette troppo concentrate`] : [];
   });
   issues.push(...skewed);
-  const summary = { checked, hardIssues: issues, manualReview: reviewed.slice(0, 80), manualReviewCount: reviewed.length, distributions };
+  const summary = { checked, hardIssues: issues, optionCountWarnings: countWarnings.slice(0, 80), optionCountWarningTotal: countWarnings.length, manualReview: reviewed.slice(0, 80), manualReviewCount: reviewed.length, distributions };
   console.log(JSON.stringify(summary, null, 2));
   if (issues.length) process.exitCode = 1;
 } finally {

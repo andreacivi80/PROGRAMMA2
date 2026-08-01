@@ -3,7 +3,7 @@ import { detailedChoice, optionCountForLevel, type Choice, type MobileUnit } fro
 const shuffle = <T,>(items: T[]) => [...items].sort(() => Math.random() - 0.5);
 const clean = (value: string) => value.trim().replace(/\s+/g, " ");
 
-function optionsFor(correct: string, alternatives: string[], size: number) {
+export function optionsFor(correct: string, alternatives: string[], size: number) {
   const optionKey = (value: string) => clean(value).toLocaleLowerCase("en").replace(/[^a-z0-9à-ÿ' ]+/g, " ").replace(/\s+/g, " ").trim();
   const normalizedCorrect = optionKey(correct);
   const unique = new Map<string, string>();
@@ -14,11 +14,22 @@ function optionsFor(correct: string, alternatives: string[], size: number) {
   const closest = [...unique.values()]
     .sort((left, right) => Math.abs(left.length - correct.length) - Math.abs(right.length - correct.length))
     .slice(0, size - 1);
+  if (closest.length < size - 1) {
+    throw new Error(`Alternative insufficienti per “${correct}”: richieste ${size - 1}, disponibili ${closest.length}.`);
+  }
   const wrong = shuffle(closest);
   const answer = Math.floor(Math.random() * Math.min(size, wrong.length + 1));
   const options = [...wrong];
   options.splice(answer, 0, clean(correct));
   return { options, answer };
+}
+
+export function tryOptionsFor(correct: string, alternatives: string[], size: number) {
+  for (let candidateSize = size; candidateSize >= 3; candidateSize -= 1) {
+    try { return optionsFor(correct, alternatives, candidateSize); }
+    catch { /* prova una forma più compatta senza introdurre riempitivi */ }
+  }
+  return null;
 }
 
 function rotatedSentences(sentence: string) {
@@ -32,7 +43,7 @@ function rotatedSentences(sentence: string) {
   return [first, second, third, fourth];
 }
 
-function grammarMistakes(sentence: string) {
+export function grammarMistakes(sentence: string) {
   const replacements: Array<[RegExp, string]> = [
     [/\bam\b/i, "is"],
     [/\bis\b/i, "are"],
@@ -45,23 +56,114 @@ function grammarMistakes(sentence: string) {
     [/\bdo\b/i, "does"],
     [/\bdid\b/i, "does"],
     [/\bcan\b/i, "cans"],
+    [/\bcan\b/i, "can to"],
     [/\bwill\b/i, "will to"],
     [/\bwould\b/i, "would to"],
     [/\ba\b/i, "an"],
     [/\ban\b/i, "a"],
+    [/\bto\b/i, "for"],
+    [/\bfor\b/i, "since"],
+    [/\bsince\b/i, "for"],
+    [/\bshould\b/i, "should to"],
+    [/\bmust\b/i, "must to"],
+    [/\bcould\b/i, "could to"],
   ];
   const variants = replacements
     .filter(([pattern]) => pattern.test(sentence))
     .map(([pattern, replacement]) => sentence.replace(pattern, replacement));
-  return [...new Set([...variants, ...rotatedSentences(sentence)])].filter(value => value !== sentence).slice(0, 6);
+  const missingArticle = sentence.replace(/\b(a|an|the)\s+/i, "");
+  const missingAuxiliary = sentence.replace(/\b(am|is|are|was|were|has|have|had|do|does|did|can|will|would|should|could|must)\s+/i, "");
+  const doubledAuxiliary = sentence.replace(/\b(am|is|are|was|were|has|have|had|do|does|did|can|will|would|should|could|must)\b/i, "$& $&");
+  const wrongSubjectCase = sentence
+    .replace(/^I\b/, "Me")
+    .replace(/^He\b/, "Him")
+    .replace(/^She\b/, "Her")
+    .replace(/^We\b/, "Us")
+    .replace(/^They\b/, "Them");
+  const missingPreposition = sentence.replace(/\b(at|in|on|to|for|from|with|by)\s+/i, "");
+  const wrongThirdPerson = sentence.replace(/\b([a-z]{3,})s\b/i, "$1");
+  const wrongPast = sentence.replace(/\b([a-z]{3,})ed\b/i, "did $1ed");
+  const wrongFirstPersonAgreement = sentence.replace(/^I\s+([a-z]{3,})\b/i, "I $1s");
+  const wrongTimeMarker = sentence.replace(/\bevery day\b/i, "yesterday").replace(/\btoday\b/i, "last year");
+  return [...new Set([...variants, missingArticle, missingAuxiliary, doubledAuxiliary, wrongSubjectCase, missingPreposition, wrongThirdPerson, wrongPast, wrongFirstPersonAgreement, wrongTimeMarker])]
+    .filter(value => value && value !== sentence)
+    .slice(0, 8);
 }
 
-function meaningMistakes(sentence: string) {
+const closeGrammarForms: Record<string, string[]> = {
+  "'ll": ["will", "would", "'d", "wouldn't"],
+  a: ["an", "the", "some", "any"], an: ["a", "the", "some", "any"],
+  am: ["is", "are", "be", "was"], is: ["are", "was", "be", "has"], are: ["is", "were", "be", "have"],
+  was: ["were", "is", "be", "has"], were: ["was", "are", "be", "had"],
+  do: ["does", "did", "doing", "done"], does: ["do", "did", "doing", "done"], did: ["do", "does", "done", "doing"],
+  have: ["has", "had", "having", "be"], has: ["have", "had", "having", "is"], had: ["have", "has", "having", "did"],
+  be: ["been", "being", "is", "was"], been: ["be", "being", "was", "gone"],
+  can: ["could", "will", "should", "must"], could: ["can", "would", "should", "must"],
+  will: ["would", "can", "should", "must"], would: ["will", "could", "should", "must"],
+  should: ["must", "could", "would", "will"], must: ["should", "have to", "could", "can"],
+  for: ["since", "during", "from", "ago"], since: ["for", "during", "from", "ago"],
+  ever: ["even", "every", "over", "never"], never: ["ever", "not ever", "no ever", "none"],
+  already: ["all ready", "ready", "earlier", "yet"], yet: ["still", "already", "ever", "yesterday"],
+  ago: ["since", "for", "before", "during"], just: ["yet", "ever", "never", "recently"],
+};
+
+const verifiedVerbForms: Record<string, string[]> = {
+  works: ["work", "worked", "working"], drink: ["drank", "drinks", "drinking", "drunk"],
+  help: ["helped", "helps", "helping"], sing: ["sang", "sings", "singing", "sung"],
+  work: ["worked", "works", "working"], working: ["work", "worked", "works"],
+  speak: ["spoke", "speaks", "speaking", "spoken"], went: ["go", "goes", "going", "gone"],
+  receive: ["received", "receives", "receiving"], going: ["go", "went", "goes", "gone"],
+  seeing: ["see", "saw", "sees", "seen"], park: ["parked", "parks", "parking"],
+  took: ["take", "takes", "taking", "taken"], like: ["liked", "likes", "liking"],
+  touch: ["touched", "touches", "touching"], see: ["saw", "sees", "seeing", "seen"],
+  take: ["took", "takes", "taking", "taken"], get: ["got", "gets", "getting", "gotten"],
+  calls: ["call", "called", "calling"], leave: ["left", "leaves", "leaving"],
+  call: ["called", "calls", "calling"], eaten: ["eat", "ate", "eats", "eating"],
+  visited: ["visit", "visits", "visiting"], finished: ["finish", "finishes", "finishing"],
+  becomes: ["become", "became", "becoming"], sent: ["send", "sends", "sending"],
+  meet: ["met", "meets", "meeting"], raises: ["raise", "raised", "raising"],
+  raised: ["raise", "raises", "raising"], changed: ["change", "changes", "changing"],
+  afford: ["afforded", "affords", "affording"], consider: ["considered", "considers", "considering"],
+  improve: ["improved", "improves", "improving"], manufacture: ["manufactured", "manufactures", "manufacturing"],
+  deliver: ["delivered", "delivers", "delivering"], approve: ["approved", "approves", "approving"],
+  announce: ["announced", "announces", "announcing"], claim: ["claimed", "claims", "claiming"],
+  admit: ["admitted", "admits", "admitting"], warn: ["warned", "warns", "warning"],
+  promise: ["promised", "promises", "promising"], survey: ["surveyed", "surveys", "surveying"],
+  concern: ["concerned", "concerns", "concerning"], passed: ["pass", "passes", "passing"],
+  checked: ["check", "checks", "checking"], meeting: ["meet", "met", "meets"],
+  let: ["lets", "letting"], hold: ["held", "holds", "holding"],
+  increased: ["increase", "increases", "increasing"], saved: ["save", "saves", "saving"],
+  regret: ["regretted", "regrets", "regretting"], assume: ["assumed", "assumes", "assuming"],
+  renovate: ["renovated", "renovates", "renovating"], estimate: ["estimated", "estimates", "estimating"],
+  commission: ["commissioned", "commissions", "commissioning"], compromise: ["compromised", "compromises", "compromising"],
+  counteroffer: ["counteroffered", "counteroffers", "counteroffering"], emphasise: ["emphasised", "emphasises", "emphasising"],
+  focus: ["focused", "focuses", "focusing"], underlying: ["underlie", "underlay", "underlies"],
+  framing: ["frame", "framed", "frames"], allege: ["alleged", "alleges", "alleging"],
+  concede: ["conceded", "concedes", "conceding"], portray: ["portrayed", "portrays", "portraying"],
+  endorse: ["endorsed", "endorses", "endorsing"], qualify: ["qualified", "qualifies", "qualifying"],
+  converge: ["converged", "converges", "converging"], diverge: ["diverged", "diverges", "diverging"],
+};
+
+export function plausibleClozeDistractors(correct: string, nearby: string[] = []) {
+  const value = clean(correct), lower = value.toLocaleLowerCase("en"), curated = closeGrammarForms[lower];
+  void nearby;
+  if (curated) return curated;
+  return verifiedVerbForms[lower] ?? [];
+}
+
+export function meaningMistakes(sentence: string) {
   const replacements: Array<[RegExp, string]> = [
     [/\bcan\b/i, "cannot"], [/\bcannot\b/i, "can"], [/\bwill\b/i, "will not"],
     [/\bmore\b/i, "less"], [/\bless\b/i, "more"], [/\bfirst\b/i, "last"],
     [/\bsupport\b/i, "oppose"], [/\bimproved\b/i, "declined"], [/\bavailable\b/i, "unavailable"],
     [/\bsame\b/i, "different"], [/\bincreased\b/i, "decreased"], [/\baccept\b/i, "reject"],
+    [/\bof course\b/i, "of course not"], [/\bof course\b/i, "probably not"],
+    [/\bof course\b/i, "I'm afraid not"], [/\bof course\b/i, "perhaps later"],
+    [/\byes\b/i, "no"], [/\bno\b/i, "yes"],
+    [/\bagree\b/i, "disagree"], [/\bpossible\b/i, "impossible"], [/\balways\b/i, "never"],
+    [/\bone\b/i, "two"], [/\btwo\b/i, "three"], [/\bthree\b/i, "four"],
+    [/\bfour\b/i, "five"], [/\bfive\b/i, "six"], [/\bsix\b/i, "seven"],
+    [/\bseven\b/i, "eight"], [/\beight\b/i, "nine"], [/\bnine\b/i, "ten"],
   ];
   const variants = replacements.filter(([pattern]) => pattern.test(sentence)).map(([pattern, replacement]) => sentence.replace(pattern, replacement));
   return [...new Set([...variants, ...grammarMistakes(sentence)])];
@@ -105,63 +207,82 @@ function diversifyFamilies(questions: Choice[]) {
   return result;
 }
 
+const curatedSupplementaryByUnit: Record<string, Choice[]> = {
+  "a1-be-introductions": [
+    { prompt: "Presentarsi · Quale domanda chiede correttamente il nome?", options: ["What is your name?", "What are your name?", "What your name is?"], answer: 0, explanationIt: "La domanda corretta è What is your name?: parola interrogativa + is + soggetto." },
+  ],
+  "a1-some-any": [
+    { prompt: "Scelta nel contesto · We haven't got ___ milk.", options: ["some", "any", "a"], answer: 1, explanationIt: "Nella frase negativa con un nome non numerabile si usa any: We haven't got any milk." },
+    { prompt: "Scelta nel contesto · Would you like ___ coffee?", options: ["some", "any", "an"], answer: 0, explanationIt: "Nelle offerte cortesi si usa normalmente some: Would you like some coffee?" },
+    { prompt: "Scelta nel contesto · Are there ___ clean glasses?", options: ["some", "any", "a"], answer: 1, explanationIt: "In una domanda neutra si usa any: Are there any clean glasses?" },
+    { prompt: "Scelta nel contesto · There are ___ biscuits on the table.", options: ["some", "any", "an"], answer: 0, explanationIt: "In questa affermativa si usa some: There are some biscuits on the table." },
+  ],
+  "b2-spoken-nuance": [
+    { prompt: "Intenzione · Quale risposta chiarisce che l'azione non era voluta?", options: ["I didn't mean to.", "I wouldn't mind.", "I don't mean it.", "I wasn't meant for it."], answer: 0, explanationIt: "I didn't mean to significa che l'azione è avvenuta, ma non era intenzionale." },
+    { prompt: "Disponibilità · Quale frase significa che accetti volentieri una proposta?", options: ["I'm up for it.", "I'm over it.", "I'm out of it.", "I'm through with it."], answer: 0, explanationIt: "I'm up for it esprime disponibilità o entusiasmo verso la proposta." },
+    { prompt: "Decisione · Quale frase affida la scelta all'altra persona?", options: ["It's up to you.", "It's over you.", "It's through you.", "It's by you."], answer: 0, explanationIt: "It's up to you significa che la decisione spetta all'altra persona." },
+    { prompt: "Aggiornamento · Quale ordine delle parole è naturale?", options: ["I'll let you know.", "I'll let know you.", "I'll know you let.", "I'll you let know."], answer: 0, explanationIt: "L'espressione fissa è I'll let you know: let + persona + know." },
+  ],
+  "b2-slang-phrasal": [
+    { prompt: "Phrasal verb nel contesto · The hotel booking fell through. Che cosa è successo?", options: ["The booking failed to happen.", "The booking became cheaper.", "The guests arrived early.", "The hotel changed floors."], answer: 0, explanationIt: "Fall through significa non concretizzarsi: The booking failed to happen." },
+  ],
+  "b2-uk-us-english": [
+    { prompt: "Varietà e chiarezza · Quale coppia indica lo stesso luogo in UK e US English?", options: ["flat / apartment", "queue / vacation", "lift / sidewalk", "holiday / elevator"], answer: 0, explanationIt: "Flat in britannico e apartment in americano indicano entrambi un appartamento." },
+  ],
+  "c1-idiom-register": [
+    { prompt: "Registro · In un rapporto formale, quale alternativa sostituisce meglio “the plan didn't cut the mustard”?", options: ["the plan proved inadequate", "the plan was gutted", "the plan was a long shot", "the plan felt sketchy", "the plan broke the ice"], answer: 0, explanationIt: "The plan proved inadequate conserva il significato in un registro formale." },
+    { prompt: "Significato · Dopo il rifiuto della proposta, Maya said she was “gutted”. Come si sentiva?", options: ["deeply disappointed", "physically exhausted", "mildly amused", "completely indifferent", "cautiously optimistic"], answer: 0, explanationIt: "In inglese informale britannico gutted significa profondamente deluso." },
+    { prompt: "Probabilità · Quale espressione indica un tentativo con poche possibilità di successo?", options: ["a long shot", "a done deal", "a safe bet", "a foregone conclusion", "a level playing field"], answer: 0, explanationIt: "A long shot è una possibilità remota; le altre espressioni suggeriscono certezza, equità o alta probabilità." },
+    { prompt: "Uso controllato · Quale frase usa “sketchy” nel senso di poco affidabile?", options: ["The evidence looks sketchy.", "The evidence looks exhaustive.", "The evidence looks conclusive.", "The evidence looks transparent.", "The evidence looks independently verified."], answer: 0, explanationIt: "Sketchy descrive informazioni incomplete, dubbie o poco affidabili." },
+  ],
+  "c1-uk-us-nuance": [
+    { prompt: "Data ambigua · Quale riscrittura elimina ogni dubbio su 06/07?", options: ["6 July 2026", "06/07/26", "6/7", "the sixth or seventh", "summer 2026"], answer: 0, explanationIt: "Scrivere il mese in lettere, 6 July 2026, elimina l'ambiguità tra ordine UK e US." },
+    { prompt: "Edifici · Un collega americano dice “first floor”. A quale livello si riferisce normalmente?", options: ["street level", "one level above street", "the basement", "the top floor", "the mezzanine only"], answer: 0, explanationIt: "Nell'uso statunitense first floor indica normalmente il piano a livello strada." },
+    { prompt: "Collettivi · Quale frase è naturale in britannico quando si pensa ai membri separatamente?", options: ["The committee are divided.", "The committee be divided.", "The committee am divided.", "The committee has divide.", "The committee are divide."], answer: 0, explanationIt: "In britannico un nome collettivo può reggere il plurale quando si considerano i membri del gruppo." },
+    { prompt: "Comunicazione internazionale · Qual è la scelta più sicura?", options: ["state dates and floors explicitly", "assume everyone follows UK usage", "assume everyone follows US usage", "avoid all dates and numbers", "translate each word literally"], answer: 0, explanationIt: "Esplicitare mese, anno e livello dell'edificio previene incomprensioni tra varietà diverse." },
+  ],
+};
+
 export function supplementaryBankFor(unit: MobileUnit): Choice[] {
   const bank: Choice[] = [];
   const optionCount = optionCountForLevel(unit.cefr);
-  const vocabularyExamples = unit.vocabulary.map(word => word.example);
-  const vocabularyMeanings = unit.vocabulary.map(word => word.it);
-  const grammarExamples = unit.grammar.examples.map(example => example.en);
+  const addGenerated = (prompt: string, correct: string, alternatives: string[], explanationIt: string) => {
+    const built = tryOptionsFor(correct, alternatives, optionCount);
+    if (built) bank.push({ prompt, ...built, explanationIt });
+  };
+  bank.push(...(curatedSupplementaryByUnit[unit.id] ?? []));
 
-  unit.vocabulary.forEach(word => {
-    bank.push({
-      prompt: `Uso nel contesto · In quale frase “${word.en}” è usato in modo naturale?`,
-      ...optionsFor(word.example, vocabularyExamples, optionCount),
-      explanationIt: `Nel contesto della lezione: ${word.example} “${word.en}” significa «${word.it}».`,
-    });
-    bank.push({
-      prompt: `Collegamento rapido · Quale significato appartiene a “${word.en}”?`,
-      ...optionsFor(word.it, vocabularyMeanings, optionCount),
-      explanationIt: `Il collegamento corretto è ${word.en} = ${word.it}. Ora prova a riutilizzarlo in una frase tua.`,
-    });
+  unit.vocabulary.forEach((word, index) => {
+    addGenerated(
+      `Lessico nel contesto ${index + 1} · Quale frase usa “${word.en}” con una struttura corretta?`,
+      word.example,
+      grammarMistakes(word.example),
+      `L'uso corretto è «${word.example}». In questo contesto “${word.en}” significa «${word.it}».`,
+    );
   });
 
   unit.grammar.examples.forEach((example, index) => {
-    bank.push({
-      prompt: `Ricostruzione ${index + 1} · Quale sequenza esprime correttamente «${example.it}»?`,
-      ...optionsFor(example.en, [...grammarMistakes(example.en), ...grammarExamples], optionCount),
-      explanationIt: `${example.en} ${example.noteIt}`,
-    });
-    bank.push({
-      prompt: `Controllo qualità ${index + 1} · Quale versione mantiene grammatica e ordine corretti?`,
-      ...optionsFor(example.en, [...grammarMistakes(example.en), ...grammarExamples], optionCount),
-      explanationIt: `${example.en} ${example.noteIt}`,
-    });
-    bank.push({
-      prompt: `Dalla frase alla spiegazione · Quale osservazione descrive meglio “${example.en}”?`,
-      ...optionsFor(example.noteIt, [...unit.grammar.examples.map(item => item.noteIt), ...unit.grammar.explanationIt, ...unit.grammar.formulas], optionCount),
-      explanationIt: `${example.noteIt} La frase corretta è: ${example.en}`,
-    });
+    addGenerated(`Ricostruzione ${index + 1} · Quale sequenza esprime correttamente «${example.it}»?`, example.en, grammarMistakes(example.en), `${example.en} ${example.noteIt}`);
+    addGenerated(
+      `Analisi ${index + 1} · Quale osservazione descrive meglio «${example.en}»?`,
+      example.noteIt,
+      [...unit.grammar.examples.map(item => item.noteIt), ...unit.grammar.formulas, ...unit.grammar.explanationIt],
+      `${example.noteIt} L'esempio di riferimento è «${example.en}».`,
+    );
+  });
+
+  unit.writing.cloze.forEach((item, index) => {
+    const correct = item.answers[0];
+    addGenerated(`Completamento ragionato ${index + 1} · ${item.prompt}`, correct, plausibleClozeDistractors(correct, unit.writing.cloze.flatMap(entry => entry.answers)), `${item.hintIt} La risposta corretta è «${correct}».`);
   });
 
   const listeningLines = dialogueLines(unit.listening.transcript);
   listeningLines.slice(0, 5).forEach((line, index) => {
-    bank.push({
-      prompt: `Riconoscimento attivo ${index + 1} · Quale battuta appartiene davvero al dialogo della lezione?`,
-      ...optionsFor(line, [...meaningMistakes(line), ...listeningLines, ...grammarExamples, ...vocabularyExamples], optionCount),
-      explanationIt: `La battuta presente nel dialogo è: “${line}”.`,
-    });
+    addGenerated(`Riconoscimento attivo ${index + 1} · Quale battuta appartiene davvero al dialogo della lezione?`, line, meaningMistakes(line), `La battuta presente nel dialogo è: “${line}”.`);
   });
 
-  bank.push({
-    prompt: `Produzione orale · Quale versione conserva l’ordine naturale della frase da ripetere?`,
-    ...optionsFor(unit.speaking.target, [...rotatedSentences(unit.speaking.target), ...grammarExamples], optionCount),
-    explanationIt: `La sequenza naturale è: ${unit.speaking.target}`,
-  });
-  bank.push({
-    prompt: `Pronuncia e struttura · Quale frase useresti come modello completo?`,
-    ...optionsFor(unit.speaking.target, [...grammarExamples, ...vocabularyExamples], optionCount),
-    explanationIt: `Il modello previsto per questa lezione è: ${unit.speaking.target}`,
-  });
+  addGenerated("Produzione orale · Quale versione conserva l’ordine naturale della frase da ripetere?", unit.speaking.target, grammarMistakes(unit.speaking.target), `La sequenza naturale è: ${unit.speaking.target}`);
+  addGenerated("Pronuncia e struttura · Quale frase useresti come modello completo?", unit.speaking.target, grammarMistakes(unit.speaking.target), `Il modello previsto per questa lezione è: ${unit.speaking.target}`);
 
   return [...new Map(bank.map(question => [supplementaryFingerprint(question), detailedChoice(question)])).values()];
 }
@@ -170,6 +291,6 @@ export function buildSupplementaryQuiz(unit: MobileUnit, count: number, excluded
   const bank = supplementaryBankFor(unit);
   const excludedSet = new Set(excluded);
   const unseen = shuffle(bank.filter(question => !excludedSet.has(supplementaryFingerprint(question))));
-  const fallback = shuffle(bank.filter(question => excludedSet.has(supplementaryFingerprint(question))));
-  return [...diversifyFamilies(unseen), ...diversifyFamilies(fallback)].slice(0, Math.min(count, bank.length));
+  if (excludedSet.size && unseen.length) return diversifyFamilies(unseen).slice(0, Math.min(count, unseen.length));
+  return diversifyFamilies(shuffle(bank)).slice(0, Math.min(count, bank.length));
 }
