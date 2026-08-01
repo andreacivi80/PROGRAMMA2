@@ -41,6 +41,7 @@ import {
   supplementaryFingerprint,
 } from "./supplementaryQuiz";
 import { analyzeLocalWriting } from "./languageAnalysis";
+import { compareResponseWords, isAcceptedAnswer, orderedResponseScore, type ResponsePart } from "./responseValidation";
 import { buildErrorClusters, buildSkillProfile } from "./learningIntelligence";
 import "./themePacks.css";
 import "./lessonEnhancements.css";
@@ -59,9 +60,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "8.0";
+const APP_VERSION = "8.1";
 const BUILD_DATE = "1 agosto 2026";
-const BUILD_ID = "EC-8.0-0801";
+const BUILD_ID = "EC-8.1-0801";
 type View =
   | "start"
   | "home"
@@ -633,59 +634,9 @@ function decodeProgress(value: string): { progress: Progress; state?: Record<str
     throw new Error("invalid");
   return { progress: progress as Progress, state };
 }
-function similarity(a: string, b: string) {
-  const words = (s: string) =>
-      s
-        .toLowerCase()
-        .replace(/[^\p{L}\p{N}\s']/gu, "")
-        .split(/\s+/)
-        .filter(Boolean),
-    x = words(a),
-    y = words(b);
-  return x.length
-    ? Math.round((x.filter((w) => y.includes(w)).length / x.length) * 100)
-    : 0;
-}
-type PronunciationPart = { expected?: string; heard?: string; ok: boolean };
-function pronunciationDiff(
-  expected: string,
-  heard: string,
-): PronunciationPart[] {
-  const clean = (v: string) =>
-      v
-        .toLowerCase()
-        .replace(/[^\p{L}\p{N}'\s]/gu, "")
-        .split(/\s+/)
-        .filter(Boolean),
-    a = clean(expected),
-    b = clean(heard),
-    rows = a.length + 1,
-    cols = b.length + 1,
-    dp = Array.from({ length: rows }, () => Array(cols).fill(0));
-  for (let i = 0; i < rows; i++) dp[i][0] = i;
-  for (let j = 0; j < cols; j++) dp[0][j] = j;
-  for (let i = 1; i < rows; i++)
-    for (let j = 1; j < cols; j++)
-      dp[i][j] =
-        a[i - 1] === b[j - 1]
-          ? dp[i - 1][j - 1]
-          : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
-  const out: PronunciationPart[] = [];
-  let i = a.length,
-    j = b.length;
-  while (i || j) {
-    if (i && j && a[i - 1] === b[j - 1]) {
-      out.unshift({ expected: a[--i], heard: b[--j], ok: true });
-    } else if (i && j && dp[i][j] === dp[i - 1][j - 1] + 1) {
-      out.unshift({ expected: a[--i], heard: b[--j], ok: false });
-    } else if (i && dp[i][j] === dp[i - 1][j] + 1) {
-      out.unshift({ expected: a[--i], ok: false });
-    } else {
-      out.unshift({ heard: b[--j], ok: false });
-    }
-  }
-  return out;
-}
+const similarity = orderedResponseScore;
+type PronunciationPart = ResponsePart;
+const pronunciationDiff = compareResponseWords;
 const audioSlug = (word: string) =>
   word
     .toLowerCase()
@@ -2197,9 +2148,7 @@ export default function Home() {
       : nextPhase();
   const check = () => {
     const exercise = practiceCloze[item],
-      ok = exercise.answers.some(
-        (x) => x.trim().toLowerCase() === input.trim().toLowerCase(),
-      );
+      ok = isAcceptedAnswer(input, exercise.answers);
     setChecked(ok);
     setPoints((p) => ({ yes: p.yes + (ok ? 1 : 0), all: p.all + 1 }));
     if (!ok)
