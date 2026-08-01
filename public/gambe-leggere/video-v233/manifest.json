@@ -1,0 +1,77 @@
+{
+  "squat-calf": {
+    "mp4": "/video-v233/squat-calf.mp4",
+    "webm": "/video-v233/squat-calf.webm",
+    "orientation": "portrait"
+  },
+  "ankle-alphabet": {
+    "mp4": "/video-v233/ankle-alphabet.mp4",
+    "webm": "/video-v233/ankle-alphabet.webm",
+    "orientation": "landscape"
+  },
+  "side-step": {
+    "mp4": "/video-v233/side-step.mp4",
+    "webm": "/video-v233/side-step.webm",
+    "orientation": "portrait"
+  },
+  "bridge": {
+    "mp4": "/video-v233/bridge.mp4",
+    "webm": "/video-v233/bridge.webm",
+    "orientation": "landscape"
+  },
+  "wide-shift": {
+    "mp4": "/video-v233/wide-shift.mp4",
+    "webm": "/video-v233/wide-shift.webm",
+    "orientation": "portrait"
+  },
+  "toe-walk": {
+    "mp4": "/video-v233/toe-walk.mp4",
+    "webm": "/video-v233/toe-walk.webm",
+    "orientation": "portrait"
+  },
+  "seated-knee-extension": {
+    "mp4": "/video-v233/seated-knee-extension.mp4",
+    "webm": "/video-v233/seated-knee-extension.webm",
+    "orientation": "landscape"
+  },
+  "back-leg": {
+    "mp4": "/video-v233/back-leg.mp4",
+    "webm": "/video-v233/back-leg.webm",
+    "orientation": "portrait"
+  },
+  "back-tap": {
+    "mp4": "/video-v233/back-tap.mp4",
+    "webm": "/video-v233/back-tap.webm",
+    "orientation": "portrait"
+  },
+  "knee-fall": {
+    "mp4": "/video-v233/knee-fall.mp4",
+    "webm": "/video-v233/knee-fall.webm",
+    "orientation": "landscape"
+  },
+  "heel-slide": {
+    "mp4": "/video-v233/heel-slide.mp4",
+    "webm": "/video-v233/heel-slide.webm",
+    "orientation": "landscape"
+  },
+  "ankle-inout": {
+    "mp4": "/video-v233/ankle-inout.mp4",
+    "webm": "/video-v233/ankle-inout.webm",
+    "orientation": "landscape"
+  },
+  "wall-hip-flex": {
+    "mp4": "/video-v233/wall-hip-flex.mp4",
+    "webm": "/video-v233/wall-hip-flex.webm",
+    "orientation": "portrait"
+  },
+  "glute-squeeze": {
+    "mp4": "/video-v233/glute-squeeze.mp4",
+    "webm": "/video-v233/glute-squeeze.webm",
+    "orientation": "landscape"
+  },
+  "pelvic-tilt": {
+    "mp4": "/video-v233/pelvic-tilt.mp4",
+    "webm": "/video-v233/pelvic-tilt.webm",
+    "orientation": "landscape"
+  }
+}
