@@ -59,9 +59,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "7.0";
+const APP_VERSION = "7.1";
 const BUILD_DATE = "1 agosto 2026";
-const BUILD_ID = "EC-7.0-0801";
+const BUILD_ID = "EC-7.1-0801";
 type View =
   | "start"
   | "home"
@@ -3386,7 +3386,6 @@ export default function Home() {
         >
           <summary>
             <span>Allenamento su misura</span>
-            <b>{selectedLevel}</b>
           </summary>
           <section className="adaptiveHome">
             <h3 className="adaptiveTimeTitle">Quanto tempo hai oggi?</h3>
@@ -3487,7 +3486,6 @@ export default function Home() {
           >
             <summary>
               <span>Percorso libero</span>
-              <b>{selectedLevel}</b>
             </summary>
             <section
               className="trainingChooser"
@@ -3498,20 +3496,7 @@ export default function Home() {
                   <strong>Scegli liberamente</strong>
                   <small>{completed}/{mobileCurriculum.length} attività completate</small>
                 </span>
-                <b>{selectedLevel}</b>
               </header>
-              <div className="levelButtons">
-                {(["A1", "A2", "B1", "B2", "C1"] as const).map((level) => (
-                  <button
-                    type="button"
-                    key={level}
-                    className={selectedLevel === level ? "active" : ""}
-                    onClick={() => chooseLevel(level)}
-                  >
-                    {level}
-                  </button>
-                ))}
-              </div>
               <select
                 aria-label="Numero della sessione"
                 value={selectedChoice.id}
@@ -5975,16 +5960,14 @@ export default function Home() {
         view !== "errors" &&
         view !== "placement" &&
         view !== "themePack" && (
-          <nav className={onboardingComplete ? "mainNav" : "startNav"} aria-label="Navigazione principale">
-            {!onboardingComplete ? (
-              <button
-                className="active"
-                aria-current="page"
-                onClick={() => setView("start")}
-              >
-                <b aria-hidden="true">◎</b>Primi passi
-              </button>
-            ) : <>
+          <nav className="mainNav" aria-label="Navigazione principale">
+            <button
+              className={view === "start" ? "active" : ""}
+              aria-current={view === "start" ? "page" : undefined}
+              onClick={() => setView("start")}
+            >
+              <b aria-hidden="true">◎</b>Primo accesso
+            </button>
             <button
               className={view === "home" ? "active" : ""}
               aria-current={view === "home" ? "page" : undefined}
@@ -6013,7 +5996,6 @@ export default function Home() {
             >
               <b aria-hidden="true">↗</b>Progressi
             </button>
-            </>}
           </nav>
         )}
     </main>

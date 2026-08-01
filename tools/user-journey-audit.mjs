@@ -63,19 +63,19 @@ try {
   localStorage.clear(); sessionStorage.clear();
   let mounted = await renderApp(App);
   check(
-    "fresh-user-sees-first-steps-only",
+    "fresh-user-opens-on-first-access",
     Boolean(screen.getByRole("heading", { name: "Inizia dal livello giusto" })) &&
-      Boolean(screen.getByRole("button", { name: "Primi passi" })) &&
-      !screen.queryByRole("button", { name: /Oggi/ }) &&
+      screen.getByRole("button", { name: "Primo accesso" }).getAttribute("aria-current") === "page" &&
+      Boolean(screen.getByRole("button", { name: /Oggi/ })) &&
       !screen.queryByText("Ripasso pronto"),
   );
   fireEvent.click(screen.getByRole("button", { name: "B1" }));
   fireEvent.click(screen.getByRole("button", { name: /Inizia dal livello B1/ }));
   await sleep(20);
   check(
-    "manual-onboarding-reaches-home-and-disappears",
+    "manual-onboarding-reaches-home-and-keeps-test-accessible",
     screen.getAllByText("Percorso libero").length >= 1 &&
-      !screen.queryByRole("button", { name: "Primi passi" }) &&
+      Boolean(screen.getByRole("button", { name: "Primo accesso" })) &&
       Boolean(screen.getByRole("button", { name: /Oggi/ })),
   );
 
@@ -91,8 +91,6 @@ try {
   check("daily-duration-closes-without-navigation", document.querySelector("details.adaptiveChoice")?.open === false && Boolean(document.querySelector(".dailyFocusHome")));
 
   const freePath = document.querySelector("details.freeChoice");
-  const b1 = within(freePath).getByRole("button", { name: "B1" });
-  fireEvent.click(b1); await sleep(20);
   check("level-change-is-saved", JSON.parse(localStorage.getItem("english-coach-selection-v1") || "{}").level === "B1");
   fireEvent.click(screen.getByRole("button", { name: /Temi/ })); await sleep(20);
   check("theme-view-is-saved", localStorage.getItem("english-coach-view-v1") === "topics");
@@ -103,7 +101,9 @@ try {
 
   fireEvent.click(screen.getByRole("button", { name: /Oggi/ })); await sleep(20);
   const freePathAgain = document.querySelector("details.freeChoice");
-  fireEvent.click(within(freePathAgain).getByRole("button", { name: "A1" })); await sleep(20);
+  const homeFocus = document.querySelector(".dailyFocusHome");
+  fireEvent.click(homeFocus.querySelector(".dailyLevelPicker>summary"));
+  fireEvent.click(within(homeFocus).getByRole("button", { name: "A1" })); await sleep(20);
   fireEvent.click(within(freePathAgain).getByRole("button", { name: /Inizia questa sessione/ })); await sleep(30);
   check("lesson-opens-at-grammar", currentPhase() === "Grammatica");
   fireEvent.click(screen.getByRole("button", { name: /Salta questa parte/ })); await sleep(10);
@@ -155,7 +155,7 @@ try {
   fireEvent.click(screen.getByRole("button", { name: "Sì, cancella tutto" })); await sleep(30);
   const cleared = JSON.parse(localStorage.getItem("english-coach-progress-v2") || "{}");
   check("confirmed-reset-clears-learning-history", Object.keys(cleared.smartReview || {}).length === 0 && Object.keys(cleared.days || {}).length === 0);
-  check("reset-returns-to-first-steps", Boolean(screen.getByRole("heading", { name: "Inizia dal livello giusto" })) && !screen.queryByRole("button", { name: /Progressi/ }));
+  check("reset-returns-to-first-steps", Boolean(screen.getByRole("heading", { name: "Inizia dal livello giusto" })) && screen.getByRole("button", { name: "Primo accesso" }).getAttribute("aria-current") === "page");
   fireEvent.click(screen.getByRole("button", { name: /Inizia dal livello A1/ })); await sleep(20);
   fireEvent.click(screen.getByRole("button", { name: /Progressi/ })); await sleep(20);
   const restoreBox = screen.getByRole("textbox", { name: /Ripristina su questo dispositivo/ });
