@@ -15,6 +15,14 @@ const check = (name, ok, detail = "") => checks.push({ name, ok: Boolean(ok), de
 
 try {
   const { default: WordGamesHub } = await server.ssrLoadModule("/src/WordGamesHub.tsx");
+  const { semanticPrecision, precisionIsCorrect } = await server.ssrLoadModule("/src/semanticPrecision.ts");
+  let precisionAnswerChecks = 0;
+  const precisionAnswerFailures = [];
+  for (const [level, questions] of Object.entries(semanticPrecision)) for (const question of questions) for (let choice = 0; choice < question.options.length; choice++) {
+    precisionAnswerChecks++;
+    if (precisionIsCorrect(question, choice) !== (choice === question.answer)) precisionAnswerFailures.push({level,prompt:question.prompt,choice});
+  }
+  check("all-precision-correct-and-wrong-paths", !precisionAnswerFailures.length && precisionAnswerChecks === 285, `${precisionAnswerChecks} risposte controllate`);
   const mount = async label => {
     cleanup(); results.length = 0;
     render(React.createElement(WordGamesHub, { level: "B1", saved: {}, onComplete: (id, score) => results.push({ id, score }) }));
@@ -80,6 +88,26 @@ try {
     }
   }
   check("opposites-memory-can-be-completed-and-saved", results.some(item => item.id === "opposites-b1"), `azioni ${guard}`);
+
+  await mount("La parola precisa");
+  let precisionPrompt = document.querySelector(".precisionSession .matchingClue")?.textContent?.trim();
+  let precisionQuestion = semanticPrecision.B1.find(item => item.prompt === precisionPrompt);
+  check("precision-question-comes-from-reviewed-level-bank", Boolean(precisionQuestion), precisionPrompt);
+  if (precisionQuestion) {
+    const wrong = precisionQuestion.options.find((_, index) => index !== precisionQuestion.answer);
+    fireEvent.click(screen.getByRole("button", { name: wrong })); await wait(3);
+    check("precision-wrong-answer-is-marked-and-explained", Boolean(document.querySelector(".precisionOptions .wrong")) && Boolean(document.querySelector(".gameFeedback:not(.perfect)")));
+    fireEvent.click(screen.getByRole("button", { name: /Prossima frase/ })); await wait(3);
+    precisionPrompt = document.querySelector(".precisionSession .matchingClue")?.textContent?.trim();
+    precisionQuestion = semanticPrecision.B1.find(item => item.prompt === precisionPrompt);
+    if (precisionQuestion) {
+      fireEvent.click(screen.getByRole("button", { name: precisionQuestion.options[precisionQuestion.answer] })); await wait(3);
+      check("precision-correct-answer-is-recognised", Boolean(document.querySelector(".precisionOptions .right")) && Boolean(document.querySelector(".gameFeedback.perfect")));
+      fireEvent.click(screen.getByRole("button", { name: /Prossima frase/ })); await wait(3);
+      for (let i = 0; i < 6; i++) { fireEvent.click(screen.getByRole("button", { name: /Salta questa domanda/ })); await wait(2); fireEvent.click(screen.getByRole("button", { name: i < 5 ? /Prossima frase/ : /Vedi il risultato finale/ })); await wait(3); }
+    }
+  }
+  check("precision-eight-rounds-complete-and-save", results.some(item => item.id === "precision-b1"), JSON.stringify(results));
 
   await mount("Parola misteriosa");
   const mystery = screen.getByPlaceholderText(/Scrivi la parola inglese/);

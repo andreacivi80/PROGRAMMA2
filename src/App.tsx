@@ -14,6 +14,7 @@ import {
   jobVisualSets,
   kitchenVisualSets,
   phrasalVisualSets,
+  visualSetsForLevel,
   type VisualSet,
 } from "./visualQuiz";
 import ThemePackHub from "./ThemePackHub";
@@ -60,9 +61,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "8.3";
+const APP_VERSION = "8.4";
 const BUILD_DATE = "1 agosto 2026";
-const BUILD_ID = "EC-8.3-0801";
+const BUILD_ID = "EC-8.4-0801";
 type View =
   | "start"
   | "home"
@@ -343,7 +344,7 @@ const themes = [
     id: "games",
     icon: "ABC",
     title: "Giochi di parole",
-    description: "Nove giochi calibrati per livello, inclusi impiccato e memory degli opposti.",
+    description: "Dieci giochi calibrati per livello, con parole vicine, impiccato e memory.",
     matches: [],
   },
   {
@@ -892,7 +893,7 @@ function playVisualAudio(word: string, browserOnly = false) {
     fallback();
   });
 }
-function VisualPictureLab({ sets }: { sets: VisualSet[] }) {
+function VisualPictureLab({ sets, level }: { sets: VisualSet[]; level: Cefr }) {
   const bank = useMemo(() => visualTiles(sets), [sets]),
     makeTargets = () => shuffled(bank).slice(0, Math.min(9, bank.length));
   const [targets, setTargets] = useState<VisualTile[]>(() => makeTargets()),
@@ -900,7 +901,8 @@ function VisualPictureLab({ sets }: { sets: VisualSet[] }) {
     [chosen, setChosen] = useState<string | null>(null),
     [revealed, setRevealed] = useState<string[]>([]),
     [score, setScore] = useState(0);
-  const done = round >= targets.length,
+  const advanced = level === "B1" || level === "B2" || level === "C1",
+    done = round >= targets.length,
     target = done ? null : targets[round],
     mosaic = useMemo(
       () =>
@@ -970,9 +972,7 @@ function VisualPictureLab({ sets }: { sets: VisualSet[] }) {
           {score}/{round} corrette
         </b>
       </div>
-      <p className="kitchenExploreHint">
-        Ascolta la parola e tocca l’immagine corretta.
-      </p>
+      <p className="kitchenExploreHint">{advanced ? "Ascolta l’espressione, interpreta l’indizio inglese e scegli l’immagine corretta." : "Ascolta la parola e tocca l’immagine corretta."}</p>
       <div className="kitchenPrompt">
         <AudioButton
           key={target!.id}
@@ -984,7 +984,7 @@ function VisualPictureLab({ sets }: { sets: VisualSet[] }) {
           }
           label="Ascolta"
         />
-        <strong lang="en">{target!.item.en}</strong>
+        <strong lang="en">{advanced && target!.item.clue ? target!.item.clue : target!.item.en}</strong>
       </div>
       <div className={`utensilGrid ${chosen !== null ? "explore" : ""}`}>
         {mosaic.map((tile, position) => {
@@ -1049,7 +1049,7 @@ function VisualPictureLab({ sets }: { sets: VisualSet[] }) {
   );
 }
 function KitchenUtensilLab() {
-  return <VisualPictureLab sets={kitchenVisualSets} />;
+  return <VisualPictureLab sets={visualSetsForLevel(kitchenVisualSets,"A1")} level="A1" />;
 }
 type ListeningTurn = {
   speaker?: string;
@@ -4099,16 +4099,18 @@ export default function Home() {
                 </button>
               </div>
               <VisualPictureLab
-                key={visualCategory}
-                sets={
+                key={`${visualCategory}-${selectedLevel}`}
+                level={selectedLevel}
+                sets={visualSetsForLevel(
                   visualCategory === "kitchen"
                     ? kitchenVisualSets
                     : visualCategory === "jobs"
                       ? jobVisualSets
                       : visualCategory === "actions"
                         ? actionVisualSets
-                        : phrasalVisualSets
-                }
+                        : phrasalVisualSets,
+                  selectedLevel,
+                )}
               />
             </section>
           ) : selectedTheme === "games" ? (

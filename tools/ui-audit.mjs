@@ -60,6 +60,7 @@ const checks={
   wordOrder:wordGames.includes("function WordOrder("),
   matching:wordGames.includes("function MatchingGame("),
   opposites:wordGames.includes("function OppositesGame("),
+  semanticPrecision:wordGames.includes("function PrecisionGame("),
   millionaire:wordGames.includes("function MillionaireGame("),
   trivia:wordGames.includes("function TriviaGame("),
   levelFilter:app.includes("themeSupportsLevel")&&app.includes("compactLevelPicker"),

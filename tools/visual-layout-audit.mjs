@@ -5,7 +5,8 @@ import { join } from "node:path";
 
 const chrome = "C:/Program Files/Google/Chrome/Application/chrome.exe";
 const base = process.env.ENGLISH_COACH_URL ?? "http://127.0.0.1:4174/PROGRAMMA2/";
-const port = 9334;
+// Keep the browser used by this audit isolated from other local UI tests.
+const port = Number(process.env.ENGLISH_COACH_DEBUG_PORT ?? 19000 + (process.pid % 10000));
 const profile = await mkdtemp(join(tmpdir(), "english-coach-visual-"));
 const shots = await mkdtemp(join(tmpdir(), "english-coach-shots-"));
 const child = spawn(chrome, ["--headless=new", "--disable-gpu", "--no-first-run", "--no-default-browser-check", "--remote-allow-origins=*", `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, base], { stdio: "ignore" });
