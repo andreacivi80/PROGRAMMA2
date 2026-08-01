@@ -239,12 +239,13 @@ function diversifyFamilies(questions: Choice[]) {
   const result: Choice[] = [];
   let previous = "";
   while ([...buckets.values()].some(bucket => bucket.length)) {
-    const families = shuffle([...buckets.keys()].filter(family => buckets.get(family)?.length));
-    if (families.length > 1 && families[0] === previous) families.push(families.shift()!);
-    for (const family of families) {
-      const question = buckets.get(family)?.shift();
-      if (question) { result.push(question); previous = family; }
-    }
+    const available = [...buckets.keys()].filter(family => buckets.get(family)?.length);
+    const alternatives = available.filter(family => family !== previous);
+    const candidates = alternatives.length ? alternatives : available;
+    const largest = Math.max(...candidates.map(family => buckets.get(family)!.length));
+    const family = shuffle(candidates.filter(value => buckets.get(value)!.length === largest))[0];
+    const question = buckets.get(family)?.shift();
+    if (question) { result.push(question); previous = family; }
   }
   return result;
 }

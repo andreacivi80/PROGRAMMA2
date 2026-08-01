@@ -61,6 +61,26 @@ try {
   }
   check("memory-can-be-completed-and-saved", results.some(item => item.id === "memory-b1"), `azioni ${guard}`);
 
+  await mount("Memory degli opposti");
+  guard = 0;
+  while (!results.some(item => item.id === "opposites-b1") && guard++ < 160) {
+    const enabled = [...document.querySelectorAll(".oppositeGrid button:not(:disabled)")];
+    if (enabled.length < 2) break;
+    let matched = false;
+    for (let candidate = 1; candidate < enabled.length && !matched; candidate++) {
+      const current = [...document.querySelectorAll(".oppositeGrid button:not(:disabled)")];
+      if (current.length < 2) break;
+      fireEvent.click(current[0]);
+      fireEvent.click(current[Math.min(candidate, current.length - 1)]);
+      await wait(2);
+      matched = Boolean(document.querySelector(".gameFeedback.perfect"));
+      const go = document.querySelector(".memoryContinue");
+      if (go) { fireEvent.click(go); await wait(2); }
+      if (results.some(item => item.id === "opposites-b1")) break;
+    }
+  }
+  check("opposites-memory-can-be-completed-and-saved", results.some(item => item.id === "opposites-b1"), `azioni ${guard}`);
+
   await mount("Parola misteriosa");
   const mystery = screen.getByPlaceholderText(/Scrivi la parola inglese/);
   fireEvent.change(mystery, { target: { value: "certainlywrong" } });

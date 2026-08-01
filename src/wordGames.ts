@@ -1,4 +1,5 @@
 import type {Cefr} from "./curriculum";
+import {extraHangman} from "./gameExpansion";
 
 export type CrosswordEntry={answer:string;clue:string};
 export type HangmanEntry={phrase:string;hint:string};
@@ -151,3 +152,7 @@ export const wordGameSets:Record<Cefr,WordGameSet>={
   ]
  }
 };
+
+for (const level of Object.keys(wordGameSets) as Cefr[]) {
+ wordGameSets[level].hangman.push(...extraHangman[level]);
+}

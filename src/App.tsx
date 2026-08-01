@@ -60,9 +60,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "8.2";
+const APP_VERSION = "8.3";
 const BUILD_DATE = "1 agosto 2026";
-const BUILD_ID = "EC-8.2-0801";
+const BUILD_ID = "EC-8.3-0801";
 type View =
   | "start"
   | "home"
@@ -343,7 +343,7 @@ const themes = [
     id: "games",
     icon: "ABC",
     title: "Giochi di parole",
-    description: "Cruciverba e impiccato calibrati per livello.",
+    description: "Nove giochi calibrati per livello, inclusi impiccato e memory degli opposti.",
     matches: [],
   },
   {

@@ -59,6 +59,7 @@ const checks={
   hangman:wordGames.includes("function Hangman("),
   wordOrder:wordGames.includes("function WordOrder("),
   matching:wordGames.includes("function MatchingGame("),
+  opposites:wordGames.includes("function OppositesGame("),
   millionaire:wordGames.includes("function MillionaireGame("),
   trivia:wordGames.includes("function TriviaGame("),
   levelFilter:app.includes("themeSupportsLevel")&&app.includes("compactLevelPicker"),

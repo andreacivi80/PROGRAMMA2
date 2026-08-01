@@ -1,8 +1,9 @@
 import {useMemo,useRef,useState} from "react";
 import type {Cefr} from "./curriculum";
 import {wordGameSets,type CrosswordEntry,type HangmanEntry} from "./wordGames";
+import {antonymSets} from "./gameExpansion";
 
-type GameKind="crossword"|"hangman"|"wordorder"|"matching"|"memory"|"wordguess"|"millionaire"|"trivia";
+type GameKind="crossword"|"hangman"|"wordorder"|"matching"|"memory"|"opposites"|"wordguess"|"millionaire"|"trivia";
 type Result={score:number;attempts:number};
 type Props={level:Cefr;saved:Record<string,Result>;onComplete:(id:string,score:number)=>void};
 type Placed=CrosswordEntry&{row:number;col:number;direction:"across"|"down";number:number};
@@ -85,7 +86,7 @@ function Hangman({level,saved,onDone,onBack}:{level:Cefr;saved?:Result;onDone:(s
  return <section className="gameSession">
   <header><button type="button" onClick={onBack}>← Giochi</button><b>{level}</b></header>
   <span className="eyebrow">IMPICCATO · COMPLETA LA FRASE INGLESE</span><h1>Scegli le lettere</h1>
-  <p className="gameIntro">Usa l’indizio in inglese. Ogni partita propone sette frasi scelte casualmente da una raccolta di quindici; puoi saltarne una senza uscire dalla sessione.</p>
+  <p className="gameIntro">Usa l’indizio in inglese. Ogni partita propone sette frasi scelte casualmente da una raccolta di {wordGameSets[level].hangman.length}; puoi saltarne una senza uscire dalla sessione.</p>
   {saved&&<small className="gamePrevious">Migliore risultato: {saved.score}% · {saved.attempts} tentativi</small>}
   <div className="hangmanStatus"><span>{Math.min(round+1,entries.length)} / {entries.length}</span><div>{Array.from({length:7},(_,index)=><i key={index} className={index<lives?"live":""}/>)}</div><b>{Math.max(0,lives)} tentativi rimasti</b></div>
   <div className="hangmanPhrase" lang="en">{masked}</div><p className="hangmanHint"><b>Indizio</b>{entry.hint}</p>
@@ -122,6 +123,22 @@ function MemoryGame({level,saved,onDone,onBack}:{level:Cefr;saved?:Result;onDone
  const choose=(card:MemoryCard)=>{if(open.length>=2||open.includes(card.id)||matched.includes(card.pair))return;if(open.length===0){setOpen([card.id]);return}const first=cards.find(item=>item.id===open[0])!;setOpen([open[0],card.id]);setMoves(value=>value+1);if(first.pair===card.pair)setMatched(values=>[...values,card.pair])};
  const continueGame=()=>{if(matched.length===pairs.length){onDone(Math.min(100,Math.round((pairs.length/Math.max(1,moves))*100)));return}setOpen([])};
  return <section className="gameSession memorySession"><header><button type="button" onClick={onBack}>← Giochi</button><b>{level}</b></header><span className="eyebrow">MEMORY · PAROLA E DEFINIZIONE</span><h1>Trova le coppie</h1><p className="gameIntro">Abbina sei parole alle rispettive definizioni inglesi. Le carte cambiano posizione a ogni partita.</p>{saved&&<small className="gamePrevious">Migliore risultato: {saved.score}% · {saved.attempts} tentativi</small>}<div className="memoryStatus"><b>{matched.length} / {pairs.length} coppie</b><span>{moves} tentativi</span></div><div className="memoryGrid">{cards.map(card=>{const visible=open.includes(card.id)||matched.includes(card.pair);return <button type="button" key={card.id} disabled={open.length>=2||matched.includes(card.pair)} className={`${visible?"open":""} ${matched.includes(card.pair)?"matched":""} ${card.kind}`} onClick={()=>choose(card)}>{visible?<><small>{card.kind==="word"?"PAROLA":"DEFINIZIONE"}</small><span lang="en">{card.text}</span></>:<b>?</b>}</button>})}</div>{open.length===2&&<><div className={`gameFeedback ${cards.find(item=>item.id===open[0])?.pair===cards.find(item=>item.id===open[1])?.pair?"perfect":""}`}><strong>{cards.find(item=>item.id===open[0])?.pair===cards.find(item=>item.id===open[1])?.pair?"Coppia corretta!":"Non è questa la coppia: confronta significato e parola."}</strong></div><button type="button" className="gamePrimary memoryContinue" onClick={continueGame}>{matched.length===pairs.length?"Concludi la sessione":"Continua"}</button></>}</section>
+}
+
+type OppositeCard={id:string;pair:string;text:string};
+function OppositesGame({level,saved,onDone,onBack}:{level:Cefr;saved?:Result;onDone:(score:number)=>void;onBack:()=>void}){
+ const deck=useMemo(()=>{
+  const all=antonymSets[level],groups=[...new Set(all.map(item=>item.group))],group=shuffle(groups)[0];
+  return shuffle(all.filter(item=>item.group===group)).slice(0,5);
+ },[level]);
+ const cards=useMemo<OppositeCard[]>(()=>shuffle(deck.flatMap((item,index)=>[
+  {id:`${index}-left`,pair:String(index),text:item.left},{id:`${index}-right`,pair:String(index),text:item.right}
+ ])),[deck]);
+ const[open,setOpen]=useState<string[]>([]),[matched,setMatched]=useState<string[]>([]),[moves,setMoves]=useState(0);
+ const choose=(card:OppositeCard)=>{if(open.length>=2||open.includes(card.id)||matched.includes(card.pair))return;if(!open.length){setOpen([card.id]);return}const first=cards.find(item=>item.id===open[0])!;setOpen([open[0],card.id]);setMoves(value=>value+1);if(first.pair===card.pair)setMatched(values=>[...values,card.pair])};
+ const samePair=open.length===2&&cards.find(item=>item.id===open[0])?.pair===cards.find(item=>item.id===open[1])?.pair;
+ const continueGame=()=>{if(matched.length===deck.length){onDone(Math.min(100,Math.round(deck.length/Math.max(deck.length,moves)*100)));return}setOpen([])};
+ return <section className="gameSession memorySession"><header><button type="button" onClick={onBack}>← Giochi</button><b>{level}</b></header><span className="eyebrow">OPPOSTI · MEMORY SEMANTICO</span><h1>Trova la parola opposta</h1><p className="gameIntro">Abbina cinque coppie di contrari inglesi dello stesso campo semantico. Le carte e il gruppo di parole cambiano a ogni partita.</p>{saved&&<small className="gamePrevious">Migliore risultato: {saved.score}% · {saved.attempts} tentativi</small>}<div className="memoryStatus"><b>{matched.length} / {deck.length} coppie</b><span>{moves} tentativi</span></div><div className="memoryGrid oppositeGrid">{cards.map(card=>{const visible=open.includes(card.id)||matched.includes(card.pair);return <button type="button" key={card.id} disabled={open.length>=2||matched.includes(card.pair)} className={`${visible?"open word":""} ${matched.includes(card.pair)?"matched":""}`} onClick={()=>choose(card)}>{visible?<><small>ENGLISH</small><span lang="en">{card.text}</span></>:<b>?</b>}</button>})}</div>{open.length===2&&<><div className={`gameFeedback ${samePair?"perfect":""}`}><strong>{samePair?"Coppia di opposti corretta!":"Non sono opposti: confronta con attenzione il significato."}</strong>{samePair&&<span lang="en">{cards.find(item=>item.id===open[0])?.text} ↔ {cards.find(item=>item.id===open[1])?.text}</span>}</div><button type="button" className="gamePrimary memoryContinue" onClick={continueGame}>{matched.length===deck.length?"Concludi la sessione":"Continua"}</button></>}</section>
 }
 
 function WordGuessGame({level,saved,onDone,onBack}:{level:Cefr;saved?:Result;onDone:(score:number)=>void;onBack:()=>void}){
@@ -165,18 +182,20 @@ export default function WordGamesHub({level,saved,onComplete}:Props){
  if(game==="wordorder")return <WordOrder level={level} saved={saved[id(game)]} onDone={score=>onComplete(id(game),score)} onBack={()=>setGame(null)}/>;
  if(game==="matching")return <MatchingGame level={level} saved={saved[id(game)]} onDone={score=>onComplete(id(game),score)} onBack={()=>setGame(null)}/>;
  if(game==="memory")return <MemoryGame level={level} saved={saved[id(game)]} onDone={score=>onComplete(id(game),score)} onBack={()=>setGame(null)}/>;
+ if(game==="opposites")return <OppositesGame level={level} saved={saved[id(game)]} onDone={score=>onComplete(id(game),score)} onBack={()=>setGame(null)}/>;
  if(game==="wordguess")return <WordGuessGame level={level} saved={saved[id(game)]} onDone={score=>onComplete(id(game),score)} onBack={()=>setGame(null)}/>;
  if(game==="millionaire")return <MillionaireGame level={level} saved={saved[id(game)]} onDone={score=>onComplete(id(game),score)} onBack={()=>setGame(null)}/>;
  if(game==="trivia")return <TriviaGame level={level} saved={saved[id(game)]} onDone={score=>onComplete(id(game),score)} onBack={()=>setGame(null)}/>;
  return <section className="wordGamesHub">
-  <div className="themeHeading"><span><small>GIOCHI IN INGLESE · {level}</small><h2>Impara giocando</h2></span><b>8 sessioni</b></div>
-  <p className="readingHubIntro">Otto giochi autonomi con vocabolario e strutture calibrati per il livello {level}. Le istruzioni sono in italiano; indizi e contenuti da risolvere restano in inglese.</p>
+  <div className="themeHeading"><span><small>GIOCHI IN INGLESE · {level}</small><h2>Impara giocando</h2></span><b>9 sessioni</b></div>
+  <p className="readingHubIntro">Nove giochi autonomi con vocabolario e strutture calibrati per il livello {level}. Le istruzioni sono in italiano; indizi e contenuti da risolvere restano in inglese.</p>
   <div className="gameCards">
    <button type="button" onClick={()=>setGame("crossword")}><b>▦</b><strong>Mini cruciverba</strong><p>Leggi le definizioni inglesi e collega le parole nella griglia.</p><small>10–15 min · {wordGameSets[level].crossword.length} definizioni{saved[id("crossword")]?` · record ${saved[id("crossword")].score}%`:""}</small></button>
    <button type="button" onClick={()=>setGame("hangman")}><b>_?</b><strong>Frasi dell’impiccato</strong><p>Completa sette frasi casuali da una raccolta più ampia e progressiva.</p><small>12–18 min · 7 su {wordGameSets[level].hangman.length} frasi{saved[id("hangman")]?` · record ${saved[id("hangman")].score}%`:""}</small></button>
    <button type="button" onClick={()=>setGame("wordorder")}><b>1·2</b><strong>Ordine delle parole</strong><p>Ricostruisci sette frasi casuali toccando le parole nell’ordine corretto.</p><small>10–15 min · 7 su {wordGameSets[level].hangman.length} frasi{saved[id("wordorder")]?` · record ${saved[id("wordorder")].score}%`:""}</small></button>
    <button type="button" onClick={()=>setGame("matching")}><b>↔</b><strong>Abbina il significato</strong><p>Abbina ogni definizione inglese alla parola corretta.</p><small>8–12 min · 8 abbinamenti{saved[id("matching")]?` · record ${saved[id("matching")].score}%`:""}</small></button>
    <button type="button" onClick={()=>setGame("memory")}><b>▦</b><strong>Memory inglese</strong><p>Trova le coppie tra parole e definizioni senza affidarti alla posizione.</p><small>10–15 min · 6 coppie{saved[id("memory")]?` · record ${saved[id("memory")].score}%`:""}</small></button>
+   <button type="button" onClick={()=>setGame("opposites")}><b>⇄</b><strong>Memory degli opposti</strong><p>Abbina contrari inglesi scelti nello stesso campo semantico.</p><small>8–12 min · 5 su {antonymSets[level].length} coppie{saved[id("opposites")]?` · record ${saved[id("opposites")].score}%`:""}</small></button>
    <button type="button" onClick={()=>setGame("wordguess")}><b>?</b><strong>Parola misteriosa</strong><p>Recupera e scrivi la parola dalla sola definizione inglese.</p><small>10–15 min · 6 parole{saved[id("wordguess")]?` · record ${saved[id("wordguess")].score}%`:""}</small></button>
    <button type="button" onClick={()=>setGame("millionaire")}><b>€?</b><strong>Milionario in inglese</strong><p>Scala i livelli con dieci domande e l’aiuto 50:50.</p><small>12–18 min · 10 domande{saved[id("millionaire")]?` · record ${saved[id("millionaire")].score}%`:""}</small></button>
    <button type="button" onClick={()=>setGame("trivia")}><b>●</b><strong>Sfida a categorie</strong><p>Completa quattro categorie: parole, definizioni, frasi e inglese quotidiano.</p><small>12–18 min · 12 domande{saved[id("trivia")]?` · record ${saved[id("trivia")].score}%`:""}</small></button>
