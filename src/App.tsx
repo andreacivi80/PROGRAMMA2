@@ -59,9 +59,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "7.7";
+const APP_VERSION = "7.8";
 const BUILD_DATE = "1 agosto 2026";
-const BUILD_ID = "EC-7.7-0801";
+const BUILD_ID = "EC-7.8-0801";
 type View =
   | "start"
   | "home"
@@ -285,8 +285,8 @@ const themes = [
   {
     id: "work",
     icon: "▣",
-    title: "Lavoro e negoziazione",
-    description: "Riunioni, richieste, problemi e accordi.",
+    title: "Inglese professionale",
+    description: "Email, riunioni, problemi, accordi e negoziazione.",
     matches: ["work", "meeting", "negotiation", "professional"],
   },
   {
@@ -3272,35 +3272,37 @@ export default function Home() {
         </div>
       )}
       {view === "start" && (
-        <div className="screen firstStepsScreen">
+        <div className={`screen firstStepsScreen ${onboardingComplete ? "returning" : "newLearner"}`}>
           <section className="firstStepsHero" aria-labelledby="first-steps-title">
-            <span className="eyebrow">Primi passi</span>
-            <h1 id="first-steps-title">Inizia dal livello giusto</h1>
+            <span className="eyebrow">{onboardingComplete ? "Il tuo punto di partenza" : "Primi passi"}</span>
+            <h1 id="first-steps-title">{onboardingComplete ? `Continua dal livello ${selectedLevel}` : "Inizia dal livello giusto"}</h1>
             <p>
-              Se è la prima volta, fai la valutazione. Se conosci già il tuo
-              livello, selezionalo e comincia subito.
+              {onboardingComplete
+                ? "Il livello resta memorizzato. Cambialo soltanto se vuoi allenarti da un punto diverso."
+                : "Se è la prima volta, fai la valutazione. Se conosci già il tuo livello, selezionalo e comincia subito."}
             </p>
           </section>
           <section className="firstStepsCard placementStartCard">
-            <span className="stepNumber">1</span>
+            <span className="stepNumber">{onboardingComplete ? "?" : "1"}</span>
             <div>
-              <span className="eyebrow">Scelta consigliata</span>
-              <h2>Valuta il tuo livello</h2>
+              <span className="eyebrow">{onboardingComplete ? "Facoltativo" : "Scelta consigliata"}</span>
+              <h2>{onboardingComplete ? "Vuoi rivalutare il livello?" : "Valuta il tuo livello"}</h2>
               <p>
-                30 domande progressive di grammatica, lessico, ascolto e
-                comprensione per proporti un punto di partenza attendibile.
+                {onboardingComplete
+                  ? "Ripeti il test soltanto se pensi che il livello memorizzato non rappresenti più la tua preparazione."
+                  : "30 domande progressive di grammatica, lessico, ascolto e comprensione per proporti un punto di partenza attendibile."}
               </p>
               <button type="button" className="firstStepsPrimary" onClick={() => setView("placement")}>
-                <span><strong>Inizia il test</strong><small>Circa 15 minuti</small></span>
+                <span><strong>{onboardingComplete ? "Rivaluta il livello" : "Inizia il test"}</strong><small>Circa 15 minuti</small></span>
                 <b>→</b>
               </button>
             </div>
           </section>
           <section className="firstStepsCard knownLevelCard">
-            <span className="stepNumber">2</span>
+            <span className="stepNumber">{onboardingComplete ? "✓" : "2"}</span>
             <div>
-              <span className="eyebrow">Partenza diretta</span>
-              <h2>Conosco già il mio livello</h2>
+              <span className="eyebrow">{onboardingComplete ? "Livello memorizzato" : "Partenza diretta"}</span>
+              <h2>{onboardingComplete ? `Il tuo livello è ${selectedLevel}` : "Conosco già il mio livello"}</h2>
               <p>Scegli il livello che vuoi allenare. Potrai cambiarlo in ogni momento.</p>
               <div className="firstLevelButtons" aria-label="Scegli il livello iniziale">
                 {(["A1", "A2", "B1", "B2", "C1"] as const).map((level) => (
@@ -3326,7 +3328,7 @@ export default function Home() {
                 </select>
               </label>
               <button type="button" className="firstStepsSecondary" onClick={() => completeOnboarding(selectedLevel)}>
-                Inizia dal livello {selectedLevel} <b>→</b>
+                {onboardingComplete ? `Continua dal livello ${selectedLevel}` : `Inizia dal livello ${selectedLevel}`} <b>→</b>
               </button>
             </div>
           </section>
@@ -3939,6 +3941,44 @@ export default function Home() {
                 saved={progress.themePacks ?? {}}
                 onOpen={openThemePack}
               />
+            </div>
+          ) : selectedTheme === "work" ? (
+            <div
+              ref={(node) => {
+                themeResultsRef.current = node;
+              }}
+            >
+              <ThemePackHub
+                title="Inglese professionale"
+                intro="Un percorso distinto da IRA, progressivo da A1 a C1: comunicazione quotidiana, email, riunioni, gestione dei problemi e negoziazione avanzata."
+                packs={themePacks.filter(
+                  (pack) =>
+                    pack.category === "professional" && pack.level === selectedLevel,
+                )}
+                saved={progress.themePacks ?? {}}
+                onOpen={openThemePack}
+              />
+              <section className="themeResults linkedLessons">
+                <div className="themeHeading">
+                  <span>
+                    <small>ALTRE LEZIONI PROFESSIONALI</small>
+                    <h2>Allenamento collegato</h2>
+                  </span>
+                  <b>{unitsForTheme("work").filter((unit) => unit.cefr === selectedLevel).length} sessioni</b>
+                </div>
+                <div className="units">
+                  {unitsForTheme("work")
+                    .filter((unit) => unit.cefr === selectedLevel)
+                    .map((unit) => {
+                      const done = progress.days[unit.day];
+                      return <button key={unit.id} className={done ? "done" : ""} onClick={() => open(unit)}>
+                        <b>{done ? "✓" : unit.cefr}</b>
+                        <span><strong>{unit.title}</strong><small>{unit.cefr} · {unit.minutes} min{done ? ` · ${done.score}%` : ""}</small></span>
+                        <i>›</i>
+                      </button>;
+                    })}
+                </div>
+              </section>
             </div>
           ) : selectedTheme === "food" ? (
             <div

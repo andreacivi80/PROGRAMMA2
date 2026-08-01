@@ -38,6 +38,8 @@ const mixedText=searchable(readFileSync("src/MixedText.tsx","utf8"));
 const grammarLesson=searchable(readFileSync("src/GrammarLesson.tsx","utf8"));
 const placement=searchable(readFileSync("src/PlacementTest.tsx","utf8"));
 const skills=searchable(readFileSync("src/SkillsLab.tsx","utf8"));
+const themePacks=searchable(readFileSync("src/themePacks.ts","utf8"));
+const professional=searchable(readFileSync("src/professionalThemePacks.ts","utf8"));
 const conceptText=searchable(readFileSync("src/ConceptText.tsx","utf8"));
 const wordGames=readFileSync("src/WordGamesHub.tsx","utf8");
 const css=readFileSync("src/styles.css","utf8")+readFileSync("src/themePacks.css","utf8")+readFileSync("src/lessonEnhancements.css","utf8")+readFileSync("src/appEnhancements.css","utf8")+readFileSync("src/wordGames.css","utf8");
@@ -63,6 +65,7 @@ const checks={
   placementTest:placement.includes("Comprensione scritta")&&placement.includes("Valutazione orientativa")&&placement.includes("Produzione orale")&&app.includes("english-coach-onboarding-v1"),
   findError:skills.includes("Trova l’errore"),
   minimalPairs:skills.includes("Minimal pairs"),
+  stableMinimalPairReplay:skills.includes("pairReady")&&skills.includes("Riascolta la stessa parola")&&skills.includes("disabled={!pairReady||selected!==null}"),
   mediation:skills.includes("SFIDA DI MEDIAZIONE"),
   wordFamilies:skills.includes("FAMIGLIE DI PAROLE"),
   branchingDialogue:skills.includes("DIALOGO A BIVI"),
@@ -161,6 +164,13 @@ themeQuestions:pack.includes("Salta domanda")
   pastAndParticiple:languageFocus.includes("Past Simple")&&languageFocus.includes("Past Participle"),
   falseFriends:languageFocus.includes("false friends")&&languageFocus.includes("actually")
  },
+ professionalEnglish:{
+  separateFromIra:app.includes('pack.category === "professional"')&&app.includes("Un percorso distinto da IRA"),
+  fiveLevels:["A1","A2","B1","B2","C1"].every(level=>professional.includes(`level: "${level}"`)),
+  completePractice:professional.includes("Email e aggiornamenti chiari")&&professional.includes("Riunione: aggiornare")&&professional.includes("Negoziazione e decisioni"),
+  socialAcronymsSeparated:themePacks.includes("FYI significa for your information")&&themePacks.includes("IDK significa I don’t know: non lo so")&&themePacks.includes("LMK significa let me know: fammi sapere"),
+  returningLearnerFlow:app.includes('onboardingComplete ? "Facoltativo" : "Scelta consigliata"')&&app.includes("Continua dal livello")
+ },
  responsive:{
   phoneRules:css.includes("@media(max-width:390px)")&&css.includes("@media(max-width:370px)"),
   touchTargets:css.includes("min-height:42px")||css.includes("min-height:44px"),
@@ -180,6 +190,7 @@ const failed=[
  ...Object.entries(checks.recoveryTraining).filter(([,value])=>!value).map(([name])=>`recovery-training:${name}`),
  ...Object.entries(checks.learningClarity).filter(([,value])=>!value).map(([name])=>`learning-clarity:${name}`),
  ...Object.entries(checks.languageFocus).filter(([,value])=>!value).map(([name])=>`language-focus:${name}`),
+ ...Object.entries(checks.professionalEnglish).filter(([,value])=>!value).map(([name])=>`professional-english:${name}`),
  ...Object.entries(checks.responsive).filter(([,value])=>!value).map(([name])=>`responsive:${name}`)
 ];
 console.log(JSON.stringify({...checks,failed},null,2));
