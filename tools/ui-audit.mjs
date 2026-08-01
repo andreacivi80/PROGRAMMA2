@@ -170,6 +170,7 @@ themeQuestions:pack.includes("Salta domanda")
   completePractice:professional.includes("Email e aggiornamenti chiari")&&professional.includes("Riunione: aggiornare")&&professional.includes("Negoziazione e decisioni"),
   socialAcronymsSeparated:themePacks.includes("FYI significa for your information")&&themePacks.includes("IDK significa I don’t know: non lo so")&&themePacks.includes("LMK significa let me know: fammi sapere"),
   returningLearnerFlow:app.includes('onboardingComplete ? "Facoltativo" : "Scelta consigliata"')&&app.includes("Continua dal livello")
+  ,visibleAtEveryLevel:app.includes('id === "work" ? "professional"')
  },
  responsive:{
   phoneRules:css.includes("@media(max-width:390px)")&&css.includes("@media(max-width:370px)"),

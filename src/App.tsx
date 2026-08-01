@@ -59,9 +59,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "7.8";
+const APP_VERSION = "7.9";
 const BUILD_DATE = "1 agosto 2026";
-const BUILD_ID = "EC-7.8-0801";
+const BUILD_ID = "EC-7.9-0801";
 type View =
   | "start"
   | "home"
@@ -418,9 +418,10 @@ function themeSupportsLevel(id: ThemeId, level: Cefr) {
     id === "ira" ||
     id === "accents" ||
     id === "language" ||
+    id === "work" ||
     id === "food"
   ) {
-    const category = id === "food" ? "dining" : id;
+    const category = id === "food" ? "dining" : id === "work" ? "professional" : id;
     return themePacks.some(
       (pack) => pack.category === category && pack.level === level,
     );

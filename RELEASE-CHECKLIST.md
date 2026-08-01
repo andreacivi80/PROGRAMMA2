@@ -1,4 +1,4 @@
-# English Coach 7.8 — stato verificato
+# English Coach 7.9 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
