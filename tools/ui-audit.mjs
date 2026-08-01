@@ -61,6 +61,7 @@ const checks={
   matching:wordGames.includes("function MatchingGame("),
   opposites:wordGames.includes("function OppositesGame("),
   semanticPrecision:wordGames.includes("function PrecisionGame("),
+  naturalReplies:wordGames.includes("function NaturalReplyGame("),
   millionaire:wordGames.includes("function MillionaireGame("),
   trivia:wordGames.includes("function TriviaGame("),
   levelFilter:app.includes("themeSupportsLevel")&&app.includes("compactLevelPicker"),

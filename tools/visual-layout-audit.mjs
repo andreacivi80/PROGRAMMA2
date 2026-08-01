@@ -98,7 +98,7 @@ try {
     await evaluate(`localStorage.setItem("english-coach-view-v1","path");location.reload()`);
     await waitForSelector(".units button");
     results.push(await inspect(`${viewport.name}-path`));
-    await evaluate(`localStorage.setItem("english-coach-view-v1","progress");location.reload()`); await wait(1400);
+    await evaluate(`localStorage.setItem("english-coach-view-v1","progress");location.reload()`); await waitForSelector(".metrics");
     results.push(await inspect(`${viewport.name}-progress`));
     if (viewport.name === "phone") await screenshot("phone-progress");
     const checkpoint = { unitId: "a1-be-introductions", phase: "examples", item: 0, writing: "", points: { yes: 0, all: 0 }, updatedAt: new Date().toISOString() };
@@ -129,8 +129,8 @@ try {
     results.push(await inspect(`${viewport.name}-b2-grammar-layout`));
     if (viewport.name === "phone") await screenshot("phone-b2-grammar");
     const mixedCheckpoint = { unitId: "b2-mixed-conditionals", phase: "grammar", item: 0, writing: "", points: { yes: 0, all: 0 }, updatedAt: new Date().toISOString() };
-    await seed("lesson", mixedCheckpoint, { level: "B2", lessonId: "b2-mixed-conditionals", theme: "language" }); await wait(1200);
-    const mixedReady = await evaluate(`Boolean(document.querySelector(".deepGuide"))`);
+    await seed("lesson", mixedCheckpoint, { level: "B2", lessonId: "b2-mixed-conditionals", theme: "language" });
+    const mixedReady = await waitForSelector(".deepGuide");
     results.push({ label: `${viewport.name}-b2-mixed-ready`, ready: mixedReady });
     results.push(await inspect(`${viewport.name}-b2-mixed-layout`));
     await evaluate(`localStorage.setItem("english-coach-view-v1","topics");localStorage.setItem("english-coach-selection-v1",${JSON.stringify(JSON.stringify({ level: "B2", lessonId: "b2-uk-us-english", theme: "varieties" }))});location.reload()`); await wait(1500);

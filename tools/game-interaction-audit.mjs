@@ -16,6 +16,7 @@ const check = (name, ok, detail = "") => checks.push({ name, ok: Boolean(ok), de
 try {
   const { default: WordGamesHub } = await server.ssrLoadModule("/src/WordGamesHub.tsx");
   const { semanticPrecision, precisionIsCorrect } = await server.ssrLoadModule("/src/semanticPrecision.ts");
+  const { naturalReplies, naturalReplyIsCorrect } = await server.ssrLoadModule("/src/naturalReplies.ts");
   let precisionAnswerChecks = 0;
   const precisionAnswerFailures = [];
   for (const [level, questions] of Object.entries(semanticPrecision)) for (const question of questions) for (let choice = 0; choice < question.options.length; choice++) {
@@ -23,6 +24,14 @@ try {
     if (precisionIsCorrect(question, choice) !== (choice === question.answer)) precisionAnswerFailures.push({level,prompt:question.prompt,choice});
   }
   check("all-precision-correct-and-wrong-paths", !precisionAnswerFailures.length && precisionAnswerChecks === 285, `${precisionAnswerChecks} risposte controllate`);
+  let naturalAnswerChecks = 0;
+  const naturalAnswerFailures = [];
+  for (const [level, questions] of Object.entries(naturalReplies)) for (const question of questions) for (let choice = 0; choice < question.options.length; choice++) {
+    naturalAnswerChecks++;
+    if (naturalReplyIsCorrect(question, choice) !== (choice === question.answer)) naturalAnswerFailures.push({level,prompt:question.prompt,choice});
+  }
+  const naturalPrompts = Object.values(naturalReplies).flat().map(question => question.prompt);
+  check("all-natural-reply-correct-and-wrong-paths", !naturalAnswerFailures.length && naturalAnswerChecks === 190 && new Set(naturalPrompts).size === naturalPrompts.length, `${naturalAnswerChecks} risposte controllate`);
   const mount = async label => {
     cleanup(); results.length = 0;
     render(React.createElement(WordGamesHub, { level: "B1", saved: {}, onComplete: (id, score) => results.push({ id, score }) }));
@@ -108,6 +117,26 @@ try {
     }
   }
   check("precision-eight-rounds-complete-and-save", results.some(item => item.id === "precision-b1"), JSON.stringify(results));
+
+  await mount("La risposta naturale");
+  let naturalPrompt = document.querySelector(".dialoguePrompt strong")?.textContent?.trim();
+  let naturalQuestion = naturalReplies.B1.find(item => item.prompt === naturalPrompt);
+  check("natural-reply-comes-from-reviewed-level-bank", Boolean(naturalQuestion), naturalPrompt);
+  if (naturalQuestion) {
+    const wrong = naturalQuestion.options.find((_, optionIndex) => optionIndex !== naturalQuestion.answer);
+    fireEvent.click(screen.getByRole("button", { name: wrong })); await wait(3);
+    check("natural-reply-wrong-choice-is-explained", Boolean(document.querySelector(".naturalReplyOptions .wrong")) && Boolean(document.querySelector(".gameFeedback:not(.perfect)")));
+    fireEvent.click(screen.getByRole("button", { name: /Prossimo dialogo/ })); await wait(3);
+    naturalPrompt = document.querySelector(".dialoguePrompt strong")?.textContent?.trim();
+    naturalQuestion = naturalReplies.B1.find(item => item.prompt === naturalPrompt);
+    if (naturalQuestion) {
+      fireEvent.click(screen.getByRole("button", { name: naturalQuestion.options[naturalQuestion.answer] })); await wait(3);
+      check("natural-reply-correct-choice-is-recognised", Boolean(document.querySelector(".naturalReplyOptions .right")) && Boolean(document.querySelector(".gameFeedback.perfect")));
+      fireEvent.click(screen.getByRole("button", { name: /Prossimo dialogo/ })); await wait(3);
+      for (let i = 0; i < 6; i++) { fireEvent.click(screen.getByRole("button", { name: /Salta questo dialogo/ })); await wait(2); fireEvent.click(screen.getByRole("button", { name: i < 5 ? /Prossimo dialogo/ : /Vedi il risultato finale/ })); await wait(3); }
+    }
+  }
+  check("natural-reply-eight-rounds-complete-and-save", results.some(item => item.id === "natural-b1"), JSON.stringify(results));
 
   await mount("Parola misteriosa");
   const mystery = screen.getByPlaceholderText(/Scrivi la parola inglese/);
