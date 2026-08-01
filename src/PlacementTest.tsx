@@ -121,17 +121,17 @@ export default function PlacementTest({ onClose, onChoose }: { onClose: () => vo
         <h1>Due brevi risposte per rendere più precisa la stima</h1>
         <label>
           <b>Presentati e racconta un’esperienza o un progetto. Spiega anche perché è stato importante. (circa 40–80 parole)</b>
-          <textarea value={evidence.writing} onChange={(event) => setEvidence((current) => ({ ...current, writing: event.target.value }))} placeholder="Write in English…" />
+          <textarea lang="en" value={evidence.writing} onChange={(event) => setEvidence((current) => ({ ...current, writing: event.target.value }))} placeholder="Scrivi la risposta in inglese…" />
         </label>
         <label>
           <b>Produzione orale: parla per circa 30 secondi di un problema che hai risolto. Poi incolla o scrivi qui ciò che hai detto.</b>
           <button type="button" className={`placementMic ${recording ? "recording" : ""}`} onClick={recordOral} disabled={recording}>{recording ? "● Registrazione in corso…" : "🎙 Parla in inglese"}</button>
           {speechMessage && <small className="placementSpeechMessage" role="status">{speechMessage}</small>}
-          <textarea value={evidence.oral} onChange={(event) => setEvidence((current) => ({ ...current, oral: event.target.value }))} placeholder="What I said…" />
+          <textarea lang="en" value={evidence.oral} onChange={(event) => setEvidence((current) => ({ ...current, oral: event.target.value }))} placeholder="Trascrizione di ciò che hai detto…" />
         </label>
         <label>
           <b>Traduci il senso, senza seguire parola per parola: “Ieri sono andato a una riunione, ma sono arrivato tardi perché il treno era stato cancellato.”</b>
-          <textarea value={evidence.mediation} onChange={(event) => setEvidence((current) => ({ ...current, mediation: event.target.value }))} placeholder="Write in English…" />
+          <textarea lang="en" value={evidence.mediation} onChange={(event) => setEvidence((current) => ({ ...current, mediation: event.target.value }))} placeholder="Scrivi il significato essenziale in inglese…" />
         </label>
         <p className="placementNote">La valutazione locale controlla completezza e strutture riconoscibili; non sostituisce il giudizio di un insegnante.</p>
         <button className="continue" disabled={!evidence.writing.trim() || !evidence.mediation.trim()} onClick={() => setPhase("result")}>Calcola il livello <b>→</b></button>

@@ -1,4 +1,4 @@
-import {detailedChoice,rotateChoice,type Cefr,type Choice} from "./curriculum";
+import {detailedChoice,expandChoiceForLevel,type Cefr,type Choice} from "./curriculum";
 import {iraThemePacks} from "./iraThemePacks";
 import {accentThemePacks} from "./accentThemePacks";
 import {worldAccentPacks} from "./worldAccentPacks";
@@ -19,4 +19,4 @@ export const themePacks:ThemePack[]=[
 ];
 themePacks.push(...iraThemePacks,...accentThemePacks,...worldAccentPacks,...languageFocusPacks);
 let themeChoiceIndex=0;
-themePacks.forEach(pack=>{pack.questions=pack.questions.map(choice=>rotateChoice(detailedChoice(choice),themeChoiceIndex++))});
+themePacks.forEach(pack=>{const pool=pack.questions.flatMap(choice=>choice.options);pack.questions=pack.questions.map(choice=>expandChoiceForLevel(detailedChoice(choice),pack.level,pool,themeChoiceIndex++))});

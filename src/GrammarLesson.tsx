@@ -16,16 +16,8 @@ export default function GrammarLesson({
     ...unit.vocabulary.flatMap((word) => [word.en, word.example]),
     unit.listening.transcript,
     unit.speaking.target,
-    ...unit.speaking.focus,
   ],
-    sourceWords = englishSources.flatMap((text) =>
-      text.match(/[A-Za-z]+(?:['’][A-Za-z]+)?/g) ?? [],
-    ),
-    lessonTerms = [
-    ...unit.grammar.formulas,
-    ...englishSources,
-    ...sourceWords,
-  ];
+    lessonTerms = englishSources;
   const seenExamples = new Set<string>(),
     exampleKey = (en: string, it: string) => `${en} ${it}`.toLocaleLowerCase().replace(/\s+/g, " ").trim(),
     guideSections = guide.sections.map((section) => ({

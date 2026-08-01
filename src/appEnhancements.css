@@ -1175,9 +1175,18 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
 .homeQuickRow .placementEntry { width: 100%; margin: 0; }
 .homeQuickRow .smartStudyHome > summary,
 .homeQuickRow .placementEntry { min-height: 58px; padding: 9px 11px; }
-.homeQuickRow .smartStudyHome > summary { gap: 6px; }
+.homeQuickRow .smartStudyHome > summary {
+  gap: 3px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
 .homeQuickRow .smartStudyHome > summary > span,
 .homeQuickRow .placementEntry strong { font-size: 13px; line-height: 1.15; }
+.homeQuickRow .smartStudyHome > summary > span {
+  max-width: 100%;
+  white-space: nowrap;
+}
 .homeQuickRow .smartStudyHome > summary b { padding: 5px 7px; font-size: 9px; }
 .homeQuickRow .placementEntry span { display: grid; gap: 2px; }
 .homeQuickRow .placementEntry small { color: var(--muted); font-size: 10px; }

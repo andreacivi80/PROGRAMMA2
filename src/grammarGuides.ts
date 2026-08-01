@@ -277,7 +277,6 @@ export const grammarGuides: Record<string, GrammarGuide> = {
 function generatedGuide(unit: MobileUnit): GrammarGuide {
   const examples = unit.grammar.examples.map(({ en, it }) => ({ en, it })),
     explanation = unit.grammar.explanationIt.join(" "),
-    structures = unit.grammar.formulas.join(" "),
     notes = unit.grammar.examples.map((example) => example.noteIt).join(" "),
     usefulWords = unit.vocabulary.slice(0, 5).map((word) => word.en).join(", ");
   return {
@@ -290,7 +289,7 @@ function generatedGuide(unit: MobileUnit): GrammarGuide {
       },
       {
         title: "Costruzione passo dopo passo",
-        text: `Usa questi schemi come controllo: ${structures} Individua prima il soggetto, poi scegli l’ausiliare o la forma verbale e infine completa la frase. Nelle domande e nelle negative controlla con attenzione l’ordine delle parole.`,
+        text: "Individua prima il soggetto, poi scegli l’ausiliare o la forma verbale e infine completa la frase. Nelle domande e nelle negative controlla con attenzione l’ordine delle parole. Verifica che ogni elemento richiesto dalla struttura sia presente e nella posizione corretta.",
         examples: examples.slice(1, 2),
       },
       {

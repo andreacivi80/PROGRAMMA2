@@ -12,14 +12,22 @@ const check = ({ group, id, level, prompt, options, answer, explanationIt, evide
   checked += 1;
   const label = `${group}:${id}`;
   if (!Array.isArray(options) || options.length < 3) issues.push(`${label}: meno di tre risposte`);
+  const expectedOptions = level === "C1" ? 5 : level === "B1" || level === "B2" ? 4 : 3;
+  if (options.length < expectedOptions) issues.push(`${label}: ${level} richiede almeno ${expectedOptions} alternative plausibili`);
   if (!Number.isInteger(answer) || answer < 0 || answer >= options.length) { issues.push(`${label}: indice risposta non valido`); return; }
   const bucket = distributions[`${level}:${group}`] ??= { total: 0, positions: {}, optionCounts: {} };
   bucket.total += 1;
   bucket.positions[answer + 1] = (bucket.positions[answer + 1] ?? 0) + 1;
   bucket.optionCounts[options.length] = (bucket.optionCounts[options.length] ?? 0) + 1;
   const normalOptions = options.map(norm);
-  if (new Set(normalOptions).size !== normalOptions.length) issues.push(`${label}: risposte duplicate`);
+  if (new Set(normalOptions).size !== normalOptions.length) issues.push(`${label}: risposte duplicate ${JSON.stringify(options)}`);
   if (normalOptions.some(option => !option)) issues.push(`${label}: risposta vuota`);
+  if (normalOptions.some(option => ["none of these", "a different structure", "all of the above"].includes(option))) issues.push(`${label}: distrattore generico o facilmente eliminabile`);
+  if ((level === "B2" || level === "C1") && options[answer]?.length >= 12) {
+    const correctLength = options[answer].length;
+    const extreme = options.filter((_, index) => index !== answer).filter(option => option.length < correctLength * 0.25 || option.length > correctLength * 4);
+    if (extreme.length > 1) issues.push(`${label}: distrattori avanzati troppo diversi per lunghezza ${JSON.stringify(options)}`);
+  }
   const correct = options[answer], support = `${prompt} ${explanationIt} ${evidence}`;
   const meaningful = tokens(correct);
   const supported = meaningful.length === 0 || meaningful.some(token => norm(support).includes(token));

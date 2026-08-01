@@ -55,9 +55,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "6.6";
-const BUILD_DATE = "31 luglio 2026";
-const BUILD_ID = "EC-6.6-0731";
+const APP_VERSION = "6.7";
+const BUILD_DATE = "1 agosto 2026";
+const BUILD_ID = "EC-6.7-0801";
 type View =
   | "home"
   | "path"
@@ -3694,7 +3694,7 @@ export default function Home() {
                           <small>
                             {choice.final
                               ? "30 esercizi casuali da tutte le 12 sessioni"
-                              : "20 esercizi casuali sulle quattro sessioni precedenti"}
+                              : `20 esercizi casuali dalle sessioni ${choice.end - 3}–${choice.end}`}
                             {saved
                               ? ` · ultimo ${saved.score}%`
                               : " · nuova attività"}
@@ -3820,7 +3820,6 @@ export default function Home() {
                   (pack) =>
                     pack.category === "social" && pack.level === selectedLevel,
                 )}
-                currentVersion={APP_VERSION}
                 saved={progress.themePacks ?? {}}
                 onOpen={openThemePack}
               />
@@ -3838,7 +3837,6 @@ export default function Home() {
                   (pack) =>
                     pack.category === "ira" && pack.level === selectedLevel,
                 )}
-                currentVersion={APP_VERSION}
                 saved={progress.themePacks ?? {}}
                 onOpen={openThemePack}
               />
@@ -3857,7 +3855,6 @@ export default function Home() {
                     pack.category === "language" &&
                     pack.level === selectedLevel,
                 )}
-                currentVersion={APP_VERSION}
                 saved={progress.themePacks ?? {}}
                 onOpen={openThemePack}
               />
@@ -3875,7 +3872,6 @@ export default function Home() {
                   (pack) =>
                     pack.category === "accents" && pack.level === selectedLevel,
                 )}
-                currentVersion={APP_VERSION}
                 saved={progress.themePacks ?? {}}
                 onOpen={openThemePack}
               />
@@ -3893,7 +3889,6 @@ export default function Home() {
                   (pack) =>
                     pack.category === "dining" && pack.level === selectedLevel,
                 )}
-                currentVersion={APP_VERSION}
                 saved={progress.themePacks ?? {}}
                 onOpen={openThemePack}
               />
@@ -4986,11 +4981,6 @@ export default function Home() {
           <ThemePackLab
             key={selectedPack.id}
             pack={selectedPack}
-            badge={
-              selectedPack.introducedIn === APP_VERSION
-                ? `NEW ${selectedPack.introducedIn}`
-                : `V ${selectedPack.introducedIn}`
-            }
             previous={progress.themePacks?.[selectedPack.id]}
             onMistake={(question, givenAnswer) =>
               queueThemeMistake(selectedPack, question, givenAnswer)
@@ -5590,7 +5580,7 @@ export default function Home() {
                       setDictation(e.target.value);
                       setDictationChecked(false);
                     }}
-                    placeholder="I heard…"
+                    placeholder="Scrivi in inglese ciò che hai sentito…"
                   />
                   <button
                     disabled={!dictation.trim()}

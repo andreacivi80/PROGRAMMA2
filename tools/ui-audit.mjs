@@ -38,6 +38,7 @@ const grammarLesson=searchable(readFileSync("src/GrammarLesson.tsx","utf8"));
 const placement=searchable(readFileSync("src/PlacementTest.tsx","utf8"));
 const skills=searchable(readFileSync("src/SkillsLab.tsx","utf8"));
 const conceptText=searchable(readFileSync("src/ConceptText.tsx","utf8"));
+const wordGames=readFileSync("src/WordGamesHub.tsx","utf8");
 const css=readFileSync("src/styles.css","utf8")+readFileSync("src/themePacks.css","utf8")+readFileSync("src/lessonEnhancements.css","utf8")+readFileSync("src/appEnhancements.css","utf8")+readFileSync("src/wordGames.css","utf8");
 const checks={
  buttons,
@@ -51,12 +52,12 @@ const checks={
   stopsOnNavigation:app.includes("useEffect(()=>()=>stopActiveAudio?.(),[view,phase,unit.id])")
  },
  games:{
-  crossword:readFileSync("src/WordGamesHub.tsx","utf8").includes("Mini Crossword"),
-  hangman:readFileSync("src/WordGamesHub.tsx","utf8").includes("Hangman Phrases"),
-  wordOrder:readFileSync("src/WordGamesHub.tsx","utf8").includes("Word Order"),
-  matching:readFileSync("src/WordGamesHub.tsx","utf8").includes("Match the Meaning"),
-  millionaire:readFileSync("src/WordGamesHub.tsx","utf8").includes("English Millionaire"),
-  trivia:readFileSync("src/WordGamesHub.tsx","utf8").includes("Trivia Quest"),
+  crossword:wordGames.includes("function Crossword("),
+  hangman:wordGames.includes("function Hangman("),
+  wordOrder:wordGames.includes("function WordOrder("),
+  matching:wordGames.includes("function MatchingGame("),
+  millionaire:wordGames.includes("function MillionaireGame("),
+  trivia:wordGames.includes("function TriviaGame("),
   levelFilter:app.includes("themeSupportsLevel")&&app.includes("compactLevelPicker"),
   placementTest:placement.includes("Comprensione scritta")&&placement.includes("Valutazione orientativa")&&placement.includes("Produzione orale")&&app.includes("english-coach-onboarding-v1"),
   findError:skills.includes("Trova l’errore"),

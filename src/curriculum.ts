@@ -31,6 +31,25 @@ export function rotateChoice(choice: Choice, offset: number): Choice {
   return { ...choice, options, answer: (choice.answer + shift) % choice.options.length };
 }
 
+export function optionCountForLevel(level: Cefr) {
+  return level === "C1" ? 5 : level === "B1" || level === "B2" ? 4 : 3;
+}
+
+export function expandChoiceForLevel(choice: Choice, level: Cefr, candidates: string[], offset: number): Choice {
+  const target = optionCountForLevel(level), correct = choice.options[choice.answer];
+  const options = [...choice.options];
+  const known = new Set(options.map(option => option.trim().toLocaleLowerCase("en")));
+  [...new Set(candidates.map(option => option.trim()).filter(Boolean))]
+    .filter(option => !known.has(option.toLocaleLowerCase("en")))
+    .sort((left, right) => Math.abs(left.length - correct.length) - Math.abs(right.length - correct.length))
+    .forEach(option => {
+      if (options.length >= target) return;
+      options.push(option);
+      known.add(option.toLocaleLowerCase("en"));
+    });
+  return rotateChoice({ ...choice, options, answer: options.indexOf(correct) }, offset);
+}
+
 export type MobileUnit = {
   id: string;
   day: number;
@@ -508,6 +527,7 @@ const orderedCurriculum: MobileUnit[] = [
 const a1Durations = [18, 18, 20, 20, 22, 22, 20, 22, 25, 25, 25, 30];
 export const mobileCurriculum: MobileUnit[] = orderedCurriculum.map((unit, index) => {
   const levelIndex = orderedCurriculum.slice(0, index).filter((item) => item.cefr === unit.cefr).length;
+  const choicePool = [...unit.listening.questions, ...unit.quickCheck].flatMap(choice => choice.options);
   return {
     ...unit,
     day: index + 1,
@@ -527,8 +547,8 @@ export const mobileCurriculum: MobileUnit[] = orderedCurriculum.map((unit, index
         hintIt: `${punctuate(exercise.hintIt)} La forma attesa è «${exercise.answers[0]}»: rileggi la frase completa e controlla la posizione della parola.`,
       })),
     },
-    listening: { ...unit.listening, questions: unit.listening.questions.map((choice, choiceIndex) => rotateChoice(detailedChoice(choice), index + choiceIndex)) },
-    quickCheck: unit.quickCheck.map((choice, choiceIndex) => rotateChoice(detailedChoice(choice), index + choiceIndex + 1)),
+    listening: { ...unit.listening, questions: unit.listening.questions.map((choice, choiceIndex) => expandChoiceForLevel(detailedChoice(choice), unit.cefr, choicePool, index + choiceIndex)) },
+    quickCheck: unit.quickCheck.map((choice, choiceIndex) => expandChoiceForLevel(detailedChoice(choice), unit.cefr, choicePool, index + choiceIndex + 1)),
   };
 });
 

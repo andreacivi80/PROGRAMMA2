@@ -81,7 +81,6 @@ const englishTerms = [
   "you",
   "we",
   "they",
-  "I",
   "am",
   "is",
   "are",
@@ -103,9 +102,17 @@ const englishTerms = [
   "than",
 ];
 
+export const italianContextWords = new Set([
+  "a", "e", "i", "o", "in", "di", "da", "la", "le", "lo", "un", "una", "che", "come", "per", "con", "tra", "fra", "su", "se", "ma", "non", "più", "si", "è", "era", "sono", "corso", "rapporto", "parlanti",
+  "agenda", "aria", "bar", "camera", "caso", "data", "estate", "fine", "media", "mobile", "modo", "nota", "radio", "sale", "solo", "studio", "via",
+]);
 
-export default function MixedText({ text, terms = [] }: { text: string; terms?: string[] }) {
-  const localTerms = [...new Set([...terms, ...englishTerms])]
+export function mixedTextChunks(text: string, terms: string[] = []) {
+  const safeTerms = [...new Set([...terms, ...englishTerms])]
+    .map(term => term.trim())
+    .filter(term => term.length > 1 && !italianContextWords.has(term.toLocaleLowerCase("it")));
+  if (!safeTerms.length) return [{ value: text, english: false }];
+  const localTerms = safeTerms
     .sort((a, b) => b.length - a.length)
     .map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
   const localMatcher = new RegExp(`(^|[\\s,;:()“”«»])(${localTerms.join("|")})(?=$|[\\s,;:.!?()“”«»])`, "gi");
@@ -117,17 +124,16 @@ export default function MixedText({ text, terms = [] }: { text: string; terms?: 
     const prefix = match[1] ?? "";
     const term = match[2];
     const termStart = start + prefix.length;
-
-    if (termStart > cursor) {
-      chunks.push({ value: text.slice(cursor, termStart), english: false });
-    }
+    if (termStart > cursor) chunks.push({ value: text.slice(cursor, termStart), english: false });
     chunks.push({ value: term, english: true });
     cursor = termStart + term.length;
   }
+  if (cursor < text.length) chunks.push({ value: text.slice(cursor), english: false });
+  return chunks;
+}
 
-  if (cursor < text.length) {
-    chunks.push({ value: text.slice(cursor), english: false });
-  }
+export default function MixedText({ text, terms = [] }: { text: string; terms?: string[] }) {
+  const chunks = mixedTextChunks(text, terms);
 
   return (
     <>

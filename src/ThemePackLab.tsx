@@ -14,7 +14,6 @@ import {
 
 type Props = {
   pack: ThemePack;
-  badge: string;
   previous?: { score: number; attempts: number };
   onClose: () => void;
   onComplete: (score: number) => void;
@@ -166,7 +165,6 @@ function speak(text: string, onWord?: (index: number) => void) {
 
 export default function ThemePackLab({
   pack,
-  badge,
   previous,
   onClose,
   onComplete,
@@ -308,7 +306,6 @@ export default function ThemePackLab({
         {phase === "learn" && (
           <>
             <div className="themePackHero">
-              <span className="versionBadge current">{badge}</span>
               {pack.flagUrl ? (
                 <img
                   className="themeHeroFlagImage"
@@ -572,7 +569,7 @@ export default function ThemePackLab({
               rows={8}
               value={freeResponse}
               onChange={(event) => setFreeResponse(event.target.value)}
-              placeholder="Write your response in English…"
+              placeholder="Scrivi la risposta in inglese…"
             />
             <div className="missionScoreLine">
               <b>{responseWords} parole</b>

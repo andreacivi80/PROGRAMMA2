@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 
 const server = await createServer({ server: { middlewareMode: true }, appType: "custom", logLevel: "silent" });
 try {
-  const { mobileCurriculum } = await server.ssrLoadModule("/src/curriculum.ts");
+  const { mobileCurriculum, optionCountForLevel } = await server.ssrLoadModule("/src/curriculum.ts");
   const { readingPassages } = await server.ssrLoadModule("/src/readingLab.ts");
   const { themePacks } = await server.ssrLoadModule("/src/themePacks.ts");
   const { wordGameSets } = await server.ssrLoadModule("/src/wordGames.ts");
@@ -40,7 +40,7 @@ try {
     bonus: Math.min(...exerciseAudit.map(row => row.bonus)),
     modalities: Math.min(...exerciseAudit.map(row => row.modalities))
   };
-  const readingInvalid = readingPassages.filter(passage => passage.paragraphs.join(" ").split(/\s+/).length < 180 || passage.questions.length !== 6 || passage.glossary.length < 6 || passage.questions.some(question => question.options.length !== 3 || question.answer < 0 || question.answer > 2 || !question.explanationIt));
+  const readingInvalid = readingPassages.filter(passage => passage.paragraphs.join(" ").split(/\s+/).length < 180 || passage.questions.length !== 6 || passage.glossary.length < 6 || passage.questions.some(question => question.options.length !== optionCountForLevel(passage.level) || question.answer < 0 || question.answer >= question.options.length || !question.explanationIt));
   const reading = { total: readingPassages.length, levels: Object.fromEntries(["A1", "A2", "B1", "B2", "C1"].map(level => [level, readingPassages.filter(passage => passage.level === level).length])), minWords: Math.min(...readingPassages.map(passage => passage.paragraphs.join(" ").split(/\s+/).length)), questionsPerText: Math.min(...readingPassages.map(passage => passage.questions.length)), invalid: readingInvalid.map(passage => passage.id) };
   const visualSets = [...kitchenVisualSets, ...jobVisualSets, ...actionVisualSets, ...phrasalVisualSets];
   const visualItems = visualSets.flatMap(set => set.items);

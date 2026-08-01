@@ -21,7 +21,7 @@ const stableKeys = [
 const checks = {
   packageAndLockAgree: lock.version === pkg.version && lock.packages?.[""]?.version === pkg.version,
   visibleVersionAgrees: app.includes(`const APP_VERSION = "${version}"`),
-  buildIdAgrees: app.includes(`const BUILD_ID = "EC-${version}-0731"`),
+  buildIdAgrees: app.includes(`const BUILD_ID = "EC-${version}-0801"`) && app.includes('const BUILD_DATE = "1 agosto 2026"'),
   cacheAgrees: sw.includes(`english-coach-v${version.replace(".", "")}`),
   checklistAgrees: checklist.includes(`# English Coach ${version} — stato verificato`),
   progressKeysRemainStable: stableKeys.every(key => app.includes(key)),

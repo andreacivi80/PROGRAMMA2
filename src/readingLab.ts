@@ -1,4 +1,4 @@
-import { detailedChoice, rotateChoice, type Cefr, type Choice } from "./curriculum";
+import { detailedChoice, expandChoiceForLevel, rotateChoice, type Cefr, type Choice } from "./curriculum";
 
 export type ReadingPassage = {
   id: string;
@@ -207,3 +207,8 @@ export const readingPassages:ReadingPassage[]=[
       q("What is the passage’s central argument?",["Only average temperature matters","Emergency response should replace planning","Heat policy should combine data, immediate protection, structural change and resident experience"],2,"La conclusione integra protezione rapida, redesign urbano e partecipazione.")
     ]
   }];
+let readingExpansionIndex = 0;
+readingPassages.forEach(passage => {
+  const pool = passage.questions.flatMap(question => question.options);
+  passage.questions = passage.questions.map(question => expandChoiceForLevel(question, passage.level, pool, readingExpansionIndex++));
+});

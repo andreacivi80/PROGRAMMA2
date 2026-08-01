@@ -1,10 +1,10 @@
-# English Coach 6.6 — stato verificato
+# English Coach 6.7 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 6.6, con data e identificativo visibili.
+- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 6.7, con data e identificativo visibili.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 - **VERIFICATO** — i nomi dell’archivio locale restano stabili tra le revisioni: una nuova pubblicazione sostituisce l’interfaccia, non i dati dell’utente.
@@ -31,6 +31,9 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 - **VERIFICATO** — nessun duplicato esatto o ad alta similarità rilevato; risposte, spiegazioni, audio e identificativi controllati.
 - **IMPLEMENTATO** — grammatica, lessico, ascolto, lettura, scrittura, parlato, interazione, mediazione e verifiche.
 - **IMPLEMENTATO** — inglese evidenziato, concetti separati, feedback con testo e icona oltre al colore.
+- **VERIFICATO** — 1.005 frasi grammaticali sono analizzate nel loro contesto completo; i suggerimenti italiani e le formule ibride non vengono più trattati come parole inglesi.
+- **VERIFICATO** — la schermata B1 del Present Perfect controlla esplicitamente che “ancora in corso”, “rapporto tra i parlanti” e “rileggi la frase in tre passaggi” restino testo italiano normale.
+- **IMPLEMENTATO** — le formule non sono ripetute nella spiegazione: compaiono una sola volta nello schema rapido dedicato.
 - **VERIFICATO** — tutte le 60 lezioni hanno una guida grammaticale di almeno cinque sezioni con uso, costruzione, confronto con l’italiano, errori frequenti e applicazione nel contesto.
 - **VERIFICATO** — 1.846 domande tra percorso, letture, temi ed extra hanno opzioni valide e una spiegazione completa mostrata dopo risposte corrette o da rivedere.
 
@@ -92,6 +95,7 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 
 - **VERIFICATO** — simulazione Chrome di 60 minuti a 390×844 e 1440×900 su Oggi, Percorso, Progressi, esempi, Listening e Temi.
 - **VERIFICATO** — nessun overflow orizzontale, nessuna sovrapposizione tra controlli e nessuna variazione di misura passando da play a pausa o stop.
+- **VERIFICATO** — nessuna parola visibile può spezzarsi tra due righe; “Studio intelligente”, “Vocabolario” e “UK US” hanno controlli bloccanti dedicati su telefono e desktop.
 - **IMPLEMENTATO** — play, stop e velocità degli esempi e del Listening occupano una barra unica; Stop non lascia più una riga vuota quando è inattivo.
 - **IMPLEMENTATO** — Studio intelligente e test di livello sono affiancati nella home, riducendo lo scorrimento iniziale senza nascondere le funzioni.
 - **IMPLEMENTATO** — descrizioni dei temi, modalità di ascolto, dettato, salvataggio frase e navigazione della lezione hanno dimensioni più leggibili e coerenti.
@@ -131,4 +135,5 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 
 - **VERIFICATO** — nessun progresso viene azzerato e lo schema dati conserva le migrazioni precedenti.
 - **VERIFICATO** — nessun pulsante dimostrativo e nessun commento tecnico di servizio nell’interfaccia.
+- **VERIFICATO** — le schede tematiche non mostrano più la revisione storica in cui sono state introdotte; rimane soltanto la versione corrente generale nell’intestazione.
 - **VERIFICATO** — una sola versione pubblica, stesso link e versione sempre visibile nell’intestazione.

@@ -42,7 +42,7 @@ try {
   const conceptText = readFileSync("src/ConceptText.tsx", "utf8");
   const interfaceChecks = {
     allLessonsUseDeepGuide: grammarLesson.includes("grammarGuideFor(unit)"),
-    englishSourcesBecomeTerms: grammarLesson.includes("sourceWords") && grammarLesson.includes("lessonTerms"),
+    englishSourcesBecomeTerms: grammarLesson.includes("englishSources") && grammarLesson.includes("lessonTerms") && !grammarLesson.includes("sourceWords"),
     englishIsSemanticallyMarked: mixedText.includes('className="inlineEnglish"') && mixedText.includes('lang="en"'),
     conceptsAreSeparated: conceptText.includes("splitConcepts(text).map") && conceptText.includes("<p key="),
     repeatedExamplesAreHidden: grammarLesson.includes("seenExamples.has(key)") && grammarLesson.includes("commentedExamples.length > 0"),

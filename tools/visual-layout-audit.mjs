@@ -78,7 +78,7 @@ try {
     await setViewport(viewport.width, viewport.height, viewport.mobile);
     await wait(500);
     results.push(await inspect(`${viewport.name}-home`));
-    const studyBadge = await evaluate(`(()=>{const node=document.querySelector(".smartStudyHome>summary>b");if(!node)return null;const original=node.textContent;node.textContent="Vocabolario";const style=getComputedStyle(node),result={text:node.textContent?.trim(),whiteSpace:style.whiteSpace,overflowing:node.scrollWidth>node.clientWidth};node.textContent=original;return result})()`);
+    const studyBadge = await evaluate(`(()=>{const node=document.querySelector(".smartStudyHome>summary>b"),title=document.querySelector(".smartStudyHome>summary>span");if(!node||!title)return null;const original=node.textContent;node.textContent="Vocabolario";const style=getComputedStyle(node),titleStyle=getComputedStyle(title),result={text:node.textContent?.trim(),whiteSpace:style.whiteSpace,overflowing:node.scrollWidth>node.clientWidth,title:title.textContent?.trim(),titleWhiteSpace:titleStyle.whiteSpace,titleOverflowing:title.scrollWidth>title.clientWidth,titleLines:Math.round(title.getBoundingClientRect().height/parseFloat(titleStyle.lineHeight))};node.textContent=original;return result})()`);
     results.push({ label: `${viewport.name}-study-badge`, ...studyBadge });
     if (viewport.name === "phone") await screenshot("phone-home");
     await evaluate(`localStorage.setItem("english-coach-view-v1","path");location.reload()`); await wait(1400);
@@ -101,12 +101,23 @@ try {
     await seed("lesson", { ...checkpoint, phase: "listening" }); await wait(900);
     results.push(await inspect(`${viewport.name}-listening`));
     if (viewport.name === "phone") await screenshot("phone-listening");
+    const b1Checkpoint = { unitId: "b1-present-perfect", phase: "grammar", item: 0, writing: "", points: { yes: 0, all: 0 }, updatedAt: new Date().toISOString() };
+    await seed("lesson", b1Checkpoint, { level: "B1", lessonId: "b1-present-perfect", theme: "language" }); await wait(900);
+    const b1Highlights = await evaluate(`(()=>{const forbidden=new Set(["ancora in corso","rapporto tra i parlanti","rileggi la frase in tre passaggi","corso","rapporto","parlanti"]);const highlights=[...document.querySelectorAll(".inlineEnglish")].map(node=>({term:(node.textContent||"").trim(),context:(node.closest("p")?.textContent||node.parentElement?.textContent||"").replace(/\\s+/g," ").trim()}));return{highlights,falseHighlights:highlights.filter(item=>forbidden.has(item.term.toLocaleLowerCase("it")))}})()`);
+    results.push({ label: `${viewport.name}-b1-highlight-context`, ...b1Highlights });
+    results.push(await inspect(`${viewport.name}-b1-grammar-layout`));
+    if (viewport.name === "phone") await screenshot("phone-b1-grammar");
     const b2Checkpoint = { unitId: "b2-inference-compromise", phase: "grammar", item: 0, writing: "", points: { yes: 0, all: 0 }, updatedAt: new Date().toISOString() };
     await seed("lesson", b2Checkpoint, { level: "B2", lessonId: "b2-inference-compromise", theme: "language" }); await wait(900);
     const repeatedGrammarBlocks = await evaluate(`(()=>{const texts=[...document.querySelectorAll(".deepOverview p,.deepGuide article p")].map(node=>node.textContent.trim().toLocaleLowerCase("it").replace(/\\s+/g," ")).filter(text=>text.length>40);return [...new Set(texts.filter((text,index)=>texts.indexOf(text)!==index))]})()`);
     results.push({ label: `${viewport.name}-b2-grammar-content`, repeatedBlocks: repeatedGrammarBlocks });
     results.push(await inspect(`${viewport.name}-b2-grammar-layout`));
     if (viewport.name === "phone") await screenshot("phone-b2-grammar");
+    const mixedCheckpoint = { unitId: "b2-mixed-conditionals", phase: "grammar", item: 0, writing: "", points: { yes: 0, all: 0 }, updatedAt: new Date().toISOString() };
+    await seed("lesson", mixedCheckpoint, { level: "B2", lessonId: "b2-mixed-conditionals", theme: "language" }); await wait(1200);
+    const mixedReady = await evaluate(`Boolean(document.querySelector(".deepGuide"))`);
+    results.push({ label: `${viewport.name}-b2-mixed-ready`, ready: mixedReady });
+    results.push(await inspect(`${viewport.name}-b2-mixed-layout`));
     await evaluate(`localStorage.setItem("english-coach-view-v1","topics");localStorage.setItem("english-coach-selection-v1",${JSON.stringify(JSON.stringify({ level: "B2", lessonId: "b2-uk-us-english", theme: "varieties" }))});location.reload()`); await wait(1500);
     results.push(await inspect(`${viewport.name}-topics`));
     const varietyLabel = await evaluate(`(()=>{const node=[...document.querySelectorAll(".themeGrid>button>b")].find(item=>item.textContent?.includes("UK"));if(!node)return null;const style=getComputedStyle(node);return{text:node.textContent?.trim(),whiteSpace:style.whiteSpace,wordBreak:style.wordBreak,overflowing:node.scrollWidth>node.clientWidth}})()`);
@@ -119,7 +130,7 @@ try {
     results.push(await inspect(`${viewport.name}-rapid-theme-navigation`));
     if (viewport.name === "phone") { await evaluate(`([...document.querySelectorAll(".themeGrid>button>b")].find(item=>item.textContent?.includes("UK")))?.scrollIntoView({block:"center"})`); await wait(200); await screenshot("phone-topics"); }
   }
-  const failures = results.flatMap(result => [result.horizontalOverflow ? `${result.label}: horizontal overflow` : null, result.overlaps?.length ? `${result.label}: ${result.overlaps.length} control overlaps` : null, result.changed?.length ? `${result.label}: ${result.changed.length} controls resized` : null, result.label?.endsWith("study-badge") && (result.whiteSpace !== "nowrap" || result.overflowing) ? `${result.label}: study label wrapped or overflowed` : null, result.label?.endsWith("b2-grammar-content") && result.repeatedBlocks?.length ? `${result.label}: repeated grammar blocks` : null, result.label?.endsWith("uk-us-label") && (result.text !== "UK US" || result.whiteSpace !== "nowrap" || result.overflowing) ? `${result.label}: label wrapped or overflowed` : null, result.label?.endsWith("theme-search") && result.resultCount !== 1 ? `${result.label}: unexpected filter result` : null].filter(Boolean));
+  const failures = results.flatMap(result => [result.horizontalOverflow ? `${result.label}: horizontal overflow` : null, result.overlaps?.length ? `${result.label}: ${result.overlaps.length} control overlaps` : null, result.changed?.length ? `${result.label}: ${result.changed.length} controls resized` : null, result.label?.endsWith("study-badge") && (result.whiteSpace !== "nowrap" || result.overflowing || result.title !== "Studio intelligente" || result.titleWhiteSpace !== "nowrap" || result.titleOverflowing || result.titleLines !== 1) ? `${result.label}: study title or skill label wrapped/overflowed` : null, result.label?.endsWith("b1-highlight-context") && result.falseHighlights?.length ? `${result.label}: Italian text highlighted as English` : null, result.label?.endsWith("b2-grammar-content") && result.repeatedBlocks?.length ? `${result.label}: repeated grammar blocks` : null, result.label?.endsWith("b2-mixed-ready") && !result.ready ? `${result.label}: grammar did not render` : null, result.label?.endsWith("uk-us-label") && (result.text !== "UK US" || result.whiteSpace !== "nowrap" || result.overflowing) ? `${result.label}: label wrapped or overflowed` : null, result.label?.endsWith("theme-search") && result.resultCount !== 1 ? `${result.label}: unexpected filter result` : null].filter(Boolean));
   console.log(JSON.stringify({ simulatedMinutes: 60, screenshots: shots, results, failures }, null, 2));
   if (failures.length) process.exitCode = 1;
 } finally {
