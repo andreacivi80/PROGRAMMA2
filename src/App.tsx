@@ -59,9 +59,9 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "7.2";
+const APP_VERSION = "7.3";
 const BUILD_DATE = "1 agosto 2026";
-const BUILD_ID = "EC-7.2-0801";
+const BUILD_ID = "EC-7.3-0801";
 type View =
   | "start"
   | "home"
@@ -255,6 +255,13 @@ const themes = [
     matches: ["restaurant", "cooking", "food"],
   },
   {
+    id: "real-life",
+    icon: "↗",
+    title: "Inglese nella vita reale",
+    description: "Viaggi, hotel, assistenza e decisioni di lavoro.",
+    matches: [],
+  },
+  {
     id: "social",
     icon: "@",
     title: "Social English",
@@ -407,6 +414,7 @@ function themeSupportsLevel(id: ThemeId, level: Cefr) {
     return videoResources.some((item) => item.level.includes(level));
   if (
     id === "social" ||
+    id === "real-life" ||
     id === "ira" ||
     id === "accents" ||
     id === "language" ||
@@ -3842,7 +3850,24 @@ export default function Home() {
                 </button>
               ))}
           </div>
-          {selectedTheme === "social" ? (
+          {selectedTheme === "real-life" ? (
+            <div
+              ref={(node) => {
+                themeResultsRef.current = node;
+              }}
+            >
+              <ThemePackHub
+                title="Inglese nella vita reale"
+                intro="Situazioni complete e progressive: trova informazioni, verifica fatti, scegli il tono e prendi decisioni con alternative credibili."
+                packs={themePacks.filter(
+                  (pack) =>
+                    pack.category === "real-life" && pack.level === selectedLevel,
+                )}
+                saved={progress.themePacks ?? {}}
+                onOpen={openThemePack}
+              />
+            </div>
+          ) : selectedTheme === "social" ? (
             <div
               ref={(node) => {
                 themeResultsRef.current = node;
