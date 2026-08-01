@@ -44,6 +44,7 @@ try {
 
   let totalCloze = 0;
   for (const unit of mobileCurriculum) for (const exercise of unit.writing.cloze) {
+    check(`cloze-placeholder-${unit.id}-${totalCloze}`, exercise.prompt.includes("___") && !/___(?:s|d|ed|ing)\b/i.test(exercise.prompt), exercise.prompt);
     for (const answer of exercise.answers) {
       totalCloze++;
       check(`cloze-correct-${unit.id}-${totalCloze}`, isAcceptedAnswer(answer, exercise.answers), `${exercise.prompt} => ${answer}`);

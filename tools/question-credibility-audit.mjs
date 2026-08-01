@@ -64,7 +64,7 @@ try {
     });
   }
   console.log(JSON.stringify({ checked, issueCount: issues.length, warningCount: warnings.length, issues: issues.slice(0, 200), warnings: warnings.slice(0, 40), reviewSamples }, null, 2));
-  if (issues.length) process.exitCode = 1;
+  if (issues.length || warnings.length) process.exitCode = 1;
 } finally {
   await server.close();
 }

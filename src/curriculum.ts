@@ -36,9 +36,75 @@ export function optionCountForLevel(level: Cefr) {
 }
 
 export function expandChoiceForLevel(choice: Choice, level: Cefr, candidates: string[], offset: number): Choice {
-  void level; void candidates;
-  return rotateChoice(choice, offset);
+  const target = optionCountForLevel(level);
+  if (choice.options.length >= target) return rotateChoice(choice, offset);
+  const correct = choice.options[choice.answer], normal = (value: string) => value.toLocaleLowerCase("en").replace(/[’']/g, "'").replace(/[^\p{L}\p{N}' ]+/gu, " ").replace(/\s+/g, " ").trim(),
+    kind = (value: string) => /^\d+(?:[.:/-]\d+)*$/.test(normal(value)) ? "number" : normal(value).split(" ").length === 1 ? "word" : /[.!?]$/.test(value.trim()) || normal(value).split(" ").length >= 5 ? "sentence" : "phrase",
+    correctKind = kind(correct), correctWords = normal(correct).split(" ").filter(Boolean).length,
+    unique = new Set(choice.options.map(normal)), extras: string[] = [];
+  const add = (value: string) => {
+    const clean = value.trim(), key = normal(clean);
+    if (!clean || unique.has(key) || kind(clean) !== correctKind) return;
+    const words = key.split(" ").filter(Boolean).length;
+    if (correctKind !== "number" && Math.abs(words - correctWords) > Math.max(1, Math.floor(correctWords * 0.4))) return;
+    unique.add(key); extras.push(clean);
+  };
+  const number = Number(normal(correct));
+  if (correctKind === "number" && Number.isFinite(number)) [number - 1, number + 1, number + 2, number - 2].forEach(value => add(String(value)));
+  const replacements: Array<[RegExp, string[]]> = [
+    [/\bhas\b/i, ["had", "hasn't", "was"]], [/\bhave\b/i, ["had", "haven't", "would have"]],
+    [/\bis\b/i, ["was", "has been", "isn't"]], [/\bare\b/i, ["were", "have been", "aren't"]],
+    [/\bwas\b/i, ["is", "had been", "wasn't"]], [/\bwere\b/i, ["are", "had been", "weren't"]],
+    [/\bwill\b/i, ["would", "could", "might"]], [/\bwould\b/i, ["will", "could", "should"]],
+    [/\bfor\b/i, ["since", "during", "from"]], [/\bsince\b/i, ["for", "during", "from"]],
+    [/\balready\b/i, ["yet", "still", "ever"]], [/\byet\b/i, ["already", "still", "ever"]],
+  ];
+  replacements.forEach(([pattern, values]) => { if (pattern.test(correct)) values.forEach(value => add(correct.replace(pattern, value))); });
+  const structuralVariants = [
+    correct.replace(/\bthe\s+/i, ""),
+    correct.replace(/\b(a|an)\s+/i, ""),
+    correct.replace(/\bto\b/i, "for"),
+    correct.replace(/\bon\b/i, "at"),
+    correct.replace(/\bwith\b/i, "without"),
+    correct.replace(/^I\s+/, "Me "),
+    correct.replace(/^He\s+/, "Him "),
+    correct.replace(/^She\s+/, "Her "),
+    correct.replace(/^We\s+/, "Us "),
+    correct.replace(/^They\s+/, "Them "),
+    correct.replace(/\b(he|she|it)\s+([A-Za-z]{4,})s\b/i, "$1 $2"),
+  ];
+  structuralVariants.forEach(add);
+  const inverted = correct.match(/^(Rarely|Seldom|Never|Only then|Not only|Under no circumstances)\s+(do|does|did|have|has|had|can|could|will|would)\s+(.+)$/i);
+  if (inverted) {
+    const [, opener, auxiliary, rest] = inverted, parts = rest.split(/\s+/), subject = parts.shift() ?? "we", predicate = parts.join(" ");
+    add(`${opener} ${subject} ${auxiliary} ${predicate}`);
+    add(`${opener} ${subject} ${predicate}`);
+    add(`${opener} ${auxiliary} ${predicate} ${subject}`);
+  }
+  const regularPast = correct.match(/\b([A-Za-z]{4,})ed\b/i)?.[1];
+  if (regularPast && !/\b(?:am|is|are|was|were)\b|(?:'m|'re|'s)\b/i.test(correct)) {
+    add(correct.replace(/\b[A-Za-z]{4,}ed\b/i, `has ${regularPast}ed`));
+    add(correct.replace(/\b[A-Za-z]{4,}ed\b/i, `did ${regularPast}`));
+  }
+  const capitalised = [...new Set(candidates.flatMap(value => value.match(/\b[A-Z][a-z]{2,}\b/g) ?? []))];
+  const proper = correct.match(/\b[A-Z][a-z]{2,}\b/g)?.at(-1);
+  if (proper) capitalised.filter(value => value !== proper).forEach(value => add(correct.replace(new RegExp(`\\b${proper}\\b`), value)));
+  candidates
+    .filter(value => !choice.options.some(option => normal(option) === normal(value)))
+    .sort((a, b) => Math.abs(a.length - correct.length) - Math.abs(b.length - correct.length))
+    .forEach(add);
+  if (expandedWordPool[normal(correct)]) expandedWordPool[normal(correct)].forEach(add);
+  const expanded = [...choice.options, ...extras].slice(0, target), originalCorrect = normal(correct), answer = expanded.findIndex(option => normal(option) === originalCorrect);
+  return rotateChoice({ ...choice, options: expanded, answer }, offset);
 }
+
+const expandedWordPool: Record<string, string[]> = {
+  yes: ["No", "Partly", "Unclear", "Not stated"], no: ["Yes", "Partly", "Unclear", "Not stated"],
+  a: ["B", "The client", "Both", "Neither"], b: ["A", "The client", "Both", "Neither"],
+  contrasto: ["concessione", "causa", "conseguenza", "sequenza"], focalizzare: ["generalizzare", "attenuare", "contrapporre", "riassumere"],
+  analysis: ["analyse", "analyst", "analytical", "analysed"], whereas: ["nevertheless", "consequently", "therefore", "moreover"],
+  "can't": ["might", "could", "must", "should"], flat: ["apartment", "elevator", "vacation", "gas"],
+};
 
 export type MobileUnit = {
   id: string;

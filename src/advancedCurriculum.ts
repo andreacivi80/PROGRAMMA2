@@ -1,7 +1,16 @@
 import type { Cefr, Choice, MobileUnit } from "./curriculum";
 type Example=[string,string,string];type Word=[string,string,string];
 export type Spec={id:string;cefr:Cefr;title:string;minutes:number;explanation:string[];formulas:string[];examples:Example[];words:Word[];writing:string;transcript:string;questions:Choice[];speaking:string;focus:string[];checks:Choice[]};
-export const make=(s:Spec):MobileUnit=>({id:s.id,day:0,cefr:s.cefr,title:s.title,minutes:s.minutes,grammar:{explanationIt:s.explanation,formulas:s.formulas,examples:s.examples.map(([en,it,noteIt])=>({en,it,noteIt}))},vocabulary:s.words.map(([en,it,example])=>({en,it,example})),writing:{cloze:s.words.slice(0,4).map(([en,,example])=>({prompt:example.replace(en,"___"),answers:[en],hintIt:`Inserisci l’espressione ${en}.`})),productionPromptIt:s.writing},listening:{transcript:s.transcript,guideIt:"Ascolta senza trascrizione, annota tesi e dettagli, poi riascolta a velocità naturale o rallentata.",questions:s.questions},speaking:{target:s.speaking,promptIt:"Ascolta, metti in pausa, ripeti e poi registra la frase con ritmo naturale.",focus:s.focus},quickCheck:s.checks,repetition:{retryMode:"new-order",masteryTarget:80,reviewAfterDays:[1,3,7,14]}});
+const clozeFromExample=(term:string,example:string)=>{
+  const escaped=term.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),exact=new RegExp(`\\b${escaped}\\b`,"i"),exactMatch=example.match(exact);
+  if(exactMatch)return{prompt:example.replace(exact,"___"),answers:[exactMatch[0]],hintIt:`Inserisci la forma corretta di ${term}.`};
+  if(!term.includes(" ")){
+    const prefix=Math.max(4,term.length-2),token=example.match(/\b[A-Za-z]+\b/g)?.find(word=>word.toLowerCase().slice(0,prefix)===term.toLowerCase().slice(0,prefix));
+    if(token)return{prompt:example.replace(new RegExp(`\\b${token}\\b`,"i"),"___"),answers:[token],hintIt:`Inserisci la forma corretta di ${term}.`};
+  }
+  return{prompt:`Completa con “${term}”: ${example} ___`,answers:[term],hintIt:`Inserisci ${term}.`};
+};
+export const make=(s:Spec):MobileUnit=>({id:s.id,day:0,cefr:s.cefr,title:s.title,minutes:s.minutes,grammar:{explanationIt:s.explanation,formulas:s.formulas,examples:s.examples.map(([en,it,noteIt])=>({en,it,noteIt}))},vocabulary:s.words.map(([en,it,example])=>({en,it,example})),writing:{cloze:s.words.slice(0,4).map(([en,,example])=>clozeFromExample(en,example)),productionPromptIt:s.writing},listening:{transcript:s.transcript,guideIt:"Ascolta senza trascrizione, annota tesi e dettagli, poi riascolta a velocità naturale o rallentata.",questions:s.questions},speaking:{target:s.speaking,promptIt:"Ascolta, metti in pausa, ripeti e poi registra la frase con ritmo naturale.",focus:s.focus},quickCheck:s.checks,repetition:{retryMode:"new-order",masteryTarget:80,reviewAfterDays:[1,3,7,14]}});
 export const q=(prompt:string,options:string[],answer:number,explanationIt:string):Choice=>({prompt,options,answer,explanationIt});
 
 export const b1Expansion:MobileUnit[]=[

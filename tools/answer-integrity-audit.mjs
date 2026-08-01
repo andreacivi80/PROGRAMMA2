@@ -64,7 +64,7 @@ try {
   issues.push(...skewed);
   const summary = { checked, hardIssues: issues, optionCountWarnings: countWarnings.slice(0, 80), optionCountWarningTotal: countWarnings.length, manualReview: reviewed.slice(0, 80), manualReviewCount: reviewed.length, distributions };
   console.log(JSON.stringify(summary, null, 2));
-  if (issues.length) process.exitCode = 1;
+  if (issues.length || countWarnings.length) process.exitCode = 1;
 } finally {
   await server.close();
 }

@@ -1,4 +1,4 @@
-import { detailedChoice, optionCountForLevel, type Choice, type MobileUnit } from "./curriculum";
+import { detailedChoice, expandChoiceForLevel, optionCountForLevel, type Choice, type MobileUnit } from "./curriculum";
 
 const shuffle = <T,>(items: T[]) => [...items].sort(() => Math.random() - 0.5);
 const clean = (value: string) => value.trim().replace(/\s+/g, " ");
@@ -75,17 +75,47 @@ export function grammarMistakes(sentence: string) {
   const missingAuxiliary = sentence.replace(/\b(am|is|are|was|were|has|have|had|do|does|did|can|will|would|should|could|must)\s+/i, "");
   const doubledAuxiliary = sentence.replace(/\b(am|is|are|was|were|has|have|had|do|does|did|can|will|would|should|could|must)\b/i, "$& $&");
   const wrongSubjectCase = sentence
-    .replace(/^I\b/, "Me")
-    .replace(/^He\b/, "Him")
-    .replace(/^She\b/, "Her")
-    .replace(/^We\b/, "Us")
-    .replace(/^They\b/, "Them");
+    .replace(/^I\s+/, "Me ")
+    .replace(/^He\s+/, "Him ")
+    .replace(/^She\s+/, "Her ")
+    .replace(/^We\s+/, "Us ")
+    .replace(/^They\s+/, "Them ");
   const missingPreposition = sentence.replace(/\b(at|in|on|to|for|from|with|by)\s+/i, "");
-  const wrongThirdPerson = sentence.replace(/\b([a-z]{3,})s\b/i, "$1");
-  const wrongPast = sentence.replace(/\b([a-z]{3,})ed\b/i, "did $1ed");
-  const wrongFirstPersonAgreement = sentence.replace(/^I\s+([a-z]{3,})\b/i, "I $1s");
+  const wrongThirdPerson = sentence.replace(/\b(he|she|it)\s+([a-z]{4,})s\b/i, "$1 $2");
+  const wrongPast = /\b(?:am|is|are|was|were)\b|(?:'m|'re|'s)\b/i.test(sentence) ? sentence : sentence.replace(/\b([a-z]{3,})ed\b/i, "did $1ed");
+  const wrongFirstPersonAgreement = sentence.replace(/^I\s+(?!am\b|was\b|have\b|had\b|do\b|did\b|can\b|could\b|will\b|would\b|should\b|must\b)([a-z]{3,})\b/i, "I $1s");
   const wrongTimeMarker = sentence.replace(/\bevery day\b/i, "yesterday").replace(/\btoday\b/i, "last year");
-  return [...new Set([...variants, missingArticle, missingAuxiliary, doubledAuxiliary, wrongSubjectCase, missingPreposition, wrongThirdPerson, wrongPast, wrongFirstPersonAgreement, wrongTimeMarker])]
+  const closeLexicalStructure = [
+    sentence.replace(/\bmake(s|d)?\s+(a|the)\s+decision\b/i, "do$1 $2 decision"),
+    sentence.replace(/\ba turning point\b/i, "the turning point"),
+    sentence.replace(/\bcall it a day\b/i, "call it the day"),
+    sentence.replace(/\bcall it a day\b/i, "make it a day"),
+    sentence.replace(/\ba long shot\b/i, "the long shot"),
+    sentence.replace(/\ba long shot\b/i, "a far shot"),
+    sentence.replace(/\bImagine you had\b/i, "Imagine you would have"),
+    sentence.replace(/\bmade good progress\b/i, "did made good progress"),
+    sentence.replace(/\bSend me the figures\b/i, "Send to me the figures"),
+    sentence.replace(/\bcouldn’t afford\b/i, "couldn’t to afford"),
+    sentence.replace(/\btold me\b/i, "said me"),
+    sentence.replace(/\brecommend visiting\b/i, "recommend to visit"),
+    sentence.replace(/\bAddress the concern\b/i, "Address to the concern"),
+    sentence.replace(/\bregret not applying\b/i, "regret to not applying"),
+    sentence.replace(/\bNo worries\b/i, "No worry"),
+    sentence.replace(/\bThe evidence looks\b/i, "The evidence is look"),
+    sentence.replace(/\bThe distinction requires\b/i, "The distinction is require"),
+    sentence.replace(/\bThe structure emphasises\b/i, "The structure is emphasise"),
+    sentence.replace(/\bThe framing influences\b/i, "The framing is influence"),
+    sentence.replace(/\bThe assumption requires\b/i, "The assumption is require"),
+    sentence.replace(/\bThe speaker qualifies\b/i, "The speaker is qualify"),
+    sentence.replace(/\bThey diverge\b/i, "They are diverge"),
+    sentence.replace(/\bIf I had more time\b/i, "If I would have more time"),
+    sentence.replace(/\ba neighbourhood where\b/i, "a neighbourhood which"),
+    sentence.replace(/\bcost remains a concern\b/i, "cost remain a concern"),
+    sentence.replace(/\bNo worries\b/i, "Don't worries"),
+    sentence.replace(/\bCosts tend to\b/i, "Costs tends to"),
+    sentence.replace(/\binvolves a trade-off\b/i, "involves to a trade-off"),
+  ];
+  return [...new Set([...variants, missingArticle, missingAuxiliary, doubledAuxiliary, wrongSubjectCase, missingPreposition, wrongThirdPerson, wrongPast, wrongFirstPersonAgreement, wrongTimeMarker, ...closeLexicalStructure])]
     .filter(value => value && value !== sentence)
     .slice(0, 8);
 }
@@ -131,17 +161,21 @@ const verifiedVerbForms: Record<string, string[]> = {
   promise: ["promised", "promises", "promising"], survey: ["surveyed", "surveys", "surveying"],
   concern: ["concerned", "concerns", "concerning"], passed: ["pass", "passes", "passing"],
   checked: ["check", "checks", "checking"], meeting: ["meet", "met", "meets"],
-  let: ["lets", "letting"], hold: ["held", "holds", "holding"],
+  let: ["lets", "letting", "leave", "tell"], hold: ["held", "holds", "holding"],
   increased: ["increase", "increases", "increasing"], saved: ["save", "saves", "saving"],
   regret: ["regretted", "regrets", "regretting"], assume: ["assumed", "assumes", "assuming"],
   renovate: ["renovated", "renovates", "renovating"], estimate: ["estimated", "estimates", "estimating"],
   commission: ["commissioned", "commissions", "commissioning"], compromise: ["compromised", "compromises", "compromising"],
-  counteroffer: ["counteroffered", "counteroffers", "counteroffering"], emphasise: ["emphasised", "emphasises", "emphasising"],
-  focus: ["focused", "focuses", "focusing"], underlying: ["underlie", "underlay", "underlies"],
-  framing: ["frame", "framed", "frames"], allege: ["alleged", "alleges", "alleging"],
-  concede: ["conceded", "concedes", "conceding"], portray: ["portrayed", "portrays", "portraying"],
-  endorse: ["endorsed", "endorses", "endorsing"], qualify: ["qualified", "qualifies", "qualifying"],
-  converge: ["converged", "converges", "converging"], diverge: ["diverged", "diverges", "diverging"],
+  counteroffer: ["counteroffered", "counteroffers", "counteroffering"], emphasise: ["emphasised", "emphasises", "emphasising", "emphasis"],
+  emphasises: ["emphasise", "emphasised", "emphasising", "emphasis"], focus: ["focused", "focuses", "focusing", "focal"],
+  underlying: ["underlie", "underlay", "underlies", "underlain"], framing: ["frame", "framed", "frames", "framework"],
+  allege: ["alleged", "alleges", "alleging", "allegation"], alleged: ["allege", "alleges", "alleging", "allegation"],
+  concede: ["conceded", "concedes", "conceding", "concession"], conceded: ["concede", "concedes", "conceding", "concession"],
+  portray: ["portrayed", "portrays", "portraying", "portrayal"], portrayed: ["portray", "portrays", "portraying", "portrayal"],
+  endorse: ["endorsed", "endorses", "endorsing", "endorsement"], qualify: ["qualified", "qualifies", "qualifying", "qualification"],
+  qualified: ["qualify", "qualifies", "qualifying", "qualification"], converge: ["converged", "converges", "converging", "convergence"],
+  converges: ["converge", "converged", "converging", "convergence"], diverge: ["diverged", "diverges", "diverging", "divergence"],
+  diverges: ["diverge", "diverged", "diverging", "divergence"],
 };
 
 export function plausibleClozeDistractors(correct: string, nearby: string[] = []) {
@@ -167,6 +201,14 @@ export function meaningMistakes(sentence: string) {
   ];
   const variants = replacements.filter(([pattern]) => pattern.test(sentence)).map(([pattern, replacement]) => sentence.replace(pattern, replacement));
   return [...new Set([...variants, ...grammarMistakes(sentence)])];
+}
+
+function plausibleGeneratedAlternative(value: string) {
+  const normalized = clean(value).toLocaleLowerCase("en").replace(/[’]/g, "'");
+  if (/\b(\w+)(?:\s+\1){2,}\b/i.test(normalized)) return false;
+  if (/\b(?:me|him|her|us|them)'(?:m|re|s)\b/i.test(normalized)) return false;
+  if (/\b(?:wass|focu|unles|progres)\b/i.test(normalized)) return false;
+  return true;
 }
 
 function dialogueLines(transcript: string) {
@@ -228,6 +270,13 @@ const curatedSupplementaryByUnit: Record<string, Choice[]> = {
   ],
   "b2-uk-us-english": [
     { prompt: "Varietà e chiarezza · Quale coppia indica lo stesso luogo in UK e US English?", options: ["flat / apartment", "queue / vacation", "lift / sidewalk", "holiday / elevator"], answer: 0, explanationIt: "Flat in britannico e apartment in americano indicano entrambi un appartamento." },
+    { prompt: "Coerenza editoriale · Quale frase mantiene interamente l'ortografia britannica?", options: ["The organisation analysed the colour samples.", "The organization analysed the color samples.", "The organisation analyzed the color samples.", "The organization analyzed the colour samples."], answer: 0, explanationIt: "Organisation, analysed e colour appartengono tutte alla convenzione ortografica britannica." },
+  ],
+  "c1-discourse-cohesion": [
+    { prompt: "Coesione · Quale connettivo introduce un contrasto inatteso senza creare una subordinata?", options: ["nevertheless", "therefore", "moreover", "consequently", "similarly"], answer: 0, explanationIt: "Nevertheless introduce un contrasto rispetto all'idea precedente e funziona come avverbio connettivo." },
+  ],
+  "c1-academic-argument": [
+    { prompt: "Argomentazione · Quale formulazione distingue con precisione correlazione e causalità?", options: ["The findings indicate an association but do not establish causation.", "The findings prove that one factor necessarily caused the other.", "The findings make correlation identical to causation.", "The findings exclude every possible confounding variable.", "The findings guarantee the same result in every population."], answer: 0, explanationIt: "Indicate an association but do not establish causation formula una conclusione prudente e metodologicamente corretta." },
   ],
   "c1-idiom-register": [
     { prompt: "Registro · In un rapporto formale, quale alternativa sostituisce meglio “the plan didn't cut the mustard”?", options: ["the plan proved inadequate", "the plan was gutted", "the plan was a long shot", "the plan felt sketchy", "the plan broke the ice"], answer: 0, explanationIt: "The plan proved inadequate conserva il significato in un registro formale." },
@@ -247,7 +296,9 @@ export function supplementaryBankFor(unit: MobileUnit): Choice[] {
   const bank: Choice[] = [];
   const optionCount = optionCountForLevel(unit.cefr);
   const addGenerated = (prompt: string, correct: string, alternatives: string[], explanationIt: string) => {
-    const built = tryOptionsFor(correct, alternatives, optionCount);
+    const enrichedAlternatives = [...alternatives, ...grammarMistakes(correct), ...alternatives.flatMap(option => grammarMistakes(option))]
+      .filter(plausibleGeneratedAlternative);
+    const built = tryOptionsFor(correct, enrichedAlternatives, optionCount);
     if (built) bank.push({ prompt, ...built, explanationIt });
   };
   bank.push(...(curatedSupplementaryByUnit[unit.id] ?? []));
@@ -284,7 +335,12 @@ export function supplementaryBankFor(unit: MobileUnit): Choice[] {
   addGenerated("Produzione orale · Quale versione conserva l’ordine naturale della frase da ripetere?", unit.speaking.target, grammarMistakes(unit.speaking.target), `La sequenza naturale è: ${unit.speaking.target}`);
   addGenerated("Pronuncia e struttura · Quale frase useresti come modello completo?", unit.speaking.target, grammarMistakes(unit.speaking.target), `Il modello previsto per questa lezione è: ${unit.speaking.target}`);
 
-  return [...new Map(bank.map(question => [supplementaryFingerprint(question), detailedChoice(question)])).values()];
+  return [...new Map(bank.map((question, index) => {
+    const localAlternatives = [...question.options, ...question.options.flatMap(option => grammarMistakes(option))]
+      .filter(plausibleGeneratedAlternative);
+    const expanded = expandChoiceForLevel(detailedChoice(question), unit.cefr, localAlternatives, index);
+    return [supplementaryFingerprint(expanded), expanded];
+  })).values()].filter(question => question.options.length === optionCount);
 }
 
 export function buildSupplementaryQuiz(unit: MobileUnit, count: number, excluded: string[] = []) {
