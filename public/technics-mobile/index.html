@@ -167,12 +167,12 @@ try{
 <form id="form" class="manual"><div class="field"><label id="codelabel" for="code">Codice, nome articolo, barcode, layout o foglio</label><input id="code" type="search" placeholder="" autocapitalize="characters" autocomplete="off"></div><div id="lotfield" class="field"><label for="lot">Lotto</label><input id="lot" type="search" placeholder="" autocapitalize="characters" autocomplete="off"></div><button id="searchbutton">Cerca e riconosci</button><label id="zerotoggle" class="zerotoggle"><input id="showZero" type="checkbox"><span><strong>Mostra anche giacenze zero</strong><small>Disattivato: conteggi e righe mostrano solo la giacenza reale.</small></span></label></form></section>
 <section id="message" class="message hidden"><span>!</span><div><strong id="msgtitle"></strong><p id="msgtext"></p></div></section>
 <section id="openPackingHome" class="card openhome hidden"><div class="openhomehead"><span class="opbadge">OP</span><div><small>RIPRENDI IL LAVORO</small><h2>Packing list</h2><p>Apri una lista condivisa senza avere il foglio o il barcode a portata di mano.</p></div></div><div id="openPacks" class="openpacks"><header><strong>APERTE · DA COMPLETARE</strong><button id="refreshOpenPacks">↻ Aggiorna</button></header><div id="openPackList" class="openpacklist"></div><header class="closedpackhead"><strong>CHIUSE RECENTI · STAMPA O RIAPRI</strong></header><div id="closedPackList" class="openpacklist closedpacklist"></div></div></section><section id="result" class="card hidden"><div class="fresh"><span><i></i>Dati live · aggiornamento ogni 15 s</span><time id="time"></time></div><p class="inventorywarehouse">MAGAZZINO · I.R.A. ISTITUTO RICERCHE APPLICATE S.p.A.</p><button id="refreshTop" class="refreshtop">↻ Aggiorna dal gestionale</button><div class="item"><span class="cube">▦</span><div><p id="itemcode"></p><h2 id="name"></h2><p id="barcode" class="barcode hidden"></p></div></div><p id="description" class="desc"></p><div id="verifiedLot" class="verifiedlot hidden"><div><small>LOTTO VERIFICATO DAL BARCODE</small><strong id="verifiedLotNumber"></strong></div><span><small>Lotto fornitore</small><b id="verifiedExternalLot"></b><small>Scadenza</small><b id="verifiedExpiry"></b></span></div><div class="inventorysum"><div class="metric"><small>Ubicazioni reali</small><strong id="locations">0</strong></div><div class="metric"><small>Lotti interni reali</small><strong id="lots">0</strong></div></div><div class="total"><span id="totallabel">Giacenza totale</span><strong id="total"></strong></div><div class="resulttools"><label for="sortStocks">Ordina per</label><select id="sortStocks"><option value="priority">Priorità ubicazioni</option><option value="location">Ubicazione A–Z</option><option value="lotNew">Lotto più recente</option><option value="lotOld">Lotto meno recente</option><option value="expiry">Scadenza più vicina</option><option value="quantity">Quantità maggiore</option></select></div><div id="stocks" class="stocks"></div><button id="refresh" class="refresh">↻ Aggiorna dal gestionale</button></section><section id="production" class="card hidden"><div class="fresh"><span><i></i>Packing list live · dati Technics</span><time id="ptime"></time></div><button id="prefreshTop" class="refreshtop">↻ Aggiorna dal gestionale</button><div class="ophead"><span class="opbadge">OP</span><div><p id="opnumber"></p><h2 id="opname"></h2><small id="opbarcode"></small></div></div><div class="opmetrics"><div><small>Quantità produzione</small><strong id="oprequested"></strong></div><div><small>Lotto produzione</small><strong id="oplot"></strong></div><div><small>Scadenza</small><strong id="opexpiry"></strong></div></div><div id="packStatus" class="packstatus"><div><small>Avanzamento</small><strong id="packProgress">0 / 0</strong></div><div><small>Lotti con pacchi</small><strong id="packCount">0</strong></div></div><button id="scanMaterial" class="scanmaterial"><span>▦</span><div><strong>Scansiona materiale</strong><small>Confronta il pacco con questa packing list</small></div><b>›</b></button><div class="sectiontitle"><span>Lista materiali da prelevare</span><b id="opcount"></b></div><div id="packingRows" class="packingrows"></div><div class="packactions"><button id="savePacking">Salva lista</button><button id="sharePacking">Condividi</button><button id="previewPacking">Anteprima stampa</button><button id="confirmPacking">Chiudi packing list</button></div><p id="packingMsg" class="packingmsg hidden"></p><button id="prefresh" class="refresh">↻ Aggiorna distinta dal gestionale</button></section>
-<footer><span>Technics Mobile</span><span>Versione 1.3.22</span></footer></main>
+<footer><span>Technics Mobile</span><span>Versione 1.3.23</span></footer></main>
 <div id="closePackingDialog" class="closedialog hidden"><div class="closecard"><h3>Chiudi packing list</h3><p id="closePackingSummary"></p><table class="closetable"><thead><tr><th>Materiale</th><th>Previsto</th><th>Inserito</th><th>Mancante</th></tr></thead><tbody id="closePackingRows"></tbody></table><div class="closeactions"><button id="closePackingCancel">Annulla</button><button id="closePackingOk">OK, chiudi</button></div></div></div><div id="packageChoice" class="choiceoverlay hidden"><div class="choicecard"><header><div><small>PACCO DA REGISTRARE</small><strong id="choiceTitle"></strong></div><button id="closeChoice">×</button></header><p id="choiceInstruction">Scrivi il lotto esattamente come appare sull’etichetta. Solo una corrispondenza esatta con l’OP permette di registrare il pacco.</p><label class="choicelot"><span>LOTTO LETTO SULL’ETICHETTA</span><input id="choiceLot" type="search" inputmode="numeric" autocomplete="off" placeholder=""></label><div id="choiceOptions" class="choiceoptions"></div></div></div><div id="printPreview" class="printoverlay hidden"><div class="printbar"><button id="closePrint">← Chiudi</button><strong>Anteprima packing list</strong><button id="printPacking">Stampa</button></div><div id="printMessage" class="printmessage hidden"></div><div class="printstage"><article id="printContent" class="printsheet"></article></div></div><div id="printConfirmDialog" class="closedialog hidden"><div class="closecard printconfirmcard"><div class="printconfirmicon">▤</div><h3>Conferma stampa</h3><p>Sei sicuro di voler stampare questa packing list?</p><div class="closeactions"><button id="printConfirmCancel">Annulla</button><button id="printConfirmOk">Sì, stampa</button></div></div></div><div id="printingVeil" class="printingveil hidden"><div class="printingcard"><span class="printspinner"></span><strong>Stampa in corso…</strong><small>Invio alla stampante aziendale</small></div></div><div id="camera" class="overlay hidden"><div class="camhead"><div><small>SCANSIONE</small><strong>Centra il codice</strong></div><button id="close">×</button></div><div class="video"><video id="preview" muted playsinline></video><div class="frame"><i></i></div></div><p id="camhint" class="hint">Tieni fermo il telefono: la lettura parte automaticamente.</p><div class="camactions"><button id="cancel" class="cancel">Annulla</button></div><input id="photo" class="hidden" type="file" accept="image/*" capture="environment"></div>
 <div id="materialMismatch" class="materialmismatch hidden" role="alertdialog" aria-modal="true" aria-labelledby="materialMismatchTitle"><div class="materialmismatchcard"><div class="mismatchicon">!</div><h3 id="materialMismatchTitle">MATERIALE ERRATO<br>NON UTILIZZARE</h3><p id="materialMismatchText"></p><button id="materialMismatchClose" type="button">Ho capito · Annulla</button></div></div>
 <script type="module">
-const APP_VERSION="1.3.22";
-const BRIDGE_URL="https://student-tarot-occultist.ngrok-free.dev";async function readJsonResponse(response){const text=await response.text();try{return JSON.parse(text)}catch{const error=new Error("Collegamento dati in ripristino automatico. Riprova tra pochi secondi.");error.status=response.status;throw error}}
+const APP_VERSION="1.3.23";
+const localBridgeTest=new URLSearchParams(location.search).get("testBridge"),BRIDGE_URL=location.hostname==="127.0.0.1"&&/^dev\d+$/.test(localBridgeTest||"")?`http://127.0.0.1:${localBridgeTest.slice(3)}`:"https://student-tarot-occultist.ngrok-free.dev";async function readJsonResponse(response){const text=await response.text();try{return JSON.parse(text)}catch{const error=new Error("Collegamento dati in ripristino automatico. Riprova tra pochi secondi.");error.status=response.status;throw error}}
 const scannerModules=Promise.all([import("https://cdn.jsdelivr.net/npm/@zxing/browser@0.2.1/+esm"),import("https://cdn.jsdelivr.net/npm/@zxing/library@0.23.0/+esm")]);
 const $=id=>document.getElementById(id);let controls=null,imageReader=null,nativeTimer=null,zoomTimer=null,lastCode="",lastKind="code",lastLot="",scanLocked=false,refreshTimer=null,busyLookup=false,busyProduction=false,nativeBusy=false,activeModule="inventory",currentItem=null,currentOrder=null,packingItems=[],scanPurpose="lookup",expectedMaterialCode="",packingConfirmed=false,packingSyncTimer=null,packingRevision=0,pendingMaterial=null,pendingBarcode="",pendingLocation="",pendingLocationCandidates=[],stableScanValue="",stableScanCount=0,stableScanAt=0,awaitingBarcodeLot=false;
 const q=(v,u)=>new Intl.NumberFormat("it-IT",{maximumFractionDigits:3}).format(Number(v||0))+(u?" "+u:"");
@@ -267,19 +267,24 @@ window.__technicsTestScan=acceptScan;$("code").addEventListener("input",()=>{awa
 <script id="view-resume-v1222" type="module">
 (()=>{
   const key="technics-mobile-view-v1222";
+  const refreshKey="technics-refresh-context-v1323";
   const byId=id=>document.getElementById(id);
-  const save=()=>{
+  const snapshot=()=>{
     const productionVisible=!byId("production").classList.contains("hidden");
     const productionHome=!byId("openPackingHome").classList.contains("hidden");
-    const mode=productionVisible||productionHome||byId("modeShortcut").classList.contains("active")?"production":"inventory";
+    const workspace=document.querySelector("main.shell")?.dataset.workspace;
+    const mode=workspace==="packing"||(!workspace&&(productionVisible||productionHome||byId("modeShortcut").classList.contains("active")))?"production":"inventory";
     const barcode=(byId("opbarcode").textContent.match(/\d{8,14}/)||[])[0]||"";
-    const state={
+    return {
       mode,
-      op:productionVisible?barcode:"",
+      op:productionVisible?barcode:(mode==="production"?byId("code").value.trim():""),
       code:byId("code").value.trim(),
       lot:byId("lot").value.trim(),
       scrollY:window.scrollY
     };
+  };
+  const save=()=>{
+    const state=snapshot();
     try{localStorage.setItem(key,JSON.stringify(state))}catch{}
     try{localStorage.removeItem(key+"-order")}catch{}
   };
@@ -293,8 +298,12 @@ window.__technicsTestScan=acceptScan;$("code").addEventListener("input",()=>{awa
     observer.observe(byId("openPackingHome"),{attributes:true,attributeFilter:["class"]});
     observer.observe(byId("opbarcode"),{childList:true,subtree:true});
     byId("modeShortcut").addEventListener("click",()=>setTimeout(save,0));
-    byId("form").addEventListener("submit",()=>setTimeout(save,0));
-    window.addEventListener("pagehide",save);
+    byId("form").addEventListener("submit",()=>setTimeout(()=>{const state=snapshot();try{sessionStorage.setItem(refreshKey,JSON.stringify(state))}catch{}try{localStorage.setItem(key,JSON.stringify(state))}catch{}},0));
+    window.addEventListener("pagehide",()=>{
+      const state=snapshot();
+      try{sessionStorage.setItem(refreshKey,JSON.stringify(state))}catch{}
+      try{localStorage.setItem(key,JSON.stringify(state))}catch{}
+    });
     setTimeout(reveal,10000);
     if(!saved){reveal();return}
     if(saved.mode==="production"){
@@ -303,7 +312,7 @@ window.__technicsTestScan=acceptScan;$("code").addEventListener("input",()=>{awa
     }else if(saved.code||saved.lot){
       byId("code").value=saved.code||"";
       byId("lot").value=saved.lot||"";
-      setTimeout(()=>byId("form").requestSubmit(),120);
+      setTimeout(()=>{byId("form").requestSubmit();const wait=()=>{if(!byId("result").classList.contains("hidden")){window.scrollTo(0,Number(saved.scrollY)||0);save()}else setTimeout(wait,100)};wait()},120);
     }
   });
 })();
@@ -353,6 +362,8 @@ window.__technicsTestScan=acceptScan;$("code").addEventListener("input",()=>{awa
 <script>
 const byId1214=id=>document.getElementById(id);
 let printPreviewObjectUrls1217=[];
+const packingPreviewWarm1217=new Map();
+const packingPrintBridge1217=()=>typeof BRIDGE_URL!=="undefined"&&BRIDGE_URL?BRIDGE_URL:"https://student-tarot-occultist.ngrok-free.dev";
 async function fetchPrintBridge1217(url,options={},attempts=4){
   let lastError;
   for(let attempt=0;attempt<attempts;attempt++){
@@ -363,15 +374,9 @@ async function fetchPrintBridge1217(url,options={},attempts=4){
   }
   throw lastError||new Error("Collegamento anteprima non disponibile.");
 }
-async function loadServerPrintPreview1217(){
-  const host=byId1214("printContent"),box=byId1214("printMessage");
-  const barcode=(byId1214("opbarcode").textContent.match(/Barcode\s+(\S+)/)||[])[1];
-  host.className="serverpreviewhost";
-  host.innerHTML='<div class="serverpreviewloading">Preparazione anteprima A4…</div>';
-  box.classList.add("hidden");
-  try{
+async function prepareServerPrintPreview1217(barcode){
     if(!barcode)throw new Error("Barcode del foglio non disponibile.");
-    const r=await fetchPrintBridge1217("https://student-tarot-occultist.ngrok-free.dev/api/packing/print-preview",{
+    const r=await fetchPrintBridge1217(`${packingPrintBridge1217()}/api/packing/print-preview`,{
       method:"POST",
       cache:"no-store",
       headers:{"Content-Type":"application/json","Cache-Control":"no-store","ngrok-skip-browser-warning":"1"},
@@ -381,9 +386,11 @@ async function loadServerPrintPreview1217(){
     let payload;
     try{payload=JSON.parse(text)}catch{throw new Error("Anteprima momentaneamente non disponibile. Riprova tra pochi secondi.")}
     if(!r.ok||!payload.ok||!payload.previewId)throw new Error(payload.error||"Anteprima non avviata.");
+    document.documentElement.dataset.packingWarmPreviewId=payload.previewId;
+    document.documentElement.dataset.packingWarmBridge=packingPrintBridge1217();
     let previewStatus=null;
     for(let attempt=0;attempt<50;attempt++){
-      const statusResponse=await fetchPrintBridge1217(`https://student-tarot-occultist.ngrok-free.dev/api/packing/print-preview-status?id=${encodeURIComponent(payload.previewId)}`,{
+      const statusResponse=await fetchPrintBridge1217(`${packingPrintBridge1217()}/api/packing/print-preview-status?id=${encodeURIComponent(payload.previewId)}`,{
         cache:"no-store",
         headers:{"Cache-Control":"no-store","ngrok-skip-browser-warning":"1"}
       });
@@ -391,16 +398,40 @@ async function loadServerPrintPreview1217(){
       let statusPayload;
       try{statusPayload=JSON.parse(statusText)}catch{throw new Error("Controllo anteprima momentaneamente non disponibile.")}
       if(!statusResponse.ok||!statusPayload.ok)throw new Error(statusPayload.error||"Anteprima non generata.");
-      if(statusPayload.ready){previewStatus=statusPayload;break}
+      if(statusPayload.ready){previewStatus=statusPayload;document.documentElement.dataset.packingWarmStatus="ready";break}
       await new Promise(resolve=>setTimeout(resolve,700));
     }
     if(!previewStatus||!Number(previewStatus.pageCount))throw new Error("Tempo di preparazione anteprima superato. Riprova.");
+    return {payload,previewStatus};
+}
+function warmServerPrintPreview1217(){
+  const barcode=(byId1214("opbarcode").textContent.match(/Barcode\s+(\S+)/)||[])[1];
+  if(!barcode||byId1214("production").classList.contains("hidden"))return;
+  const key=`${barcode}:${Number(typeof packingRevision!=="undefined"?packingRevision:0)}`;
+  if(packingPreviewWarm1217.has(key))return;
+  document.documentElement.dataset.packingWarmStarted=key;
+  const promise=prepareServerPrintPreview1217(barcode).then(prepared=>{document.documentElement.dataset.packingWarmReady=key;return prepared}).catch(()=>{packingPreviewWarm1217.delete(key);document.documentElement.dataset.packingWarmFailed=key;return null});
+  packingPreviewWarm1217.set(key,promise);
+  while(packingPreviewWarm1217.size>3)packingPreviewWarm1217.delete(packingPreviewWarm1217.keys().next().value);
+}
+async function loadServerPrintPreview1217(){
+  const host=byId1214("printContent"),box=byId1214("printMessage");
+  const barcode=(byId1214("opbarcode").textContent.match(/Barcode\s+(\S+)/)||[])[1];
+  const key=`${barcode}:${Number(typeof packingRevision!=="undefined"?packingRevision:0)}`;
+  host.className="serverpreviewhost";
+  host.innerHTML='<div class="serverpreviewloading">Preparazione anteprima A4…</div>';
+  box.classList.add("hidden");
+  try{
+    if(!packingPreviewWarm1217.has(key))packingPreviewWarm1217.set(key,prepareServerPrintPreview1217(barcode));
+    const prepared=await packingPreviewWarm1217.get(key);
+    if(!prepared)throw new Error("Anteprima momentaneamente non disponibile. Riprova tra pochi secondi.");
+    const {payload,previewStatus}=prepared;
     printPreviewObjectUrls1217.forEach(url=>URL.revokeObjectURL(url));
     printPreviewObjectUrls1217=[];
     const pages=document.createElement("div");
     pages.className="serverprintpages";
-    for(let index=0;index<Number(previewStatus.pageCount);index++){
-      const imageResponse=await fetchPrintBridge1217(`https://student-tarot-occultist.ngrok-free.dev/api/packing/print-preview-image?id=${encodeURIComponent(payload.previewId)}&page=${index+1}`,{
+    const images=await Promise.all(Array.from({length:Number(previewStatus.pageCount)},async(_,index)=>{
+      const imageResponse=await fetchPrintBridge1217(`${packingPrintBridge1217()}/api/packing/print-preview-image?id=${encodeURIComponent(payload.previewId)}&page=${index+1}`,{
         cache:"no-store",
         headers:{"Cache-Control":"no-store","ngrok-skip-browser-warning":"1"}
       });
@@ -411,8 +442,9 @@ async function loadServerPrintPreview1217(){
       image.className="serverprintpage";
       image.src=imageUrl;
       image.alt=`Anteprima A4 · pagina ${index+1} di ${previewStatus.pageCount}`;
-      pages.appendChild(image);
-    }
+      return image;
+    }));
+    pages.append(...images);
     host.replaceChildren(pages);
     requestAnimationFrame(()=>window.dispatchEvent(new Event("resize")));
   }catch(error){
@@ -420,6 +452,12 @@ async function loadServerPrintPreview1217(){
   }
 }
 byId1214("previewPacking").addEventListener("click",()=>setTimeout(loadServerPrintPreview1217,0));
+let packingWarmTimer1217=0;
+new MutationObserver(()=>{clearTimeout(packingWarmTimer1217);packingWarmTimer1217=setTimeout(warmServerPrintPreview1217,900)}).observe(byId1214("production"),{attributes:true,childList:true,subtree:true,characterData:true});
+const applySharedSessionPreview1217=applySharedSession;
+applySharedSession=function(session,quiet=false){const value=applySharedSessionPreview1217(session,quiet);clearTimeout(packingWarmTimer1217);packingWarmTimer1217=setTimeout(warmServerPrintPreview1217,150);return value};
+const showProductionPreview1217=showProduction;
+showProduction=function(order){const value=showProductionPreview1217(order);document.documentElement.dataset.packingWarmScheduled=String(order?.barcode||"");clearTimeout(packingWarmTimer1217);packingWarmTimer1217=setTimeout(warmServerPrintPreview1217,300);return value};
 async function sendPackingPrint1216(){
   const box=byId1214("printMessage"),button=byId1214("printPacking");
   const barcode=(byId1214("opbarcode").textContent.match(/Barcode\s+(\S+)/)||[])[1];
@@ -695,11 +733,15 @@ window.addEventListener("resize",fitCustomerName1221);
   section.querySelector(".schedulecontrols").insertAdjacentHTML("afterbegin",`<form id="scheduleDirectOp" class="scheduledirect"><label>Quando viene prodotto questo OP?</label><div><input name="number" inputmode="numeric" autocomplete="off" placeholder="Numero OP" required><button>Verifica data</button></div></form>`);
   const result=byId("planningResult");
   const enterPickingDetail=(label="← Torna a ricerca e liste")=>{section.classList.add("detailview");const back=byId("backPickingHome");back.textContent=label;back.classList.remove("hidden")};
-  const leavePickingDetail=async()=>{section.classList.remove("detailview");byId("backPickingHome").classList.add("hidden");section.querySelectorAll('.planningfield input[name="number"]').forEach(input=>input.value="");planningCurrent=null;pickingSession=null;pickingGroup=null;selectedPlans=[];pendingPicking=null;pendingGroupMatches=[];result.innerHTML="";renderMultiDraft();await loadPickingCollections()};
+  const leavePickingDetail=async()=>{section.classList.remove("detailview");byId("backPickingHome").classList.add("hidden");section.querySelectorAll('.planningfield input[name="number"]').forEach(input=>input.value="");planningCurrent=null;pickingSession=null;pickingGroup=null;selectedPlans=[];pendingPicking=null;pendingGroupMatches=[];try{localStorage.removeItem("technics-planning-last-lookup-v1");localStorage.removeItem("technics-picking-draft-v1")}catch{}result.innerHTML="";renderMultiDraft();await loadPickingCollections()};
   let planningCurrent=null,pickingSession=null,pendingPicking=null,selectedPickingLocation="",pickingLists={sessions:[],closedSessions:[]},selectedPlans=[],pickingGroup=null,pendingGroupOp="",pendingGroupMatches=[],pickingCollectionsSignature="",linkedReturn=null;
-  try{localStorage.removeItem("technics-picking-draft-v1");localStorage.removeItem("technics-planning-last-lookup-v1")}catch{}
-  const persistSelectedPlans=()=>{};
-  const persistPlanningLookup=(type,number)=>{try{localStorage.setItem("technics-planning-last-lookup-v1",JSON.stringify({type,number}))}catch{}};
+  const persistSelectedPlans=()=>{try{if(selectedPlans.length)localStorage.setItem("technics-picking-draft-v1",JSON.stringify(selectedPlans.map(plan=>plan.order.number)));else localStorage.removeItem("technics-picking-draft-v1")}catch{}};
+  const persistPlanningLookup=(type,number,scrollY=window.scrollY)=>{try{localStorage.setItem("technics-planning-last-lookup-v1",JSON.stringify({type,number,scrollY}))}catch{}};
+  let pendingPlanningLookup=null;
+  section.addEventListener("submit",event=>{const form=event.target.closest?.("form[data-planning]");if(form)pendingPlanningLookup={type:form.dataset.planning,number:form.elements.number.value.trim()}},true);
+  new MutationObserver(()=>{if(result.querySelector(".multipicklist")){try{localStorage.removeItem("technics-picking-draft-v1")}catch{}}if(!pendingPlanningLookup)return;if(result.querySelector(".planningerror")){try{localStorage.removeItem("technics-planning-last-lookup-v1")}catch{}pendingPlanningLookup=null;return}if(result.querySelector(".planningcard")){persistPlanningLookup(pendingPlanningLookup.type,pendingPlanningLookup.number);pendingPlanningLookup=null}}).observe(result,{childList:true,subtree:true});
+  window.addEventListener("pagehide",()=>{try{const saved=JSON.parse(localStorage.getItem("technics-planning-last-lookup-v1")||"null");if(saved?.type&&saved?.number&&section.classList.contains("detailview"))persistPlanningLookup(saved.type,saved.number,window.scrollY)}catch{}});
+  section.addEventListener("click",event=>{if(event.target.closest("[data-remove-selected-op],[data-clear-selected-ops],#addPlanningOp"))setTimeout(persistSelectedPlans,0)},true);
   const same=(a,b)=>String(a??"").trim().toUpperCase()===String(b??"").trim().toUpperCase();
   const pickingItemFor=(items,code,lot,location,opNumber="")=>(items||[]).find(x=>same(x.code,code)&&same(x.lot,lot)&&same(x.location,location)&&(!opNumber||same(x.opNumber,opNumber)));
   const pickingItemsFor=(items,code,lot,opNumber="")=>(items||[]).filter(x=>same(x.code,code)&&same(x.lot,lot)&&(!opNumber||same(x.opNumber,opNumber)));
@@ -724,7 +766,8 @@ window.addEventListener("resize",fitCustomerName1221);
   const warmedPickingPreviews=new Map,previewKey=target=>target?.groupId?`g:${target.groupId}:${pickingGroup?.revision||0}`:`s:${target?.opNumber}:${target?.year}:${pickingSession?.revision||0}`;
   const preparePickingPreview=target=>postPickingPrint("/api/picking/print-preview",target).then(job=>waitPickingJob("/api/packing/print-preview-status",job.previewId).then(status=>({job,status})));
   const warmPickingPreview=target=>{if(!target)return;const key=previewKey(target);if(warmedPickingPreviews.has(key))return;warmedPickingPreviews.set(key,preparePickingPreview(target).catch(()=>{warmedPickingPreviews.delete(key);return null}))};
-  const openPickingPreview=async target=>{pickingPrintTarget=target;pickingPreviewUrls.forEach(URL.revokeObjectURL);pickingPreviewUrls=[];showPickingOverlay("checking","ANTEPRIMA IN PREPARAZIONE","Attendere: sto componendo la lista di prelievo completa.");try{const key=previewKey(target);let prepared=warmedPickingPreviews.get(key)?await warmedPickingPreviews.get(key):null;if(!prepared)prepared=await preparePickingPreview(target);const{job,status}=prepared;pickingPreviewUrls=await Promise.all(Array.from({length:status.pageCount},(_,index)=>loadPickingPreviewImage(job.previewId,index+1)));showPickingOverlay("preview","LISTA DI PRELIEVO","",`<div class="pickingprintpages">${pickingPreviewUrls.map((url,index)=>`<img src="${url}" alt="Pagina ${index+1}">`).join("")}</div>`,`<button data-pick-close>Chiudi</button><button data-pick-print>Stampa</button>`)}catch(error){showPickingOverlay("error","ANTEPRIMA NON DISPONIBILE",error.message||"Preparazione non riuscita.","",`<button data-pick-close>Chiudi</button>`)}};
+  const openPickingPreview=async target=>{const started=performance.now();pickingPrintTarget=target;pickingPreviewUrls.forEach(URL.revokeObjectURL);pickingPreviewUrls=[];showPickingOverlay("checking","ANTEPRIMA IN PREPARAZIONE","Attendere: sto componendo la lista di prelievo completa.");try{const key=previewKey(target);let prepared=warmedPickingPreviews.get(key)?await warmedPickingPreviews.get(key):null;if(!prepared)prepared=await preparePickingPreview(target);const{job,status}=prepared;pickingPreviewUrls=await Promise.all(Array.from({length:status.pageCount},(_,index)=>loadPickingPreviewImage(job.previewId,index+1)));showPickingOverlay("preview","LISTA DI PRELIEVO","",`<div class="pickingprintpages">${pickingPreviewUrls.map((url,index)=>`<img src="${url}" alt="Pagina ${index+1}">`).join("")}</div>`,`<button data-pick-close>Chiudi</button><button data-pick-print>Stampa</button>`);document.documentElement.dataset.pickingPreviewOpenMs=String(Math.round(performance.now()-started))}catch(error){showPickingOverlay("error","ANTEPRIMA NON DISPONIBILE",error.message||"Preparazione non riuscita.","",`<button data-pick-close>Chiudi</button>`)}};
+  new MutationObserver(()=>{if(!result.querySelector("#printPickingList,#printPickingGroup"))return;if(pickingGroup?.id)warmPickingPreview({groupId:pickingGroup.id});else if(planningCurrent?.order&&pickingSession?.created)warmPickingPreview({opNumber:planningCurrent.order.number,year:planningCurrent.year})}).observe(result,{childList:true,subtree:true});
   const findPickingPrintTarget=opNumber=>{const op=String(opNumber||"").replace(/^0+/,"");const groups=[...(pickingLists.groups||[]),...(pickingLists.closedGroups||[])];const group=groups.find(item=>(item.members||[]).some(member=>String(member.opNumber||"").replace(/^0+/,"")===op));if(group)return{groupId:group.id};const sessions=[...(pickingLists.sessions||[]),...(pickingLists.closedSessions||[])],session=sessions.find(item=>String(item.opNumber||"").replace(/^0+/,"")===op);return session?{opNumber:session.opNumber,year:session.year}:null};
   const renderMultiDraft=()=>{const box=byId("multiPickingDraft");if(pickingGroup){box.classList.add("hidden");box.innerHTML="";return}if(!selectedPlans.length){box.classList.add("hidden");box.innerHTML="";return}box.classList.remove("hidden");box.innerHTML=`<header><strong>NUOVA LISTA · ${selectedPlans.length} OP SELEZIONATI</strong><button type="button" data-clear-selected-ops>Svuota lista</button></header><div class="selectedoplist">${selectedPlans.map(p=>`<span><b class="opref">OP ${escape(p.order.number)}</b><b class="ovref">OV ${escape(p.order.ovNumber||"—")}</b><strong>LOTTO ${escape(p.order.lot||"—")}</strong><em>${escape(p.order.articleCode||"—")} · ${escape(p.order.articleName||"")}</em><button type="button" data-remove-selected-op="${escape(p.order.number)}">Rimuovi OP</button></span>`).join("")}</div><div class="appendmultiop"><label for="appendMultiOpInput">Aggiungi un altro ordine di produzione</label><input id="appendMultiOpInput" inputmode="numeric" autocomplete="off" placeholder="Inserisci numero OP"><button id="appendMultiOpButton" type="button">＋ Aggiungi OP</button></div><button id="prepareMultiPicking">Genera lista per ${selectedPlans.length} OP</button>`};
   const renderMultiRequirements=()=>{if(!pickingGroup)return"";const rows=selectedPlans.flatMap(p=>(p.order.requirements||[]).map(x=>({...x,opNumber:p.order.number,ovNumber:p.order.ovNumber})));return `<section class="picklist multipicklist"><header class="picklisttitle"><span>LISTA MULTI-OP · ${pickingGroup.confirmed?"CHIUSA":"APERTA"}</span><em>${selectedPlans.length} OP · ${rows.length} righe</em></header><div class="pickinglifecycle pickingscanbar"><button id="scanPickingGroup" class="primary" ${pickingGroup.confirmed?"disabled":""}>Scansiona materiale</button></div><div class="picktable"><div class="pickthead multipickhead"><b>OP</b><b>Codice · materiale</b><b>Richiesto</b></div>${rows.map(x=>{const actual=pickingItemsFor(pickingGroup.items,x.code,x.lot,x.opNumber),used=usedQuantityFor(pickingGroup.items,x.code,x.lot,x.opNumber),count=actual.reduce((sum,item)=>sum+(item.scans||[]).length,0),excluded=Array.from(pickingGroup.excluded||[]).some(item=>same(item.opNumber,x.opNumber)&&same(item.code,x.code)&&same(item.lot,x.lot)),verified=excluded||count>0||used>0,locations=(x.availableLocations||[]).length?x.availableLocations:(x.location?[{location:x.location,quantity:0,planned:true}]:[]);return `<article class="pickrow multipickrow ${verified?"picked":""} ${excluded?"pickexcluded":""}"><strong class="multiopid"><span>OP ${escape(x.opNumber)}</span><small>OV ${escape(x.ovNumber||"—")}</small></strong><span><b>${escape(x.code||"—")}</b><br>${escape(x.description||"")}</span><b>${Number(x.allocatedQuantity||0).toLocaleString("it-IT")} ${escape(x.unit||"")}</b><small><span><em>LOTTO</em><strong>${escape(x.lot||"—")}</strong></span>${renderLayoutLines(locations,actual,x.unit)}</small>${excluded?"":renderUsedEditors(pickingGroup.items,{...x,location:actual[0]?.location||locations[0]?.location||""},true,pickingGroup.confirmed)}${pickingGroup.confirmed?"":`<button type="button" class="pickexclude" data-group-exclude-code="${escape(x.code||"")}" data-group-exclude-lot="${escape(x.lot||"")}" data-group-exclude-op="${escape(x.opNumber||"")}" data-excluded="${excluded}">${excluded?"↺ Reincludi":"− Non prelevare"}</button>`}</article>`}).join("")}</div><div class="pickinglifecycle pickingendactions"><button id="closePickingGroup" class="${pickingGroup.confirmed?"":"close"}">${pickingGroup.confirmed?"Riapri lista":"Chiudi lista"}</button><button id="printPickingGroup">Anteprima stampa</button></div></section>`};
@@ -733,6 +776,18 @@ window.addEventListener("resize",fitCustomerName1221);
   const updateScheduleDateDisplays=()=>section.querySelectorAll("[data-date-display]").forEach(output=>output.textContent=dateIt(section.querySelector(`#scheduleRange [name=${output.dataset.dateDisplay}]`).value));
   const clearScheduleRange=()=>{const range=section.querySelector("#scheduleRange");range.reset();range.elements.from.value="";range.elements.to.value="";range.elements.to.min="";range.dispatchEvent(new CustomEvent("technics:clear-range"));updateScheduleDateDisplays()};
   const resetScheduleMode=mode=>{if(mode!=="direct")section.querySelector("#scheduleDirectOp input").value="";if(mode!=="quick")section.querySelectorAll(".planningquick button").forEach(button=>button.classList.remove("active"));if(mode==="direct"||mode==="quick")clearScheduleRange();for(const input of section.querySelectorAll(".schedulefilters input"))input.value="";byId("scheduleFamilyFilter").value="";scheduleData=null};
+  const scheduleStateKey="technics-schedule-state-v1323";
+  const readScheduleState=()=>{try{return JSON.parse(sessionStorage.getItem(scheduleStateKey)||"null")}catch{return null}};
+  const writeScheduleState=state=>{try{sessionStorage.setItem(scheduleStateKey,JSON.stringify(state))}catch{}};
+  const clearScheduleState=()=>{try{sessionStorage.removeItem(scheduleStateKey)}catch{}};
+  window.addEventListener("pagehide",()=>{const state=readScheduleState();if(state&&document.querySelector("main.shell")?.dataset.workspace==="schedule")writeScheduleState({...state,scrollY:window.scrollY})});
+  const scheduleFiltersState=()=>({op:byId("scheduleOpFilter").value,ov:byId("scheduleOvFilter").value,family:byId("scheduleFamilyFilter").value});
+  section.querySelector(".planningquick").addEventListener("click",event=>{const button=event.target.closest("button[data-days]");if(button)writeScheduleState({mode:"quick",days:button.dataset.days,filters:{op:"",ov:"",family:""}})},true);
+  section.querySelector("#scheduleRange").addEventListener("submit",event=>{writeScheduleState({mode:"range",from:event.target.elements.from.value,to:event.target.elements.to.value,filters:scheduleFiltersState()})},true);
+  section.querySelector("#scheduleDirectOp").addEventListener("submit",event=>{writeScheduleState({mode:"direct",number:event.target.elements.number.value.trim(),filters:{op:"",ov:"",family:""}})},true);
+  section.querySelector(".schedulefilters").addEventListener("input",()=>{const state=readScheduleState();if(state)writeScheduleState({...state,filters:scheduleFiltersState()})});
+  byId("clearScheduleRange").addEventListener("click",clearScheduleState,true);
+  const restoreScheduleState=()=>{const state=readScheduleState();if(!state||document.querySelector("main.shell")?.dataset.workspace!=="schedule")return;if(state.mode==="quick"){section.querySelector(`.planningquick button[data-days="${state.days}"]`)?.click()}else if(state.mode==="range"&&state.from&&state.to){const range=section.querySelector("#scheduleRange");range.elements.from.value=state.from;range.elements.to.value=state.to;updateScheduleDateDisplays();range.requestSubmit()}else if(state.mode==="direct"&&state.number){const direct=section.querySelector("#scheduleDirectOp");direct.elements.number.value=state.number;direct.requestSubmit()}const apply=()=>{if(!scheduleData)return setTimeout(apply,120);if(state.filters){byId("scheduleOpFilter").value=state.filters.op||"";byId("scheduleOvFilter").value=state.filters.ov||"";if([...byId("scheduleFamilyFilter").options].some(option=>option.value===state.filters.family))byId("scheduleFamilyFilter").value=state.filters.family||"";applyScheduleFilters()}requestAnimationFrame(()=>window.scrollTo({top:Math.max(0,Number(state.scrollY)||0),behavior:"instant"}))};setTimeout(apply,150)};
   const applyScheduleFilters=()=>{if(!scheduleData)return;const op=byId("scheduleOpFilter").value.trim().replace(/^0+/,""),ov=byId("scheduleOvFilter").value.trim().replace(/^0+/,""),family=byId("scheduleFamilyFilter").value;const rows=(scheduleData.rows||[]).filter(x=>(!op||String(x.opNumber||"").replace(/^0+/,"").includes(op))&&(!ov||String(x.ovNumber||"").replace(/^0+/,"").includes(ov))&&(!family||x.family===family));result.innerHTML=renderSchedule({...scheduleData,rows})};
   const setScheduleData=data=>{scheduleData=data;const select=byId("scheduleFamilyFilter"),current=select.value,families=[...new Set((data.rows||[]).map(x=>x.family||"Non classificato"))].sort((a,b)=>a.localeCompare(b,"it"));select.innerHTML=`<option value="">Tutte le famiglie</option>${families.map(x=>`<option value="${escape(x)}">${escape(x)}</option>`).join("")}`;if(families.includes(current))select.value=current;applyScheduleFilters()};
   const renderValidation=data=>{const reasons=Array.isArray(data?.validation)?data.validation.flatMap(x=>x.reasons||[]):(data?.validation?.reasons||[]);return `<div class="planningerror">RISULTATO BLOCCATO · CONTROLLO INCROCIATO NON SUPERATO<ul class="validationreasons">${(reasons.length?reasons:["Le fonti gestionali non coincidono."]).map(x=>`<li>${escape(x)}</li>`).join("")}</ul></div>`};
@@ -758,7 +813,7 @@ window.addEventListener("resize",fitCustomerName1221);
   section.querySelector("#scheduleRange").addEventListener("submit",event=>event.stopPropagation());
   section.querySelector("#scheduleDirectOp").addEventListener("submit",event=>event.stopPropagation());
 section.querySelector("#scheduleDirectOp").addEventListener("submit",async event=>{event.preventDefault();const token=++scheduleRequestToken,input=event.target.elements.number,number=input.value.trim();if(!number)return;input.blur();resetScheduleMode("direct");input.value=number;result.innerHTML=`<div class="planningcard"><p>Verifica programmazione OP in corso…</p></div>`;try{const payload=await api(`/api/planning/op?number=${encodeURIComponent(number)}`),plan=payload.result,order=plan?.order,candidate=(plan?.candidates||[]).find(x=>String(x.id)===String(order?.id))||plan?.candidates?.[0];if(!plan?.verified||!order)throw new Error("OP non trovato o non verificato nell'anno corrente.");const date=candidate?.requestedDate?new Date(candidate.requestedDate):null,dateText=date&&!Number.isNaN(date.valueOf())?date.toLocaleDateString("it-IT",{weekday:"long",day:"2-digit",month:"long",year:"numeric"}):"Data non disponibile",state=String(order.status||"").toUpperCase()==="C"?"CHIUSO":"APERTO";if(token===scheduleRequestToken)result.innerHTML=`<article class="planningcard scheduledirectresult"><header><button type="button" class="opref jumpref" data-jump-op="${escape(order.number)}">OP ${escape(order.number)} ›</button><b class="ovref">OV ${escape(order.ovNumber||"—")}</b><b class="mainlot">LOTTO ${escape(order.lot||"—")}</b><b class="proofok">${state}</b></header><strong>${escape(dateText)}</strong><p>${escape(order.articleCode||"—")} · ${escape(order.articleName||"")}<br>${escape(order.customer||"Cliente non indicato")}</p></article>`}catch(error){if(token===scheduleRequestToken)result.innerHTML=`<div class="planningerror">${escape(error.message||"Programmazione OP non disponibile.")}</div>`}});
-  const addVerifiedPlan=plan=>{if(!plan?.verified||!plan?.order)throw new Error("OP non verificato: non può essere aggiunto alla lista.");if(!selectedPlans.some(item=>String(item.order.number)===String(plan.order.number)))selectedPlans.push(plan)};
+  const addVerifiedPlan=plan=>{if(!plan?.verified||!plan?.order)throw new Error("OP non verificato: non può essere aggiunto alla lista.");if(!selectedPlans.some(item=>String(item.order.number)===String(plan.order.number)))selectedPlans.push(plan);persistSelectedPlans()};
   section.addEventListener("click",async event=>{const button=event.target.closest("[data-add-number]");if(!button)return;event.preventDefault();event.stopImmediatePropagation();const type=button.dataset.addNumber,form=button.closest("form"),number=form.elements.number.value.trim();if(!number){showPickingOverlay("error",`NUMERO ${type.toUpperCase()} MANCANTE`,`Inserisci il numero prima di aggiungerlo alla lista.`,"",`<button data-pick-close>Chiudi</button>`);return}form.elements.number.blur();button.disabled=true;button.textContent="Aggiunta…";try{if(type==="op"){const payload=await api(`/api/planning/op?number=${encodeURIComponent(number)}`);addVerifiedPlan(payload.result)}else{const payload=await api(`/api/planning/ov?number=${encodeURIComponent(number)}`),opNumbers=[...new Set((payload.result?.rows||[]).map(row=>String(row.opNumber||"").trim()).filter(Boolean))];if(!payload.result?.verified||!opNumbers.length)throw new Error("OV non verificato o senza OP collegati.");for(const opNumber of opNumbers){const opPayload=await api(`/api/planning/op?number=${encodeURIComponent(opNumber)}`);addVerifiedPlan(opPayload.result)}}renderMultiDraft();form.elements.number.value="";document.activeElement?.blur()}catch(error){showPickingOverlay("error",`${type.toUpperCase()} NON AGGIUNTO`,error.message||"Aggiunta non riuscita.","",`<button data-pick-close>Chiudi</button>`)}finally{button.disabled=false;button.textContent="＋ Aggiungi OP"}},true);
   section.addEventListener("click",async event=>{const button=event.target.closest("#appendMultiOpButton");if(!button)return;event.preventDefault();event.stopImmediatePropagation();const input=byId("appendMultiOpInput"),number=input?.value.trim();if(!number){input?.focus();return}input.blur();button.disabled=true;button.textContent="Controllo OP…";try{const payload=await api(`/api/planning/op?number=${encodeURIComponent(number)}`);addVerifiedPlan(payload.result);renderMultiDraft();document.activeElement?.blur()}catch(error){showPickingOverlay("error","OP NON AGGIUNTO",error.message||"Aggiunta non riuscita.","",`<button data-pick-close>Chiudi</button>`)}},true);
   section.addEventListener("click",async event=>{const add=event.target.closest("#addPlanningOp");if(add){event.preventDefault();event.stopImmediatePropagation();if(!planningCurrent?.verified||!planningCurrent?.order)return;if(!selectedPlans.some(p=>String(p.order.number)===String(planningCurrent.order.number)))selectedPlans.push(planningCurrent);planningCurrent=null;pickingSession=null;result.innerHTML="";section.classList.remove("detailview");byId("backPickingHome").classList.add("hidden");renderMultiDraft();section.querySelector('[data-planning="op"] input').value="";document.activeElement?.blur();return}const remove=event.target.closest("[data-remove-selected-op]");if(remove){event.preventDefault();event.stopImmediatePropagation();selectedPlans=selectedPlans.filter(p=>String(p.order.number)!==String(remove.dataset.removeSelectedOp));renderMultiDraft();return}if(event.target.closest("#createMultiPicking")){event.preventDefault();event.stopImmediatePropagation();try{const payload=await postPickingGroup({action:"create",members:selectedPlans.map(p=>({opNumber:p.order.number,year:p.year}))});pickingGroup=payload.group;enterPickingDetail();renderMultiDraft();result.innerHTML=renderMultiRequirements();showPickingOverlay("success","LISTA MULTI-OP CREATA ✓",`${pickingGroup.members.length} OP condivisi con gli altri cellulari.`,pickingGroup.members.map(x=>`<div class="picklocationone"><strong>OP ${escape(x.opNumber)}</strong> · OV ${escape(x.ovNumber||"—")} · LOTTO ${escape(x.lot||"—")}</div>`).join(""),`<button data-pick-close>Continua</button>`)}catch(error){showPickingOverlay("error","LISTA NON CREATA",error.message,"",`<button data-pick-close>Chiudi</button>`)}return}},true);
@@ -788,9 +843,9 @@ section.querySelector("#scheduleDirectOp").addEventListener("submit",async event
   section.addEventListener("click",async event=>{const button=event.target.closest("[data-exclude-code]");if(!button)return;event.preventDefault();event.stopImmediatePropagation();if(button.disabled)return;const exclude=button.dataset.excluded!=="true",row=button.closest(".pickrow"),oldText=button.textContent;button.disabled=true;button.classList.add("saving");button.textContent=exclude?"↺ Reincludi":"− Non prelevare";row?.classList.toggle("pickexcluded",exclude);try{await postPicking({action:"exclude",code:button.dataset.excludeCode,lot:button.dataset.excludeLot,excluded:exclude});result.innerHTML=renderOp(planningCurrent);applyExcludedControls();warmPickingPreview({opNumber:planningCurrent.order.number,year:planningCurrent.year})}catch(error){button.disabled=false;button.classList.remove("saving");button.textContent=oldText;row?.classList.toggle("pickexcluded",!exclude);showPickingOverlay("error","MODIFICA NON SALVATA",error.message||"Aggiornamento non riuscito.","",`<button data-pick-close>Chiudi</button>`) }},true);
   section.addEventListener("click",async event=>{const button=event.target.closest("[data-group-exclude-code]");if(!button)return;event.preventDefault();event.stopImmediatePropagation();if(button.disabled)return;const exclude=button.dataset.excluded!=="true",row=button.closest(".pickrow"),oldText=button.textContent;button.disabled=true;button.classList.add("saving");button.textContent=exclude?"↺ Reincludi":"− Non prelevare";row?.classList.toggle("pickexcluded",exclude);try{const payload=await postPickingGroup({action:"exclude",id:pickingGroup.id,opNumber:button.dataset.groupExcludeOp,code:button.dataset.groupExcludeCode,lot:button.dataset.groupExcludeLot,excluded:exclude});pickingGroup=payload.group;result.innerHTML=renderMultiRequirements();warmPickingPreview({groupId:pickingGroup.id})}catch(error){button.disabled=false;button.classList.remove("saving");button.textContent=oldText;row?.classList.toggle("pickexcluded",!exclude);showPickingOverlay("error","MODIFICA NON SALVATA",error.message||"Aggiornamento non riuscito.","",`<button data-pick-close>Chiudi</button>`) }},true);
   loadPickingCollections();setInterval(loadPickingCollections,15000);
-  const restorePlanningState=async()=>{if(document.querySelector("main.shell")?.dataset.workspace!=="planning")return;selectedPlans=[];pickingGroup=null;planningCurrent=null;pickingSession=null;result.innerHTML="";renderMultiDraft();await loadPickingCollections()};
-  window.addEventListener("technics-workspace-change",event=>{const workspace=event.detail?.workspace;if(workspace==="schedule"){section.classList.remove("detailview");byId("backPickingHome").classList.add("hidden");planningCurrent=null;pickingSession=null;pickingGroup=null;selectedPlans=[];renderMultiDraft();result.innerHTML=""}else if(workspace==="planning"){pickingCollectionsSignature="";loadPickingCollections()}});
-  const testParams=new URLSearchParams(location.search),gateOp=testParams.get("gateOp"),gateMulti=testParams.get("gateMulti"),gateGroup=testParams.get("gateGroup");if(gateGroup&&location.hostname==="127.0.0.1"){setTimeout(async()=>{try{const payload=await api(`/api/picking/group?id=${encodeURIComponent(gateGroup)}`);pickingGroup=payload.group;selectedPlans=[];for(const member of pickingGroup.members){const plan=await api(`/api/planning/op?number=${encodeURIComponent(member.opNumber)}&year=${member.year}`);selectedPlans.push(plan.result)}planningCurrent=selectedPlans.at(-1);renderMultiDraft();result.innerHTML=renderMultiRequirements()}catch(error){result.innerHTML=`<div class="planningerror">${escape(error.message)}</div>`}},250)}else if(gateMulti){setTimeout(async()=>{try{selectedPlans=[];for(const number of gateMulti.split(',').map(x=>x.trim()).filter(Boolean)){const payload=await api(`/api/planning/op?number=${encodeURIComponent(number)}`);if(!payload.result?.verified)throw new Error(`OP ${number} non verificato`);selectedPlans.push(payload.result)}planningCurrent=selectedPlans.at(-1);await loadPickingSession();renderMultiDraft();result.innerHTML=renderOp(planningCurrent)}catch(error){result.innerHTML=`<div class="planningerror">${escape(error.message)}</div>`}},250)}else if(gateOp){const form=section.querySelector('[data-planning="op"]');form.elements.number.value=gateOp;setTimeout(()=>form.requestSubmit(),250)}else setTimeout(restorePlanningState,250);if(location.hostname==="127.0.0.1"&&testParams.has("gateCamera")){const cameraGate=setInterval(()=>{const button=byId("scanPickingMaterial")||byId("scanPickingGroup");if(button){clearInterval(cameraGate);button.click();const simulated=testParams.get("gateScan");if(simulated)setTimeout(()=>window.__technicsTestScan?.(simulated,true),700);if(testParams.has("gateAdd")){const addGate=setInterval(()=>{const add=scanOverlay.querySelector("[data-pick-add],[data-pick-group-add]");if(add){clearInterval(addGate);add.click()}},200)}}},200)}if(location.hostname==="127.0.0.1"&&testParams.has("gatePreview")){const previewGate=setInterval(()=>{const button=byId("printPickingList")||byId("printPickingGroup");if(button){clearInterval(previewGate);button.click()}},200)}if(location.hostname==="127.0.0.1"&&testParams.has("gateFocusValue")){const focusGate=setInterval(()=>{const input=section.querySelector("[data-picking-used],[data-group-used]");if(input){clearInterval(focusGate);input.focus();input.value=testParams.get("gateFocusValue")||"1234";input.dataset.focusGate="active"}},200)}
+  const restorePlanningState=async()=>{if(document.querySelector("main.shell")?.dataset.workspace!=="planning")return;selectedPlans=[];pickingGroup=null;planningCurrent=null;pickingSession=null;result.innerHTML="";renderMultiDraft();let draft=[],saved=null;try{draft=JSON.parse(localStorage.getItem("technics-picking-draft-v1")||"[]");saved=JSON.parse(localStorage.getItem("technics-planning-last-lookup-v1")||"null")}catch{}if(Array.isArray(draft)&&draft.length){try{for(const number of draft){const payload=await api(`/api/planning/op?number=${encodeURIComponent(number)}`);if(payload.result?.verified)selectedPlans.push(payload.result)}renderMultiDraft();if(selectedPlans.length)return}catch{selectedPlans=[];persistSelectedPlans()}}if(saved?.type&&saved?.number){const form=section.querySelector(`[data-planning="${saved.type}"]`);if(form){const savedScroll=Math.max(0,Number(saved.scrollY)||0);form.elements.number.value=saved.number;setTimeout(()=>{form.requestSubmit();let attempts=0;const restoreScroll=setInterval(()=>{attempts++;if(result.querySelector(".planningcard,.multipicklist")||attempts>80){clearInterval(restoreScroll);requestAnimationFrame(()=>window.scrollTo({top:savedScroll,behavior:"instant"}))}},100)},80);return}}await loadPickingCollections()};
+  window.addEventListener("technics-workspace-change",event=>{const workspace=event.detail?.workspace;if(workspace==="schedule"){section.classList.remove("detailview");byId("backPickingHome").classList.add("hidden");planningCurrent=null;pickingSession=null;pickingGroup=null;selectedPlans=[];renderMultiDraft();result.innerHTML="";setTimeout(restoreScheduleState,250)}else if(workspace==="planning"){pickingCollectionsSignature="";const params=new URLSearchParams(location.search),gateActive=["gateOp","gateMulti","gateGroup","gateOv"].some(name=>params.has(name));if(gateActive)loadPickingCollections();else setTimeout(restorePlanningState,250)}});
+  const testParams=new URLSearchParams(location.search),gateOp=testParams.get("gateOp"),gateMulti=testParams.get("gateMulti"),gateGroup=testParams.get("gateGroup");if(gateGroup&&location.hostname==="127.0.0.1"){setTimeout(async()=>{try{const payload=await api(`/api/picking/group?id=${encodeURIComponent(gateGroup)}`);pickingGroup=payload.group;selectedPlans=[];for(const member of pickingGroup.members){const plan=await api(`/api/planning/op?number=${encodeURIComponent(member.opNumber)}&year=${member.year}`);selectedPlans.push(plan.result)}planningCurrent=selectedPlans.at(-1);renderMultiDraft();result.innerHTML=renderMultiRequirements()}catch(error){result.innerHTML=`<div class="planningerror">${escape(error.message)}</div>`}},250)}else if(gateMulti){setTimeout(async()=>{try{selectedPlans=[];for(const number of gateMulti.split(',').map(x=>x.trim()).filter(Boolean)){const payload=await api(`/api/planning/op?number=${encodeURIComponent(number)}`);if(!payload.result?.verified)throw new Error(`OP ${number} non verificato`);selectedPlans.push(payload.result)}planningCurrent=selectedPlans.at(-1);await loadPickingSession();renderMultiDraft();result.innerHTML=renderOp(planningCurrent)}catch(error){result.innerHTML=`<div class="planningerror">${escape(error.message)}</div>`}},250)}else if(gateOp){const form=section.querySelector('[data-planning="op"]');form.elements.number.value=gateOp;setTimeout(()=>form.requestSubmit(),250)}else setTimeout(restorePlanningState,250);if(location.hostname==="127.0.0.1"&&testParams.has("gateCamera")){const cameraGate=setInterval(()=>{const button=byId("scanPickingMaterial")||byId("scanPickingGroup");if(button){clearInterval(cameraGate);button.click();const simulated=testParams.get("gateScan");if(simulated)setTimeout(()=>window.__technicsTestScan?.(simulated,true),700);if(testParams.has("gateAdd")){const addGate=setInterval(()=>{const add=scanOverlay.querySelector("[data-pick-add],[data-pick-group-add]");if(add){clearInterval(addGate);add.click()}},200)}}},200)}if(location.hostname==="127.0.0.1"&&testParams.has("gatePreview")){let creating=false;const previewGate=setInterval(()=>{const button=byId("printPickingList")||byId("printPickingGroup");if(button){clearInterval(previewGate);button.click();return}const create=byId("createPickingList");if(create&&!creating){creating=true;create.click()}},200)}if(location.hostname==="127.0.0.1"&&testParams.has("gateFocusValue")){const focusGate=setInterval(()=>{const input=section.querySelector("[data-picking-used],[data-group-used]");if(input){clearInterval(focusGate);input.focus();input.value=testParams.get("gateFocusValue")||"1234";input.dataset.focusGate="active"}},200)}
   const updateVisibility=()=>section.classList.toggle("hidden",byId("zerotoggle").classList.contains("hidden"));
   new MutationObserver(updateVisibility).observe(byId("zerotoggle"),{attributes:true,attributeFilter:["class"]});updateVisibility();
 })();
@@ -827,6 +882,35 @@ section.querySelector("#scheduleDirectOp").addEventListener("submit",async event
   const select=workspace=>{if(!["inventory","packing","planning","schedule"].includes(workspace))workspace="inventory";shell.dataset.workspace=workspace;nav.querySelectorAll("button").forEach(button=>button.classList.toggle("active",button.dataset.workspace===workspace));try{sessionStorage.setItem("technics-workspace-v130",workspace)}catch{}activateWorkspaceModule(workspace);const title=document.getElementById("planningTitle"),result=document.getElementById("planningResult");if(title)title.textContent=workspace==="schedule"?"SCADENZIARIO PRODUZIONE":"PRELIEVO MAGAZZINO · OP / OV";if(result&&(workspace==="planning"||workspace==="schedule"))result.innerHTML="";window.dispatchEvent(new CustomEvent("technics-workspace-change",{detail:{workspace}}));window.scrollTo({top:0,behavior:"instant"})};
   nav.addEventListener("click",event=>{const button=event.target.closest("button[data-workspace]");if(button)select(button.dataset.workspace)});
   let initial=new URLSearchParams(location.search).get("workspace")||"inventory";try{initial=new URLSearchParams(location.search).get("workspace")||sessionStorage.getItem("technics-workspace-v130")||initial}catch{}select(initial);
+})();
+</script>
+<script id="workspace-refresh-restore-v1323">
+(()=>{
+  const refreshKey="technics-refresh-context-v1323",viewKey="technics-mobile-view-v1222";
+  const byId=id=>document.getElementById(id);
+  const readState=()=>{let value=null;try{value=sessionStorage.getItem(refreshKey)||localStorage.getItem(viewKey)}catch{}try{return JSON.parse(value||"null")}catch{return null}};
+  const waitFor=(condition,done,attempt=0)=>{if(condition())return done();if(attempt<120)setTimeout(()=>waitFor(condition,done,attempt+1),100)};
+  const restore=()=>{
+    const shell=document.querySelector("main.shell"),saved=readState();
+    if(!shell||!saved)return;
+    if(shell.dataset.workspace==="inventory"&&saved.mode==="inventory"&&(saved.code||saved.lot)){
+      const code=byId("code"),lot=byId("lot"),form=byId("form"),result=byId("result");
+      if(!code||!lot||!form||!result)return;
+      code.value=saved.code||"";lot.value=saved.lot||"";
+      if(result.classList.contains("hidden"))form.requestSubmit();
+      waitFor(()=>!result.classList.contains("hidden"),()=>requestAnimationFrame(()=>window.scrollTo({top:Math.max(0,Number(saved.scrollY)||0),behavior:"instant"})));
+    }
+    if(shell.dataset.workspace==="packing"&&saved.mode==="production"&&saved.op){
+      const code=byId("code"),form=byId("form"),production=byId("production");
+      if(!code||!form||!production)return;
+      code.value=saved.op;
+      if(production.classList.contains("hidden"))form.requestSubmit();
+      waitFor(()=>!production.classList.contains("hidden"),()=>requestAnimationFrame(()=>window.scrollTo({top:Math.max(0,Number(saved.scrollY)||0),behavior:"instant"})));
+    }
+  };
+  window.addEventListener("technics-workspace-change",()=>setTimeout(restore,500));
+  window.addEventListener("pageshow",()=>setTimeout(restore,850),{once:true});
+  setTimeout(restore,1100);
 })();
 </script>
 <style id="hotfix-search-closed-v131">
@@ -1065,6 +1149,62 @@ if(location.hostname==="127.0.0.1"&&new URLSearchParams(location.search).has("ga
 </style>
 <script id="linked-planning-gate-v1322">
 if(location.hostname==="127.0.0.1"){const value=new URLSearchParams(location.search).get("gateLinkedPlanning");if(value){const [kind,number]=value.split(":"),selector=`[data-jump-${kind}="${CSS.escape(number)}"]`,gate=setInterval(()=>{const button=document.querySelector(selector);if(!button)return;clearInterval(gate);button.click()},150);setTimeout(()=>clearInterval(gate),30000)}}
+</script>
+<style id="usability-audit-v1323">
+#result>#refresh{display:none!important}
+#production>#prefresh{display:none!important}
+#result .stock.directstock .stockidentity{display:none!important}
+#result .stock.directstock .stockhead{justify-content:flex-end;margin-bottom:3px}
+#result .desc.auditduplicate{display:none!important}
+.departmentnav button:focus-visible,.manual button:focus-visible,.planninglookup button:focus-visible{outline:3px solid #f0bd51;outline-offset:2px}
+@media(max-width:430px){#result .item{padding-right:0}#result .stocks{gap:5px}#result .stock{padding:7px 8px}#result .stock dl{grid-template-columns:repeat(3,minmax(0,1fr))}#result .stock dd{overflow-wrap:anywhere}}
+</style>
+<script id="usability-audit-runtime-v1323">
+(()=>{
+  const result=document.getElementById("result"),stocks=document.getElementById("stocks"),description=document.getElementById("description"),name=document.getElementById("name"),itemCode=document.getElementById("itemcode");
+  let shouldReveal=false;
+  document.getElementById("form")?.addEventListener("submit",()=>{shouldReveal=true},true);
+  document.getElementById("scan")?.addEventListener("click",()=>{shouldReveal=true},true);
+  const compactInventory=()=>{
+    const duplicate=description&&name&&description.textContent.trim()&&description.textContent.trim().toLocaleUpperCase("it")===name.textContent.trim().toLocaleUpperCase("it");
+    description?.classList.toggle("auditduplicate",Boolean(duplicate));
+    const directCode=(itemCode?.textContent||"").trim().toLocaleUpperCase("it");
+    for(const row of stocks?.querySelectorAll(".stock")||[]){const rowCode=(row.querySelector(".stockidentity strong")?.textContent||"").trim().toLocaleUpperCase("it");row.classList.toggle("directstock",Boolean(directCode&&rowCode===directCode&&!directCode.startsWith("LOTTO ")&&!directCode.startsWith("LAYOUT ")))}
+  };
+  new MutationObserver(compactInventory).observe(result,{childList:true,subtree:true});
+  new MutationObserver(()=>{if(shouldReveal&&!result.classList.contains("hidden")){shouldReveal=false;requestAnimationFrame(()=>result.scrollIntoView({behavior:"smooth",block:"start"}))}}).observe(result,{attributes:true,attributeFilter:["class"]});
+  compactInventory();
+})();
+</script>
+<script id="performance-gate-v1323">
+if(location.hostname==="127.0.0.1"&&new URLSearchParams(location.search).has("gatePackingPreviewWarm")){
+  const barcode=new URLSearchParams(location.search).get("gatePackingPreviewWarm")||"2000004347505";
+  setTimeout(()=>{const form=document.getElementById("form");form.elements.code.value=barcode;form.requestSubmit()},500);
+  const productionGate=setInterval(async()=>{if(document.getElementById("production").classList.contains("hidden")||!packingPreviewWarm1217.size)return;clearInterval(productionGate);const warmed=Array.from(packingPreviewWarm1217.values()).at(-1);await warmed;const started=performance.now();document.getElementById("previewPacking").click();const pageGate=setInterval(()=>{if(!document.querySelector(".serverprintpage"))return;clearInterval(pageGate);const elapsed=Math.round(performance.now()-started);document.documentElement.dataset.packingPreviewOpenMs=String(elapsed);document.documentElement.dataset.packingPreviewFast=String(elapsed<6000)},100)},100);
+}
+</script>
+<script id="refresh-gate-v1323">
+if(location.hostname==="127.0.0.1"){
+  const refreshMode=new URLSearchParams(location.search).get("gateRefresh"),marker=`technics-refresh-gate-${refreshMode}`;
+  if(refreshMode){
+    document.documentElement.dataset.refreshContext=String(sessionStorage.getItem("technics-refresh-context-v1323")||"");
+    const waitFor=(test,done)=>{let attempts=0;const timer=setInterval(()=>{attempts++;if(test()){clearInterval(timer);done()}else if(attempts>300)clearInterval(timer)},100)};
+    if(sessionStorage.getItem(marker)==="reload"){
+      waitFor(()=>{
+        if(refreshMode==="inventory")return !document.getElementById("result").classList.contains("hidden")&&document.getElementById("name").textContent.trim();
+        if(refreshMode==="planning")return document.querySelector("#planningResult .planningcard")?.textContent.includes("000521");
+        if(refreshMode==="schedule")return document.querySelector("#planningResult .scheduleday")&&document.querySelector('#scheduleRange [name="from"]')?.value==="2026-08-03";
+        if(refreshMode==="packing")return !document.getElementById("production").classList.contains("hidden")&&document.getElementById("opnumber").textContent.includes("001561");
+      },()=>{sessionStorage.removeItem(marker);document.documentElement.dataset.refreshPreserved=refreshMode});
+    }else{
+    const reloadWhen=test=>waitFor(test,()=>{window.scrollTo(0,Math.min(500,document.documentElement.scrollHeight-innerHeight));if(refreshMode==="inventory")sessionStorage.setItem("technics-refresh-context-v1323",JSON.stringify({mode:"inventory",op:"",code:"PRO20825",lot:"",scrollY:window.scrollY}));if(refreshMode==="packing")sessionStorage.setItem("technics-refresh-context-v1323",JSON.stringify({mode:"production",op:"2000004347505",code:"2000004347505",lot:"",scrollY:window.scrollY}));sessionStorage.setItem(marker,"reload");setTimeout(()=>location.reload(),250)});
+      if(refreshMode==="inventory"){document.querySelector('.departmentnav [data-workspace="inventory"]')?.click();const form=document.getElementById("form");form.elements.code.value="PRO20825";form.requestSubmit();reloadWhen(()=>!document.getElementById("result").classList.contains("hidden")&&document.getElementById("name").textContent.trim())}
+      if(refreshMode==="planning"){document.querySelector('.departmentnav [data-workspace="planning"]')?.click();const form=document.querySelector('form[data-planning="op"]');form.elements.number.value="521";form.requestSubmit();reloadWhen(()=>document.querySelector("#planningResult .planningcard")?.textContent.includes("000521"))}
+      if(refreshMode==="schedule"){document.querySelector('.departmentnav [data-workspace="schedule"]')?.click();const form=document.getElementById("scheduleRange");form.elements.from.value="2026-08-03";form.elements.to.value="2026-08-20";form.requestSubmit();reloadWhen(()=>document.querySelector("#planningResult .scheduleday"))}
+      if(refreshMode==="packing"){document.querySelector('.departmentnav [data-workspace="packing"]')?.click();const form=document.getElementById("form");form.elements.code.value="2000004347505";form.requestSubmit();reloadWhen(()=>!document.getElementById("production").classList.contains("hidden"))}
+    }
+  }
+}
 </script>
 </body></html>
 
