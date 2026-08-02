@@ -1,6 +1,6 @@
 {
   "name": "english-coach-public",
-  "version": "9.8.0",
+  "version": "9.9.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -38,6 +38,7 @@
     "audit:engine-interaction": "node tools/engine-interaction-gate.mjs",
     "audit:engine-runtime": "node tools/engine-runtime-gate.mjs",
     "audit:engine-resilience": "node tools/engine-resilience-gate.mjs",
+    "audit:pronunciation-coach": "node tools/pronunciation-coach-audit.mjs",
     "audit:three-engines": "npm run audit:engine-content && npm run audit:engine-interaction && npm run audit:engine-runtime",
     "audit:four-engines": "npm run audit:three-engines && npm run audit:engine-resilience",
     "audit:journey3": "node tools/adaptive-persona-journey-audit.mjs",

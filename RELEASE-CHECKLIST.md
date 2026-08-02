@@ -1,10 +1,10 @@
-# English Coach 9.8 — stato verificato
+# English Coach 9.9 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti e versione web usano la stessa build 9.8, con data e identificativo visibili; la pubblicazione viene aggiornata soltanto dopo il collaudo completo.
+- **VERIFICATO** — sorgenti e versione web usano la stessa build 9.9, con data e identificativo visibili; la pubblicazione viene aggiornata soltanto dopo il collaudo completo.
 - **IMPLEMENTATO** — tre controllori permanenti e indipendenti verificano contenuti didattici, interazioni reali e build/browser; ogni futura revisione esegue automaticamente tutti e tre.
 - **IMPLEMENTATO** — un quarto controllore black-box verifica risorse HTTP, manifest, service worker, hash del bundle, 100 richieste simultanee e 30 refresh indipendenti.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
@@ -69,6 +69,7 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 - **VERIFICATO** — 1.744 file WAV controllati automaticamente: intestazione valida, dimensione utile e nessun audio richiesto mancante.
 - **VERIFICATO** — gli ascolti lunghi locali B1 e C1 durano rispettivamente almeno 60 e 45 secondi; i campioni regionali più lunghi usano soltanto registrazioni umane attribuite.
 - **IMPLEMENTATO** — registrazione visibile, nuovo tentativo, riascolto della propria voce e parole non riconosciute riascoltabili.
+- **IMPLEMENTATO** — laboratorio di pronuncia guidata con 20 esercizi A1–C1, accento tonico visibile, confronto mirato, indicazioni articolatorie e ascolto lento/naturale.
 - **VERIFICATO** — l’interfaccia parla correttamente di “parole riconosciute”, non di analisi fonetica completa.
 - **RINVIATO CON MOTIVAZIONE** — fonemi, accento e ritmo specialistici richiedono un motore fonetico dedicato non disponibile offline.
 - **RINVIATO CON MOTIVAZIONE** — accenti regionali autentici e rumore ambientale richiedono registrazioni umane con licenze verificate; non vengono simulati falsamente.

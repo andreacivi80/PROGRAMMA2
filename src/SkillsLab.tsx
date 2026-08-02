@@ -3,7 +3,7 @@ import { shuffled } from "./random";
 import type { Cefr } from "./curriculum";
 import { getAudioAccent } from "./preferences";
 
-type Lab = "menu" | "errors" | "pairs" | "mediation" | "families" | "dialogue" | "shadowing" | "define" | "daily" | "dictation" | "paraphrase" | "reconstruct";
+type Lab = "menu" | "errors" | "pairs" | "pronunciation" | "mediation" | "families" | "dialogue" | "shadowing" | "define" | "daily" | "dictation" | "paraphrase" | "reconstruct";
 const errorBank = [
   ["I am agree with you.", "I agree with you.", "Agree è un verbo e non richiede am."],
   ["She don't work here.", "She doesn't work here.", "Con she usa doesn't + verbo base."],
@@ -12,6 +12,39 @@ const errorBank = [
   ["Despite of the delay, we finished.", "Despite the delay, we finished.", "Despite è seguito direttamente dal nome."],
 ] as const;
 const pairs = [["ship", "sheep"], ["live", "leave"], ["three", "tree"], ["think", "sink"], ["bat", "bet"], ["worked", "walked"]] as const;
+export const pronunciationDrills: Record<Cefr, { word: string; stress: string; contrast: string; instruction: string; example: string }[]> = {
+  A1: [
+    { word: "three", stress: "THREE", contrast: "tree", instruction: "Metti la punta della lingua leggermente tra i denti e lascia passare l’aria. Non trasformare th in t.", example: "I need three tickets." },
+    { word: "ship", stress: "SHIP", contrast: "sheep", instruction: "Usa una vocale breve e rilassata. Non allungarla come nella parola sheep.", example: "The ship is here." },
+    { word: "water", stress: "WA-ter", contrast: "Walter", instruction: "Accenta la prima sillaba e rendi la seconda molto breve.", example: "Could I have some water?" },
+    { word: "please", stress: "PLEASE", contrast: "place", instruction: "Mantieni la vocale lunga e termina con il suono sonoro z.", example: "A coffee, please." },
+  ],
+  A2: [
+    { word: "worked", stress: "WORKED", contrast: "walked", instruction: "La terminazione -ed qui suona t, senza creare una sillaba aggiuntiva.", example: "I worked yesterday." },
+    { word: "leave", stress: "LEAVE", contrast: "live", instruction: "Allunga la vocale ee; live ha invece una vocale breve.", example: "We leave at six." },
+    { word: "comfortable", stress: "COMF-ta-ble", contrast: "comfort table", instruction: "Riduci le sillabe centrali: nel parlato naturale non si scandisce ogni lettera.", example: "This chair is comfortable." },
+    { word: "hotel", stress: "ho-TEL", contrast: "HO-tel", instruction: "L’accento principale cade sulla seconda sillaba.", example: "The hotel is nearby." },
+  ],
+  B1: [
+    { word: "development", stress: "de-VEL-op-ment", contrast: "DE-velopment", instruction: "Metti l’accento sulla seconda sillaba e riduci la prima.", example: "The development took a year." },
+    { word: "thought", stress: "THOUGHT", contrast: "taught", instruction: "Inizia con la lingua tra i denti; il resto della parola forma una sola sillaba.", example: "I thought about the proposal." },
+    { word: "focus", stress: "FO-cus", contrast: "fo-CUS", instruction: "Accenta la prima sillaba e riduci la seconda verso un suono neutro.", example: "Let us focus on the result." },
+    { word: "world", stress: "WORLD", contrast: "word", instruction: "Fai sentire la l prima della d senza aggiungere una vocale finale.", example: "It changed the world." },
+  ],
+  B2: [
+    { word: "reliable", stress: "re-LI-a-ble", contrast: "RE-liable", instruction: "L’accento cade sulla seconda sillaba; le sillabe non accentate restano leggere.", example: "We need reliable evidence." },
+    { word: "analysis", stress: "a-NA-ly-sis", contrast: "analyse", instruction: "Nel nome analysis l’accento cade sulla seconda sillaba.", example: "The analysis is incomplete." },
+    { word: "particularly", stress: "par-TIC-u-lar-ly", contrast: "particular", instruction: "Mantieni chiara la sillaba accentata e riduci quelle circostanti.", example: "This is particularly important." },
+    { word: "thorough", stress: "THOR-ough", contrast: "though", instruction: "Apri con th e pronuncia due sillabe; non confonderla con though.", example: "We need a thorough review." },
+  ],
+  C1: [
+    { word: "interpretation", stress: "in-ter-pre-TA-tion", contrast: "interpret", instruction: "Nel nome lungo l’accento principale si sposta sulla sillaba ta.", example: "That interpretation is plausible." },
+    { word: "accountability", stress: "a-count-a-BIL-i-ty", contrast: "accountable", instruction: "Sposta l’accento su bil e riduci le sillabe vicine.", example: "Public accountability matters." },
+    { word: "ambiguity", stress: "am-bi-GU-i-ty", contrast: "ambiguous", instruction: "Nel nome accentua gu; nell’aggettivo l’accento cambia.", example: "The wording creates ambiguity." },
+    { word: "statistically", stress: "sta-TIS-ti-cal-ly", contrast: "statistic", instruction: "Conserva il ritmo mettendo in rilievo tis e riducendo le altre sillabe.", example: "The difference is statistically significant." },
+  ],
+};
+export const pronunciationWordRecognised = (spoken: string, target: string) => spoken.toLowerCase().replace(/[^a-z]/g, "").includes(target.toLowerCase().replace(/[^a-z]/g, ""));
 const familyTasks = [
   { prompt: "decide", answer: "decision", options: ["decision", "description", "discussion", "selection"], family: ["decide", "decision", "decisive", "decisively"], note: "Decision è il nome formato dal verbo decide; le altre alternative sono nomi reali, ma appartengono ad altre famiglie." },
   { prompt: "succeed", answer: "successful", options: ["successful", "successive", "sufficient", "supportive"], family: ["succeed", "success", "successful", "successfully"], note: "Successful è l’aggettivo della famiglia di succeed. Successive è simile nella forma, ma significa consecutivo." },
@@ -55,16 +88,17 @@ const reconstruction:Record<Cefr,{prompt:string;lines:string[];answer:number;exp
  C1:{prompt:"Il buyer considera tre anni soltanto a nuove condizioni. Come va interpretato?",lines:["As a counterproposal rather than an acceptance.","As unconditional acceptance of the original offer.","As withdrawal from all further negotiation.","As a binding settlement of liability.","As confirmation that service levels are already binding."],answer:0,explanation:"Nuove condizioni producono una controproposta, non un’accettazione."}
 };
 
-function playWord(word: string) {
+function playWord(word: string, rate = 0.8) {
   const slug = word.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
     audio = new Audio(`${import.meta.env.BASE_URL}audio/words/${slug}.wav`),
     fallback = () => {
       const utterance = new SpeechSynthesisUtterance(word);
       utterance.lang = getAudioAccent();
-      utterance.rate = 0.8;
+      utterance.rate = rate;
       speechSynthesis.cancel();
       speechSynthesis.speak(utterance);
     };
+  audio.playbackRate = rate;
   audio.onerror = fallback;
   void audio.play().catch(fallback);
 }
@@ -91,9 +125,10 @@ export default function SkillsLab({ level, onComplete, reviewItems = [] }: { lev
     recognition.onerror = () => { setSpoken("Voce non riconosciuta. Riprova."); setRecording(false); };
     recognition.onend = () => setRecording(false); setRecording(true); setSpoken(""); recognition.start();
   };
-  if (lab === "menu") return <section className="skillsHub"><div className="themeHeading"><span><small>LABORATORI PRATICI · {level}</small><h2>Usa l’inglese, non soltanto riconoscerlo</h2></span><b>11 attività</b></div><div className="skillsCards">
+  if (lab === "menu") return <section className="skillsHub"><div className="themeHeading"><span><small>LABORATORI PRATICI · {level}</small><h2>Usa l’inglese, non soltanto riconoscerlo</h2></span><b>12 attività</b></div><div className="skillsCards">
     <button onClick={() => reset("errors")}><b>✎</b><strong>Trova l’errore</strong><small>Correggi frasi reali</small></button>
     <button onClick={() => reset("pairs")}><b>◉</b><strong>Minimal pairs</strong><small>Ascolta suoni simili</small></button>
+    <button onClick={() => reset("pronunciation")}><b>声</b><strong>Pronuncia guidata</strong><small>Suono, accento e nuovo tentativo</small></button>
     <button onClick={() => reset("mediation")}><b>IT→EN</b><strong>Mediazione</strong><small>Trasmetti il significato</small></button>
     <button onClick={() => reset("families")}><b>ABC</b><strong>Famiglie di parole</strong><small>Verbo, nome, aggettivo</small></button>
     <button onClick={() => reset("dialogue")}><b>↪</b><strong>Dialogo a bivi</strong><small>Scegli tono e risposta</small></button>
@@ -106,6 +141,7 @@ export default function SkillsLab({ level, onComplete, reviewItems = [] }: { lev
   </div></section>;
   if (lab === "errors") { const row = errorBank[index]; return <section className="skillSession"><button className="showSolution" onClick={() => reset("menu")}>← Laboratori</button><span className="eyebrow">TROVA L’ERRORE · {index + 1}/{errorBank.length}</span><h1 lang="en">{row[0]}</h1><p>Quale versione corregge la frase?</p><div className="answers">{[row[1], row[0]].sort((a,b)=>index%2?a.localeCompare(b):b.localeCompare(a)).map((option, i) => <button key={option} disabled={selected !== null} className={selected===null?"":option===row[1]?"right":i===selected?"wrong":"dim"} onClick={()=>{setSelected(i);if(option===row[1])setCorrect(v=>v+1)}}><b>{String.fromCharCode(65+i)}</b><span>{option}</span></button>)}</div>{selected!==null&&<><div className="feedback good"><strong>Regola</strong><p>{row[2]}</p></div><button className="continue" onClick={()=>index+1<errorBank.length?(setIndex(v=>v+1),setSelected(null)):finish("errors",errorBank.length)}>{index+1<errorBank.length?"Prossima frase":"Termina"}<b>→</b></button></>}</section> }
   if (lab === "pairs") { const pair=shuffledPairs[index]; const listen=()=>{if(!pairReady){const target=(Math.random()>.5?1:0) as 0|1;setPairTarget(target);setPairReady(true);playWord(pair[target]);return}playWord(pair[pairTarget])}; return <section className="skillSession"><button className="showSolution" onClick={()=>reset("menu")}>← Laboratori</button><span className="eyebrow">MINIMAL PAIRS · {index+1}/{shuffledPairs.length}</span><h1>Quale parola senti?</h1><button className="pairListen" onClick={listen}>{pairReady?"↻ Riascolta la stessa parola":"▶ Ascolta una parola"}</button><div className="pairChoices">{pair.map((word,i)=><button key={word} disabled={!pairReady||selected!==null} className={selected===null?"":i===pairTarget?"right":i===selected?"wrong":"dim"} onClick={()=>{setSelected(i);if(i===pairTarget)setCorrect(v=>v+1);playWord(word)}}>{word}</button>)}</div>{selected!==null&&<button className="continue" onClick={()=>index+1<shuffledPairs.length?(setIndex(v=>v+1),setSelected(null),setPairReady(false)):finish("pairs",shuffledPairs.length)}>{index+1<shuffledPairs.length?"Prossima coppia":"Termina"}<b>→</b></button>}</section> }
+  if (lab === "pronunciation") { const drill=pronunciationDrills[level][index], recognised=spoken.toLowerCase().replace(/[^a-z]/g,"").includes(drill.word.toLowerCase().replace(/[^a-z]/g,"")); return <section className="skillSession pronunciationCoach"><button className="showSolution" onClick={()=>reset("menu")}>← Laboratori</button><span className="eyebrow">PRONUNCIA GUIDATA · {index+1}/{pronunciationDrills[level].length}</span><h1 lang="en">{drill.word}</h1><strong className="stressPattern" lang="en">{drill.stress}</strong><p>{drill.instruction}</p><div className="pronunciationModels"><button onClick={()=>playWord(drill.word,0.65)}>▶ Lenta</button><button onClick={()=>playWord(drill.word,0.95)}>▶ Naturale</button><button onClick={()=>playWord(drill.contrast,0.8)}>Confronta: <b lang="en">{drill.contrast}</b></button></div><blockquote lang="en">{drill.example}</blockquote><button className={recording?"recording continue":"continue"} disabled={recording} onClick={recognize}>{recording?"● Registrazione in corso…":"Pronuncia la parola"}</button>{spoken&&<div className={`feedback ${recognised?"good":"bad"}`}><strong>{recognised?"Parola riconosciuta":"Riprova con il movimento indicato"}</strong><p>Il browser ha trascritto: <b lang="en">{spoken}</b></p><small>Questo riscontro verifica la parola riconosciuta, non misura scientificamente i singoli fonemi.</small></div>}{spoken&&<div className="pronunciationNext"><button onClick={()=>{setSpoken("");recognize()}}>Riprova subito</button><button onClick={()=>{const gained=recognised?1:0;if(index+1<pronunciationDrills[level].length){setCorrect(v=>v+gained);setIndex(v=>v+1);setSpoken("")}else finish("pronunciation",pronunciationDrills[level].length,correct+gained)}}>{index+1<pronunciationDrills[level].length?"Prossima parola":"Termina"}</button></div>}</section> }
   if (lab === "mediation") { const task=mediation[level], hits=task.keywords.filter(word=>text.toLowerCase().includes(word)).length; return <section className="skillSession"><button className="showSolution" onClick={()=>reset("menu")}>← Laboratori</button><span className="eyebrow">SFIDA DI MEDIAZIONE · {level}</span><h1>Comunica l’informazione essenziale in inglese</h1><blockquote>{task.it}</blockquote><textarea value={text} onChange={e=>setText(e.target.value)} placeholder="Scrivi con parole tue in inglese…" />{!checked?<button className="continue" disabled={text.trim().split(/\s+/).length<4} onClick={()=>setChecked(true)}>Controlla il messaggio<b>→</b></button>:<><div className={`feedback ${hits>=2?"good":"bad"}`}><strong>{hits}/{task.keywords.length} idee chiave riconosciute</strong><p>Modello possibile: <b lang="en">{task.model}</b></p></div><button className="continue" onClick={()=>finish("mediation",task.keywords.length,hits)}>Concludi<b>→</b></button></>}</section> }
   if (lab === "families") { const task=familyTasks[index], options=[...task.options].sort((a,b)=>(a.length+index)%5-(b.length+index)%5); return <section className="skillSession"><button className="showSolution" onClick={()=>reset("menu")}>← Laboratori</button><span className="eyebrow">FAMIGLIE DI PAROLE · {index+1}/{familyTasks.length}</span><h1>Quale parola appartiene alla stessa famiglia di <em>{task.prompt}</em>?</h1><div className="answers">{options.map((option,i)=><button key={option} disabled={selected!==null} className={selected===null?"":option===task.answer?"right":i===selected?"wrong":"dim"} onClick={()=>{setSelected(i);if(option===task.answer)setCorrect(v=>v+1)}}><b>{String.fromCharCode(65+i)}</b><span>{option}</span></button>)}</div>{selected!==null&&<><div className="feedback good"><strong>Confronto linguistico</strong><p>{task.note}</p></div><p className="familyLine">{task.family.join(" · ")}</p><button className="continue" onClick={()=>index+1<familyTasks.length?(setIndex(v=>v+1),setSelected(null)):finish("families",familyTasks.length)}>{index+1<familyTasks.length?"Prossima famiglia":"Termina"}<b>→</b></button></>}</section> }
   if (lab === "shadowing") { const target=shadowing[level][index], expected=target.toLowerCase().replace(/[^a-z' ]/g," ").split(/\s+/).filter(Boolean), heard=spoken.toLowerCase().replace(/[^a-z' ]/g," ").split(/\s+/).filter(Boolean), hits=expected.filter((word,position)=>heard[position]===word).length, score=Math.round((hits/expected.length)*100); return <section className="skillSession"><button className="showSolution" onClick={()=>reset("menu")}>← Laboratori</button><span className="eyebrow">SHADOWING · {index+1}/{shadowing[level].length}</span><h1>Ascolta e ripeti subito</h1><blockquote lang="en">{target}</blockquote><button className="pairListen" onClick={()=>playWord(target)}>▶ Ascolta il modello</button><button className={recording?"recording continue":"continue"} disabled={recording} onClick={recognize}>{recording?"● Sto ascoltando…":"Ripeti adesso"}</button>{spoken&&<div className="feedback good"><strong>{score}% di parole e ordine riconosciuti</strong><p lang="en">{spoken}</p><small>Il punteggio non valuta i singoli fonemi: usa anche il tuo riascolto nella lezione.</small></div>}{spoken&&<button className="continue" onClick={()=>{const gained=score>=75?1:0; if(index+1<shadowing[level].length){setCorrect(v=>v+gained);setIndex(v=>v+1);setSpoken("")}else finish("shadowing",shadowing[level].length,correct+gained)}}>{index+1<shadowing[level].length?"Prossima frase":"Termina"}<b>→</b></button>}</section> }

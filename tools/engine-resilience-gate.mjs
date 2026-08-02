@@ -1,7 +1,9 @@
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 
 const port = 4197;
+const expectedCache = `english-coach-v${JSON.parse(readFileSync("package.json", "utf8")).version.split(".").slice(0, 2).join("")}`;
 const base = `http://127.0.0.1:${port}/PROGRAMMA2/`;
 const server = spawn(process.execPath, ["node_modules/vite/bin/vite.js", "preview", "--host", "127.0.0.1", "--port", String(port), "--strictPort"], {
   cwd: process.cwd(), stdio: "ignore", windowsHide: true,
@@ -35,7 +37,7 @@ try {
   const manifest = await request(new URL("manifest.webmanifest", base).href);
   const serviceWorker = await request(new URL("sw.js", base).href);
   check(manifest.status === 200 && manifest.text.includes("English Coach"), "Manifest non valido");
-  check(serviceWorker.status === 200 && serviceWorker.text.includes("english-coach-v98"), "Service worker non allineato alla 9.8");
+  check(serviceWorker.status === 200 && serviceWorker.text.includes(expectedCache), `Service worker non allineato a ${expectedCache}`);
 
   const entryUrl = paths.find(path => /assets\/index-[^/]+\.js/.test(path));
   check(Boolean(entryUrl), "Bundle principale non individuato");
