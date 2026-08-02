@@ -1,11 +1,12 @@
-# English Coach 9.7 — stato verificato
+# English Coach 9.8 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti e versione web usano la stessa build 9.7, con data e identificativo visibili; la pubblicazione viene aggiornata soltanto dopo il collaudo completo.
+- **VERIFICATO** — sorgenti e versione web usano la stessa build 9.8, con data e identificativo visibili; la pubblicazione viene aggiornata soltanto dopo il collaudo completo.
 - **IMPLEMENTATO** — tre controllori permanenti e indipendenti verificano contenuti didattici, interazioni reali e build/browser; ogni futura revisione esegue automaticamente tutti e tre.
+- **IMPLEMENTATO** — un quarto controllore black-box verifica risorse HTTP, manifest, service worker, hash del bundle, 100 richieste simultanee e 30 refresh indipendenti.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 - **VERIFICATO** — i nomi dell’archivio locale restano stabili tra le revisioni: una nuova pubblicazione sostituisce l’interfaccia, non i dati dell’utente.
