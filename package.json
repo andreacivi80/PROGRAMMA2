@@ -1,6 +1,6 @@
 {
   "name": "english-coach-public",
-  "version": "9.3.0",
+  "version": "9.4.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -33,6 +33,7 @@
     "audit:journey2": "node tools/adversarial-journey-2-audit.mjs",
     "audit:learning": "node tools/learner-progression-audit.mjs",
     "audit:adaptive-plan": "node tools/adaptive-plan-audit.mjs",
+    "audit:writing": "node tools/writing-analysis-audit.mjs",
     "audit:journey3": "node tools/adaptive-persona-journey-audit.mjs",
     "audit:visual": "node tools/visual-layout-audit.mjs",
     "audit:crawl": "node tools/full-app-crawl-audit.mjs",
@@ -41,7 +42,7 @@
     "audit:prefeature": "node tools/pre-feature-gate-audit.mjs",
     "audit:browsers": "node tools/browser-compatibility-audit.mjs",
     "audit:boundaries": "node tools/project-boundary-audit.mjs",
-    "test": "npm run audit:placement && npm run audit:ui && npm run audit:course && npm run audit:diversity && npm run audit:personas && npm run audit:cefr && npm run audit:didactic && npm run audit:editorial && npm run audit:answers && npm run audit:credibility && npm run audit:nuance && npm run audit:difficulty && npm run audit:independent && npm run audit:metamorphic && npm run audit:duplicates && npm run audit:accessibility && npm run audit:language-labs && npm run audit:theme-questions && npm run audit:responses && npm run audit:games && npm run audit:learning && npm run audit:adaptive-plan && npm run audit:journey && npm run audit:journey2 && npm run audit:journey3 && npm run audit:persistence && npm run audit:migrations && npm run audit:audio && npm run audit:offline && npm run audit:boundaries && npm run audit:visual && npm run audit:crawl && npm run audit:release && npm run build && npm run audit:prefeature && npm run audit:browsers"
+    "test": "npm run audit:placement && npm run audit:ui && npm run audit:course && npm run audit:diversity && npm run audit:personas && npm run audit:cefr && npm run audit:didactic && npm run audit:editorial && npm run audit:answers && npm run audit:credibility && npm run audit:nuance && npm run audit:difficulty && npm run audit:independent && npm run audit:metamorphic && npm run audit:duplicates && npm run audit:accessibility && npm run audit:language-labs && npm run audit:theme-questions && npm run audit:responses && npm run audit:games && npm run audit:learning && npm run audit:adaptive-plan && npm run audit:writing && npm run audit:journey && npm run audit:journey2 && npm run audit:journey3 && npm run audit:persistence && npm run audit:migrations && npm run audit:audio && npm run audit:offline && npm run audit:boundaries && npm run audit:visual && npm run audit:crawl && npm run audit:release && npm run build && npm run audit:prefeature && npm run audit:browsers"
   },
   "dependencies": {
     "@types/react": "19.2.14",

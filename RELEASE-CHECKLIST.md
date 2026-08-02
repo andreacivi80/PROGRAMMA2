@@ -1,10 +1,10 @@
-# English Coach 9.3 — stato verificato
+# English Coach 9.4 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti e versione web usano la stessa build 9.3, con data e identificativo visibili; la pubblicazione viene aggiornata soltanto dopo il collaudo completo.
+- **VERIFICATO** — sorgenti e versione web usano la stessa build 9.4, con data e identificativo visibili; la pubblicazione viene aggiornata soltanto dopo il collaudo completo.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 - **VERIFICATO** — i nomi dell’archivio locale restano stabili tra le revisioni: una nuova pubblicazione sostituisce l’interfaccia, non i dati dell’utente.
@@ -74,8 +74,9 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 ## 13. Writing Lab
 
 - **IMPLEMENTATO** — frase, testo libero, mail, reclamo, sintesi, opinione, confronto, mediazione e risposte professionali nei laboratori e nelle lezioni.
-- **IMPLEMENTATO** — controlli locali dichiarati esplicitamente come controlli di base.
-- **VERIFICATO** — il controllo locale intercetta gli errori più comuni, spiega la regola e permette di applicare, ascoltare, modificare e ricontrollare la proposta senza spostare la pagina.
+- **IMPLEMENTATO** — analisi locale distinta per grammatica, ortografia, chiarezza e lessico, con punteggio trasparente per ciascuna area.
+- **VERIFICATO** — il controllo intercetta gli errori frequenti, classifica e spiega ogni rilievo e permette di applicare, ascoltare, modificare e ricontrollare la proposta senza spostare la pagina.
+- **VERIFICATO** — corpus positivo/negativo, 3.000 mutazioni, controllo di idempotenza e prova reale dell’interfaccia proteggono da falsi positivi e correzioni incoerenti.
 - **RINVIATO CON MOTIVAZIONE** — correzione completa di naturalezza e coerenza richiede un correttore linguistico/AI esterno; le verifiche locali non vengono presentate come equivalenti.
 
 ## 14–15. Tempo ed esami

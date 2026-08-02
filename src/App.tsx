@@ -154,9 +154,9 @@ function OfflinePanel() {
   );
 }
 
-const APP_VERSION = "9.3";
+const APP_VERSION = "9.4";
 const BUILD_DATE = "2 agosto 2026";
-const BUILD_ID = "EC-9.3-0802";
+const BUILD_ID = "EC-9.4-0802";
 type View =
   | "start"
   | "home"
@@ -2052,9 +2052,9 @@ export default function Home() {
     dictationScore = dictationChecked
       ? similarity(unit.listening.transcript, dictation)
       : 0,
-    writingParts = writingSuggestion
-      ? pronunciationDiff(writingSuggestion, writing)
-      : [];
+    writingAnalysis = writingNotes
+      ? analyzeLocalWriting(writing, unit.grammar.formulas[0]?.trim())
+      : null;
   const playWord = (word: string, rate = 0.85) => {
     const fallback = () => {
       if (typeof speechSynthesis === "undefined") return;
@@ -5694,33 +5694,36 @@ export default function Home() {
                   }
                   onClick={analyzeWriting}
                 >
-                  Avvia i controlli di base
+                  Analizza grammatica e stile
                 </button>
                 {writingNotes && (
                   <div className="writingReview">
+                    {writingAnalysis && (
+                      <section className="writingScoreSummary" aria-label="Valutazione del testo">
+                        <strong>{writingAnalysis.scores.Totale}<small>/100</small></strong>
+                        <div>
+                          {(["Grammatica", "Ortografia", "Chiarezza", "Lessico"] as const).map((category) => (
+                            <span key={category}><b>{writingAnalysis.scores[category]}</b><small>{category}</small></span>
+                          ))}
+                        </div>
+                      </section>
+                    )}
                     <div className="checklist">
-                      <b>Perché correggere</b>
-                      {writingNotes.map((x) => (
-                        <span key={x}>✓ {x}</span>
+                      <b>{writingAnalysis?.issues.length ? "Punti da migliorare" : "Controllo completato"}</b>
+                      {writingAnalysis?.issues.map((issue, index) => (
+                        <span key={`${issue.category}-${index}`}><em>{issue.category}</em> {issue.explanation}</span>
                       ))}
+                      {writingAnalysis?.suggestions.map((suggestion) => (
+                        <span key={suggestion}><em>Stile</em> {suggestion}</span>
+                      ))}
+                      {!writingAnalysis?.notes.length && <span>✓ Non ho rilevato errori frequenti.</span>}
                     </div>
                     <article>
                       <small>VERSIONE SUGGERITA</small>
-                      <p lang="en">
-                        {writingParts
-                          .filter((x) => x.expected)
-                          .map((x, i) => (
-                            <span
-                              key={`${x.expected}-${i}`}
-                              className={x.ok ? "wordOk" : "wordBad"}
-                            >
-                              {x.expected}{" "}
-                            </span>
-                          ))}
-                      </p>
+                      <p className="writingExact" lang="en">{writingSuggestion}</p>
                       <em>
-                        Le parole evidenziate sono state corrette. Controlla
-                        sempre che il significato resti quello che volevi
+                        Confronta la versione proposta con il tuo testo e
+                        controlla che il significato resti quello che volevi
                         esprimere.
                       </em>
                       <AudioButton text={writingSuggestion} label="Ascolta la versione" />

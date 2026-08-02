@@ -660,6 +660,42 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
   margin-top: 13px;
 }
 
+.writingScoreSummary {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid #b9ddd1;
+  border-radius: 16px;
+  background: #f3fbf8;
+}
+
+.writingScoreSummary > strong {
+  display: flex;
+  align-items: baseline;
+  color: var(--green);
+  font-size: 25px;
+}
+
+.writingScoreSummary > strong small { font-size: 11px; }
+.writingScoreSummary > div { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.writingScoreSummary span { display: flex; flex-direction: column; align-items: center; min-width: 0; }
+.writingScoreSummary span b { font-size: 13px; }
+.writingScoreSummary span small { font-size: 9px; overflow-wrap: anywhere; }
+.writingReview .checklist span em {
+  display: inline-block;
+  margin-right: 5px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #e1f0eb;
+  color: var(--deep);
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
 .writingReviewActions {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -686,6 +722,7 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
 
 @media (max-width: 390px) {
   .writingReviewActions { grid-template-columns: 1fr; }
+  .writingScoreSummary { grid-template-columns: 1fr; gap: 7px; }
 }
 
 @media (max-width: 430px) {

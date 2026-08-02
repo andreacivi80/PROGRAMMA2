@@ -100,6 +100,16 @@ try {
   fireEvent.click(screen.getByRole("button", { name: "Confronta con l’audio" })); await wait(15);
   check("ui-exact-dictation-is-100-and-green", Boolean(screen.getByText("100% riconosciuto")) && document.querySelectorAll(".dictationResult .wordBad").length === 0);
 
+  await mountAt("writing", 0);
+  fireEvent.change(screen.getByPlaceholderText("Scrivi qui…"), { target: { value: "i am agree becouse people is friendly" } });
+  fireEvent.click(screen.getByRole("button", { name: "Analizza grammatica e stile" })); await wait(20);
+  check("ui-writing-shows-category-scores", Boolean(document.querySelector(".writingScoreSummary")) && screen.getAllByText("Ortografia").length > 0 && screen.getAllByText("Lessico").length > 0);
+  check("ui-writing-shows-corrected-version", document.body.textContent.includes("I agree because people are friendly."));
+  const writingScore = Number(document.querySelector(".writingScoreSummary > strong")?.textContent?.replace("/100", ""));
+  check("ui-writing-error-lowers-score", Number.isFinite(writingScore) && writingScore < 100, String(writingScore));
+  fireEvent.click(screen.getByRole("button", { name: "Applica le correzioni" })); await wait(15);
+  check("ui-writing-applies-without-scroll-reset", screen.getByPlaceholderText("Scrivi qui…").value === "I agree because people are friendly.");
+
   await mountAt("speaking", 0);
   speechTranscript = b1.speaking.target;
   fireEvent.click(screen.getByRole("button", { name: /Parla in inglese/ })); await wait(150);

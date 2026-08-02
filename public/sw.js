@@ -1,4 +1,4 @@
-const CACHE = "english-coach-v93";
+const CACHE = "english-coach-v94";
 const AUDIO_CACHE = "english-coach-audio-v1";
 const BASE = "/PROGRAMMA2/";
 self.addEventListener("install", event => {

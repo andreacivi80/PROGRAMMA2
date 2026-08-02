@@ -30,7 +30,7 @@ try {
   const skills = readFileSync("src/SkillsLab.tsx", "utf8").replace(/\s+/g, " ");
   const checks = {
     writingCases: writingCases.every(test => test.ok),
-    honestCleanResult: clean.corrected === "I work from home." && clean.notes[0]?.includes("controllabili offline"),
+    honestCleanResult: clean.corrected === "I work from home." && clean.notes.length === 0 && clean.scores.Totale === 100,
     applySuggestion: app.includes("Applica le correzioni") && app.includes("setWriting(writingSuggestion)"),
     listenSuggestion: app.includes('<AudioButton text={writingSuggestion} label="Ascolta la versione"'),
     retryWithoutJump: app.includes("focus({ preventScroll: true })"),
