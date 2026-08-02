@@ -204,7 +204,7 @@ export const readingPassages:ReadingPassage[]=[
       q("What limitation can affect sensor maps?",["Convenient locations may omit marginal areas","Satellites cannot observe cities","All sensors report identical values"],0,"La facilità di accesso può creare lacune sistematiche nei dati."),
       q("Why are tree-planting programmes not an immediate complete solution?",["Trees always increase heat","Young trees need time and water","Residents never want shade"],1,"Gli alberi giovani non producono subito ombra e richiedono cura."),
       q("What distinguishes an equity-based project ranking?",["It considers vulnerability as well as numbers","It funds only the largest district","It ignores health conditions"],0,"La valutazione equa include rischio e capacità di risposta."),
-      q("What is the passage’s central argument?",["Only average temperature matters","Emergency response should replace planning","Heat policy should combine data, immediate protection, structural change and resident experience"],2,"La conclusione integra protezione rapida, redesign urbano e partecipazione.")
+      q("What is the passage’s central argument?",["Heat policy should rely on average temperature and exclude resident experience.","Heat policy should prioritise emergency response and postpone structural planning.","Heat policy should combine data, immediate protection, structural change and resident experience.","Heat policy should use structural change alone and avoid immediate protective measures.","Heat policy should replace temperature data with resident experience."],2,"La conclusione integra dati, protezione immediata, cambiamento strutturale ed esperienza dei residenti.")
     ]
   }];
 const readingExtraDistractors: Record<string, string[][]> = {

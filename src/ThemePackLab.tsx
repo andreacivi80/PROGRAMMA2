@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { Choice } from "./curriculum";
+import { optionCountForLevel, type Choice } from "./curriculum";
 import type { ThemePack } from "./themePacks";
 import AuthenticAudio from "./AuthenticAudio";
 import MixedText from "./MixedText";
 import ConceptText from "./ConceptText";
 import { accentComprehension } from "./accentComprehension";
 import { getAudioAccent } from "./preferences";
+import { grammarMistakes, tryOptionsFor } from "./supplementaryQuiz";
 import {
   applyDialogueVoice,
   dialogueRole,
@@ -22,29 +23,24 @@ type Props = {
 type QuizItem = Choice & { id: string };
 const shuffle = <T,>(items: T[]) => [...items].sort(() => Math.random() - 0.5);
 
-function buildQuiz(pack: ThemePack): QuizItem[] {
+export function buildQuiz(pack: ThemePack): QuizItem[] {
   const authoredSource = [
     ...pack.questions,
     ...(accentComprehension[pack.id] ?? []),
-  ].slice(0, 8);
-  const meanings = shuffle(pack.vocabulary)
-    .slice(0, Math.max(0, 10 - authoredSource.length))
+  ].slice(0, 10);
+  const usage = shuffle(pack.vocabulary)
     .map((word, index) => {
-      const wrong = shuffle(
-        pack.vocabulary
-          .filter((item) => item.en !== word.en)
-          .map((item) => item.it),
-      ).slice(0, 3);
-      const options = shuffle([word.it, ...wrong]),
-        answer = options.indexOf(word.it);
+      const built = tryOptionsFor(word.example, grammarMistakes(word.example), optionCountForLevel(pack.level));
+      if (!built || built.options.length !== optionCountForLevel(pack.level)) return null;
       return {
         id: `word-${index}`,
-        prompt: `Che cosa significa “${word.en}” in questo contesto?`,
-        options,
-        answer,
-        explanationIt: `${word.en} significa ${word.it}. Esempio: ${word.example}`,
+        prompt: `Quale frase usa “${word.en}” correttamente?`,
+        ...built,
+        explanationIt: `La forma corretta è «${word.example}». In questo contesto “${word.en}” significa «${word.it}».`,
       };
-    });
+    })
+    .filter((item): item is QuizItem => item !== null)
+    .slice(0, Math.max(0, 10 - authoredSource.length));
   const authored = authoredSource.map((question, index) => {
     const correct = question.options[question.answer],
       options = shuffle(question.options);
@@ -55,7 +51,7 @@ function buildQuiz(pack: ThemePack): QuizItem[] {
       answer: options.indexOf(correct),
     };
   });
-  return shuffle([...meanings, ...authored]);
+  return shuffle([...usage, ...authored]);
 }
 
 type DialogueTurn = {

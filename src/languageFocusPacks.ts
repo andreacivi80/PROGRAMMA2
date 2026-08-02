@@ -63,8 +63,16 @@ export const languageFocusPacks: ThemePack[] = [
     ],
     scenario: { title: "A delayed report", text: "Nina: Have you finished the report? Paul: Not yet. I have been checking the figures since nine. Nina: Did you find the error yesterday? Paul: Yes, but I have discovered another problem today. We need a sensible solution.", translation: "Le forme cambiano secondo risultato presente, durata e momento passato concluso." },
     questions: [
-      q("Which form emphasises duration?", ["Have been checking", "Did find", "Finished at six"], 0, "Il Perfect Continuous mette in primo piano l’attività durata da un momento iniziale."),
-      q("Why is did used with yesterday?", ["Yesterday is a finished past time", "The action is still continuing", "It is a passive"], 0, "Yesterday richiede normalmente il Past Simple.")
+      q("Which form emphasises duration?", ["Have been checking", "Have checked", "Checked yesterday", "Will be checking"], 0, "Il Perfect Continuous mette in primo piano l’attività durata da un momento iniziale."),
+      q("Why is did used with yesterday?", ["Yesterday marks a finished past time", "Yesterday links the action to the present", "Yesterday expresses an unfinished duration", "Yesterday introduces a future arrangement"], 0, "Yesterday richiede normalmente il Past Simple."),
+      q("In “I finished at six”, what does finished express?", ["A completed action at a stated past time", "A present result with no stated past time", "An activity continuing until now", "A repeated present habit"], 0, "At six colloca l’azione in un momento passato concluso, quindi si usa il Past Simple."),
+      q("In “I have finished the report”, what is emphasised?", ["The report is complete now", "The exact past time of completion", "The duration of the work", "A future deadline"], 0, "Il Present Perfect mette in rilievo il risultato attuale: il rapporto è ora completo."),
+      q("In “I have been working since nine”, what is emphasised?", ["An activity continuing from nine", "A completed action at nine", "A single future action", "A permanent general truth"], 0, "Il Present Perfect Continuous mette in primo piano la durata dell’attività iniziata alle nove."),
+      q("Which adjective means reasonable in “a ___ plan”?", ["sensible", "sensitive", "sensory", "sentimental"], 0, "Sensible significa ragionevole; sensitive significa sensibile o delicato."),
+      q("Which adjective means delicate or confidential in “___ information”?", ["sensitive", "sensible", "sensory", "sentimental"], 0, "Sensitive descrive qualcosa di delicato o che richiede cautela."),
+      q("What does argument mean in “They had an argument”?", ["A disagreement or quarrel", "A reason supporting a position", "A formal presentation", "A negotiated agreement"], 0, "In questo contesto argument indica un litigio o un forte disaccordo."),
+      q("She has lived here ___ May.", ["since", "for", "during", "from"], 0, "Since introduce il momento iniziale: since May."),
+      q("She has lived here ___ a year.", ["for", "since", "during", "from"], 0, "For introduce la durata: for a year.")
     ]
   },
   {

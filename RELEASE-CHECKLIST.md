@@ -1,10 +1,10 @@
-# English Coach 8.6 — stato verificato
+# English Coach 8.8 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 8.6, con data e identificativo visibili.
+- **VERIFICATO** — sorgenti e versione web usano la stessa build 8.8, con data e identificativo visibili; la pubblicazione viene aggiornata soltanto dopo il collaudo completo.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 - **VERIFICATO** — i nomi dell’archivio locale restano stabili tra le revisioni: una nuova pubblicazione sostituisce l’interfaccia, non i dati dell’utente.
@@ -146,3 +146,6 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 - **VERIFICATO** — nessun pulsante dimostrativo e nessun commento tecnico di servizio nell’interfaccia.
 - **VERIFICATO** — le schede tematiche non mostrano più la revisione storica in cui sono state introdotte; rimane soltanto la versione corrente generale nell’intestazione.
 - **VERIFICATO** — una sola versione pubblica, stesso link e versione sempre visibile nell’intestazione.
+- **IMPLEMENTATO** — modalità aereo per lezioni, esercizi, lettura, scrittura e progressi; download facoltativo dei 1.744 audio locali, circa 204 MB, con avanzamento visibile.
+- **VERIFICATO** — il riconoscimento vocale viene dichiarato correttamente come funzione dipendente dal browser e potenzialmente dalla connessione.
+- **VERIFICATO** — gli spin-off `gambe-leggere` e `technics-mobile` sono protetti: restano intatti, non vengono importati da English Coach e non entrano nel pacchetto audio offline.

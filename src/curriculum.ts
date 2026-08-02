@@ -36,75 +36,10 @@ export function optionCountForLevel(level: Cefr) {
 }
 
 export function expandChoiceForLevel(choice: Choice, level: Cefr, candidates: string[], offset: number): Choice {
-  const target = optionCountForLevel(level);
-  if (choice.options.length >= target) return rotateChoice(choice, offset);
-  const correct = choice.options[choice.answer], normal = (value: string) => value.toLocaleLowerCase("en").replace(/[’']/g, "'").replace(/[^\p{L}\p{N}' ]+/gu, " ").replace(/\s+/g, " ").trim(),
-    kind = (value: string) => /^\d+(?:[.:/-]\d+)*$/.test(normal(value)) ? "number" : normal(value).split(" ").length === 1 ? "word" : /[.!?]$/.test(value.trim()) || normal(value).split(" ").length >= 5 ? "sentence" : "phrase",
-    correctKind = kind(correct), correctWords = normal(correct).split(" ").filter(Boolean).length,
-    unique = new Set(choice.options.map(normal)), extras: string[] = [];
-  const add = (value: string) => {
-    const clean = value.trim(), key = normal(clean);
-    if (!clean || unique.has(key) || kind(clean) !== correctKind) return;
-    const words = key.split(" ").filter(Boolean).length;
-    if (correctKind !== "number" && Math.abs(words - correctWords) > Math.max(1, Math.floor(correctWords * 0.4))) return;
-    unique.add(key); extras.push(clean);
-  };
-  const number = Number(normal(correct));
-  if (correctKind === "number" && Number.isFinite(number)) [number - 1, number + 1, number + 2, number - 2].forEach(value => add(String(value)));
-  const replacements: Array<[RegExp, string[]]> = [
-    [/\bhas\b/i, ["had", "hasn't", "was"]], [/\bhave\b/i, ["had", "haven't", "would have"]],
-    [/\bis\b/i, ["was", "has been", "isn't"]], [/\bare\b/i, ["were", "have been", "aren't"]],
-    [/\bwas\b/i, ["is", "had been", "wasn't"]], [/\bwere\b/i, ["are", "had been", "weren't"]],
-    [/\bwill\b/i, ["would", "could", "might"]], [/\bwould\b/i, ["will", "could", "should"]],
-    [/\bfor\b/i, ["since", "during", "from"]], [/\bsince\b/i, ["for", "during", "from"]],
-    [/\balready\b/i, ["yet", "still", "ever"]], [/\byet\b/i, ["already", "still", "ever"]],
-  ];
-  replacements.forEach(([pattern, values]) => { if (pattern.test(correct)) values.forEach(value => add(correct.replace(pattern, value))); });
-  const structuralVariants = [
-    correct.replace(/\bthe\s+/i, ""),
-    correct.replace(/\b(a|an)\s+/i, ""),
-    correct.replace(/\bto\b/i, "for"),
-    correct.replace(/\bon\b/i, "at"),
-    correct.replace(/\bwith\b/i, "without"),
-    correct.replace(/^I\s+/, "Me "),
-    correct.replace(/^He\s+/, "Him "),
-    correct.replace(/^She\s+/, "Her "),
-    correct.replace(/^We\s+/, "Us "),
-    correct.replace(/^They\s+/, "Them "),
-    correct.replace(/\b(he|she|it)\s+([A-Za-z]{4,})s\b/i, "$1 $2"),
-  ];
-  structuralVariants.forEach(add);
-  const inverted = correct.match(/^(Rarely|Seldom|Never|Only then|Not only|Under no circumstances)\s+(do|does|did|have|has|had|can|could|will|would)\s+(.+)$/i);
-  if (inverted) {
-    const [, opener, auxiliary, rest] = inverted, parts = rest.split(/\s+/), subject = parts.shift() ?? "we", predicate = parts.join(" ");
-    add(`${opener} ${subject} ${auxiliary} ${predicate}`);
-    add(`${opener} ${subject} ${predicate}`);
-    add(`${opener} ${auxiliary} ${predicate} ${subject}`);
-  }
-  const regularPast = correct.match(/\b([A-Za-z]{4,})ed\b/i)?.[1];
-  if (regularPast && !/\b(?:am|is|are|was|were)\b|(?:'m|'re|'s)\b/i.test(correct)) {
-    add(correct.replace(/\b[A-Za-z]{4,}ed\b/i, `has ${regularPast}ed`));
-    add(correct.replace(/\b[A-Za-z]{4,}ed\b/i, `did ${regularPast}`));
-  }
-  const capitalised = [...new Set(candidates.flatMap(value => value.match(/\b[A-Z][a-z]{2,}\b/g) ?? []))];
-  const proper = correct.match(/\b[A-Z][a-z]{2,}\b/g)?.at(-1);
-  if (proper) capitalised.filter(value => value !== proper).forEach(value => add(correct.replace(new RegExp(`\\b${proper}\\b`), value)));
-  candidates
-    .filter(value => !choice.options.some(option => normal(option) === normal(value)))
-    .sort((a, b) => Math.abs(a.length - correct.length) - Math.abs(b.length - correct.length))
-    .forEach(add);
-  if (expandedWordPool[normal(correct)]) expandedWordPool[normal(correct)].forEach(add);
-  const expanded = [...choice.options, ...extras].slice(0, target), originalCorrect = normal(correct), answer = expanded.findIndex(option => normal(option) === originalCorrect);
-  return rotateChoice({ ...choice, options: expanded, answer }, offset);
+  void level;
+  void candidates;
+  return rotateChoice(choice, offset);
 }
-
-const expandedWordPool: Record<string, string[]> = {
-  yes: ["No", "Partly", "Unclear", "Not stated"], no: ["Yes", "Partly", "Unclear", "Not stated"],
-  a: ["B", "The client", "Both", "Neither"], b: ["A", "The client", "Both", "Neither"],
-  contrasto: ["concessione", "causa", "conseguenza", "sequenza"], focalizzare: ["generalizzare", "attenuare", "contrapporre", "riassumere"],
-  analysis: ["analyse", "analyst", "analytical", "analysed"], whereas: ["nevertheless", "consequently", "therefore", "moreover"],
-  "can't": ["might", "could", "must", "should"], flat: ["apartment", "elevator", "vacation", "gas"],
-};
 
 export type MobileUnit = {
   id: string;
@@ -268,7 +203,7 @@ const coreCurriculum: MobileUnit[] = [
     ["Questa unità integra be, articoli, present simple, continuous e can.", "Prima comprendi il contesto; poi scegli il tempo o la struttura.", "L'obiettivo è comunicare anche con frasi brevi ma corrette."],
     ["Routine → present simple.", "Adesso → present continuous.", "Capacità/richiesta → can + base."],
     [["I work here every day.", "Lavoro qui ogni giorno.", "Routine."], ["I am working now.", "Sto lavorando adesso.", "Azione in corso."], ["Can you repeat that?", "Puoi ripeterlo?", "Richiesta utile."]],
-    [["repeat", "ripetere", "Can you repeat that?"], ["understand", "capire", "I understand the question."], ["need", "avere bisogno", "I need a ticket."], ["near", "vicino", "The café is near."], ["today", "oggi", "I am working today."]],
+    [["repeat", "ripetere", "Can you repeat that?"], ["understand", "capire", "I understand the question."], ["need", "avere bisogno", "I need some help."], ["near", "vicino", "The café is near."], ["today", "oggi", "I am working today."]],
     [["I usually ___ at home.", ["work"], "Routine con I."], ["I am ___ now.", ["working"], "Azione in corso."], ["Can you ___ slowly?", ["speak"], "Can + base."]],
     "Scrivi un mini-dialogo di sei battute: presentazione, richiesta e risposta.",
     "Sara: Hi, I am Sara. I work at the hotel. Guest: Is the restaurant open now? Sara: Yes, it is. You can have dinner until ten.",
@@ -380,7 +315,7 @@ const coreCurriculum: MobileUnit[] = [
     ["Il present perfect collega passato e presente.", "Si usa per esperienze senza tempo preciso, risultati presenti e durate ancora in corso.", "Since introduce il punto iniziale; for introduce una durata."],
     ["have/has + participio.", "Have you ever ...?", "since 2021; for five years."],
     [["I have visited Scotland.", "Ho visitato la Scozia.", "Esperienza."], ["She has lost her keys.", "Ha perso le chiavi.", "Risultato presente."], ["We have lived here for years.", "Viviamo qui da anni.", "Durata ancora vera."]],
-    [["ever", "mai", "Have you ever tried it?"], ["already", "già", "I have already finished."], ["yet", "ancora/già", "Have you finished yet?"], ["since", "da", "Since Monday."], ["for", "da/per", "For three days."]],
+    [["ever", "mai", "Have you ever worked abroad?"], ["already", "già", "I have already finished."], ["yet", "ancora/già", "Have you finished yet?"], ["since", "da", "Since Monday."], ["for", "da/per", "For three days."]],
     [["I have known her ___ ten years.", ["for"], "Segue una durata."], ["She ___ already finished.", ["has"], "She + has."], ["Have you ever ___ to Ireland?", ["been"], "Participio di be."]],
     "Scrivi cinque esperienze e una situazione iniziata nel passato ancora vera.",
     "Ben has worked in Madrid since 2021. He has already learned Spanish, but he has not visited Barcelona yet.",
@@ -413,7 +348,7 @@ const coreCurriculum: MobileUnit[] = [
     ["If + present, present.", "If + present, will + base.", "If + past, would + base."],
     [["If you heat ice, it melts.", "Se scaldi il ghiaccio, si scioglie.", "Fatto generale."], ["If it rains, we will stay home.", "Se piove, resteremo a casa.", "Possibilità reale."], ["If I had time, I would study.", "Se avessi tempo, studierei.", "Ipotesi."]],
     [["condition", "condizione", "There is one condition."], ["possible", "possibile", "It is possible."], ["unless", "a meno che", "I will go unless it rains."], ["choice", "scelta", "It is your choice."], ["imagine", "immaginare", "Imagine you had more time."]],
-    [["If it rains, we ___ stay home.", ["will", "'ll"], "First conditional."], ["If I ___ more confident, I would speak.", ["were", "was"], "Second conditional."], ["If water freezes, it ___ solid.", ["becomes"], "Fatto generale."]],
+    [["If the weather gets worse, we ___ cancel the picnic.", ["will", "'ll"], "First conditional."], ["If I ___ more confident, I would speak.", ["were", "was"], "Second conditional."], ["If water freezes, it ___ solid.", ["becomes"], "Fatto generale."]],
     "Scrivi una regola generale, due possibilità reali e due desideri immaginari.",
     "If the weather is good, we will have the meeting outside. If it rains, we will use the main hall. If I were the organiser, I would prepare both spaces.",
     "Individua piano reale e opinione immaginaria.",
@@ -460,7 +395,7 @@ const coreCurriculum: MobileUnit[] = [
     ["Integra present perfect, condizionali, passivo e lessico di lavoro.", "Prima riassumi il problema, poi proponi una soluzione e una condizione.", "Usa il passivo quando l'autore dell'azione non è importante."],
     ["Problem: The deadline has changed.", "Condition: If we start now, we will finish.", "Passive: The report was sent."],
     [["The client has changed the date.", "Il cliente ha cambiato la data.", "Risultato presente."], ["If we share the work, we will finish.", "Se dividiamo il lavoro, finiremo.", "Piano reale."], ["The files were sent yesterday.", "I file sono stati inviati ieri.", "Passivo."]],
-    [["adjust", "adattare", "Adjust the schedule."], ["solution", "soluzione", "We need a solution."], ["delay", "ritardo", "There is a delay."], ["priority", "priorità", "This is the priority."], ["review", "rivedere", "Review the report."]],
+    [["adjust", "adattare", "Adjust the schedule."], ["solution", "soluzione", "We need a solution."], ["delay", "ritardo", "The delay affects our schedule."], ["priority", "priorità", "This is the priority."], ["review", "rivedere", "Review the report."]],
     [["The date has ___ (change).", ["changed"], "Present perfect."], ["If we start now, we ___ finish.", ["will"], "First conditional."], ["The files were ___ yesterday.", ["sent"], "Passivo."]],
     "Descrivi un problema di lavoro e proponi due soluzioni con if.",
     "The final report has been delayed because some figures were missing. If the team receives them today, the document will be completed tomorrow.",
@@ -556,7 +491,7 @@ const coreCurriculum: MobileUnit[] = [
     ["Integra strutture avanzate in una risposta chiara, argomentata e diplomatica.", "Presenta il contesto, riporta posizioni, valuta alternative e formula una proposta.", "La verifica premia chiarezza, accuratezza, lessico e capacità di cogliere implicazioni."],
     ["Reported: They said that ...", "Hypothesis: If we had ..., we would have ...", "Compromise: on condition that ..."],
     [["The team said that costs had increased.", "Il gruppo disse che i costi erano aumentati.", "Discorso indiretto."], ["If we had planned earlier, we would have saved time.", "Se avessimo pianificato prima, avremmo risparmiato tempo.", "Third conditional."], ["I support it on condition that we review the results.", "Lo sostengo a condizione di verificare i risultati.", "Compromesso."]],
-    [["evidence", "prova", "The evidence supports the claim."], ["outcome", "risultato", "The outcome was positive."], ["trade-off", "compromesso tra vantaggi", "Every option has a trade-off."], ["recommendation", "raccomandazione", "My recommendation is clear."], ["monitor", "monitorare", "We should monitor progress."]],
+    [["evidence", "prova", "The evidence supports the claim."], ["outcome", "risultato", "The final outcome exceeded expectations."], ["trade-off", "compromesso tra vantaggi", "Every option has a trade-off."], ["recommendation", "raccomandazione", "My recommendation is clear."], ["monitor", "monitorare", "We should monitor progress."]],
     [["They said costs had ___ (increase).", ["increased"], "Past perfect."], ["If we had planned, we would have ___ time.", ["saved"], "Participio."], ["I agree on ___ that we review it.", ["condition"], "Espressione formale."]],
     "Registra e scrivi una proposta di 120 parole: problema, due opzioni, rischio, condizione e raccomandazione.",
     "The committee said that the pilot programme had improved attendance, although costs were higher than expected. They recommended extending it for three months on condition that results were reviewed every two weeks.",

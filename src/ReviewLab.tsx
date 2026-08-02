@@ -4,6 +4,7 @@ import { readingPassages } from "./readingLab";
 import { plausibleClozeDistractors, tryOptionsFor } from "./supplementaryQuiz";
 import ConceptText from "./ConceptText";
 import { getAudioAccent } from "./preferences";
+import { advancedNuanceQuestions } from "./advancedNuanceQuestions";
 
 type ReviewArea =
   | "Grammatica"
@@ -73,8 +74,9 @@ export function buildReviewBank(units: MobileUnit[], target: number, final: bool
   units.forEach((unit) => {
     const optionCount = optionCountForLevel(unit.cefr);
     const nearbyClozeAnswers = unit.writing.cloze.flatMap((item) => item.answers);
-    unit.quickCheck.forEach((choice) => bank.push(randomChoice(choice, unit, "Uso nel contesto")));
-    unit.writing.cloze.forEach((item) => {
+    const nuance = advancedNuanceQuestions[unit.id] ?? [];
+    (nuance.length ? nuance : unit.quickCheck).forEach((choice) => bank.push(randomChoice(choice, unit, "Uso nel contesto")));
+    if (!nuance.length) unit.writing.cloze.forEach((item) => {
       const correct = item.answers[0], built = tryOptionsFor(correct, plausibleClozeDistractors(correct, nearbyClozeAnswers), optionCount);
       if (built) bank.push({ prompt: item.prompt, ...built, explanationIt: `${item.hintIt} La risposta corretta è «${correct}».`, unitId: unit.id, unitTitle: unit.title, area: "Uso nel contesto" });
     });

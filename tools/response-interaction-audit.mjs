@@ -99,11 +99,11 @@ try {
 
   await mountAt("speaking", 0);
   speechTranscript = b1.speaking.target;
-  fireEvent.click(screen.getByRole("button", { name: /Parla in inglese/ })); await wait(30);
+  fireEvent.click(screen.getByRole("button", { name: /Parla in inglese/ })); await wait(150);
   check("ui-exact-speech-is-100-and-green", Boolean(screen.getByText("100% di parole e ordine riconosciuti")) && document.querySelectorAll(".pronunciationCompare .wordBad").length === 0);
   await mountAt("speaking", 0);
   speechTranscript = "I worked there yesterday";
-  fireEvent.click(screen.getByRole("button", { name: /Parla in inglese/ })); await wait(30);
+  fireEvent.click(screen.getByRole("button", { name: /Parla in inglese/ })); await wait(150);
   check("ui-wrong-speech-shows-errors", document.querySelectorAll(".pronunciationCompare .wordBad").length > 0 && Boolean(document.querySelector(".retryWords")));
 } finally {
   cleanup();

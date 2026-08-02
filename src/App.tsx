@@ -9,6 +9,7 @@ import {
   type MobileUnit,
 } from "./curriculum";
 import { readingPassages, type ReadingPassage } from "./readingLab";
+import { advancedNuanceQuestions } from "./advancedNuanceQuestions";
 import {
   actionVisualSets,
   jobVisualSets,
@@ -61,9 +62,100 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
-const APP_VERSION = "8.6";
+type OfflineMessage = {
+  type: "OFFLINE_STATUS" | "OFFLINE_PROGRESS" | "OFFLINE_READY" | "OFFLINE_ERROR";
+  cached?: number;
+  completed?: number;
+  total?: number;
+  bytes?: number;
+  message?: string;
+};
+
+function OfflinePanel() {
+  const [status, setStatus] = useState<"checking" | "ready" | "downloading" | "error">("checking");
+  const [cached, setCached] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [bytes, setBytes] = useState(0);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (!("serviceWorker" in navigator)) {
+      setStatus("error");
+      setMessage("La modalità aereo non è disponibile in questo browser.");
+      return;
+    }
+    const onMessage = (event: MessageEvent<OfflineMessage>) => {
+      const data = event.data;
+      if (!data?.type?.startsWith("OFFLINE_")) return;
+      if (typeof data.total === "number") setTotal(data.total);
+      if (typeof data.bytes === "number") setBytes(data.bytes);
+      if (typeof data.cached === "number") setCached(data.cached);
+      if (typeof data.completed === "number") setCached(data.completed);
+      if (data.type === "OFFLINE_PROGRESS") setStatus("downloading");
+      if (data.type === "OFFLINE_READY" || data.type === "OFFLINE_STATUS") setStatus("ready");
+      if (data.type === "OFFLINE_ERROR") {
+        setStatus("error");
+        setMessage(data.message || "Download non completato. Controlla lo spazio disponibile e riprova.");
+      }
+    };
+    navigator.serviceWorker.addEventListener("message", onMessage);
+    navigator.serviceWorker.ready
+      .then((registration) => registration.active?.postMessage({ type: "OFFLINE_STATUS" }))
+      .catch(() => {
+        setStatus("error");
+        setMessage("Apri una volta il programma connesso a Internet, poi riprova.");
+      });
+    return () => navigator.serviceWorker.removeEventListener("message", onMessage);
+  }, []);
+
+  const download = async () => {
+    setStatus("downloading");
+    setMessage("");
+    try {
+      await navigator.storage?.persist?.();
+      const registration = await navigator.serviceWorker.ready;
+      registration.active?.postMessage({ type: "CACHE_OFFLINE_AUDIO" });
+    } catch {
+      setStatus("error");
+      setMessage("Download non avviato. Riprova quando la connessione è stabile.");
+    }
+  };
+  const complete = total > 0 && cached >= total;
+  const percent = total ? Math.min(100, Math.round((cached / total) * 100)) : 0;
+  const size = bytes ? Math.round(bytes / 1024 / 1024) : 204;
+
+  return (
+    <section className="offlinePanel" aria-live="polite">
+      <div>
+        <span className="eyebrow">Modalità aereo</span>
+        <h2>{complete ? "Audio disponibili offline" : "Usa English Coach senza rete"}</h2>
+        <p>
+          Lezioni, esercizi, scrittura e progressi restano disponibili dopo la prima apertura.
+          Per ascoltare tutti gli audio senza connessione, scaricali una volta su questo dispositivo.
+        </p>
+      </div>
+      <div className="offlineAction">
+        <strong>{complete ? "Pronto" : `${cached}/${total || 1744} audio`}</strong>
+        <small>{complete ? "Puoi attivare la modalità aereo." : `Download completo: circa ${size} MB.`}</small>
+        {!complete && (
+          <button type="button" onClick={download} disabled={status === "downloading"}>
+            {status === "downloading" ? `Download ${percent}%` : "Scarica audio offline"}
+          </button>
+        )}
+        {status === "downloading" && <progress max={100} value={percent}>{percent}%</progress>}
+      </div>
+      <p className="offlineNote">
+        Il riconoscimento della voce dipende dal browser e può richiedere Internet; ascolto, lettura,
+        scrittura, quiz e salvataggio dei progressi funzionano offline.
+      </p>
+      {message && <small className="offlineError" role="status">{message}</small>}
+    </section>
+  );
+}
+
+const APP_VERSION = "8.8";
 const BUILD_DATE = "2 agosto 2026";
-const BUILD_ID = "EC-8.6-0802";
+const BUILD_ID = "EC-8.8-0802";
 type View =
   | "start"
   | "home"
@@ -1472,8 +1564,9 @@ export function finalQuizFor(unit: MobileUnit): Choice[] {
       const built = tryOptionsFor(item.answers[0], plausibleClozeDistractors(item.answers[0], nearbyAnswers), optionCount);
       return built ? [{ prompt: item.prompt, ...built, explanationIt: `${item.hintIt} La risposta corretta è «${item.answers[0]}».` }] : [];
     }).slice(0, 2);
+  const nuance = advancedNuanceQuestions[unit.id] ?? [];
   return [
-    ...unit.quickCheck.slice(0, 2),
+    ...(nuance.length ? nuance.slice(0, 3) : unit.quickCheck.slice(0, 2)),
     ...contextualCloze,
     ...unit.listening.questions.slice(0, 2),
   ].slice(0, 6);
@@ -1492,7 +1585,7 @@ export function listeningQuizFor(unit: MobileUnit): Choice[] {
   return [
     ...unit.listening.questions,
     ...recognition,
-    ...unit.quickCheck,
+    ...(advancedNuanceQuestions[unit.id] ?? unit.quickCheck),
   ].slice(0, Math.max(5, Math.min(6, unit.listening.questions.length + 2)));
 }
 function practiceFor(unit: MobileUnit): MobileUnit["writing"]["cloze"] {
@@ -4462,6 +4555,7 @@ export default function Home() {
               <button className={textSize === "large" ? "active" : ""} onClick={() => { setTextSize("large"); localStorage.setItem("english-coach-text-size", "large"); }}>Più grande</button>
             </div>
           </section>
+          <OfflinePanel />
           <section className="masteryPanel">
             <div className="masteryHeading">
               <span>

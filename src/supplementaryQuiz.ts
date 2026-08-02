@@ -1,4 +1,5 @@
 import { detailedChoice, expandChoiceForLevel, optionCountForLevel, type Choice, type MobileUnit } from "./curriculum";
+import { advancedNuanceQuestions } from "./advancedNuanceQuestions";
 
 const shuffle = <T,>(items: T[]) => [...items].sort(() => Math.random() - 0.5);
 const clean = (value: string) => value.trim().replace(/\s+/g, " ");
@@ -114,6 +115,22 @@ export function grammarMistakes(sentence: string) {
     sentence.replace(/\bNo worries\b/i, "Don't worries"),
     sentence.replace(/\bCosts tend to\b/i, "Costs tends to"),
     sentence.replace(/\binvolves a trade-off\b/i, "involves to a trade-off"),
+    sentence.replace(/\bExcessive nominalisation reduces readability\b/i, "Excessive nominalisation reduce readability"),
+    sentence.replace(/\bExcessive nominalisation reduces readability\b/i, "Excessive nominalisation is reduce readability"),
+    sentence.replace(/\bExcessive nominalisation reduces readability\b/i, "Excessive nominalisation reducing readability"),
+    sentence.replace(/\bExcessive nominalisation reduces readability\b/i, "Excessive nominalisation reduces readable"),
+    sentence.replace(/\bDate conventions vary between regions\b/i, "Date conventions varies between regions"),
+    sentence.replace(/\bDate conventions vary between regions\b/i, "Date conventions are vary between regions"),
+    sentence.replace(/\bDate conventions vary between regions\b/i, "Date conventions vary among region"),
+    sentence.replace(/\bDate conventions vary between regions\b/i, "Date convention vary between regions"),
+    sentence.replace(/\bIndependent evidence may corroborate the claim\b/i, "Independent evidence may corroborates the claim"),
+    sentence.replace(/\bIndependent evidence may corroborate the claim\b/i, "Independent evidence may to corroborate the claim"),
+    sentence.replace(/\bIndependent evidence may corroborate the claim\b/i, "Independent evidence may corroborated the claim"),
+    sentence.replace(/\bIndependent evidence may corroborate the claim\b/i, "Independent evidence may corroborating the claim"),
+    sentence.replace(/\bA strong synthesis reconciles competing evidence\b/i, "A strong synthesis reconcile competing evidence"),
+    sentence.replace(/\bA strong synthesis reconciles competing evidence\b/i, "A strong synthesis is reconcile competing evidence"),
+    sentence.replace(/\bA strong synthesis reconciles competing evidence\b/i, "A strong synthesis reconciles between competing evidence"),
+    sentence.replace(/\bA strong synthesis reconciles competing evidence\b/i, "A strong synthesis can reconciles competing evidence"),
   ];
   return [...new Set([...variants, missingArticle, missingAuxiliary, doubledAuxiliary, wrongSubjectCase, missingPreposition, wrongThirdPerson, wrongPast, wrongFirstPersonAgreement, wrongTimeMarker, ...closeLexicalStructure])]
     .filter(value => value && value !== sentence)
@@ -275,9 +292,13 @@ const curatedSupplementaryByUnit: Record<string, Choice[]> = {
   ],
   "c1-discourse-cohesion": [
     { prompt: "Coesione · Quale connettivo introduce un contrasto inatteso senza creare una subordinata?", options: ["nevertheless", "therefore", "moreover", "consequently", "similarly"], answer: 0, explanationIt: "Nevertheless introduce un contrasto rispetto all'idea precedente e funziona come avverbio connettivo." },
+    { prompt: "Relazione logica · The urban service expanded, ___ rural access remained limited.", options: ["whereas", "consequently", "insofar as", "moreover", "therefore"], answer: 0, explanationIt: "Whereas mette in contrasto due fatti simultanei: l'espansione del servizio urbano e il permanere del limite rurale." },
   ],
   "c1-academic-argument": [
     { prompt: "Argomentazione · Quale formulazione distingue con precisione correlazione e causalità?", options: ["The findings indicate an association but do not establish causation.", "The findings prove that one factor necessarily caused the other.", "The findings make correlation identical to causation.", "The findings exclude every possible confounding variable.", "The findings guarantee the same result in every population."], answer: 0, explanationIt: "Indicate an association but do not establish causation formula una conclusione prudente e metodologicamente corretta." },
+  ],
+  "c1-synthesis-capstone": [
+    { prompt: "Sintesi · Quale frase esprime una convergenza sulla flessibilità e una divergenza sull'accesso digitale?", options: ["Both sources value flexibility, but they differ on whether digital access is sufficient.", "Both sources value flexibility, and they agree that digital access is sufficient.", "The sources differ on the value of flexibility, but they agree that digital access is sufficient.", "Only one source values flexibility, but both agree that digital access is sufficient.", "Neither source values flexibility, although they differ on whether digital access is sufficient."], answer: 0, explanationIt: "La prima alternativa esprime entrambe le relazioni richieste: convergenza sul valore della flessibilità e divergenza sulla sufficienza dell'accesso digitale." },
   ],
   "c1-idiom-register": [
     { prompt: "Registro · In un rapporto formale, quale alternativa sostituisce meglio “the plan didn't cut the mustard”?", options: ["the plan proved inadequate", "the plan was gutted", "the plan was a long shot", "the plan felt sketchy", "the plan broke the ice"], answer: 0, explanationIt: "The plan proved inadequate conserva il significato in un registro formale." },
@@ -303,6 +324,7 @@ export function supplementaryBankFor(unit: MobileUnit): Choice[] {
     if (built) bank.push({ prompt, ...built, explanationIt });
   };
   bank.push(...(curatedSupplementaryByUnit[unit.id] ?? []));
+  bank.push(...(advancedNuanceQuestions[unit.id] ?? []));
 
   unit.vocabulary.forEach((word, index) => {
     addGenerated(
@@ -315,12 +337,7 @@ export function supplementaryBankFor(unit: MobileUnit): Choice[] {
 
   unit.grammar.examples.forEach((example, index) => {
     addGenerated(`Ricostruzione ${index + 1} · Quale sequenza esprime correttamente «${example.it}»?`, example.en, grammarMistakes(example.en), `${example.en} ${example.noteIt}`);
-    addGenerated(
-      `Analisi ${index + 1} · Quale osservazione descrive meglio «${example.en}»?`,
-      example.noteIt,
-      [...unit.grammar.examples.map(item => item.noteIt), ...unit.grammar.formulas, ...unit.grammar.explanationIt],
-      `${example.noteIt} L'esempio di riferimento è «${example.en}».`,
-    );
+    if (unit.cefr === "A1" || unit.cefr === "A2") addGenerated(`Funzione ${index + 1} · Quale osservazione spiega «${example.en}»?`, example.noteIt, unit.grammar.examples.map(item => item.noteIt), `${example.noteIt} L'esempio di riferimento è «${example.en}».`);
   });
 
   unit.writing.cloze.forEach((item, index) => {

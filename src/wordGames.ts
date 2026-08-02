@@ -1,21 +1,21 @@
 import type {Cefr} from "./curriculum";
 import {extraHangman} from "./gameExpansion";
 
-export type CrosswordEntry={answer:string;clue:string};
+export type CrosswordEntry={answer:string;clue:string;kind:"noun"|"verb"|"adjective"};
 export type HangmanEntry={phrase:string;hint:string};
 export type WordGameSet={crossword:CrosswordEntry[];hangman:HangmanEntry[]};
 
 export const wordGameSets:Record<Cefr,WordGameSet>={
  A1:{
   crossword:[
-   {answer:"FAMILY",clue:"The people you live with or are related to."},
-   {answer:"WATER",clue:"You drink this when you are thirsty."},
-   {answer:"TABLE",clue:"You put plates and glasses on it."},
-   {answer:"HOUSE",clue:"A building where people live."},
-   {answer:"SCHOOL",clue:"A place where students learn."},
-   {answer:"FRIEND",clue:"A person you like and know well."},
-   {answer:"WINDOW",clue:"You can look outside through it."},
-   {answer:"APPLE",clue:"A round fruit that can be red or green."}
+   {answer:"FAMILY",clue:"The people you live with or are related to.",kind:"noun"},
+   {answer:"WATER",clue:"You drink this when you are thirsty.",kind:"noun"},
+   {answer:"TABLE",clue:"You put plates and glasses on it.",kind:"noun"},
+   {answer:"HOUSE",clue:"A building where people live.",kind:"noun"},
+   {answer:"SCHOOL",clue:"A place where students learn.",kind:"noun"},
+   {answer:"FRIEND",clue:"A person you like and know well.",kind:"noun"},
+   {answer:"WINDOW",clue:"You can look outside through it.",kind:"noun"},
+   {answer:"APPLE",clue:"A round fruit that can be red or green.",kind:"noun"}
   ],
   hangman:[
    {phrase:"GOOD MORNING",hint:"A greeting used before midday."},
@@ -37,14 +37,14 @@ export const wordGameSets:Record<Cefr,WordGameSet>={
  },
  A2:{
   crossword:[
-   {answer:"JOURNEY",clue:"The act of travelling from one place to another."},
-   {answer:"TICKET",clue:"You often need this to travel by train."},
-   {answer:"WEATHER",clue:"Sun, rain, wind and temperature."},
-   {answer:"MARKET",clue:"A place where people buy and sell things."},
-   {answer:"RECIPE",clue:"Instructions for preparing a dish."},
-   {answer:"HOLIDAY",clue:"Time away from work or school."},
-   {answer:"NEIGHBOUR",clue:"A person who lives near you."},
-   {answer:"APPOINTMENT",clue:"An arranged time to meet someone."}
+   {answer:"JOURNEY",clue:"The act of travelling from one place to another.",kind:"noun"},
+   {answer:"TICKET",clue:"You often need this to travel by train.",kind:"noun"},
+   {answer:"WEATHER",clue:"Sun, rain, wind and temperature.",kind:"noun"},
+   {answer:"MARKET",clue:"A place where people buy and sell things.",kind:"noun"},
+   {answer:"RECIPE",clue:"Instructions for preparing a dish.",kind:"noun"},
+   {answer:"HOLIDAY",clue:"Time away from work or school.",kind:"noun"},
+   {answer:"NEIGHBOUR",clue:"A person who lives near you.",kind:"noun"},
+   {answer:"APPOINTMENT",clue:"An arranged time to meet someone.",kind:"noun"}
   ],
   hangman:[
    {phrase:"I HAVE NEVER BEEN THERE",hint:"A Present Perfect sentence about experience."},
@@ -66,14 +66,18 @@ export const wordGameSets:Record<Cefr,WordGameSet>={
  },
  B1:{
   crossword:[
-   {answer:"DEADLINE",clue:"The latest time by which work must be finished."},
-   {answer:"FEEDBACK",clue:"Comments intended to help someone improve."},
-   {answer:"COMMUTE",clue:"Travel regularly between home and work."},
-   {answer:"NEGOTIATE",clue:"Discuss in order to reach an agreement."},
-   {answer:"CONFIDENT",clue:"Feeling sure about your abilities."},
-   {answer:"EXPERIENCE",clue:"Knowledge gained by doing something."},
-   {answer:"RECOMMEND",clue:"Suggest that something is suitable or good."},
-   {answer:"CHALLENGE",clue:"A difficult task that tests your ability."}
+   {answer:"DEADLINE",clue:"The latest time by which work must be finished.",kind:"noun"},
+   {answer:"FEEDBACK",clue:"Comments intended to help someone improve.",kind:"noun"},
+   {answer:"COMMUTE",clue:"Travel regularly between home and work.",kind:"verb"},
+   {answer:"NEGOTIATE",clue:"Discuss in order to reach an agreement.",kind:"verb"},
+   {answer:"CONFIDENT",clue:"Feeling sure about your abilities.",kind:"adjective"},
+   {answer:"EXPERIENCE",clue:"Knowledge gained by doing something.",kind:"noun"},
+   {answer:"RECOMMEND",clue:"Suggest that something is suitable or good.",kind:"verb"},
+   {answer:"CHALLENGE",clue:"A difficult task that tests your ability.",kind:"noun"},
+   {answer:"PRIORITISE",clue:"Decide which task is the most important.",kind:"verb"},
+   {answer:"FLEXIBLE",clue:"Able to change easily when circumstances change.",kind:"adjective"},
+   {answer:"EFFICIENT",clue:"Working well without wasting time or resources.",kind:"adjective"},
+   {answer:"RELEVANT",clue:"Directly connected with the subject being discussed.",kind:"adjective"}
   ],
   hangman:[
    {phrase:"I USED TO WORK FROM HOME",hint:"A past habit that is no longer true."},
@@ -95,14 +99,14 @@ export const wordGameSets:Record<Cefr,WordGameSet>={
  },
  B2:{
   crossword:[
-   {answer:"SUSTAINABLE",clue:"Able to continue without harming future resources."},
-   {answer:"PERSPECTIVE",clue:"A particular way of viewing a situation."},
-   {answer:"MISLEADING",clue:"Giving an incorrect idea or impression."},
-   {answer:"COMPROMISE",clue:"An agreement in which both sides make concessions."},
-   {answer:"INEVITABLE",clue:"Certain to happen and impossible to avoid."},
-   {answer:"AWARENESS",clue:"Knowledge or understanding of a situation."},
-   {answer:"OUTCOME",clue:"The final result of a process or event."},
-   {answer:"RELIABLE",clue:"Consistently good and able to be trusted."}
+   {answer:"SUSTAINABLE",clue:"Able to continue without harming future resources.",kind:"adjective"},
+   {answer:"PERSPECTIVE",clue:"A particular way of viewing a situation.",kind:"noun"},
+   {answer:"MISLEADING",clue:"Giving an incorrect idea or impression.",kind:"adjective"},
+   {answer:"COMPROMISE",clue:"An agreement in which both sides make concessions.",kind:"noun"},
+   {answer:"INEVITABLE",clue:"Certain to happen and impossible to avoid.",kind:"adjective"},
+   {answer:"AWARENESS",clue:"Knowledge or understanding of a situation.",kind:"noun"},
+   {answer:"OUTCOME",clue:"The final result of a process or event.",kind:"noun"},
+   {answer:"RELIABLE",clue:"Consistently good and able to be trusted.",kind:"adjective"}
   ],
   hangman:[
    {phrase:"HAD I KNOWN I WOULD HAVE CALLED",hint:"An inverted third conditional."},
@@ -124,14 +128,18 @@ export const wordGameSets:Record<Cefr,WordGameSet>={
  },
  C1:{
   crossword:[
-   {answer:"AMBIGUOUS",clue:"Open to more than one interpretation."},
-   {answer:"SCRUTINY",clue:"Very careful and detailed examination."},
-   {answer:"UNDERMINE",clue:"Gradually weaken confidence or authority."},
-   {answer:"PLAUSIBLE",clue:"Seeming reasonable or likely to be true."},
-   {answer:"ACCOUNTABILITY",clue:"Responsibility for decisions and their consequences."},
-   {answer:"CONCESSION",clue:"Something accepted or given up to reach agreement."},
-   {answer:"COHERENT",clue:"Logical, consistent and easy to understand."},
-   {answer:"NUANCE",clue:"A subtle difference in meaning or expression."}
+   {answer:"AMBIGUOUS",clue:"Open to more than one interpretation.",kind:"adjective"},
+   {answer:"SCRUTINY",clue:"Very careful and detailed examination.",kind:"noun"},
+   {answer:"UNDERMINE",clue:"Gradually weaken confidence or authority.",kind:"verb"},
+   {answer:"PLAUSIBLE",clue:"Seeming reasonable or likely to be true.",kind:"adjective"},
+   {answer:"ACCOUNTABILITY",clue:"Responsibility for decisions and their consequences.",kind:"noun"},
+   {answer:"CONCESSION",clue:"Something accepted or given up to reach agreement.",kind:"noun"},
+   {answer:"COHERENT",clue:"Logical, consistent and easy to understand.",kind:"adjective"},
+   {answer:"INCONCLUSIVE",clue:"Not providing enough evidence for a definite decision.",kind:"adjective"},
+   {answer:"NUANCE",clue:"A subtle difference in meaning or expression.",kind:"noun"},
+   {answer:"SUBSTANTIATE",clue:"Support a claim with convincing evidence.",kind:"verb"},
+   {answer:"QUALIFY",clue:"Limit or make a statement more precise.",kind:"verb"},
+   {answer:"CORROBORATE",clue:"Confirm a claim by providing independent evidence.",kind:"verb"}
   ],
   hangman:[
    {phrase:"BE THAT AS IT MAY THE EVIDENCE REMAINS INCONCLUSIVE",hint:"A formal concession followed by a cautious judgement."},

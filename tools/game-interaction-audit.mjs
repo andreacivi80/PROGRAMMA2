@@ -14,7 +14,8 @@ const checks = [];
 const check = (name, ok, detail = "") => checks.push({ name, ok: Boolean(ok), detail });
 
 try {
-  const { default: WordGamesHub } = await server.ssrLoadModule("/src/WordGamesHub.tsx");
+  const { default: WordGamesHub, questionPool, balancedGameQuestions } = await server.ssrLoadModule("/src/WordGamesHub.tsx");
+  const { wordGameSets } = await server.ssrLoadModule("/src/wordGames.ts");
   const { semanticPrecision, precisionIsCorrect } = await server.ssrLoadModule("/src/semanticPrecision.ts");
   const { naturalReplies, naturalReplyIsCorrect } = await server.ssrLoadModule("/src/naturalReplies.ts");
   let precisionAnswerChecks = 0;
@@ -32,6 +33,20 @@ try {
   }
   const naturalPrompts = Object.values(naturalReplies).flat().map(question => question.prompt);
   check("all-natural-reply-correct-and-wrong-paths", !naturalAnswerFailures.length && naturalAnswerChecks === 190 && new Set(naturalPrompts).size === naturalPrompts.length, `${naturalAnswerChecks} risposte controllate`);
+  const generatedGameFailures = [];
+  for (const level of ["A1", "A2", "B1", "B2", "C1"]) for (let run = 0; run < 200; run++) {
+    const pool = questionPool(level), session = balancedGameQuestions(level, 12);
+    for (const question of pool) {
+      if (question.options.length !== 4 || new Set(question.options.map(option => option.toLowerCase())).size !== 4 || question.answer < 0 || question.answer > 3) generatedGameFailures.push(`${level}: opzioni non valide in ${question.prompt}`);
+      if (question.category === "Definitions") {
+        const entries = question.options.map(option => wordGameSets[level].crossword.find(entry => entry.answer === option));
+        if (entries.some(entry => !entry) || new Set(entries.map(entry => entry?.kind)).size !== 1) generatedGameFailures.push(`${level}: categorie grammaticali miste in ${question.prompt}`);
+      }
+    }
+    const counts = session.reduce((result, question) => ({ ...result, [question.category]: (result[question.category] ?? 0) + 1 }), {});
+    if (["Words", "Definitions", "Sentences", "Everyday"].some(category => counts[category] !== 3)) generatedGameFailures.push(`${level}: categorie non bilanciate ${JSON.stringify(counts)}`);
+  }
+  check("generated-game-options-are-balanced-and-grammatically-related", !generatedGameFailures.length, generatedGameFailures.slice(0, 5).join(" | "));
   const mount = async label => {
     cleanup(); results.length = 0;
     render(React.createElement(WordGamesHub, { level: "B1", saved: {}, onComplete: (id, score) => results.push({ id, score }) }));

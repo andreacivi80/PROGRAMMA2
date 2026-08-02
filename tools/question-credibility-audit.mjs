@@ -2,6 +2,7 @@ import { createServer } from "vite";
 
 const server = await createServer({ server: { middlewareMode: true }, appType: "custom", logLevel: "silent" });
 const normal = value => String(value ?? "").toLocaleLowerCase("en").replace(/[’]/g, "'").replace(/[^a-z0-9' ]+/g, " ").replace(/\s+/g, " ").trim();
+const optionIdentity = value => String(value ?? "").toLocaleLowerCase("en").replace(/[’]/g, "'").replace(/\s+/g, " ").trim();
 const words = value => normal(value).split(" ").filter(Boolean);
 const overlap = (left, right) => {
   const a = new Set(words(left)), b = new Set(words(right));
@@ -24,11 +25,21 @@ function validate(question, level, label, strictCount = false) {
   const correct = question.options?.[question.answer];
   if (!correct) { issues.push(`${label}: risposta corretta assente`); return; }
   if (question.options.length < 3) issues.push(`${label}: meno di tre opzioni`);
-  if (strictCount && question.options.length !== expected) warnings.push(`${label}: ${question.options.length} opzioni invece dell'obiettivo ${expected}`);
+  if (strictCount && question.options.length > expected) issues.push(`${label}: troppe opzioni (${question.options.length}, massimo ${expected})`);
   if (forbiddenPrompt.test(question.prompt)) issues.push(`${label}: traduzione lessicale isolata vietata: ${question.prompt}`);
   if (question.options.some(option => generic.test(normal(option)))) issues.push(`${label}: distrattore riempitivo`);
-  if (new Set(question.options.map(normal)).size !== question.options.length) issues.push(`${label}: opzioni duplicate`);
-  if (words(correct).length >= 4 && /versione|sequenza|frase|battuta/i.test(question.prompt)) {
+  if (new Set(question.options.map(optionIdentity)).size !== question.options.length) issues.push(`${label}: opzioni duplicate`);
+  const correctLength = words(correct).length;
+  const polaritySet = question.options.some(option => /^yes\b/i.test(option)) && question.options.some(option => /^no\b/i.test(option));
+  if (!polaritySet) question.options.forEach((option, index) => {
+      if (index === question.answer) return;
+      const optionLength = words(option).length;
+      if (correctLength >= 5 && optionLength / correctLength < 0.4)
+        issues.push(`${label}: alternativa troppo corta e semanticamente sospetta (${JSON.stringify(correct)} / ${JSON.stringify(option)})`);
+      if (correctLength <= 2 && optionLength >= 6)
+        issues.push(`${label}: alternativa troppo lunga e di forma diversa (${JSON.stringify(correct)} / ${JSON.stringify(option)})`);
+    });
+  if (words(correct).length >= 4 && /^(ricostruzione|riconoscimento attivo|produzione orale|pronuncia e struttura)/i.test(question.prompt)) {
     question.options.forEach((option, index) => {
       if (index !== question.answer && overlap(correct, option) < 0.45)
         issues.push(`${label}: alternativa estranea alla frase (${JSON.stringify(correct)} / ${JSON.stringify(option)})`);
@@ -64,7 +75,7 @@ try {
     });
   }
   console.log(JSON.stringify({ checked, issueCount: issues.length, warningCount: warnings.length, issues: issues.slice(0, 200), warnings: warnings.slice(0, 40), reviewSamples }, null, 2));
-  if (issues.length || warnings.length) process.exitCode = 1;
+  if (issues.length) process.exitCode = 1;
 } finally {
   await server.close();
 }

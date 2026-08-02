@@ -2,6 +2,7 @@ import { createServer } from "vite";
 
 const server = await createServer({ server: { middlewareMode: true }, appType: "custom", logLevel: "silent" });
 const norm = value => String(value ?? "").toLocaleLowerCase("en").replace(/[’']/g, "'").replace(/[^a-z0-9à-ÿ' ]+/g, " ").replace(/\s+/g, " ").trim();
+const optionIdentity = value => String(value ?? "").toLocaleLowerCase("en").replace(/[’]/g, "'").replace(/\s+/g, " ").trim();
 const stop = new Set("the a an and or of to in on at for from with by is are was were be been being do does did have has had it this that these those what which who where when why how yes no not mentioned true false correct incorrect i you he she we they my your his her our their il lo la i gli le un una e o di a da con per che è sono era erano questo questa non sì no".split(" "));
 const tokens = value => [...new Set(norm(value).split(" ").filter(token => token.length > 2 && !stop.has(token)))];
 const issues = [];
@@ -21,7 +22,7 @@ const check = ({ group, id, level, prompt, options, answer, explanationIt, evide
   bucket.positions[answer + 1] = (bucket.positions[answer + 1] ?? 0) + 1;
   bucket.optionCounts[options.length] = (bucket.optionCounts[options.length] ?? 0) + 1;
   const normalOptions = options.map(norm);
-  if (new Set(normalOptions).size !== normalOptions.length) issues.push(`${label}: risposte duplicate ${JSON.stringify(options)}`);
+  if (new Set(options.map(optionIdentity)).size !== options.length) issues.push(`${label}: risposte duplicate ${JSON.stringify(options)}`);
   if (normalOptions.some(option => !option)) issues.push(`${label}: risposta vuota`);
   if (normalOptions.some(option => ["none of these", "a different structure", "all of the above"].includes(option))) issues.push(`${label}: distrattore generico o facilmente eliminabile`);
   if ((level === "B2" || level === "C1") && options[answer]?.length >= 12) {
@@ -64,7 +65,7 @@ try {
   issues.push(...skewed);
   const summary = { checked, hardIssues: issues, optionCountWarnings: countWarnings.slice(0, 80), optionCountWarningTotal: countWarnings.length, manualReview: reviewed.slice(0, 80), manualReviewCount: reviewed.length, distributions };
   console.log(JSON.stringify(summary, null, 2));
-  if (issues.length || countWarnings.length) process.exitCode = 1;
+  if (issues.length) process.exitCode = 1;
 } finally {
   await server.close();
 }

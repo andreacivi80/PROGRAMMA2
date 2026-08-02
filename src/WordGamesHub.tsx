@@ -4,6 +4,7 @@ import {wordGameSets,type CrosswordEntry,type HangmanEntry} from "./wordGames";
 import {antonymSets} from "./gameExpansion";
 import {precisionIsCorrect,semanticPrecision} from "./semanticPrecision";
 import {naturalReplies,naturalReplyIsCorrect} from "./naturalReplies";
+import {plausibleClozeDistractors} from "./supplementaryQuiz";
 
 type GameKind="crossword"|"hangman"|"wordorder"|"matching"|"memory"|"opposites"|"precision"|"natural"|"wordguess"|"millionaire"|"trivia";
 type Result={score:number;attempts:number};
@@ -13,6 +14,9 @@ type Cell={key:string;row:number;col:number;answer:string;number?:number};
 const alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const normal=(value:string)=>value.toUpperCase().replace(/[^A-Z]/g,"");
 const shuffle=<T,>(items:T[])=>[...items].sort(()=>Math.random()-.5);
+const contentWords=(value:string)=>new Set(value.toLowerCase().replace(/[^a-z' ]/g," ").split(/\s+/).filter(word=>word.length>3));
+const relatedScore=(left:string,right:string)=>{const a=contentWords(left),b=contentWords(right),shared=[...a].filter(word=>b.has(word)).length;return shared*100-Math.abs(left.length-right.length)/10};
+const closest=<T,>(reference:string,items:T[],text:(item:T)=>string,count=3)=>[...items].sort((left,right)=>relatedScore(reference,text(right))-relatedScore(reference,text(left))).slice(0,count);
 
 export function buildCrossword(entries:CrosswordEntry[]){
  const size=17,grid=new Map<string,string>(),placed:Placed[]=[];
@@ -107,8 +111,8 @@ function WordOrder({level,saved,onDone,onBack}:{level:Cefr;saved?:Result;onDone:
 }
 
 function MatchingGame({level,saved,onDone,onBack}:{level:Cefr;saved?:Result;onDone:(score:number)=>void;onBack:()=>void}){
- const entries=wordGameSets[level].crossword,[round,setRound]=useState(0),[selected,setSelected]=useState<string|null>(null),[correct,setCorrect]=useState(0);
- const entry=entries[round],options=useMemo(()=>shuffle([entry.answer,...shuffle(entries.filter(item=>item.answer!==entry.answer).map(item=>item.answer)).slice(0,3)]),[entry,entries]),isCorrect=selected===entry.answer;
+ const entries=useMemo(()=>shuffle(wordGameSets[level].crossword).slice(0,8),[level]),[round,setRound]=useState(0),[selected,setSelected]=useState<string|null>(null),[correct,setCorrect]=useState(0);
+ const entry=entries[round],options=useMemo(()=>{const peers=wordGameSets[level].crossword.filter(item=>item.answer!==entry.answer&&item.kind===entry.kind);return shuffle([entry.answer,...closest(entry.clue,peers,item=>item.clue).map(item=>item.answer)])},[entry,level]),isCorrect=selected===entry.answer;
  const choose=(answer:string)=>{if(selected!==null)return;setSelected(answer);if(answer===entry.answer)setCorrect(value=>value+1)};
  const next=()=>{if(round+1<entries.length){setRound(value=>value+1);setSelected(null)}else onDone(Math.round(correct/entries.length*100))};
  return <section className="gameSession"><header><button type="button" onClick={onBack}>← Giochi</button><b>{level}</b></header><span className="eyebrow">ABBINAMENTO · PAROLA E DEFINIZIONE</span><h1>Trova la parola inglese</h1><p className="gameIntro">Leggi la definizione in inglese e scegli la parola corrispondente.</p>{saved&&<small className="gamePrevious">Migliore risultato: {saved.score}% · {saved.attempts} tentativi</small>}<div className="gameRound">Abbinamento {round+1} / {entries.length}</div><div className="matchingClue" lang="en">{entry.clue}</div><div className="matchingOptions">{options.map(option=><button type="button" key={option} disabled={selected!==null} className={selected===null?"":option===entry.answer?"right":option===selected?"wrong":""} onClick={()=>choose(option)}>{option}</button>)}</div>{selected!==null&&<div className={`gameFeedback ${isCorrect?"perfect":""}`}><strong>{isCorrect?"Abbinamento corretto!":"Tentativo utile: collega l’indizio alla parola corretta."}</strong><span lang="en">{entry.answer}: {entry.clue}</span></div>}<div className="gameActions">{selected===null?<button type="button" className="gameSkip" onClick={()=>setSelected("")}>Salta questo abbinamento</button>:<button type="button" className="gamePrimary" onClick={next}>{round+1<entries.length?"Prossimo abbinamento":"Concludi la sessione"}</button>}</div></section>
@@ -154,17 +158,23 @@ function WordGuessGame({level,saved,onDone,onBack}:{level:Cefr;saved?:Result;onD
 }
 type GameQuestion={category:"Words"|"Definitions"|"Sentences"|"Everyday";prompt:string;options:string[];answer:number;explanation:string};
 const categoryIt:Record<GameQuestion["category"],string>={Words:"Parole",Definitions:"Definizioni",Sentences:"Frasi",Everyday:"Uso quotidiano"};
-function questionPool(level:Cefr):GameQuestion[]{
- const set=wordGameSets[level],answers=set.crossword.map(item=>item.answer),phrases=set.hangman.map(item=>item.phrase),allPhraseWords=[...new Set(phrases.flatMap(phrase=>phrase.split(" ")).filter(word=>word.length>2))];
- const words=set.crossword.map((item,index)=>{const options=shuffle([item.answer,...shuffle(answers.filter(answer=>answer!==item.answer)).slice(0,3)]);return{category:"Definitions" as const,prompt:item.clue,options,answer:options.indexOf(item.answer),explanation:`${item.answer}: ${item.clue}`}});
- const reverse=set.crossword.slice(0,5).map(item=>{const clues=shuffle([item.clue,...shuffle(set.crossword.filter(other=>other.answer!==item.answer).map(other=>other.clue)).slice(0,3)]);return{category:"Words" as const,prompt:`Which definition matches “${item.answer}”?`,options:clues,answer:clues.indexOf(item.clue),explanation:`${item.answer}: ${item.clue}`}});
- const sentences=set.hangman.map(item=>{const words=item.phrase.split(" "),targetIndex=Math.max(1,words.findIndex(word=>word.length===Math.max(...words.map(value=>value.length)))),target=words[targetIndex],prompt=words.map((word,index)=>index===targetIndex?"_____":word).join(" "),options=shuffle([target,...shuffle(allPhraseWords.filter(word=>word!==target)).slice(0,3)]);return{category:"Sentences" as const,prompt:`Complete: ${prompt}`,options,answer:options.indexOf(target),explanation:item.phrase}});
- const everyday=set.hangman.map(item=>{const options=shuffle([item.phrase,...shuffle(phrases.filter(phrase=>phrase!==item.phrase)).slice(0,3)]);return{category:"Everyday" as const,prompt:item.hint,options,answer:options.indexOf(item.phrase),explanation:item.phrase}});
+export function questionPool(level:Cefr):GameQuestion[]{
+ const set=wordGameSets[level];
+ const words=set.crossword.map(item=>{const peers=set.crossword.filter(other=>other.answer!==item.answer&&other.kind===item.kind),alternatives=closest(item.clue,peers,other=>other.clue);const options=shuffle([item.answer,...alternatives.map(other=>other.answer)]);return{category:"Definitions" as const,prompt:item.clue,options,answer:options.indexOf(item.answer),explanation:`${item.answer}: ${item.clue}`}});
+ const reverse=set.crossword.map(item=>{const peers=set.crossword.filter(other=>other.answer!==item.answer&&other.kind===item.kind),alternatives=closest(item.clue,peers,other=>other.clue);const clues=shuffle([item.clue,...alternatives.map(other=>other.clue)]);return{category:"Words" as const,prompt:`Which definition matches “${item.answer}”?`,options:clues,answer:clues.indexOf(item.clue),explanation:`${item.answer}: ${item.clue}`}});
+ const sentences=set.hangman.flatMap(item=>{const phraseWords=item.phrase.split(" ");const candidates=phraseWords.map((target,index)=>({target,index,distractors:plausibleClozeDistractors(target.toLowerCase()).map(value=>value.toUpperCase())})).filter(candidate=>candidate.distractors.length>=3);if(!candidates.length)return[];const selected=candidates.sort((left,right)=>right.target.length-left.target.length)[0],prompt=phraseWords.map((word,index)=>index===selected.index?"_____":word).join(" "),options=shuffle([selected.target,...selected.distractors.slice(0,3)]);return[{category:"Sentences" as const,prompt:`Complete: ${prompt}`,options,answer:options.indexOf(selected.target),explanation:item.phrase}]});
+ const everyday=set.hangman.map(item=>{const peers=set.hangman.filter(other=>other.phrase!==item.phrase),alternatives=closest(item.hint,peers,other=>other.hint);const options=shuffle([item.phrase,...alternatives.map(other=>other.phrase)]);return{category:"Everyday" as const,prompt:item.hint,options,answer:options.indexOf(item.phrase),explanation:item.phrase}});
  return shuffle([...words,...reverse,...sentences,...everyday]);
+}
+export function balancedGameQuestions(level:Cefr,count:number){
+ const pool=questionPool(level),categories=(["Words","Definitions","Sentences","Everyday"] as const),buckets=Object.fromEntries(categories.map(category=>[category,shuffle(pool.filter(question=>question.category===category))])) as Record<GameQuestion["category"],GameQuestion[]>;
+ const result:GameQuestion[]=[];let cursor=0;
+ while(result.length<count&&categories.some(category=>buckets[category].length)){const category=categories[cursor%categories.length],question=buckets[category].shift();if(question)result.push(question);cursor+=1}
+ return result;
 }
 const moneySteps=["€100","€200","€300","€500","€1,000","€2,000","€4,000","€8,000","€16,000","€32,000"];
 function MillionaireGame({level,saved,onDone,onBack}:{level:Cefr;saved?:Result;onDone:(score:number)=>void;onBack:()=>void}){
- const questions=useMemo(()=>questionPool(level).slice(0,10),[level]),[index,setIndex]=useState(0),[selected,setSelected]=useState<number|null>(null),[correct,setCorrect]=useState(0),[hidden,setHidden]=useState<number[]>([]),[fiftyUsed,setFiftyUsed]=useState(false),question=questions[index],isCorrect=selected===question.answer;
+ const questions=useMemo(()=>balancedGameQuestions(level,10),[level]),[index,setIndex]=useState(0),[selected,setSelected]=useState<number|null>(null),[correct,setCorrect]=useState(0),[hidden,setHidden]=useState<number[]>([]),[fiftyUsed,setFiftyUsed]=useState(false),question=questions[index],isCorrect=selected===question.answer;
  const choose=(choice:number)=>{if(selected!==null)return;setSelected(choice);if(choice===question.answer)setCorrect(value=>value+1)};
  const next=()=>{if(index+1<questions.length){setIndex(value=>value+1);setSelected(null);setHidden([])}else onDone(Math.round(correct/questions.length*100))};
  const fifty=()=>{if(fiftyUsed||selected!==null)return;setFiftyUsed(true);setHidden(shuffle(question.options.map((_,choice)=>choice).filter(choice=>choice!==question.answer)).slice(0,2))};
@@ -172,7 +182,7 @@ function MillionaireGame({level,saved,onDone,onBack}:{level:Cefr;saved?:Result;o
 }
 
 function TriviaGame({level,saved,onDone,onBack}:{level:Cefr;saved?:Result;onDone:(score:number)=>void;onBack:()=>void}){
- const questions=useMemo(()=>questionPool(level).slice(0,12),[level]),[index,setIndex]=useState(0),[selected,setSelected]=useState<number|null>(null),[correct,setCorrect]=useState(0),question=questions[index],isCorrect=selected===question.answer;
+ const questions=useMemo(()=>balancedGameQuestions(level,12),[level]),[index,setIndex]=useState(0),[selected,setSelected]=useState<number|null>(null),[correct,setCorrect]=useState(0),question=questions[index],isCorrect=selected===question.answer;
  const choose=(choice:number)=>{if(selected!==null)return;setSelected(choice);if(choice===question.answer)setCorrect(value=>value+1)};const next=()=>{if(index+1<questions.length){setIndex(value=>value+1);setSelected(null)}else onDone(Math.round(correct/questions.length*100))};
  const categoryCounts=questions.slice(0,index).reduce<Record<string,number>>((counts,item)=>({...counts,[item.category]:(counts[item.category]??0)+1}),{});
  return <section className="gameSession triviaSession"><header><button type="button" onClick={onBack}>← Giochi</button><b>{level}</b></header><span className="eyebrow">TRIVIA · QUATTRO CATEGORIE</span><h1>Completa le quattro categorie</h1><p className="gameIntro">Vocabolario, definizioni, ordine delle parole e inglese quotidiano. Puoi saltare qualsiasi domanda.</p>{saved&&<small className="gamePrevious">Migliore risultato: {saved.score}% · {saved.attempts} tentativi</small>}<div className="triviaWheel">{(["Words","Definitions","Sentences","Everyday"] as const).map(category=><span key={category} className={`${category.toLowerCase()} ${categoryCounts[category]?"earned":""}`} title={categoryIt[category]}>{categoryCounts[category]??0}</span>)}</div><div className={`triviaCategory ${question.category.toLowerCase()}`}>{categoryIt[question.category]}</div><div className="matchingClue">{question.prompt}</div><div className="matchingOptions">{question.options.map((option,choice)=><button type="button" key={option} disabled={selected!==null} className={selected===null?"":choice===question.answer?"right":choice===selected?"wrong":""} onClick={()=>choose(choice)}>{option}</button>)}</div>{selected!==null&&<div className={`gameFeedback ${isCorrect?"perfect":""}`}><strong>{isCorrect?"Corretto: categoria completata!":"Tentativo utile: rivedi questo collegamento."}</strong><span>{question.explanation}</span></div>}<div className="gameActions">{selected===null?<button type="button" className="gameSkip" onClick={()=>setSelected(-1)}>Salta questa domanda</button>:<button type="button" className="gamePrimary" onClick={next}>{index+1<questions.length?"Prossima categoria":"Vedi il risultato finale"}</button>}</div></section>

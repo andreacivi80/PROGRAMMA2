@@ -1,11 +1,11 @@
 {
   "name": "english-coach-public",
-  "version": "8.6.0",
+  "version": "8.8.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "node tools/offline-manifest.mjs && tsc -b && vite build",
     "audit:placement": "node tools/placement-audit.mjs",
     "audit:ui": "node tools/ui-audit.mjs",
     "audit:course": "node tools/course-audit.mjs",
@@ -17,8 +17,11 @@
     "audit:editorial": "node tools/editorial-audit.mjs",
     "audit:answers": "node tools/answer-integrity-audit.mjs",
     "audit:credibility": "node tools/question-credibility-audit.mjs",
+    "audit:nuance": "node tools/pedagogical-nuance-audit.mjs",
+    "audit:duplicates": "node tools/global-question-duplicate-audit.mjs",
     "audit:accessibility": "node tools/accessibility-audit.mjs",
     "audit:language-labs": "node tools/language-lab-audit.mjs",
+    "audit:theme-questions": "node tools/theme-question-quality-audit.mjs",
     "audit:responses": "node tools/response-interaction-audit.mjs",
     "audit:games": "node tools/game-interaction-audit.mjs",
     "audit:release": "node tools/release-audit.mjs",
@@ -30,7 +33,9 @@
     "audit:visual": "node tools/visual-layout-audit.mjs",
     "audit:crawl": "node tools/full-app-crawl-audit.mjs",
     "audit:cefr": "node tools/cefr-boundary-audit.mjs",
-    "test": "npm run audit:placement && npm run audit:ui && npm run audit:course && npm run audit:diversity && npm run audit:personas && npm run audit:cefr && npm run audit:didactic && npm run audit:editorial && npm run audit:answers && npm run audit:credibility && npm run audit:accessibility && npm run audit:language-labs && npm run audit:responses && npm run audit:games && npm run audit:learning && npm run audit:journey && npm run audit:journey2 && npm run audit:journey3 && npm run audit:persistence && npm run audit:migrations && npm run audit:audio && npm run audit:release && npm run build"
+    "audit:offline": "node tools/offline-audit.mjs",
+    "audit:boundaries": "node tools/project-boundary-audit.mjs",
+    "test": "npm run audit:placement && npm run audit:ui && npm run audit:course && npm run audit:diversity && npm run audit:personas && npm run audit:cefr && npm run audit:didactic && npm run audit:editorial && npm run audit:answers && npm run audit:credibility && npm run audit:nuance && npm run audit:duplicates && npm run audit:accessibility && npm run audit:language-labs && npm run audit:theme-questions && npm run audit:responses && npm run audit:games && npm run audit:learning && npm run audit:journey && npm run audit:journey2 && npm run audit:journey3 && npm run audit:persistence && npm run audit:migrations && npm run audit:audio && npm run audit:offline && npm run audit:boundaries && npm run audit:release && npm run build"
   },
   "dependencies": {
     "@types/react": "19.2.14",
