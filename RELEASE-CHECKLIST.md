@@ -1,10 +1,10 @@
-# English Coach 8.5 — stato verificato
+# English Coach 8.6 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 8.5, con data e identificativo visibili.
+- **VERIFICATO** — sorgenti, versione web e pubblicazione usano la stessa build 8.6, con data e identificativo visibili.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 - **VERIFICATO** — i nomi dell’archivio locale restano stabili tra le revisioni: una nuova pubblicazione sostituisce l’interfaccia, non i dati dell’utente.
@@ -55,6 +55,7 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 - **IMPLEMENTATO** — shadowing, dialogo a bivi, definizione in inglese, mediazione, famiglie di parole e sfida quotidiana.
 - **IMPLEMENTATO** — cruciverba, impiccato, Milionario e Trivia con livello selezionabile.
 - **IMPLEMENTATO** — “La risposta naturale” propone 50 dialoghi distinti per livello, con registro quotidiano, professionale e formale e alternative progressivamente più vicine.
+- **IMPLEMENTATO** — le 15 storie a episodi mostrano conseguenze specifiche per ogni scelta e permettono una risposta orale facoltativa con trascrizione e riscontro sugli elementi essenziali riconosciuti.
 
 ## 11–12. Listening e pronuncia
 

@@ -74,6 +74,17 @@ try {
   stored = JSON.parse(localStorage.getItem("english-coach-progress-v2") || "{}");
   check("story-result-is-saved-locally", stored.wordGames?.["story-c1-1"]?.score === 100);
   check("story-choice-explains-why", Boolean(document.querySelector(".storyFeedback")));
+  check("story-choice-shows-specific-consequence", screen.getByText(/linguaggio inclusivo contrasta/i).textContent.includes("spazio negoziale"));
+  fireEvent.click(screen.getByRole("button", { name: /Parla in inglese/ })); await wait(5);
+  check("story-speech-has-honest-unavailable-fallback", Boolean(screen.getByText(/riconoscimento vocale non è disponibile/i)));
+  class RecognitionMock {
+    start() { this.onresult?.({ results: [[{ transcript: "Although the language appears inclusive, participants cannot influence the outcome" }]] }); this.onend?.(); }
+    stop() {}
+  }
+  window.SpeechRecognition = RecognitionMock;
+  fireEvent.click(screen.getByRole("button", { name: /Parla in inglese/ })); await wait(5);
+  check("story-speech-shows-recognised-transcript", Boolean(screen.getByText(/participants cannot influence the outcome/i)));
+  check("story-speech-scores-essential-elements", Boolean(screen.getByText(/100% degli elementi essenziali riconosciuti/i)));
   fireEvent.change(document.querySelector(".storyWriting textarea"), { target: { value: "Although the process appears open, the fixed timetable may undermine its credibility." } }); await wait(10);
   check("story-writing-unlocks-model-only-after-real-attempt", Boolean(screen.getByText("Confronta con un esempio")));
 

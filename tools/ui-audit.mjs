@@ -1,7 +1,7 @@
 import ts from "typescript";
 import {readFileSync} from "node:fs";
 
-const files=["src/App.tsx","src/LearningCoach.tsx","src/GrammarLesson.tsx","src/ReviewLab.tsx","src/ThemePackHub.tsx","src/ThemePackLab.tsx","src/AuthenticAudio.tsx","src/WordGamesHub.tsx","src/PlacementTest.tsx","src/SkillsLab.tsx"];
+const files=["src/App.tsx","src/LearningCoach.tsx","src/GrammarLesson.tsx","src/ReviewLab.tsx","src/ThemePackHub.tsx","src/ThemePackLab.tsx","src/AuthenticAudio.tsx","src/WordGamesHub.tsx","src/PlacementTest.tsx","src/SkillsLab.tsx","src/StoryPath.tsx"];
 const missingHandlers=[];
 let buttons=0;
 for(const file of files){
@@ -42,6 +42,7 @@ const themePacks=searchable(readFileSync("src/themePacks.ts","utf8"));
 const professional=searchable(readFileSync("src/professionalThemePacks.ts","utf8"));
 const conceptText=searchable(readFileSync("src/ConceptText.tsx","utf8"));
 const wordGames=readFileSync("src/WordGamesHub.tsx","utf8");
+const storyPath=searchable(readFileSync("src/StoryPath.tsx","utf8"));
 const css=readFileSync("src/styles.css","utf8")+readFileSync("src/themePacks.css","utf8")+readFileSync("src/lessonEnhancements.css","utf8")+readFileSync("src/appEnhancements.css","utf8")+readFileSync("src/wordGames.css","utf8");
 const checks={
  buttons,
@@ -75,6 +76,13 @@ const checks={
   guidedDictation:skills.includes("DETTATO MIRATO") && skills.includes("Maiuscole e punteggiatura non riducono"),
   guidedParaphrase:skills.includes("PARAFRASI GUIDATA") && skills.includes("Il modello non è l’unica risposta possibile"),
   dialogueReconstruction:skills.includes("COERENZA DEL DIALOGO") && skills.includes("non continua correttamente")
+ },
+ storyPath:{
+  choiceConsequences:storyPath.includes("storyConsequence")&&storyPath.includes("CONSEGUENZA DELLA SCELTA"),
+  optionalSpeech:storyPath.includes("SpeechRecognition")&&storyPath.includes("Parla in inglese"),
+  recognisedTranscript:storyPath.includes("TRASCRIZIONE RICONOSCIUTA")&&storyPath.includes("elementi essenziali riconosciuti"),
+  honestFallback:storyPath.includes("Il riconoscimento vocale non è disponibile")&&storyPath.includes("Puoi svolgere la risposta scritta"),
+  keywordEvaluation:storyPath.includes("evaluateStorySpeech")
  },
  visualQuiz:{
   fullCategoryBank:app.includes("visualTiles(sets)"),
@@ -187,6 +195,7 @@ const failed=[
  ...(missingHandlers.length?["buttons-without-handler"]:[]),
  ...Object.entries(checks.lessonAudio).filter(([,value])=>!value).map(([name])=>`lesson-audio:${name}`),
  ...Object.entries(checks.games).filter(([,value])=>!value).map(([name])=>`games:${name}`),
+ ...Object.entries(checks.storyPath).filter(([,value])=>!value).map(([name])=>`story-path:${name}`),
  ...Object.entries(checks.visualQuiz).filter(([,value])=>!value).map(([name])=>`visual-quiz:${name}`),
  ...Object.entries(checks.themeAudio).filter(([,value])=>!value).map(([name])=>`theme-audio:${name}`),
  ...Object.entries(checks.skipping).filter(([,value])=>!value).map(([name])=>`skipping:${name}`),
