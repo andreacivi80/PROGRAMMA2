@@ -1,7 +1,8 @@
 import { detailedChoice, expandChoiceForLevel, optionCountForLevel, type Choice, type MobileUnit } from "./curriculum";
 import { advancedNuanceQuestions } from "./advancedNuanceQuestions";
+import { shuffled } from "./random";
 
-const shuffle = <T,>(items: T[]) => [...items].sort(() => Math.random() - 0.5);
+const shuffle = shuffled;
 const clean = (value: string) => value.trim().replace(/\s+/g, " ");
 
 export function optionsFor(correct: string, alternatives: string[], size: number) {
@@ -18,7 +19,7 @@ export function optionsFor(correct: string, alternatives: string[], size: number
   if (closest.length < size - 1) {
     throw new Error(`Alternative insufficienti per “${correct}”: richieste ${size - 1}, disponibili ${closest.length}.`);
   }
-  const wrong = shuffle(closest);
+  const wrong = shuffled(closest);
   const answer = Math.floor(Math.random() * Math.min(size, wrong.length + 1));
   const options = [...wrong];
   options.splice(answer, 0, clean(correct));

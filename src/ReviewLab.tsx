@@ -5,6 +5,7 @@ import { plausibleClozeDistractors, tryOptionsFor } from "./supplementaryQuiz";
 import ConceptText from "./ConceptText";
 import { getAudioAccent } from "./preferences";
 import { advancedNuanceQuestions } from "./advancedNuanceQuestions";
+import { shuffled } from "./random";
 
 type ReviewArea =
   | "Grammatica"
@@ -23,6 +24,7 @@ type ReviewQuestion = Choice & {
   audioText?: string;
 };
 type AreaScore = { yes: number; all: number };
+const shuffle = shuffled;
 type Props = {
   level: string;
   units: MobileUnit[];
@@ -44,7 +46,6 @@ const allAreas: ReviewArea[] = [
 ];
 const blankAreas = () =>
   Object.fromEntries(allAreas.map((area) => [area, { yes: 0, all: 0 }])) as Record<ReviewArea, AreaScore>;
-const shuffle = <T,>(values: T[]) => [...values].sort(() => Math.random() - 0.5);
 const words = (value: string) =>
   value.toLowerCase().replace(/[^a-z0-9' ]/g, " ").split(/\s+/).filter(Boolean);
 function textSimilarity(expected: string, received: string) {
@@ -58,7 +59,7 @@ function textSimilarity(expected: string, received: string) {
   return Math.round((hits / Math.max(1, Math.max(a.length, b.length))) * 100);
 }
 function randomChoice(choice: Choice, unit: MobileUnit, area: ReviewArea, extra: Partial<ReviewQuestion> = {}): ReviewQuestion {
-  const entries = shuffle(choice.options.map((value, index) => ({ value, ok: index === choice.answer })));
+  const entries = shuffled(choice.options.map((value, index) => ({ value, ok: index === choice.answer })));
   return {
     ...choice,
     options: entries.map((entry) => entry.value),

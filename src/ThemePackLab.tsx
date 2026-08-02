@@ -12,6 +12,7 @@ import {
   dialogueRole,
   dialogueVoicePair,
 } from "./speechVoices";
+import { shuffled } from "./random";
 
 type Props = {
   pack: ThemePack;
@@ -21,14 +22,14 @@ type Props = {
   onMistake?: (item: Choice, givenAnswer: string) => void;
 };
 type QuizItem = Choice & { id: string };
-const shuffle = <T,>(items: T[]) => [...items].sort(() => Math.random() - 0.5);
+const shuffle = shuffled;
 
 export function buildQuiz(pack: ThemePack): QuizItem[] {
   const authoredSource = [
     ...pack.questions,
     ...(accentComprehension[pack.id] ?? []),
   ].slice(0, 10);
-  const usage = shuffle(pack.vocabulary)
+  const usage = shuffled(pack.vocabulary)
     .map((word, index) => {
       const built = tryOptionsFor(word.example, grammarMistakes(word.example), optionCountForLevel(pack.level));
       if (!built || built.options.length !== optionCountForLevel(pack.level)) return null;

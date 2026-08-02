@@ -5,6 +5,7 @@ import {antonymSets} from "./gameExpansion";
 import {precisionIsCorrect,semanticPrecision} from "./semanticPrecision";
 import {naturalReplies,naturalReplyIsCorrect} from "./naturalReplies";
 import {plausibleClozeDistractors} from "./supplementaryQuiz";
+import {shuffled} from "./random";
 
 type GameKind="crossword"|"hangman"|"wordorder"|"matching"|"memory"|"opposites"|"precision"|"natural"|"wordguess"|"millionaire"|"trivia";
 type Result={score:number;attempts:number};
@@ -13,7 +14,7 @@ type Placed=CrosswordEntry&{row:number;col:number;direction:"across"|"down";numb
 type Cell={key:string;row:number;col:number;answer:string;number?:number};
 const alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const normal=(value:string)=>value.toUpperCase().replace(/[^A-Z]/g,"");
-const shuffle=<T,>(items:T[])=>[...items].sort(()=>Math.random()-.5);
+const shuffle=shuffled;
 const contentWords=(value:string)=>new Set(value.toLowerCase().replace(/[^a-z' ]/g," ").split(/\s+/).filter(word=>word.length>3));
 const relatedScore=(left:string,right:string)=>{const a=contentWords(left),b=contentWords(right),shared=[...a].filter(word=>b.has(word)).length;return shared*100-Math.abs(left.length-right.length)/10};
 const closest=<T,>(reference:string,items:T[],text:(item:T)=>string,count=3)=>[...items].sort((left,right)=>relatedScore(reference,text(right))-relatedScore(reference,text(left))).slice(0,count);

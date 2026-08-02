@@ -2,11 +2,25 @@ import { spawn } from "node:child_process";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { createServer as createNetServer } from "node:net";
+import { createServer } from "vite";
 
 const chrome = "C:/Program Files/Google/Chrome/Application/chrome.exe";
-const base = process.env.ENGLISH_COACH_URL ?? "http://127.0.0.1:4174/PROGRAMMA2/";
+const reservePort = () => new Promise((resolve, reject) => {
+  const server = createNetServer();
+  server.unref();
+  server.on("error", reject);
+  server.listen(0, "127.0.0.1", () => {
+    const address = server.address();
+    server.close(() => resolve(address.port));
+  });
+});
+const appPort = await reservePort();
+const vite = await createServer({ server: { host: "127.0.0.1", port: appPort, strictPort: true }, logLevel: "silent" });
+await vite.listen();
+const base = process.env.ENGLISH_COACH_URL ?? `http://127.0.0.1:${appPort}/PROGRAMMA2/`;
 // Keep the browser used by this audit isolated from other local UI tests.
-const port = Number(process.env.ENGLISH_COACH_DEBUG_PORT ?? 19000 + (process.pid % 10000));
+const port = Number(process.env.ENGLISH_COACH_DEBUG_PORT ?? await reservePort());
 const profile = await mkdtemp(join(tmpdir(), "english-coach-visual-"));
 const shots = await mkdtemp(join(tmpdir(), "english-coach-shots-"));
 const child = spawn(chrome, ["--headless=new", "--disable-gpu", "--no-first-run", "--no-default-browser-check", "--remote-allow-origins=*", `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, base], { stdio: "ignore" });
@@ -72,6 +86,13 @@ const waitForSelector = async selector => {
   }
   return false;
 };
+const seedReady = async (view, checkpoint, selection, selector) => {
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    await seed(view, checkpoint, selection);
+    if (await waitForSelector(selector)) return true;
+  }
+  return false;
+};
 const screenshot = async name => {
   const result = await call("Page.captureScreenshot", { format: "png", captureBeyondViewport: false });
   const path = join(shots, `${name}.png`); await writeFile(path, Buffer.from(result.result.data, "base64")); return path;
@@ -102,8 +123,7 @@ try {
     results.push(await inspect(`${viewport.name}-progress`));
     if (viewport.name === "phone") await screenshot("phone-progress");
     const checkpoint = { unitId: "a1-be-introductions", phase: "examples", item: 0, writing: "", points: { yes: 0, all: 0 }, updatedAt: new Date().toISOString() };
-    await seed("lesson", checkpoint);
-    await wait(800);
+    await seedReady("lesson", checkpoint, { level: "A1", lessonId: "a1-be-introductions", theme: "food" }, ".examples");
     results.push(await inspect(`${viewport.name}-lesson-example-before-play`));
     const before = await buttonRects();
     await clickText("Ascolta"); await wait(900);
@@ -113,27 +133,26 @@ try {
     await clickText("Pausa"); await wait(200); results.push(await inspect(`${viewport.name}-lesson-example-paused`));
     await clickText("Stop"); await wait(200);
     if (viewport.name === "phone") await screenshot("phone-lesson-audio");
-    await seed("lesson", { ...checkpoint, phase: "listening" }); await wait(900);
+    await seedReady("lesson", { ...checkpoint, phase: "listening" }, { level: "A1", lessonId: "a1-be-introductions", theme: "food" }, ".dictationLab");
     results.push(await inspect(`${viewport.name}-listening`));
     if (viewport.name === "phone") await screenshot("phone-listening");
     const b1Checkpoint = { unitId: "b1-present-perfect", phase: "grammar", item: 0, writing: "", points: { yes: 0, all: 0 }, updatedAt: new Date().toISOString() };
-    await seed("lesson", b1Checkpoint, { level: "B1", lessonId: "b1-present-perfect", theme: "language" }); await wait(900);
+    await seedReady("lesson", b1Checkpoint, { level: "B1", lessonId: "b1-present-perfect", theme: "language" }, ".deepGuide");
     const b1Highlights = await evaluate(`(()=>{const forbidden=new Set(["ancora in corso","rapporto tra i parlanti","rileggi la frase in tre passaggi","corso","rapporto","parlanti"]);const highlights=[...document.querySelectorAll(".inlineEnglish")].map(node=>({term:(node.textContent||"").trim(),context:(node.closest("p")?.textContent||node.parentElement?.textContent||"").replace(/\\s+/g," ").trim()}));return{highlights,falseHighlights:highlights.filter(item=>forbidden.has(item.term.toLocaleLowerCase("it")))}})()`);
     results.push({ label: `${viewport.name}-b1-highlight-context`, ...b1Highlights });
     results.push(await inspect(`${viewport.name}-b1-grammar-layout`));
     if (viewport.name === "phone") await screenshot("phone-b1-grammar");
     const b2Checkpoint = { unitId: "b2-inference-compromise", phase: "grammar", item: 0, writing: "", points: { yes: 0, all: 0 }, updatedAt: new Date().toISOString() };
-    await seed("lesson", b2Checkpoint, { level: "B2", lessonId: "b2-inference-compromise", theme: "language" }); await wait(900);
+    await seedReady("lesson", b2Checkpoint, { level: "B2", lessonId: "b2-inference-compromise", theme: "language" }, ".deepGuide");
     const repeatedGrammarBlocks = await evaluate(`(()=>{const texts=[...document.querySelectorAll(".deepOverview p,.deepGuide article p")].map(node=>node.textContent.trim().toLocaleLowerCase("it").replace(/\\s+/g," ")).filter(text=>text.length>40);return [...new Set(texts.filter((text,index)=>texts.indexOf(text)!==index))]})()`);
     results.push({ label: `${viewport.name}-b2-grammar-content`, repeatedBlocks: repeatedGrammarBlocks });
     results.push(await inspect(`${viewport.name}-b2-grammar-layout`));
     if (viewport.name === "phone") await screenshot("phone-b2-grammar");
     const mixedCheckpoint = { unitId: "b2-mixed-conditionals", phase: "grammar", item: 0, writing: "", points: { yes: 0, all: 0 }, updatedAt: new Date().toISOString() };
-    await seed("lesson", mixedCheckpoint, { level: "B2", lessonId: "b2-mixed-conditionals", theme: "language" });
-    const mixedReady = await waitForSelector(".deepGuide");
+    const mixedReady = await seedReady("lesson", mixedCheckpoint, { level: "B2", lessonId: "b2-mixed-conditionals", theme: "language" }, ".deepGuide");
     results.push({ label: `${viewport.name}-b2-mixed-ready`, ready: mixedReady });
     results.push(await inspect(`${viewport.name}-b2-mixed-layout`));
-    await evaluate(`localStorage.setItem("english-coach-view-v1","topics");localStorage.setItem("english-coach-selection-v1",${JSON.stringify(JSON.stringify({ level: "B2", lessonId: "b2-uk-us-english", theme: "varieties" }))});location.reload()`); await wait(1500);
+    await evaluate(`localStorage.setItem("english-coach-view-v1","topics");localStorage.setItem("english-coach-selection-v1",${JSON.stringify(JSON.stringify({ level: "B2", lessonId: "b2-uk-us-english", theme: "varieties" }))});location.reload()`); await waitForSelector(".themeGrid>button");
     results.push(await inspect(`${viewport.name}-topics`));
     const varietyLabel = await evaluate(`(()=>{const node=[...document.querySelectorAll(".themeGrid>button>b")].find(item=>item.textContent?.includes("UK"));if(!node)return null;const style=getComputedStyle(node);return{text:node.textContent?.trim(),whiteSpace:style.whiteSpace,wordBreak:style.wordBreak,overflowing:node.scrollWidth>node.clientWidth}})()`);
     results.push({ label: `${viewport.name}-uk-us-label`, ...varietyLabel });
@@ -149,5 +168,5 @@ try {
   console.log(JSON.stringify({ simulatedMinutes: 60, screenshots: shots, results, failures }, null, 2));
   if (failures.length) process.exitCode = 1;
 } finally {
-  socket?.close(); child.kill(); await wait(800); await rm(profile, { recursive: true, force: true }).catch(() => undefined);
+  socket?.close(); child.kill(); await vite.close(); await wait(800); await rm(profile, { recursive: true, force: true }).catch(() => undefined);
 }

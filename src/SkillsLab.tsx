@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { shuffled } from "./random";
 import type { Cefr } from "./curriculum";
 import { getAudioAccent } from "./preferences";
 
@@ -74,10 +75,10 @@ export default function SkillsLab({ level, onComplete, reviewItems = [] }: { lev
     [text, setText] = useState(""), [checked, setChecked] = useState(false),
     [pairTarget, setPairTarget] = useState<0 | 1>(0), [pairReady, setPairReady] = useState(false), [dialogueStep, setDialogueStep] = useState(0),
     [spoken, setSpoken] = useState(""), [recording, setRecording] = useState(false);
-  const shuffledPairs = useMemo(() => [...pairs].sort(() => Math.random() - .5), [lab]);
+  const shuffledPairs = useMemo(() => shuffled(pairs), [lab]);
   const dailyQuestions = useMemo(() => {
     const source = reviewItems.length ? reviewItems : errorBank.map((row) => ({ prompt: row[0], answer: row[1] }));
-    return [...source].sort(() => Math.random() - .5).slice(0, 5);
+    return shuffled(source).slice(0, 5);
   }, [level, lab, reviewItems]);
   const reset = (next: Lab) => { setLab(next); setIndex(0); setSelected(null); setCorrect(0); setText(""); setChecked(false); setPairReady(false); setDialogueStep(0); setSpoken(""); setRecording(false); };
   const finish = (id: string, total: number, value = correct) => { onComplete(`skills:${level}:${id}`, Math.round((value / total) * 100)); reset("menu"); };

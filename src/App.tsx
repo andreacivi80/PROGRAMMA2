@@ -153,9 +153,9 @@ function OfflinePanel() {
   );
 }
 
-const APP_VERSION = "9.0";
+const APP_VERSION = "9.1";
 const BUILD_DATE = "2 agosto 2026";
-const BUILD_ID = "EC-9.0-0802";
+const BUILD_ID = "EC-9.1-0802";
 type View =
   | "start"
   | "home"
@@ -1618,9 +1618,12 @@ export function listeningQuizFor(unit: MobileUnit): Choice[] {
     optionCount = optionCountForLevel(unit.cefr);
   const recognition = heard
     .slice(0, 2)
-    .flatMap((sentence) => {
+    .flatMap((sentence, index) => {
       const built = tryOptionsFor(sentence, meaningMistakes(sentence), optionCount);
-      return built ? [{ prompt: "Quale frase hai sentito nel dialogo?", ...built, explanationIt: `Nel dialogo viene detto: “${sentence}”` }] : [];
+      const prompt = index === 0
+        ? "Quale frase hai sentito per prima nel dialogo?"
+        : "Quale frase hai sentito subito dopo nel dialogo?";
+      return built ? [{ prompt, ...built, explanationIt: `Nel dialogo viene detto: “${sentence}”` }] : [];
     });
   return [
     ...unit.listening.questions,
