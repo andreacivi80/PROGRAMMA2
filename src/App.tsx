@@ -153,9 +153,9 @@ function OfflinePanel() {
   );
 }
 
-const APP_VERSION = "8.8";
+const APP_VERSION = "8.9";
 const BUILD_DATE = "2 agosto 2026";
-const BUILD_ID = "EC-8.8-0802";
+const BUILD_ID = "EC-8.9-0802";
 type View =
   | "start"
   | "home"
@@ -915,7 +915,34 @@ function AudioDuration({ src }: { src: string }) {
       : `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
   return <small className="audioLength">◷ Durata audio · {formatted}</small>;
 }
-const shuffled = <T,>(items: T[]) => [...items].sort(() => Math.random() - 0.5);
+const shuffled = <T,>(items: T[]) => {
+  const result = [...items];
+  for (let index = result.length - 1; index > 0; index -= 1) {
+    const target = Math.floor(Math.random() * (index + 1));
+    [result[index], result[target]] = [result[target], result[index]];
+  }
+  return result;
+};
+const shuffledChoice = (choice: Choice): Choice => {
+  const correct = choice.options[choice.answer];
+  const options = shuffled(choice.options);
+  return { ...choice, options, answer: options.indexOf(correct) };
+};
+const levelChoice = (choice: Choice, level: Cefr): Choice => {
+  const target = optionCountForLevel(level);
+  if (choice.options.length >= target) return shuffledChoice(choice);
+  const correct = choice.options[choice.answer];
+  const expanded = tryOptionsFor(
+    correct,
+    [
+      ...choice.options.filter((_, index) => index !== choice.answer),
+      ...meaningMistakes(correct),
+      ...plausibleClozeDistractors(correct),
+    ],
+    target,
+  );
+  return shuffledChoice(expanded ? { ...choice, ...expanded } : choice);
+};
 type VisualTile = {
   id: string;
   set: VisualSet;
@@ -1564,12 +1591,25 @@ export function finalQuizFor(unit: MobileUnit): Choice[] {
       const built = tryOptionsFor(item.answers[0], plausibleClozeDistractors(item.answers[0], nearbyAnswers), optionCount);
       return built ? [{ prompt: item.prompt, ...built, explanationIt: `${item.hintIt} La risposta corretta è «${item.answers[0]}».` }] : [];
     }).slice(0, 2);
-  const nuance = advancedNuanceQuestions[unit.id] ?? [];
-  return [
+  const nuance = advancedNuanceQuestions[unit.id] ?? [],
+    initial = [
     ...(nuance.length ? nuance.slice(0, 3) : unit.quickCheck.slice(0, 2)),
     ...contextualCloze,
     ...unit.listening.questions.slice(0, 2),
-  ].slice(0, 6);
+  ],
+    expectedOptions = optionCountForLevel(unit.cefr),
+    advanced = unit.cefr === "B1" || unit.cefr === "B2" || unit.cefr === "C1",
+    candidates = advanced
+      ? [
+          ...initial.filter((choice) => choice.options.length >= expectedOptions),
+          ...supplementaryBankFor(unit).filter((choice) => choice.options.length >= expectedOptions),
+        ]
+      : initial,
+    unique = candidates.filter((choice, index, all) => {
+      const key = `${choice.prompt}|${choice.options[choice.answer]}`;
+      return all.findIndex((item) => `${item.prompt}|${item.options[item.answer]}` === key) === index;
+    });
+  return unique.slice(0, 6).map((choice) => levelChoice(choice, unit.cefr));
 }
 export function listeningQuizFor(unit: MobileUnit): Choice[] {
   const heard = unit.listening.transcript
@@ -1586,7 +1626,7 @@ export function listeningQuizFor(unit: MobileUnit): Choice[] {
     ...unit.listening.questions,
     ...recognition,
     ...(advancedNuanceQuestions[unit.id] ?? unit.quickCheck),
-  ].slice(0, Math.max(5, Math.min(6, unit.listening.questions.length + 2)));
+  ].slice(0, Math.max(5, Math.min(6, unit.listening.questions.length + 2))).map((choice) => levelChoice(choice, unit.cefr));
 }
 function practiceFor(unit: MobileUnit): MobileUnit["writing"]["cloze"] {
   const generated = unit.vocabulary.map((word) => ({

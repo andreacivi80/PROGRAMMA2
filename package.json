@@ -1,6 +1,6 @@
 {
   "name": "english-coach-public",
-  "version": "8.8.0",
+  "version": "8.9.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -18,6 +18,7 @@
     "audit:answers": "node tools/answer-integrity-audit.mjs",
     "audit:credibility": "node tools/question-credibility-audit.mjs",
     "audit:nuance": "node tools/pedagogical-nuance-audit.mjs",
+    "audit:difficulty": "node tools/adversarial-difficulty-audit.mjs",
     "audit:duplicates": "node tools/global-question-duplicate-audit.mjs",
     "audit:accessibility": "node tools/accessibility-audit.mjs",
     "audit:language-labs": "node tools/language-lab-audit.mjs",
@@ -35,7 +36,7 @@
     "audit:cefr": "node tools/cefr-boundary-audit.mjs",
     "audit:offline": "node tools/offline-audit.mjs",
     "audit:boundaries": "node tools/project-boundary-audit.mjs",
-    "test": "npm run audit:placement && npm run audit:ui && npm run audit:course && npm run audit:diversity && npm run audit:personas && npm run audit:cefr && npm run audit:didactic && npm run audit:editorial && npm run audit:answers && npm run audit:credibility && npm run audit:nuance && npm run audit:duplicates && npm run audit:accessibility && npm run audit:language-labs && npm run audit:theme-questions && npm run audit:responses && npm run audit:games && npm run audit:learning && npm run audit:journey && npm run audit:journey2 && npm run audit:journey3 && npm run audit:persistence && npm run audit:migrations && npm run audit:audio && npm run audit:offline && npm run audit:boundaries && npm run audit:release && npm run build"
+    "test": "npm run audit:placement && npm run audit:ui && npm run audit:course && npm run audit:diversity && npm run audit:personas && npm run audit:cefr && npm run audit:didactic && npm run audit:editorial && npm run audit:answers && npm run audit:credibility && npm run audit:nuance && npm run audit:difficulty && npm run audit:duplicates && npm run audit:accessibility && npm run audit:language-labs && npm run audit:theme-questions && npm run audit:responses && npm run audit:games && npm run audit:learning && npm run audit:journey && npm run audit:journey2 && npm run audit:journey3 && npm run audit:persistence && npm run audit:migrations && npm run audit:audio && npm run audit:offline && npm run audit:boundaries && npm run audit:visual && npm run audit:crawl && npm run audit:release && npm run build"
   },
   "dependencies": {
     "@types/react": "19.2.14",

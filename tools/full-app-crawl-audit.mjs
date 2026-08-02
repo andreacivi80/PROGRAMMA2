@@ -1,15 +1,27 @@
 import { spawn } from "node:child_process";
 import { mkdtemp, rm } from "node:fs/promises";
+import { createServer as createNetServer } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createServer } from "vite";
 
-const vite = await createServer({ server: { middlewareMode: true }, appType: "custom", logLevel: "silent" });
+const reservePort = () => new Promise((resolve, reject) => {
+  const server = createNetServer();
+  server.unref();
+  server.on("error", reject);
+  server.listen(0, "127.0.0.1", () => {
+    const address = server.address();
+    server.close(() => resolve(address.port));
+  });
+});
+const appPort = await reservePort();
+const vite = await createServer({ server: { host: "127.0.0.1", port: appPort, strictPort: true }, logLevel: "silent" });
+await vite.listen();
 const { mobileCurriculum } = await vite.ssrLoadModule("/src/curriculum.ts");
 const { themePacks } = await vite.ssrLoadModule("/src/themePacks.ts");
 const chrome = "C:/Program Files/Google/Chrome/Application/chrome.exe";
-const base = process.env.ENGLISH_COACH_URL ?? "http://127.0.0.1:4174/PROGRAMMA2/";
-const port = 9336;
+const base = process.env.ENGLISH_COACH_URL ?? `http://127.0.0.1:${appPort}/PROGRAMMA2/`;
+const port = await reservePort();
 const profile = await mkdtemp(join(tmpdir(), "english-coach-crawl-"));
 const child = spawn(chrome, ["--headless=new", "--disable-gpu", "--no-first-run", "--no-default-browser-check", "--remote-allow-origins=*", `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, base], { stdio: "ignore" });
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));

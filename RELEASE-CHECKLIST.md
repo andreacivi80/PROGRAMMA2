@@ -1,10 +1,10 @@
-# English Coach 8.8 — stato verificato
+# English Coach 8.9 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti e versione web usano la stessa build 8.8, con data e identificativo visibili; la pubblicazione viene aggiornata soltanto dopo il collaudo completo.
+- **VERIFICATO** — sorgenti e versione web usano la stessa build 8.9, con data e identificativo visibili; la pubblicazione viene aggiornata soltanto dopo il collaudo completo.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 - **VERIFICATO** — i nomi dell’archivio locale restano stabili tra le revisioni: una nuova pubblicazione sostituisce l’interfaccia, non i dati dell’utente.
@@ -127,11 +127,12 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 
 - **IMPLEMENTATO** — sezioni pesanti caricate soltanto all’apertura; build locale esclusa dalla cartella sorgente finale.
 - **VERIFICATO** — strumenti di compilazione aggiornati alla versione corretta e controllo di sicurezza senza vulnerabilità note.
-- **VERIFICATO** — 248 pulsanti, audio, stop, velocità, salti, ripassi, giochi, missioni e persistenza coperti dagli audit statici.
+- **VERIFICATO** — 296 pulsanti, audio, stop, velocità, salti, ripassi, giochi, missioni e persistenza coperti dagli audit statici.
 - **VERIFICATO** — test automatici per 60 lezioni, 30 prove d’ingresso, profili CEFR, duplicati, banche esercizi e struttura UI.
 - **VERIFICATO** — 1.415 risposte controllate per indice corretto, coerenza con spiegazione o testo sorgente, alternative duplicate e distribuzione della posizione corretta.
 - **VERIFICATO** — il generatore non crea più domande di traduzione con parole casuali: cloze, riconoscimento e correzione usano alternative grammaticali o semantiche riferite alla stessa frase; se non esistono almeno tre alternative valide, la domanda non viene generata.
-- **VERIFICATO** — scansione integrale di 526 schermate reali: otto fasi di ciascuna delle 60 lezioni, tutte le viste principali e tutti i 26 percorsi tematici, senza sovrapposizioni, parole spezzate o contenuti fuori bordo.
+- **VERIFICATO** — scansione integrale di 542 schermate reali: otto fasi di ciascuna delle 60 lezioni, tutte le viste principali e tutti i 42 percorsi tematici, senza sovrapposizioni, parole spezzate o contenuti fuori bordo. Il motore avvia una copia isolata dei sorgenti correnti e non può certificare per errore un vecchio server locale.
+- **VERIFICATO** — 8.640 sessioni avanzate e 47.520 quesiti effettivi controllano alternative plausibili, quiz finali da almeno cinque domande, distribuzione casuale della soluzione e assenza di risposte riempitive.
 - **VERIFICATO** — il test d’ingresso usa 3 alternative in A1–A2, 4 in B1–B2 e 5 in C1, con soglie separate di lettura/ascolto e produzione avanzata obbligatoria per B2/C1.
 - **VERIFICATO** — profili di confine, abilità sbilanciate e 500 compilazioni casuali non ottengono un livello alto senza i prerequisiti.
 - **VERIFICATO** — 41 scenari di utilizzo concatenati simulano un’ora di percorso: primo accesso, livelli, viste, errori volontari, salti, indietro, refresh, chiusura, ripresa, preferenze, test d’ingresso, backup e quiz visivo.
