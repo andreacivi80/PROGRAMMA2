@@ -1,10 +1,11 @@
-# English Coach 10.2 — stato verificato
+# English Coach 10.3 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti e versione web usano la stessa build 10.2, con data e identificativo visibili; la pubblicazione viene aggiornata soltanto dopo il collaudo completo.
+- **VERIFICATO** — sorgenti e versione web usano la stessa build 10.3, con data e identificativo visibili; la pubblicazione viene aggiornata soltanto dopo il collaudo completo.
+- **VERIFICATO** — l’ascolto offre una scala volontaria: solo audio, parole chiave e trascrizione sincronizzata.
 - **VERIFICATO** — i dialoghi a bivi sono realistici e distinti per livello, con conseguenze spiegate e alternative progressivamente più sottili.
 - **IMPLEMENTATO** — tre controllori permanenti e indipendenti verificano contenuti didattici, interazioni reali e build/browser; ogni futura revisione esegue automaticamente tutti e tre.
 - **IMPLEMENTATO** — un quarto controllore black-box verifica risorse HTTP, manifest, service worker, hash del bundle, 100 richieste simultanee e 30 refresh indipendenti.

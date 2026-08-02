@@ -45,6 +45,7 @@ import {
 import { analyzeLocalWriting } from "./languageAnalysis";
 import { adaptChoices, difficultyMode } from "./adaptiveDifficulty";
 import { evaluateWritingRubric } from "./writingRubric";
+import { listeningKeywords, listeningStageLabel, type ListeningHelpStage } from "./listeningProgression";
 import { compareResponseWords, isAcceptedAnswer, orderedResponseScore, type ResponsePart } from "./responseValidation";
 import { buildErrorClusters, buildSkillProfile } from "./learningIntelligence";
 import { buildAdaptivePlan } from "./adaptivePlan";
@@ -156,9 +157,9 @@ function OfflinePanel() {
   );
 }
 
-const APP_VERSION = "10.2";
+const APP_VERSION = "10.3";
 const BUILD_DATE = "2 agosto 2026";
-const BUILD_ID = "EC-10.2-0802";
+const BUILD_ID = "EC-10.3-0802";
 type View =
   | "start"
   | "home"
@@ -1202,14 +1203,11 @@ function GuidedListening({ unit, src }: { unit: MobileUnit; src: string }) {
     [rate, setRate] = useState<AudioRate>(getAudioRate),
     [current, setCurrent] = useState(0),
     [duration, setDuration] = useState(0),
-    [listeningMode, setListeningMode] = useState<"assist" | "natural" | "summary">(
-      unit.cefr === "A1" || unit.cefr === "A2" ? "assist" : "natural",
-    ),
+    [listeningMode, setListeningMode] = useState<"assist" | "natural" | "summary">("natural"),
+    [helpStage, setHelpStage] = useState<ListeningHelpStage>(0),
     [summary, setSummary] = useState(""),
     [summaryChecked, setSummaryChecked] = useState(false),
-    [transcriptOpen, setTranscriptOpen] = useState(
-      unit.cefr === "A1" || unit.cefr === "A2",
-    );
+    [transcriptOpen, setTranscriptOpen] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null),
     delayRef = useRef<number | null>(null),
     wordTimerRef = useRef<number | null>(null),
@@ -1222,6 +1220,7 @@ function GuidedListening({ unit, src }: { unit: MobileUnit; src: string }) {
     ),
     isDialogue = turns.length > 1,
     words = useMemo(() => turns.flatMap((turn) => turn.words), [turns]),
+    keywords = useMemo(() => listeningKeywords(unit.listening.transcript, unit.cefr), [unit.listening.transcript, unit.cefr]),
     active = Math.min(
       words.length - 1,
       Math.max(
@@ -1411,7 +1410,9 @@ function GuidedListening({ unit, src }: { unit: MobileUnit; src: string }) {
             onClick={() => {
               stop();
               setListeningMode(mode);
-              setTranscriptOpen(mode === "assist");
+              const nextStage: ListeningHelpStage = mode === "assist" ? 2 : 0;
+              setHelpStage(nextStage);
+              setTranscriptOpen(nextStage === 2);
               setRate(mode === "assist" ? 0.8 : 1);
               setSummaryChecked(false);
             }}
@@ -1426,6 +1427,10 @@ function GuidedListening({ unit, src }: { unit: MobileUnit; src: string }) {
           ? `${Math.floor(estimated / 60)}:${String(Math.round(estimated) % 60).padStart(2, "0")}`
           : "calcolo…"}
       </small>
+      <div className="listeningHelpSteps" aria-label="Aiuti progressivi per l’ascolto">
+        {([0,1,2] as ListeningHelpStage[]).map(stage => <button type="button" key={stage} className={helpStage===stage?"active":""} onClick={()=>{setHelpStage(stage);setTranscriptOpen(stage===2)}}><b>{stage+1}</b>{listeningStageLabel(stage)}</button>)}
+      </div>
+      {helpStage === 1 && <div className="listeningKeywords"><small>PAROLE CHIAVE</small><p lang="en">{keywords.join(" · ")}</p></div>}
       <div className="audioControl">
         <div className="audioActions">
           <button type="button" className="audio" onClick={primary}>
@@ -1467,14 +1472,11 @@ function GuidedListening({ unit, src }: { unit: MobileUnit; src: string }) {
       </div>
       <details
         className="guidedTranscript"
-        open={transcriptOpen}
-        onToggle={(event) => setTranscriptOpen(event.currentTarget.open)}
+        open={helpStage === 2 && transcriptOpen}
+        onToggle={(event) => { const open=event.currentTarget.open; setTranscriptOpen(open); if(open)setHelpStage(2); }}
       >
         <summary>
-          Testo sincronizzato{" "}
-          {unit.cefr === "A1" || unit.cefr === "A2"
-            ? "· aperto per aiutarti"
-            : "· mostra se ti serve"}
+          Testo sincronizzato · apri quando ti serve
         </summary>
         <div
           ref={transcriptRef}

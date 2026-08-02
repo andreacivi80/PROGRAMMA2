@@ -695,6 +695,7 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
   font-weight: 900;
   text-transform: uppercase;
 }
+.listeningHelpSteps{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.listeningHelpSteps button{min-width:0;padding:8px 5px;border:1px solid #ffffff38;border-radius:12px;background:#ffffff12;color:#d9eee7;font-size:10px}.listeningHelpSteps button b{display:grid;width:20px;height:20px;margin:0 auto 4px;place-items:center;border-radius:50%;background:#ffffff20}.listeningHelpSteps button.active{border-color:#f1c75b;background:#f1c75b;color:#26372f}.listeningKeywords{padding:12px;border-radius:14px;background:#ffffff14}.listeningKeywords small{color:#bce7d7;font-weight:900}.listeningKeywords p{margin:6px 0 0;color:#fff;font-weight:800}
 .cefrWritingRubric { padding: 12px; border: 1px solid #d8d0f0; border-radius: 16px; background: #faf8ff; }
 .cefrWritingRubric header span,.cefrWritingRubric article span { display:flex; justify-content:space-between; gap:8px; }
 .cefrWritingRubric header p { margin:5px 0 10px; font-size:12px; }
