@@ -124,7 +124,7 @@ themeQuestions:pack.includes("Salta domanda")
   storesErrors:app.includes("smartReview?:Record<string,SmartReviewItem>")&&app.includes("queueReview"),
   storesSkipped:app.includes('skipStage=()=>{if(phase==="cloze")')&&app.includes('queueReview("Ascolto"'),
   pronunciation:app.includes('speechScore<75')&&app.includes('queueReview("Pronuncia"'),
-  schedule:app.includes("const delays=[1,3,7,14,30]"),
+  schedule:app.includes("planSpacedReview(remembered")&&app.includes("dueAt:futureDate(plan.delayDays)"),
   dueToday:app.includes("Ripasso pronto")&&app.includes("Inizia il ripasso")&&app.includes('view==="smartReview"'),
   savesLocally:app.includes("smartReview:{...(current.smartReview??{})"),
   resetAndBackup:app.includes("schemaVersion: 14")&&app.includes("normalizeProgress(imported.progress,deviceId())")&&app.includes("english-coach-supplementary-seen-v1")
@@ -135,7 +135,7 @@ themeQuestions:pack.includes("Salta domanda")
   credibleOptions:app.includes("review.options?.length")&&app.includes("...source.quickCheck")&&app.includes("meaningMistakes(review.answer)")&&!app.includes("mobileCurriculum.flatMap((candidate)"),
   answerFeedback:app.includes("recoveryFeedback")&&app.includes("Rivediamola subito"),
   canSkip:app.includes('className="recoverySkip"')&&app.includes("answerRecovery(-1)"),
-  updatesSchedule:app.includes("const answerRecovery=")&&app.includes("delays=[1,3,7,14,30]")
+  updatesSchedule:app.includes("const answerRecovery=")&&app.includes("planSpacedReview(remembered")
  },
  learningClarity:{
   noServiceCopy:!["banca tecnica","algoritmo interno","posizioni cambiano continuamente","dettaglio di implementazione"].some(text=>app.toLowerCase().includes(text)),

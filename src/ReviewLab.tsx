@@ -6,6 +6,7 @@ import ConceptText from "./ConceptText";
 import { getAudioAccent } from "./preferences";
 import { advancedNuanceQuestions } from "./advancedNuanceQuestions";
 import { shuffled } from "./random";
+import { answerVisualState } from "./answerPresentation";
 
 type ReviewArea =
   | "Grammatica"
@@ -208,7 +209,7 @@ export default function ReviewLab({ level, units, final, onClose, onComplete, on
         {question.context && <details className="examReading"><summary>Leggi il testo</summary>{question.context.split("\n\n").map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</details>}
         {question.audioText && <button type="button" className="examListen" onClick={() => speak(question.audioText!)}>▶ Ascolta il brano</button>}
         <h2>{question.prompt}</h2><div>{question.options.map((option, optionIndex) => {
-          const state = pick === null ? "" : optionIndex === question.answer ? "right" : optionIndex === pick ? "wrong" : "dim";
+          const state = answerVisualState(optionIndex,pick,question.answer);
           return <button key={`${option}-${optionIndex}`} className={state} disabled={pick !== null} onClick={() => answer(optionIndex)}><b>{String.fromCharCode(65 + optionIndex)}</b><span>{option}</span></button>;
         })}</div>{pick !== null && <aside className={pick === question.answer ? "good" : "bad"}><strong>{pick === question.answer ? "Ben fatto: consolidiamo il motivo." : "Questa è un’ottima occasione per fissare il concetto."}</strong><ConceptText text={question.explanationIt} terms={question.options} /></aside>}</article>
       <div className="reviewNav"><button type="button" className="showSolution" onClick={next}>Salta domanda</button><button className="continue" disabled={pick === null} onClick={next}>{index + 1 < questions.length ? "Prossimo esercizio" : final ? "Passa alle prove aperte" : "Vedi il riepilogo"}<b>→</b></button></div>

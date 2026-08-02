@@ -3,6 +3,8 @@ import { spawnSync } from "node:child_process";
 const controls = [
   ["risposte scritte, ascolto e parlato", "tools/response-interaction-audit.mjs"],
   ["giochi e casualizzazione", "tools/game-interaction-audit.mjs"],
+  ["stress corretto, errato, salto e doppio click", "tools/answer-state-stress-audit.mjs"],
+  ["copertura di ogni famiglia di esercizi", "tools/exercise-contract-matrix-audit.mjs"],
   ["utente rapido, fragile e discontinuo", "tools/adversarial-journey-2-audit.mjs"],
 ];
 const results = controls.map(([name, script]) => {

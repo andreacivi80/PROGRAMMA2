@@ -48,6 +48,7 @@ import { evaluateWritingRubric } from "./writingRubric";
 import { listeningKeywords, listeningStageLabel, type ListeningHelpStage } from "./listeningProgression";
 import { planSpacedReview, type ReviewPattern } from "./spacedReview";
 import { buildLocalPortfolio } from "./localPortfolio";
+import { answerVisualState } from "./answerPresentation";
 import { compareResponseWords, isAcceptedAnswer, orderedResponseScore, type ResponsePart } from "./responseValidation";
 import { buildErrorClusters, buildSkillProfile } from "./learningIntelligence";
 import { buildAdaptivePlan } from "./adaptivePlan";
@@ -159,9 +160,9 @@ function OfflinePanel() {
   );
 }
 
-const APP_VERSION = "10.5";
+const APP_VERSION = "10.6";
 const BUILD_DATE = "2 agosto 2026";
-const BUILD_ID = "EC-10.5-0802";
+const BUILD_ID = "EC-10.6-0802";
 type View =
   | "start"
   | "home"
@@ -1545,15 +1546,7 @@ function Question({
           <button
             key={x + i}
             disabled={pick !== null}
-            className={
-              pick === null
-                ? ""
-                : i === data.answer
-                  ? "right"
-                  : i === pick
-                    ? "wrong"
-                    : "dim"
-            }
+            className={answerVisualState(i,pick,data.answer)}
             onClick={() => {
               setPick(i);
               done(i === data.answer, data, x);
@@ -5031,15 +5024,7 @@ export default function Home() {
                         type="button"
                         key={`${option}-${index}`}
                         disabled={recoveryPick !== null}
-                        className={
-                          recoveryPick === null
-                            ? ""
-                            : index === question.answer
-                              ? "correct"
-                              : index === recoveryPick
-                                ? "wrong"
-                                : "dim"
-                        }
+                        className={answerVisualState(index,recoveryPick,question.answer,"correct")}
                         onClick={() => answerRecovery(index)}
                       >
                         <b>{String.fromCharCode(65 + index)}</b>

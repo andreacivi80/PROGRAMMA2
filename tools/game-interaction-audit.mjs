@@ -167,7 +167,25 @@ try {
   await mount("Milionario in inglese");
   fireEvent.click(screen.getByRole("button", { name: "50:50" })); await wait(3);
   check("millionaire-fifty-fifty-hides-two", document.querySelectorAll(".millionaireOptions button[hidden]").length === 2);
-  for (let i = 0; i < 10; i++) { fireEvent.click(screen.getByRole("button", { name: /Salta questa domanda/ })); await wait(2); fireEvent.click(screen.getByRole("button", { name: i < 9 ? /Prossima domanda/ : /Vedi il risultato finale/ })); await wait(3); }
+  let millionairePrompt = document.querySelector(".millionaireQuestion")?.textContent?.trim();
+  let millionaireQuestion = questionPool("B1").find(item => item.prompt === millionairePrompt);
+  if (millionaireQuestion) {
+    const visibleOptions = [...document.querySelectorAll(".millionaireOptions button:not([hidden])")];
+    const wrongButton = visibleOptions.find(button => !button.textContent.includes(millionaireQuestion.options[millionaireQuestion.answer]));
+    if (wrongButton) fireEvent.click(wrongButton); await wait(3);
+    check("millionaire-wrong-answer-is-red", Boolean(document.querySelector(".millionaireOptions .wrong")) && Boolean(document.querySelector(".gameFeedback.incorrect")) && !document.querySelector(".millionaireOptions .right"));
+    check("millionaire-solution-is-revealed-without-green-success", Boolean(document.querySelector(".millionaireOptions .correctReveal")) && !document.querySelector(".gameFeedback.perfect"));
+    fireEvent.click(screen.getByRole("button", { name: /Prossima domanda/ })); await wait(3);
+    millionairePrompt = document.querySelector(".millionaireQuestion")?.textContent?.trim();
+    millionaireQuestion = questionPool("B1").find(item => item.prompt === millionairePrompt);
+    if (millionaireQuestion) {
+      const correctButton = [...document.querySelectorAll(".millionaireOptions button")].find(button => button.textContent.includes(millionaireQuestion.options[millionaireQuestion.answer]));
+      if (correctButton) fireEvent.click(correctButton); await wait(3);
+      check("millionaire-correct-answer-is-green", Boolean(document.querySelector(".millionaireOptions .right")) && Boolean(document.querySelector(".gameFeedback.perfect")) && !document.querySelector(".gameFeedback.incorrect"));
+      fireEvent.click(screen.getByRole("button", { name: /Prossima domanda/ })); await wait(3);
+    }
+  }
+  for (let i = 2; i < 10; i++) { fireEvent.click(screen.getByRole("button", { name: /Salta questa domanda/ })); await wait(2); fireEvent.click(screen.getByRole("button", { name: i < 9 ? /Prossima domanda/ : /Vedi il risultato finale/ })); await wait(3); }
   check("millionaire-ten-rounds-complete", results.some(item => item.id === "millionaire-b1"));
 
   await mount("Sfida a categorie");

@@ -6,6 +6,7 @@ import MixedText from "./MixedText";
 import ConceptText from "./ConceptText";
 import { accentComprehension } from "./accentComprehension";
 import { getAudioAccent } from "./preferences";
+import { answerVisualState } from "./answerPresentation";
 import { grammarMistakes, tryOptionsFor } from "./supplementaryQuiz";
 import {
   applyDialogueVoice,
@@ -493,14 +494,7 @@ export default function ThemePackLab({
             <h1>{item.prompt}</h1>
             <div className="themeQuizOptions">
               {item.options.map((option, choice) => {
-                const state =
-                  selected === null
-                    ? ""
-                    : choice === item.answer
-                      ? "correct"
-                      : choice === selected
-                        ? "wrong"
-                        : "";
+                const state = answerVisualState(choice,selected,item.answer,"correct");
                 return (
                   <button
                     type="button"

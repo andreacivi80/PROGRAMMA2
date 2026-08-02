@@ -3,6 +3,7 @@ import type { Cefr } from "./curriculum";
 import { storyEpisodes } from "./storyData";
 import { evaluateStorySpeech, storyBranchSupport } from "./storyBranches";
 import { getAudioAccent } from "./preferences";
+import { answerVisualState } from "./answerPresentation";
 
 export default function StoryPath({ level, saved, onComplete }: {
   level: Cefr;
@@ -96,7 +97,7 @@ export default function StoryPath({ level, saved, onComplete }: {
         <div className="storyAudio"><button type="button" onClick={listen}>▶ Ascolta</button><button type="button" onClick={() => { if (paused) speechSynthesis.resume(); else speechSynthesis.pause(); setPaused(!paused); }}>{paused ? "▶ Riprendi" : "Ⅱ Pausa"}</button><button type="button" onClick={() => { speechSynthesis.cancel(); setPaused(false); }}>■ Stop</button></div>
         <h4>{current.question}</h4>
         <div className="storyChoices">
-          {current.choices.map((answer, index) => <button type="button" key={answer} disabled={evaluated} className={evaluated ? index === current.answer ? "correct" : index === choice ? "wrong" : "" : ""} onClick={() => { setChoice(index); onComplete(current.id, index === current.answer ? 100 : 50); }}>{answer}</button>)}
+          {current.choices.map((answer, index) => <button type="button" key={answer} disabled={evaluated} className={answerVisualState(index,evaluated?choice:null,current.answer,"correct")} onClick={() => { setChoice(index); onComplete(current.id, index === current.answer ? 100 : 50); }}>{answer}</button>)}
         </div>
         {evaluated && <section className="storyFeedback"><strong>{choice === current.answer ? "Hai colto il punto centrale." : "Rileggiamolo con attenzione."}</strong><p>{current.explanation}</p><div className={choice === current.answer ? "storyConsequence good" : "storyConsequence"}><small>CONSEGUENZA DELLA SCELTA</small><span>{branch.consequences[choice]}</span></div></section>}
         {evaluated && <section className={`storySpeaking ${recording ? "recording" : ""}`}>
