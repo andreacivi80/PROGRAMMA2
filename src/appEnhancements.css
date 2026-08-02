@@ -1415,3 +1415,18 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
   .offlinePanel { grid-template-columns: 1fr; margin: 10px; padding: 13px; }
   .offlinePanel .offlineNote { grid-column: 1; }
 }
+
+.adaptivePlanSummary { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 13px; border: 1px solid #b7d9c8; border-radius: 16px; background: #eff9f4; }
+.adaptivePlanSummary.support { border-color: #e9c165; background: #fff8df; }
+.adaptivePlanSummary.advancing { border-color: #b9c9ec; background: #f2f5ff; }
+.adaptivePlanSummary h3 { margin: 3px 0; font-size: 16px; }
+.adaptivePlanSummary p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
+.adaptivePlanSummary > div { display: grid; grid-template-columns: repeat(3, minmax(66px, 1fr)); gap: 6px; }
+.adaptivePlanSummary > div > b { display: grid; gap: 2px; min-height: 54px; align-content: center; padding: 7px; border-radius: 12px; background: #fff; color: var(--deep); text-align: center; font-size: 17px; }
+.adaptivePlanSummary > div small { color: var(--muted); font-size: 8px; letter-spacing: 0; }
+.mode-dark .adaptivePlanSummary { border-color: #365347; background: #20332b; }
+.mode-dark .adaptivePlanSummary > div > b { background: #17241f; color: #edf7f2; }
+@media (max-width: 600px) {
+  .adaptivePlanSummary { grid-template-columns: 1fr; padding: 11px; }
+  .adaptivePlanSummary > div { grid-template-columns: repeat(3, 1fr); }
+}

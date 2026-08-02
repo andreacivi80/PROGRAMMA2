@@ -45,6 +45,7 @@ import {
 import { analyzeLocalWriting } from "./languageAnalysis";
 import { compareResponseWords, isAcceptedAnswer, orderedResponseScore, type ResponsePart } from "./responseValidation";
 import { buildErrorClusters, buildSkillProfile } from "./learningIntelligence";
+import { buildAdaptivePlan } from "./adaptivePlan";
 import "./themePacks.css";
 import "./lessonEnhancements.css";
 import "./wordGames.css";
@@ -153,9 +154,9 @@ function OfflinePanel() {
   );
 }
 
-const APP_VERSION = "9.2";
+const APP_VERSION = "9.3";
 const BUILD_DATE = "2 agosto 2026";
-const BUILD_ID = "EC-9.2-0802";
+const BUILD_ID = "EC-9.3-0802";
 type View =
   | "start"
   | "home"
@@ -3186,6 +3187,13 @@ export default function Home() {
     nextLearningIndex = Math.max(0, levelLearningUnits.findIndex((candidate) => candidate.id === nextLearningUnit.id)),
     prerequisiteUnit = levelLearningUnits[Math.max(0, nextLearningIndex - 1)] ?? nextLearningUnit,
     prerequisiteRequired = weakestLearningSkill.score < 45 && nextLearningIndex > 0,
+    adaptiveLearningPlan = buildAdaptivePlan({
+      level: selectedLevel,
+      skills: learningSkills,
+      completedLessons: levelLearningUnits.filter((candidate) => progress.days[candidate.day]).length,
+      dueReviews: dueSmartReviews.length,
+      openReviews: smartReviews.filter((review) => !review.mastered && review.level === selectedLevel).length,
+    }),
     dailyFocus = dueSmartReviews.length > 0
       ? {
           tone: "dailyReview",
@@ -3561,6 +3569,7 @@ export default function Home() {
                 level={selectedLevel}
                 goal={progress.learningGoal ?? learningGoal}
                 skills={learningSkills}
+                plan={adaptiveLearningPlan}
                 clusters={learningClusters}
                 phrases={progress.savedPhrases ?? []}
                 monthly={progress.monthlyChecks ?? {}}

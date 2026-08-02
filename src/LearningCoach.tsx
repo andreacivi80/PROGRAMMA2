@@ -3,14 +3,16 @@ import type { Cefr } from "./curriculum";
 import { placementItems } from "./placementModel";
 import type { ErrorCluster, SkillEstimate } from "./learningIntelligence";
 import { analyzeLocalWriting } from "./languageAnalysis";
+import type { AdaptiveAction, AdaptivePlan } from "./adaptivePlan";
 
 type SavedPhrase = { id: string; en: string; it?: string; source: string; savedAt: string };
 type MonthlyCheck = { score: number; completedAt: string };
 
-export default function LearningCoach({ level, goal, skills, clusters, phrases, monthly, weeklyDone, prerequisite, onGoal, onMicro, onNew, onPrerequisite, onReview, onReading, onSimulation, onRemovePhrase, onMonthly, onWeekly }: {
+export default function LearningCoach({ level, goal, skills, plan, clusters, phrases, monthly, weeklyDone, prerequisite, onGoal, onMicro, onNew, onPrerequisite, onReview, onReading, onSimulation, onRemovePhrase, onMonthly, onWeekly }: {
   level: Cefr;
   goal: string;
   skills: SkillEstimate[];
+  plan: AdaptivePlan;
   clusters: ErrorCluster[];
   phrases: SavedPhrase[];
   monthly: Record<string, MonthlyCheck>;
@@ -51,6 +53,12 @@ export default function LearningCoach({ level, goal, skills, clusters, phrases, 
     utterance.rate = 0.92;
     speechSynthesis.speak(utterance);
   };
+  const runPlanAction = (action: AdaptiveAction) => {
+    if (action === "new") onNew();
+    else if (action === "reading") onReading();
+    else if (action === "simulation") onSimulation();
+    else onReview();
+  };
   return (
     <section className="learningCoach">
       <header>
@@ -68,11 +76,12 @@ export default function LearningCoach({ level, goal, skills, clusters, phrases, 
           <span><small>ORDINE CONSIGLIATO</small><h3>{prerequisite.required ? `Prima: ${prerequisite.first}` : `Puoi proseguire con ${prerequisite.then}`}</h3><p>{prerequisite.required ? `${prerequisite.reason} Dopo il rinforzo passerai a “${prerequisite.then}”.` : "Le competenze necessarie risultano sufficienti per affrontare il prossimo argomento."}</p></span>
           <button type="button" onClick={prerequisite.required ? onPrerequisite : onNew}>{prerequisite.required ? "Rinforza prima questo" : "Continua il percorso"}</button>
         </section>
+        <section className={`adaptivePlanSummary ${plan.mode}`} aria-label="Piano adattivo di oggi">
+          <span><small>PIANO CALCOLATO SUI TUOI RISULTATI</small><h3>{plan.headline}</h3><p>{plan.reason}</p></span>
+          <div><b>{plan.consolidation}%<small>consolidamento</small></b><b>{plan.newContent}%<small>nuovo</small></b><b>{plan.context}%<small>contesto</small></b></div>
+        </section>
         <div className="dailyMix">
-          <button onClick={onNew}><b>40%</b><span><strong>Argomento nuovo</strong><small>Avanza nel livello {level}</small></span></button>
-          <button onClick={onReview}><b>30%</b><span><strong>Errori recenti</strong><small>{clusters[0]?.label ?? "Consolidamento guidato"}</small></span></button>
-          <button onClick={onReading}><b>20%</b><span><strong>Ripasso nel contesto</strong><small>Lettura e comprensione</small></span></button>
-          <button onClick={onSimulation}><b>10%</b><span><strong>Piccola sfida</strong><small>Situazione reale leggermente più difficile</small></span></button>
+          {plan.items.map(item => <button key={item.action} onClick={() => runPlanAction(item.action)}><b>{item.percent}%</b><span><strong>{item.title}</strong><small>{item.detail}</small></span></button>)}
         </div>
         <button className="microSession" onClick={onMicro}><b>5 min</b><span><strong>Allenamento rapido intelligente</strong><small>Errore, ascolto, frase e verifica finale</small></span><i>→</i></button>
         <div className="skillProfile">

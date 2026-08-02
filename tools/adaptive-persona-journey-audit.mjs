@@ -42,7 +42,9 @@ try {
   await waitFor(() => screen.getByText(/Il tuo allenamento, non uno standard/), { timeout: 4000 });
   check("successful-learner-is-cleared-to-advance", Boolean(screen.getByText(new RegExp(`Puoi proseguire con ${third.title}`, "i"))));
   check("successful-learner-sees-balanced-six-skill-profile", document.querySelectorAll(".skillProfile article").length === 6);
-  fireEvent.click(screen.getByRole("button", { name: "Continua il percorso" }));
+  const successfulPlan = document.querySelector(".adaptivePlanSummary");
+  check("successful-learner-gets-evidence-based-advancing-plan", successfulPlan?.classList.contains("advancing") && successfulPlan.textContent.includes("50%") && successfulPlan.textContent.includes("nuovo"));
+  fireEvent.click(screen.getByRole("button", { name: /50%.*Argomento nuovo/i }));
   await waitFor(() => screen.getByRole("heading", { name: third.title }), { timeout: 4000 });
   check("successful-learner-opens-next-unfinished-lesson", Boolean(screen.getByRole("heading", { name: third.title })) && Boolean(screen.getByText("Grammatica")));
   mounted.unmount();
@@ -54,6 +56,8 @@ try {
   check("struggling-learner-is-routed-to-previous-prerequisite", Boolean(screen.getByText(new RegExp(`Prima: ${second.title}`, "i"))));
   check("struggling-learner-sees-specific-reason", Boolean(screen.getByText(/conviene consolidare la base/i)));
   check("repeated-error-is-grouped-not-hidden", screen.getAllByText(/Tempi e forme verbali/).length > 0);
+  const strugglingPlan = document.querySelector(".adaptivePlanSummary");
+  check("struggling-learner-gets-sixty-percent-consolidation", strugglingPlan?.classList.contains("support") && strugglingPlan.textContent.includes("60%") && strugglingPlan.textContent.includes("1 elemento"));
   fireEvent.click(screen.getByRole("button", { name: "Rinforza prima questo" }));
   await waitFor(() => screen.getByRole("heading", { name: second.title }), { timeout: 4000 });
   check("prerequisite-button-opens-the-correct-earlier-lesson", Boolean(screen.getByRole("heading", { name: second.title })) && Boolean(screen.getByText("Grammatica")));
