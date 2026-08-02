@@ -59,5 +59,5 @@
   const invalidate=()=>responseCache.clear();
   const diagnostics=()=>Object.freeze({...state,inFlight:inFlight.size,cacheEntries:responseCache.size});
   window.TechnicsDataClient=Object.freeze({parseText,read,fetchJson,invalidate,diagnostics,incompleteMessage,version:"1.5.14"});
-  document.documentElement.dataset.dataClient="1.5.1";
+  document.documentElement.dataset.dataClient="1.5.14";
 })();
