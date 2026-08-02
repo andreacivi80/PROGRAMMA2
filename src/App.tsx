@@ -43,6 +43,7 @@ import {
   supplementaryFingerprint,
 } from "./supplementaryQuiz";
 import { analyzeLocalWriting } from "./languageAnalysis";
+import { adaptChoices, difficultyMode } from "./adaptiveDifficulty";
 import { compareResponseWords, isAcceptedAnswer, orderedResponseScore, type ResponsePart } from "./responseValidation";
 import { buildErrorClusters, buildSkillProfile } from "./learningIntelligence";
 import { buildAdaptivePlan } from "./adaptivePlan";
@@ -154,9 +155,9 @@ function OfflinePanel() {
   );
 }
 
-const APP_VERSION = "9.9";
+const APP_VERSION = "10.0";
 const BUILD_DATE = "2 agosto 2026";
-const BUILD_ID = "EC-9.9-0802";
+const BUILD_ID = "EC-10.0-0802";
 type View =
   | "start"
   | "home"
@@ -2016,7 +2017,10 @@ export default function Home() {
               (25 / mobileCurriculum.length),
         )
       : 0;
-  const finalQuiz = useMemo(() => finalQuizFor(unit), [unit]),
+  const savedUnitResult = progress?.days?.[unit.day],
+    savedUnitFeedback = progress?.lessonFeedback?.[unit.id],
+    adaptiveQuestionMode = difficultyMode({ score: savedUnitResult?.score, attempts: savedUnitResult?.attempts, rating: savedUnitFeedback?.rating }),
+    finalQuiz = useMemo(() => adaptChoices(finalQuizFor(unit), adaptiveQuestionMode), [unit, adaptiveQuestionMode]),
     listeningQuiz = useMemo(() => listeningQuizFor(unit), [unit]),
     activeBonus = bonusQuiz.slice(0, bonusMinutes);
   const activeStages: Phase[] =
@@ -2364,7 +2368,7 @@ export default function Home() {
     const bankSize = supplementaryBankFor(unit).length,
       seen = (history[unit.id] ?? []).slice(-bankSize),
       cycle = seen.length >= bankSize ? [] : seen,
-      questions = buildSupplementaryQuiz(unit, minutes, cycle);
+      questions = adaptChoices(buildSupplementaryQuiz(unit, minutes, cycle), adaptiveQuestionMode);
     history[unit.id] = [
       ...new Set([...cycle, ...questions.map(supplementaryFingerprint)]),
     ].slice(-bankSize);
