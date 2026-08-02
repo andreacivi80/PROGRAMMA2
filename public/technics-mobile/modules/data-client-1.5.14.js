@@ -33,8 +33,8 @@
     for(let attempt=0;attempt<attempts;attempt++){
       const id=requestId(),controller=new AbortController(),timer=setTimeout(()=>controller.abort("timeout"),timeoutMs),started=performance.now();state.requests++;state.lastRequestId=id;
       try{
-        const headers=new Headers(options.headers||{});headers.set("X-Technics-Request-Id",id);
-        const response=await fetch(url,{...options,headers,signal:controller.signal}),payload=validateMeta(await read(response,settings.message),id);
+        const headers=new Headers(options.headers||{}),urgent=/\/api\/(items\/lookup|barcodes\/resolve)/.test(String(url));headers.set("X-Technics-Request-Id",id);headers.set("X-Technics-Priority",urgent?"urgent":"normal");
+        const response=await fetch(url,{...options,headers,signal:controller.signal,priority:urgent?"high":"auto"}),payload=validateMeta(await read(response,settings.message),id);
         if(key&&latestSequence.get(key)!==sequence){state.discarded++;const error=new Error("Risposta superata da una richiesta più recente.");error.staleResponse=true;throw error}
         state.lastLatencyMs=Math.round(performance.now()-started);state.lastSuccessAt=new Date().toISOString();
         if(attempt){state.recovered++;document.dispatchEvent(new CustomEvent("technics:data-recovered",{detail:{url,attempt:attempt+1}}))}
@@ -58,6 +58,6 @@
   };
   const invalidate=()=>responseCache.clear();
   const diagnostics=()=>Object.freeze({...state,inFlight:inFlight.size,cacheEntries:responseCache.size});
-  window.TechnicsDataClient=Object.freeze({parseText,read,fetchJson,invalidate,diagnostics,incompleteMessage,version:"1.5.3"});
+  window.TechnicsDataClient=Object.freeze({parseText,read,fetchJson,invalidate,diagnostics,incompleteMessage,version:"1.5.14"});
   document.documentElement.dataset.dataClient="1.5.1";
 })();

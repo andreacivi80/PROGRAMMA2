@@ -1,0 +1,7 @@
+:where(button,a,input,select,textarea):focus-visible{outline:3px solid #e6a93f!important;outline-offset:3px!important}
+:where(button,[role="button"],input,select){touch-action:manipulation}
+:where(.stock dd,.locationbox strong,.planninglot,.planningcode,.pickinglocation,.packinglot){overflow-wrap:normal;word-break:keep-all}
+:where(.planningname,.item h2,.desc,.openpack em){overflow-wrap:anywhere;text-wrap:pretty}
+@media(max-width:380px){:where(button,input,select){min-height:44px}.departmentnav button{font-size:10px}.stock dd{font-size:11px}.locationbox strong{font-size:14px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+@media(forced-colors:active){button,.card,.stock,.planningcard{border:1px solid CanvasText}.status i,.fresh i{forced-color-adjust:none}}
