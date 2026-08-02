@@ -46,6 +46,7 @@ import { analyzeLocalWriting } from "./languageAnalysis";
 import { adaptChoices, difficultyMode } from "./adaptiveDifficulty";
 import { evaluateWritingRubric } from "./writingRubric";
 import { listeningKeywords, listeningStageLabel, type ListeningHelpStage } from "./listeningProgression";
+import { planSpacedReview, type ReviewPattern } from "./spacedReview";
 import { compareResponseWords, isAcceptedAnswer, orderedResponseScore, type ResponsePart } from "./responseValidation";
 import { buildErrorClusters, buildSkillProfile } from "./learningIntelligence";
 import { buildAdaptivePlan } from "./adaptivePlan";
@@ -157,9 +158,9 @@ function OfflinePanel() {
   );
 }
 
-const APP_VERSION = "10.3";
+const APP_VERSION = "10.4";
 const BUILD_DATE = "2 agosto 2026";
-const BUILD_ID = "EC-10.3-0802";
+const BUILD_ID = "EC-10.4-0802";
 type View =
   | "start"
   | "home"
@@ -229,6 +230,7 @@ type SmartReviewItem = {
   hintUsed?: boolean;
   confidence?: "Bassa" | "Media" | "Alta";
   options?: string[];
+  pattern?: ReviewPattern;
 };
 type RecoveryQuestion = {
   review: SmartReviewItem;
@@ -3025,16 +3027,14 @@ export default function Home() {
       if (!current) return current;
       const previous =
           current.smartReview?.[question.review.id] ?? question.review,
-        delays = [1, 3, 7, 14, 30],
-        step = remembered ? previous.step + 1 : 0,
-        mastered = remembered && previous.step >= delays.length,
+        plan = planSpacedReview(remembered, previous.wrongCount ?? 0, previous.correctStreak ?? 0, previous.step),
         now = new Date().toISOString(),
-        nextStreak = remembered ? (previous.correctStreak ?? 0) + 1 : 0,
         item: SmartReviewItem = {
           ...previous,
-          step,
-          mastered,
-          correctStreak: nextStreak,
+          step: plan.step,
+          mastered: plan.mastered,
+          correctStreak: plan.correctStreak,
+          pattern: plan.pattern,
           wrongCount: (previous.wrongCount ?? 0) + (remembered ? 0 : 1),
           lastAttemptAt: now,
           attempts: [
@@ -3045,14 +3045,8 @@ export default function Home() {
               correct: remembered,
             },
           ].slice(-30),
-          status: mastered
-            ? "Acquisito"
-            : remembered
-              ? "In consolidamento"
-              : "Da ripassare",
-          dueAt: mastered
-            ? futureDate(3650)
-            : futureDate(remembered ? delays[previous.step] : 1),
+          status: plan.status,
+          dueAt: futureDate(plan.delayDays),
         },
         updated = {
           ...current,
@@ -3080,18 +3074,14 @@ export default function Home() {
   };
   const answerSmartReview = async (remembered: boolean) => {
     if (!activeSmartReview) return;
-    const delays = [1, 3, 7, 14, 30],
-      nextStep = remembered ? activeSmartReview.step + 1 : 0,
-      nextStreak = remembered
-        ? (activeSmartReview.correctStreak ?? 0) + 1
-        : 0,
-      mastered = remembered && nextStreak > delays.length,
+    const plan = planSpacedReview(remembered, activeSmartReview.wrongCount ?? 0, activeSmartReview.correctStreak ?? 0, activeSmartReview.step),
       now = new Date().toISOString(),
       updatedItem: SmartReviewItem = {
         ...activeSmartReview,
-        step: nextStep,
-        mastered,
-        correctStreak: nextStreak,
+        step: plan.step,
+        mastered: plan.mastered,
+        correctStreak: plan.correctStreak,
+        pattern: plan.pattern,
         wrongCount: (activeSmartReview.wrongCount ?? 0) + (remembered ? 0 : 1),
         lastAttemptAt: now,
         attempts: [
@@ -3102,18 +3092,8 @@ export default function Home() {
             correct: remembered,
           },
         ].slice(-30),
-        status: mastered
-          ? "Acquisito"
-          : remembered
-            ? "In consolidamento"
-            : "Da ripassare",
-        dueAt: mastered
-          ? futureDate(3650)
-          : futureDate(
-              remembered
-                ? delays[Math.min(activeSmartReview.step, delays.length - 1)]
-                : 1,
-            ),
+        status: plan.status,
+        dueAt: futureDate(plan.delayDays),
       },
       updated: Progress = {
         ...progress,
@@ -4926,7 +4906,7 @@ export default function Home() {
                       )}
                       <footer>
                         <small>
-                          {review.wrongCount ?? 1} errori ·{" "}
+                          {review.pattern ?? ((review.wrongCount ?? 0) >= 3 ? "Ricorrente" : "Occasionale")} · {review.wrongCount ?? 1} errori ·{" "}
                           {review.correctStreak ?? 0} conferme · prossimo
                           ripasso{" "}
                           {new Date(

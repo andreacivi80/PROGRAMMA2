@@ -1,6 +1,6 @@
 {
   "name": "english-coach-public",
-  "version": "10.3.0",
+  "version": "10.4.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -43,6 +43,7 @@
     "audit:writing-rubric": "node tools/writing-rubric-audit.mjs",
     "audit:real-dialogues": "node tools/real-dialogue-audit.mjs",
     "audit:listening-progression": "node tools/listening-progression-audit.mjs",
+    "audit:spaced-review": "node tools/spaced-review-audit.mjs",
     "audit:three-engines": "npm run audit:engine-content && npm run audit:engine-interaction && npm run audit:engine-runtime",
     "audit:four-engines": "npm run audit:three-engines && npm run audit:engine-resilience",
     "audit:journey3": "node tools/adaptive-persona-journey-audit.mjs",
