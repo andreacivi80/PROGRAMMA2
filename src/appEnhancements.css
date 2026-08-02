@@ -695,6 +695,15 @@ html,body,#root{max-width:100%;overflow-x:hidden}.lessonCard,.themePackPanel,.re
   font-weight: 900;
   text-transform: uppercase;
 }
+.cefrWritingRubric { padding: 12px; border: 1px solid #d8d0f0; border-radius: 16px; background: #faf8ff; }
+.cefrWritingRubric header span,.cefrWritingRubric article span { display:flex; justify-content:space-between; gap:8px; }
+.cefrWritingRubric header p { margin:5px 0 10px; font-size:12px; }
+.cefrWritingRubric > div { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.cefrWritingRubric article { display:grid; gap:4px; padding:8px; border-radius:11px; background:#fff; }
+.cefrWritingRubric article i { height:5px; overflow:hidden; border-radius:5px; background:#e7e2f2; }
+.cefrWritingRubric article i em { display:block; height:100%; background:var(--purple); }
+.cefrWritingRubric article small { font-size:9px; }
+@media(max-width:390px){.cefrWritingRubric > div{grid-template-columns:1fr}}
 
 .writingReviewActions {
   display: grid;

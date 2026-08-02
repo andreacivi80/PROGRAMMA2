@@ -1,0 +1,6 @@
+import {createServer} from "vite";
+const server=await createServer({server:{middlewareMode:true},appType:"custom",logLevel:"silent"}),failures=[],check=(ok,msg)=>{if(!ok)failures.push(msg)};
+try{const {evaluateWritingRubric}=await server.ssrLoadModule("/src/writingRubric.ts"),{analyzeLocalWriting}=await server.ssrLoadModule("/src/languageAnalysis.ts");
+const weak="i am agree and i am agree", strong="Although the proposal offers clear benefits, it also involves practical risks. However, the team could reduce those risks by testing the process first. This would provide reliable evidence while allowing staff to identify problems before the full launch.";
+for(const level of ["A1","A2","B1","B2","C1"]){const a=evaluateWritingRubric(weak,level,analyzeLocalWriting(weak)),b=evaluateWritingRubric(strong,level,analyzeLocalWriting(strong));check(b.total>a.total,`${level}: testo forte non supera testo debole`);check(a.areas.length===5,`${level}: aree mancanti`);check(a.areas.every(x=>x.score>=0&&x.score<=100),`${level}: punteggio fuori scala`);check(b.nextStep.startsWith("Prossimo passo:"),`${level}: indicazione operativa assente`)}
+console.log(JSON.stringify({engine:"rubrica CEFR di scrittura",levels:5,failures},null,2));}finally{await server.close()}if(failures.length)process.exitCode=1;

@@ -1,10 +1,10 @@
-# English Coach 10.0 — stato verificato
+# English Coach 10.1 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti e versione web usano la stessa build 10.0, con data e identificativo visibili; la pubblicazione viene aggiornata soltanto dopo il collaudo completo.
+- **VERIFICATO** — sorgenti e versione web usano la stessa build 10.1, con data e identificativo visibili; la pubblicazione viene aggiornata soltanto dopo il collaudo completo.
 - **IMPLEMENTATO** — tre controllori permanenti e indipendenti verificano contenuti didattici, interazioni reali e build/browser; ogni futura revisione esegue automaticamente tutti e tre.
 - **IMPLEMENTATO** — un quarto controllore black-box verifica risorse HTTP, manifest, service worker, hash del bundle, 100 richieste simultanee e 30 refresh indipendenti.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
@@ -78,6 +78,7 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 
 - **IMPLEMENTATO** — frase, testo libero, mail, reclamo, sintesi, opinione, confronto, mediazione e risposte professionali nei laboratori e nelle lezioni.
 - **IMPLEMENTATO** — analisi locale distinta per grammatica, ortografia, chiarezza e lessico, con punteggio trasparente per ciascuna area.
+- **IMPLEMENTATO** — rubrica CEFR A1–C1 per correttezza, organizzazione, varietà, registro e sviluppo, con prossimo passo prioritario.
 - **VERIFICATO** — il controllo intercetta gli errori frequenti, classifica e spiega ogni rilievo e permette di applicare, ascoltare, modificare e ricontrollare la proposta senza spostare la pagina.
 - **VERIFICATO** — corpus positivo/negativo, 3.000 mutazioni, controllo di idempotenza e prova reale dell’interfaccia proteggono da falsi positivi e correzioni incoerenti.
 - **RINVIATO CON MOTIVAZIONE** — correzione completa di naturalezza e coerenza richiede un correttore linguistico/AI esterno; le verifiche locali non vengono presentate come equivalenti.

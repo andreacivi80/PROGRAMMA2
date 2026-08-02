@@ -44,6 +44,7 @@ import {
 } from "./supplementaryQuiz";
 import { analyzeLocalWriting } from "./languageAnalysis";
 import { adaptChoices, difficultyMode } from "./adaptiveDifficulty";
+import { evaluateWritingRubric } from "./writingRubric";
 import { compareResponseWords, isAcceptedAnswer, orderedResponseScore, type ResponsePart } from "./responseValidation";
 import { buildErrorClusters, buildSkillProfile } from "./learningIntelligence";
 import { buildAdaptivePlan } from "./adaptivePlan";
@@ -155,9 +156,9 @@ function OfflinePanel() {
   );
 }
 
-const APP_VERSION = "10.0";
+const APP_VERSION = "10.1";
 const BUILD_DATE = "2 agosto 2026";
-const BUILD_ID = "EC-10.0-0802";
+const BUILD_ID = "EC-10.1-0802";
 type View =
   | "start"
   | "home"
@@ -2058,7 +2059,8 @@ export default function Home() {
       : 0,
     writingAnalysis = writingNotes
       ? analyzeLocalWriting(writing, unit.grammar.formulas[0]?.trim())
-      : null;
+      : null,
+    writingRubric = writingAnalysis ? evaluateWritingRubric(writing, unit.cefr, writingAnalysis) : null;
   const playWord = (word: string, rate = 0.85) => {
     const fallback = () => {
       if (typeof speechSynthesis === "undefined") return;
@@ -5722,6 +5724,7 @@ export default function Home() {
                       ))}
                       {!writingAnalysis?.notes.length && <span>✓ Non ho rilevato errori frequenti.</span>}
                     </div>
+                    {writingRubric && <section className="cefrWritingRubric" aria-label={`Rubrica di scrittura ${unit.cefr}`}><header><span><small>RUBRICA {unit.cefr}</small><b>{writingRubric.total}/100</b></span><p>{writingRubric.nextStep}</p></header><div>{writingRubric.areas.map(area=><article key={area.area}><span><b>{area.area}</b><strong>{area.score}</strong></span><i><em style={{width:`${area.score}%`}} /></i><small>{area.feedback}</small></article>)}</div></section>}
                     <article>
                       <small>VERSIONE SUGGERITA</small>
                       <p className="writingExact" lang="en">{writingSuggestion}</p>
