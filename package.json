@@ -1,6 +1,6 @@
 {
   "name": "english-coach-public",
-  "version": "9.5.0",
+  "version": "9.6.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -35,6 +35,7 @@
     "audit:adaptive-plan": "node tools/adaptive-plan-audit.mjs",
     "audit:writing": "node tools/writing-analysis-audit.mjs",
     "audit:engine-content": "node tools/engine-content-gate.mjs",
+    "audit:engine-interaction": "node tools/engine-interaction-gate.mjs",
     "audit:journey3": "node tools/adaptive-persona-journey-audit.mjs",
     "audit:visual": "node tools/visual-layout-audit.mjs",
     "audit:crawl": "node tools/full-app-crawl-audit.mjs",
