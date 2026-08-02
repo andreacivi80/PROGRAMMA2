@@ -1,10 +1,10 @@
-# English Coach 8.9 — stato verificato
+# English Coach 9.0 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti e versione web usano la stessa build 8.9, con data e identificativo visibili; la pubblicazione viene aggiornata soltanto dopo il collaudo completo.
+- **VERIFICATO** — sorgenti e versione web usano la stessa build 9.0, con data e identificativo visibili; la pubblicazione viene aggiornata soltanto dopo il collaudo completo.
 - **NON APPLICABILE** — non esistono più una versione Electron e uno ZIP separati: il prodotto corrente è una PWA web unica sul link permanente.
 - **IMPLEMENTATO** — cache aggiornata senza cancellare i progressi locali.
 - **VERIFICATO** — i nomi dell’archivio locale restano stabili tra le revisioni: una nuova pubblicazione sostituisce l’interfaccia, non i dati dell’utente.
@@ -42,6 +42,7 @@ Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON M
 - **IMPLEMENTATO** — le formule non sono ripetute nella spiegazione: compaiono una sola volta nello schema rapido dedicato.
 - **VERIFICATO** — tutte le 60 lezioni hanno una guida grammaticale di almeno cinque sezioni con uso, costruzione, confronto con l’italiano, errori frequenti e applicazione nel contesto.
 - **VERIFICATO** — 1.415 domande tra percorso, letture, temi ed extra hanno indice, opzioni e spiegazione coerenti; le verifiche avanzate provano fino a 15.460 generazioni casuali senza alternative estranee o riempitive.
+- **VERIFICATO** — un secondo motore indipendente controlla 1.302 famiglie uniche con matrice CEFR, indizi involontari nella risposta, lunghezza anomala, assoluti-spia e mutazioni artificiali; rileva 4 difetti seminati su 4 e non lascia anomalie bloccanti.
 
 ## 9. Missioni reali
 

@@ -480,7 +480,7 @@ const coreCurriculum: MobileUnit[] = [
     "Riassumi due posizioni opposte e proponi un compromesso condizionato.",
     "Ravi: Rejecting the development altogether seems short-sighted. Elena: The council has not exactly been transparent about traffic. Ravi: What if we supported housing on condition that public transport improved first? Elena: I could get behind that.",
     "Riconosci critica indiretta, condizione e accordo finale.",
-    [C("What does Elena imply?", ["The council communicated poorly", "Traffic is perfect", "Housing is cancelled"], 0, "Not exactly transparent è una critica."), C("What is the compromise?", ["Reject everything", "Support housing if transport improves", "Ignore traffic"], 1, "Supporto condizionato al trasporto.")],
+    [C("What does Elena imply?", ["The council communicated poorly", "Traffic is perfect", "Housing is cancelled"], 0, "Not exactly transparent è una critica."), C("What is the compromise?", ["Approve housing without transport changes", "Support housing if transport improves", "Delay housing until traffic concerns are resolved"], 1, "Supporto condizionato al trasporto.")],
     "I can see the concern. I could support the plan on condition that public transport improved first.",
     "Presenta una posizione diplomatica con pausa prima della condizione.",
     ["can see why", "on condition that", "support"],
