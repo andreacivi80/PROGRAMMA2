@@ -1,10 +1,11 @@
-# English Coach 10.4 — stato verificato
+# English Coach 10.5 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti e versione web usano la stessa build 10.4, con data e identificativo visibili; la pubblicazione viene aggiornata soltanto dopo il collaudo completo.
+- **VERIFICATO** — sorgenti e versione web usano la stessa build 10.5, con data e identificativo visibili; la pubblicazione viene aggiornata soltanto dopo il collaudo completo.
+- **VERIFICATO** — il portafoglio personale confronta produzioni e frasi esclusivamente sul dispositivo corrente, senza sincronizzazione.
 - **VERIFICATO** — il ripasso dilazionato distingue gli errori occasionali dalle lacune ricorrenti e accorcia gli intervalli quando serve.
 - **VERIFICATO** — l’ascolto offre una scala volontaria: solo audio, parole chiave e trascrizione sincronizzata.
 - **VERIFICATO** — i dialoghi a bivi sono realistici e distinti per livello, con conseguenze spiegate e alternative progressivamente più sottili.

@@ -47,6 +47,7 @@ import { adaptChoices, difficultyMode } from "./adaptiveDifficulty";
 import { evaluateWritingRubric } from "./writingRubric";
 import { listeningKeywords, listeningStageLabel, type ListeningHelpStage } from "./listeningProgression";
 import { planSpacedReview, type ReviewPattern } from "./spacedReview";
+import { buildLocalPortfolio } from "./localPortfolio";
 import { compareResponseWords, isAcceptedAnswer, orderedResponseScore, type ResponsePart } from "./responseValidation";
 import { buildErrorClusters, buildSkillProfile } from "./learningIntelligence";
 import { buildAdaptivePlan } from "./adaptivePlan";
@@ -158,9 +159,9 @@ function OfflinePanel() {
   );
 }
 
-const APP_VERSION = "10.4";
+const APP_VERSION = "10.5";
 const BUILD_DATE = "2 agosto 2026";
-const BUILD_ID = "EC-10.4-0802";
+const BUILD_ID = "EC-10.5-0802";
 type View =
   | "start"
   | "home"
@@ -2935,6 +2936,7 @@ export default function Home() {
         candidate.vocabulary.map((word) => word.en.toLowerCase()),
       ),
     ).size,
+    localPortfolio = buildLocalPortfolio(progress, mobileCurriculum),
     lastExam = Object.entries(progress.reviews ?? {})
       .filter(([id]) => id.includes("-review-12-"))
       .sort((a, b) => b[1].completedAt.localeCompare(a[1].completedAt))[0],
@@ -4430,6 +4432,12 @@ export default function Home() {
               <small>nel livello {selectedLevel}</small>
             </article>
           </div>
+          <section className="localPortfolio" aria-label="Portafoglio personale locale">
+            <header><span><small>SOLO SU QUESTO DISPOSITIVO</small><h2>Il mio portafoglio</h2></span><b>{localPortfolio.writings.length + localPortfolio.challenges.length} produzioni</b></header>
+            <p>Raccoglie i testi e le frasi che hai creato: serve a vedere progressi concreti, senza account e senza sincronizzazione.</p>
+            {localPortfolio.firstWriting && localPortfolio.latestWriting ? <div className="portfolioComparison"><article><small>PRIMO TESTO · {localPortfolio.firstWriting.level}</small><strong>{localPortfolio.firstWriting.title}</strong><p lang="en">{localPortfolio.firstWriting.text}</p></article><article><small>TESTO PIÙ RECENTE · {localPortfolio.latestWriting.level}</small><strong>{localPortfolio.latestWriting.title}</strong><p lang="en">{localPortfolio.latestWriting.text}</p></article></div>:<div className="portfolioEmpty"><b>Il primo testo comparirà qui.</b><span>Completa la prova di scrittura di una sessione per iniziare il confronto.</span></div>}
+            <footer><span><b>{localPortfolio.phrases.length}</b> frasi salvate</span><span><b>{localPortfolio.challenges.length}</b> sfide scritte</span><span><b>{localPortfolio.writings.length}</b> testi di lezione</span></footer>
+          </section>
           <section className="card">
             <div className="title">
               <div>
@@ -4669,8 +4677,8 @@ export default function Home() {
             <span className="eyebrow">Backup reale</span>
             <h2>I progressi restano salvati</h2>
             <p>
-              Il programma salva automaticamente in questo browser. Per passare
-              a un altro telefono, copia il backup e incollalo lì.
+              Il programma salva automaticamente in questo browser. Il backup
+              è manuale e non attiva alcuna sincronizzazione.
             </p>
             <button
               onClick={() => {
