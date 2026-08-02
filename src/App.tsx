@@ -154,9 +154,9 @@ function OfflinePanel() {
   );
 }
 
-const APP_VERSION = "9.4";
+const APP_VERSION = "9.5";
 const BUILD_DATE = "2 agosto 2026";
-const BUILD_ID = "EC-9.4-0802";
+const BUILD_ID = "EC-9.5-0802";
 type View =
   | "start"
   | "home"
