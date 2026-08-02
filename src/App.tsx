@@ -153,9 +153,9 @@ function OfflinePanel() {
   );
 }
 
-const APP_VERSION = "9.1";
+const APP_VERSION = "9.2";
 const BUILD_DATE = "2 agosto 2026";
-const BUILD_ID = "EC-9.1-0802";
+const BUILD_ID = "EC-9.2-0802";
 type View =
   | "start"
   | "home"
@@ -1838,6 +1838,13 @@ export default function Home() {
     [dictation, setDictation] = useState(initialSession?.checkpoint.dictation ?? ""),
     [dictationChecked, setDictationChecked] = useState(initialSession?.checkpoint.dictationChecked ?? false),
     [recordedAudioUrl, setRecordedAudioUrl] = useState("");
+
+  useEffect(
+    () => () => {
+      if (recordedAudioUrl) URL.revokeObjectURL(recordedAudioUrl);
+    },
+    [recordedAudioUrl],
+  );
   const themeResultsRef = useRef<HTMLElement | null>(null),
     writingRef = useRef<HTMLTextAreaElement | null>(null),
     finishingRef = useRef(false);
@@ -2490,10 +2497,7 @@ export default function Home() {
       recorder.onstop = () => {
         if (!chunks.length) return;
         const nextUrl = URL.createObjectURL(new Blob(chunks, { type: recorder?.mimeType || "audio/webm" }));
-        setRecordedAudioUrl((previous) => {
-          if (previous) URL.revokeObjectURL(previous);
-          return nextUrl;
-        });
+        setRecordedAudioUrl(nextUrl);
       };
       recorder.start();
     }
@@ -2569,7 +2573,16 @@ export default function Home() {
     setSpoken("");
     setRecordedAudioUrl("");
     setRecording(true);
-    r.start();
+    try {
+      r.start();
+    } catch {
+      window.clearTimeout(timeout);
+      setRecording(false);
+      finishRecording();
+      setSpoken(
+        "Il riconoscimento vocale non è partito. Attendi un momento e riprova.",
+      );
+    }
   };
   const reviewId = (level: Cefr, end: number) =>
     `${level.toLowerCase()}-review-${end}-v1`;

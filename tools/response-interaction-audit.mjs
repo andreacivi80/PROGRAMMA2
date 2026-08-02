@@ -9,7 +9,9 @@ window.HTMLElement.prototype.scrollIntoView = () => undefined;
 window.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} });
 window.URL.createObjectURL = () => "blob:response-audit";
 window.URL.revokeObjectURL = () => undefined;
-Object.defineProperty(window.navigator, "mediaDevices", { value: { getUserMedia: async () => ({ getTracks: () => [{ stop() {} }] }) } });
+let speechStartThrows = false;
+let stoppedMicrophoneTracks = 0;
+Object.defineProperty(window.navigator, "mediaDevices", { value: { getUserMedia: async () => ({ getTracks: () => [{ stop() { stoppedMicrophoneTracks += 1; } }] }) } });
 Object.defineProperty(window, "speechSynthesis", { value: { speaking: false, paused: false, getVoices: () => [], speak: utterance => { utterance.onstart?.(); utterance.onend?.(); }, cancel() {}, pause() {}, resume() {} } });
 globalThis.speechSynthesis = window.speechSynthesis;
 globalThis.SpeechSynthesisUtterance = class { constructor(text) { this.text = text; this.rate = 1; this.lang = ""; } };
@@ -18,6 +20,7 @@ globalThis.Audio = class { constructor(src) { this.src = src; this.currentTime =
 let speechTranscript = "";
 class SpeechRecognitionMock {
   start() {
+    if (speechStartThrows) throw new Error("simulated browser start failure");
     setTimeout(() => {
       const alternative = { transcript: speechTranscript };
       this.onresult?.({ results: Object.assign([[alternative]], { length: 1 }) });
@@ -105,6 +108,14 @@ try {
   speechTranscript = "I worked there yesterday";
   fireEvent.click(screen.getByRole("button", { name: /Parla in inglese/ })); await wait(150);
   check("ui-wrong-speech-shows-errors", document.querySelectorAll(".pronunciationCompare .wordBad").length > 0 && Boolean(document.querySelector(".retryWords")));
+
+  await mountAt("speaking", 0);
+  speechStartThrows = true;
+  const stoppedBeforeFailure = stoppedMicrophoneTracks;
+  fireEvent.click(screen.getByRole("button", { name: /Parla in inglese/ })); await wait(20);
+  check("ui-speech-start-failure-is-explained", Boolean(screen.getByText(/Il riconoscimento vocale non è partito/)));
+  check("ui-speech-start-failure-releases-microphone", stoppedMicrophoneTracks > stoppedBeforeFailure, `${stoppedMicrophoneTracks - stoppedBeforeFailure} tracce chiuse`);
+  speechStartThrows = false;
 } finally {
   cleanup();
   await server.close();
