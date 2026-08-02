@@ -1,4 +1,4 @@
-const CACHE = "gambe-leggere-v234";
+const CACHE = "gambe-leggere-v235";
 const BASE = "/PROGRAMMA2/gambe-leggere/";
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.add(BASE)));
