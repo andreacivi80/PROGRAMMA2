@@ -160,9 +160,9 @@ function OfflinePanel() {
   );
 }
 
-const APP_VERSION = "10.7";
+const APP_VERSION = "10.8";
 const BUILD_DATE = "3 agosto 2026";
-const BUILD_ID = "EC-10.7-0803";
+const BUILD_ID = "EC-10.8-0803";
 type View =
   | "start"
   | "home"

@@ -1,10 +1,11 @@
-# English Coach 10.7 — stato verificato
+# English Coach 10.8 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti e versione web usano la stessa build 10.7, con data e identificativo visibili; la pubblicazione viene aggiornata soltanto dopo il collaudo completo.
+- **VERIFICATO** — sorgenti e versione web usano la stessa build 10.8, con data e identificativo visibili; la pubblicazione viene aggiornata soltanto dopo il collaudo completo.
+- **VERIFICATO** — identità cromatica a due toni estesa all’intera applicazione: fondo continuo e moduli coordinati, distinti per A1, A2, B1, B2 e C1 in Oggi, Percorso, Temi e Progressi.
 - **VERIFICATO** — revisione editoriale finale su contenuti, risposte, duplicati, impaginazione, persistenza, offline e confini del progetto.
 - **VERIFICATO** — nel Milionario risposta corretta, risposta errata e soluzione rivelata hanno stati visivi distinti e testati separatamente.
 - **VERIFICATO** — matrice obbligatoria per 19 famiglie di esercizi e stress test combinatorio su risposta corretta, errata, salto, doppio click e reset.

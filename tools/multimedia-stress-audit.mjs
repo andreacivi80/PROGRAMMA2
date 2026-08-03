@@ -129,6 +129,7 @@ const click = async selector => {
   throw new Error(`Control not found: ${selector}`);
 };
 const snapshot = () => evaluate(`({audit:window.__multimediaAudit,level:document.querySelector(".app")?.dataset.learningLevel,background:getComputedStyle(document.querySelector(".app")).backgroundImage,horizontal:document.documentElement.scrollWidth>innerWidth+1})`);
+const surfaceSnapshot = (selector, variable) => evaluate(`(()=>{const app=document.querySelector(".app"),surface=document.querySelector(${JSON.stringify(selector)}),probe=document.createElement("i");probe.style.cssText=${JSON.stringify(`position:absolute;background:var(${variable})`)};app?.append(probe);const state={level:app?.dataset.learningLevel,background:getComputedStyle(app).backgroundImage,canvas:getComputedStyle(app).getPropertyValue("--level-canvas").trim(),panel:getComputedStyle(app).getPropertyValue("--level-panel").trim(),surface:Boolean(surface),surfaceBackground:surface?getComputedStyle(surface).backgroundColor:null,expectedBackground:getComputedStyle(probe).backgroundColor,horizontal:document.documentElement.scrollWidth>innerWidth+1};probe.remove();return state})()`);
 const checks = [];
 const check = (name, passed, detail = "") => checks.push({ name, passed: Boolean(passed), detail });
 const marker = /\b([A-Za-z][A-Za-z ]{0,18}):\s*/g;
@@ -198,19 +199,34 @@ try {
   const video = await evaluate(`(()=>{const links=[...document.querySelectorAll(".videoCards a")];return{count:links.length,official:links.every(link=>link.href.startsWith("https://learnenglish.britishcouncil.org/")),safe:links.every(link=>link.target==="_blank"&&link.rel.includes("noreferrer")),horizontal:document.documentElement.scrollWidth>innerWidth+1}})()`);
   check("video-resources-visible-and-official", video.count > 0 && video.official && video.safe && !video.horizontal, video);
 
-  const levelBackgrounds = [];
+  const levelBackgrounds = [], levelPanels = [];
+  const viewSurfaces = {
+    home: [".homeChoice", "--level-panel"],
+    path: [".pathSequence>button", "--level-panel-strong"],
+    topics: [".themeGrid>button", "--level-panel-strong"],
+    progress: [".metrics article", "--level-panel"],
+  };
   for (const level of ["A1", "A2", "B1", "B2", "C1"]) {
     const unit = mobileCurriculum.find(candidate => candidate.cefr === level);
-    await seed(unit, "grammar", "home");
-    for (const viewport of [{ width: 390, height: 844, mobile: true }, { width: 1440, height: 900, mobile: false }]) {
-      await call("Emulation.setDeviceMetricsOverride", { ...viewport, deviceScaleFactor: 1 });
+    await call("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, mobile: true, deviceScaleFactor: 1 });
+    for (const [view, [selector, variable]] of Object.entries(viewSurfaces)) {
+      await seed(unit, "grammar", view);
       await wait(80);
-      const state = await snapshot();
-      check(`${level}-responsive-${viewport.width}`, state.level === level && !state.horizontal, state);
-      if (viewport.width === 390) levelBackgrounds.push(state.background);
+      const state = await surfaceSnapshot(selector, variable);
+      check(`${level}-${view}-two-tone-mobile`, state.level === level && state.surface && state.canvas !== state.panel && state.surfaceBackground === state.expectedBackground && !state.horizontal, state);
+      if (view === "home") {
+        levelBackgrounds.push(state.background);
+        levelPanels.push(state.panel);
+      }
     }
+    await call("Emulation.setDeviceMetricsOverride", { width: 1440, height: 900, mobile: false, deviceScaleFactor: 1 });
+    await seed(unit, "grammar", "home");
+    await wait(80);
+    const desktop = await surfaceSnapshot(".homeChoice", "--level-panel");
+    check(`${level}-home-two-tone-desktop`, desktop.level === level && desktop.surface && desktop.surfaceBackground === desktop.expectedBackground && !desktop.horizontal, desktop);
   }
   check("five-distinct-level-backgrounds", new Set(levelBackgrounds).size === 5, levelBackgrounds);
+  check("five-distinct-level-panels", new Set(levelPanels).size === 5, levelPanels);
 
   const sampledAudio = mobileCurriculum.flatMap(unit => [`audio/${unit.id}-listening.wav`, `audio/${unit.id}-speaking.wav`]).filter((_, index) => index % 12 === 0).slice(0, 10);
   const mediaResponses = await Promise.all(Array.from({ length: 5 }, () => sampledAudio).flat().map(async path => {
@@ -221,7 +237,7 @@ try {
   check("concurrent-media-delivery", mediaResponses.length >= 25 && mediaResponses.every(Boolean), { requests: mediaResponses.length, passed: mediaResponses.filter(Boolean).length });
 
   const failures = checks.filter(result => !result.passed);
-  console.log(JSON.stringify({ system: "multimedia stress gate", browser: "Chrome headless", exerciseFlows: 5, responsiveStates: 10, concurrentMediaRequests: mediaResponses.length, checks, failureCount: failures.length }, null, 2));
+  console.log(JSON.stringify({ system: "multimedia stress gate", browser: "Chrome headless", exerciseFlows: 5, responsiveStates: 25, concurrentMediaRequests: mediaResponses.length, checks, failureCount: failures.length }, null, 2));
   if (failures.length) process.exitCode = 1;
 } finally {
   socket?.close();
