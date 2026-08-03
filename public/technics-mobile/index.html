@@ -153,8 +153,21 @@ html.resume-production body:after{content:"Riapro packing list…";position:fixe
 </style>
 <script id="resume-mask-start-v123">
 try{
-  const saved=JSON.parse(localStorage.getItem("technics-mobile-view-v1222")||"null");
-  if(saved?.mode==="production")document.documentElement.classList.add("resume-production");
+  const navType=performance.getEntriesByType("navigation")[0]?.type||"navigate";
+  const saved=navType==="reload"?JSON.parse(sessionStorage.getItem("technics-refresh-context-v1323")||"null"):null;
+  localStorage.removeItem("technics-mobile-view-v1222");
+  if(navType!=="reload"){
+    sessionStorage.removeItem("technics-refresh-context-v1323");
+    sessionStorage.removeItem("technics-workspace-v130");
+    sessionStorage.removeItem("technics-layout-restore-v164");
+    const clean=new URL(location.href);
+    clean.searchParams.delete("workspace");
+    clean.searchParams.delete("inventoryKind");
+    clean.searchParams.delete("inventoryValue");
+    clean.searchParams.delete("inventoryLot");
+    history.replaceState(null,"",clean);
+  }
+  if(navType==="reload"&&saved?.mode==="production")document.documentElement.classList.add("resume-production");
 }catch{}
 </script>
 <style id="inventory-refresh-top-v1256">#result{position:relative}#result>.refreshtop{position:absolute;z-index:2;top:11px;right:14px;width:auto!important;min-height:28px!important;margin:0!important;padding:0 9px!important;font-size:9px!important}#result>.fresh{min-height:32px;padding-right:86px}#result>.inventorywarehouse{margin-top:7px}#opnumber{display:flex;flex-wrap:wrap;align-items:center;gap:5px}.opref,.ovref{display:inline-flex;padding:4px 7px;border:1px solid;border-radius:7px;background:#fff;font-size:11px;font-weight:950}.opref{border-color:#2b7564;color:#175345}.ovref{border-color:#4778a8;color:#315f8c}.artref{color:#5f7b73;font-weight:900}.printtitle .opref,.printtitle .ovref{margin-right:5px;font-size:12px}.printtitle .artref{font-size:inherit}</style>
@@ -183,7 +196,7 @@ try{
 <script id="technics-live-sync-v144" src="modules/live-sync-1.4.4.js"></script>
 <script id="technics-system-health-v162" src="modules/system-health-1.6.2.js"></script>
 <script type="module">
-const APP_VERSION="1.7.37";
+const APP_VERSION="1.7.38";
 const localBridgeTest=new URLSearchParams(location.search).get("testBridge"),BRIDGE_URL=location.hostname==="127.0.0.1"&&/^dev\d+$/.test(localBridgeTest||"")?`http://127.0.0.1:${localBridgeTest.slice(3)}`:"https://student-tarot-occultist.ngrok-free.dev";async function readJsonResponse(response){return TechnicsDataClient.read(response,"Collegamento dati in ripristino automatico. Riprova tra pochi secondi.")}
 const scannerModules=Promise.all([import("https://cdn.jsdelivr.net/npm/@zxing/browser@0.2.1/+esm"),import("https://cdn.jsdelivr.net/npm/@zxing/library@0.23.0/+esm")]);
 const $=id=>document.getElementById(id);let controls=null,imageReader=null,nativeTimer=null,zoomTimer=null,lastCode="",lastKind="code",lastLot="",scanLocked=false,refreshTimer=null,busyLookup=false,busyProduction=false,nativeBusy=false,activeModule="inventory",currentItem=null,currentOrder=null,packingItems=[],scanPurpose="lookup",expectedMaterialCode="",packingConfirmed=false,packingSyncTimer=null,packingRevision=0,pendingMaterial=null,pendingBarcode="",pendingLocation="",pendingLocationCandidates=[],stableScanValue="",stableScanCount=0,stableScanAt=0,awaitingBarcodeLot=false,packingLiveSync=null;const scannerConsensus=TechnicsScannerCore.createConsensus(1500);
@@ -198,7 +211,7 @@ async function lookup(value,kind="code",lotFilter="",silent=false,forceFresh=fal
   try{const params=new URLSearchParams();params.set(kind,term);if(kind==="code"&&lot)params.set("lot",lot);if(forceFresh)params.set("fresh",Date.now().toString());const {response:r,payload:p}=await TechnicsDataClient.fetchJson(`${BRIDGE_URL}/api/items/lookup?${params}`,{cache:"no-store",headers:{"Cache-Control":"no-store","ngrok-skip-browser-warning":"1"}},{cacheMs:forceFresh?0:12000,message:"Collegamento inventario temporaneamente incompleto."});if(p.requiresLot){awaitingBarcodeLot=true;lastLot="";$("lot").value="";message("Articolo verificato · lotto necessario",`${p.articleCode||"Articolo"} · questo barcode non identifica il lotto. Inserisci il lotto stampato sul contenitore per vedere quantità e ubicazione.`,false);setTimeout(()=>$("lot").focus(),50);return}if(!r.ok||!p.ok)throw new Error(p.error||"Lettura non riuscita.");awaitingBarcodeLot=false;if(p.item.lookupType==="productionOrder"){await loadProduction(term,silent);return}if(p.item.lookupType==="location")lastKind="location";show(p.item)}
  catch(e){if(!silent)message("Lettura non disponibile",(kind==="lot"?"Lotto ":"Codice ")+term+" · "+(e.message||"Il ponte Technics non risponde."))}finally{busyLookup=false}
 }function scheduleRefresh(){clearTimeout(refreshTimer);if(!BRIDGE_URL||!lastCode)return;refreshTimer=setTimeout(()=>{if(document.hidden)scheduleRefresh();else refreshCurrent(true)},15000)}const appOpenedAt=Date.now();let pendingAppVersion="";function hasActiveOperatorWork(){const planning=document.querySelector("#planningLookup");return Boolean(currentOrder||currentItem||lastCode||planning?.classList.contains("detailview")||planning?.querySelector("#planningResult .planningcard,#planningResult .multipicklist,#planningResult .scheduleday")||document.activeElement?.matches?.("input,select,textarea"))}async function checkAppUpdate(){try{const r=await fetch(`version.json?fresh=${Date.now()}`,{cache:"no-store"}),v=await readJsonResponse(r);if(!v.version||v.version===APP_VERSION)return;pendingAppVersion=v.version;document.documentElement.dataset.updatePending=v.version;if(!hasActiveOperatorWork()&&Date.now()-appOpenedAt<15000)location.replace(`${location.pathname}?v=${encodeURIComponent(v.version)}`)}catch{}}
-function persistInventoryContext(){const state={mode:"inventory",op:"",code:lastKind==="code"?lastCode:"",lot:lastKind==="lot"?lastCode:lastLot,scrollY:window.scrollY};try{sessionStorage.setItem("technics-refresh-context-v1323",JSON.stringify(state));localStorage.setItem("technics-mobile-view-v1222",JSON.stringify(state));const url=new URL(location.href);url.searchParams.set("workspace","inventory");url.searchParams.set("inventoryKind",lastKind);url.searchParams.set("inventoryValue",lastCode);if(lastLot)url.searchParams.set("inventoryLot",lastLot);else url.searchParams.delete("inventoryLot");history.replaceState(null,"",url)}catch{}}
+function persistInventoryContext(){const state={mode:"inventory",op:"",code:lastKind==="code"?lastCode:"",lot:lastKind==="lot"?lastCode:lastLot,scrollY:window.scrollY};try{sessionStorage.setItem("technics-refresh-context-v1323",JSON.stringify(state));const url=new URL(location.href);url.searchParams.set("workspace","inventory");url.searchParams.set("inventoryKind",lastKind);url.searchParams.set("inventoryValue",lastCode);if(lastLot)url.searchParams.set("inventoryLot",lastLot);else url.searchParams.delete("inventoryLot");history.replaceState(null,"",url)}catch{}}
 function show(i){currentItem=i;currentOrder=null;activateModule("inventory",true);$("message").classList.add("hidden");$("result").classList.remove("hidden");renderStocks();persistInventoryContext();scheduleRefresh()}
 function lotKey(v){const n=String(v||"").replace(/\D/g,"");if(!n)return -1;const year=Number(n.slice(-2)),seq=Number(n.slice(0,-2)||0);return year*1000000+seq}
 function sortedStocks(rows){const mode=$("sortStocks").value,copy=[...rows],loc=x=>String(x.location||"").toUpperCase();return copy.sort((a,b)=>{if(mode==="quantity")return Number(b.quantity)-Number(a.quantity);if(mode==="lotNew")return lotKey(b.lot)-lotKey(a.lot);if(mode==="lotOld")return lotKey(a.lot)-lotKey(b.lot);if(mode==="expiry")return (new Date(a.expiry||"2999-12-31"))-(new Date(b.expiry||"2999-12-31"));if(mode==="location")return loc(a).localeCompare(loc(b),"it");const score=x=>loc(x).startsWith("000")?0:loc(x).startsWith("001")?1:2;return score(a)-score(b)||loc(a).localeCompare(loc(b),"it")})}
@@ -233,7 +246,7 @@ async function startNativeDetector(){if(!window.BarcodeDetector)return;try{const
 async function camera(){stableScanValue="";stableScanCount=0;stableScanAt=0;document.querySelector(".camhead strong").textContent=scanPurpose==="material"?(expectedMaterialCode?"Scansiona "+expectedMaterialCode:"Scansiona materiale"):"Centra il codice";$("camhint").textContent="Avvio rapido della fotocamera…";$("camera").classList.remove("hidden");try{const [{BrowserMultiFormatReader},{DecodeHintType}]=await scannerModules;const hints=new Map([[DecodeHintType.TRY_HARDER,true],[DecodeHintType.ALSO_INVERTED,true]]);const reader=new BrowserMultiFormatReader(hints,{delayBetweenScanAttempts:8,delayBetweenScanSuccess:75});imageReader=reader;controls=await reader.decodeFromConstraints({audio:false,video:{facingMode:{ideal:"environment"},width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30,max:60}}},$("preview"),(r)=>{if(r)acceptScan(r.getText())});await tuneCamera(false);await startNativeDetector();zoomTimer=setTimeout(()=>tuneCamera(true),1200);$("camhint").textContent="Centra tutto il barcode, compresi i margini bianchi."}catch(e){controls?.stop();controls=null;$("camhint").textContent=e?.name==="NotAllowedError"?"Consenti la fotocamera nelle impostazioni del browser e riprova.":"Fotocamera non disponibile. Chiudi e riprova.";}}
 fitPrintPreview=function(){const stage=$("printPreview").querySelector(".printstage"),sheet=$("printContent");TechnicsPrintCore.fit(stage,sheet)};
 window.__openTechnicsCamera=camera;
-$("openPackingByOp").onclick=openPackingFromManualOp;$("manualOp").addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();openPackingFromManualOp()}});document.querySelector("footer span:last-child").textContent="Versione 1.7.37";
+$("openPackingByOp").onclick=openPackingFromManualOp;$("manualOp").addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();openPackingFromManualOp()}});document.querySelector("footer span:last-child").textContent="Versione 1.7.38";
 window.__openPlanningCamera=()=>{scanPurpose="planning";expectedMaterialCode="";camera()};
 function stop(){controls?.stop();controls=null;clearInterval(nativeTimer);clearTimeout(zoomTimer);nativeTimer=null;zoomTimer=null;nativeBusy=false;scannerConsensus.reset();$("camera").classList.add("hidden");setTimeout(()=>scanLocked=false,350)}
 function loadScript(src){return new Promise((ok,fail)=>{const old=document.querySelector(`script[src="${src}"]`);if(old)return old.dataset.ready?ok():old.addEventListener("load",ok,{once:true});const s=document.createElement("script");s.src=src;s.async=true;s.onload=()=>{s.dataset.ready="1";ok()};s.onerror=fail;document.head.appendChild(s)})}
@@ -296,8 +309,9 @@ window.__technicsTestScan=acceptScan;$("code").addEventListener("input",()=>{awa
 <script id="inventory-live-cache-v151">refreshCurrent=function(silent=false){if(!lastCode)return;if(activeModule==="production"||lastKind==="production")return loadProduction(lastCode,silent);return lookup(lastCode,lastKind,lastLot,silent,true)};</script>
 <script id="view-resume-v1222" type="module">
 (()=>{
-  const key="technics-mobile-view-v1222";
+  const legacyKey="technics-mobile-view-v1222";
   const refreshKey="technics-refresh-context-v1323";
+  const isReload=(performance.getEntriesByType("navigation")[0]?.type||"navigate")==="reload";
   const byId=id=>document.getElementById(id);
   const snapshot=()=>{
     const productionVisible=!byId("production").classList.contains("hidden");
@@ -315,12 +329,12 @@ window.__technicsTestScan=acceptScan;$("code").addEventListener("input",()=>{awa
   };
   const save=()=>{
     const state=snapshot();
-    try{localStorage.setItem(key,JSON.stringify(state))}catch{}
-    try{localStorage.removeItem(key+"-order")}catch{}
+    try{sessionStorage.setItem(refreshKey,JSON.stringify(state))}catch{}
+    try{localStorage.removeItem(legacyKey);localStorage.removeItem(legacyKey+"-order")}catch{}
   };
   document.addEventListener("DOMContentLoaded",()=>{
     let saved=null;
-    try{saved=JSON.parse(localStorage.getItem(key)||"null")}catch{}
+    try{localStorage.removeItem(legacyKey);saved=isReload?JSON.parse(sessionStorage.getItem(refreshKey)||"null"):null;if(!isReload)sessionStorage.removeItem(refreshKey)}catch{}
     const reveal=()=>document.documentElement.classList.remove("resume-production");
     const ready=()=>!byId("production").classList.contains("hidden")||!byId("openPackingHome").classList.contains("hidden");
     const observer=new MutationObserver(()=>{save();if(ready())reveal()});
@@ -328,11 +342,10 @@ window.__technicsTestScan=acceptScan;$("code").addEventListener("input",()=>{awa
     observer.observe(byId("openPackingHome"),{attributes:true,attributeFilter:["class"]});
     observer.observe(byId("opbarcode"),{childList:true,subtree:true});
     byId("modeShortcut").addEventListener("click",()=>setTimeout(save,0));
-    byId("form").addEventListener("submit",()=>setTimeout(()=>{const state=snapshot();try{sessionStorage.setItem(refreshKey,JSON.stringify(state))}catch{}try{localStorage.setItem(key,JSON.stringify(state))}catch{}},0));
+    byId("form").addEventListener("submit",()=>setTimeout(()=>{const state=snapshot();try{sessionStorage.setItem(refreshKey,JSON.stringify(state))}catch{}},0));
     window.addEventListener("pagehide",()=>{
       const state=snapshot();
       try{sessionStorage.setItem(refreshKey,JSON.stringify(state))}catch{}
-      try{localStorage.setItem(key,JSON.stringify(state))}catch{}
     });
     setTimeout(reveal,10000);
     if(!saved){reveal();return}
@@ -914,14 +927,16 @@ section.querySelector("#scheduleDirectOp").addEventListener("submit",async event
   const activateWorkspaceModule=(workspace,attempt=0)=>{const tab=document.getElementById(workspace==="packing"?"productionTab":"inventoryTab");if(typeof tab?.onclick==="function"){tab.click();applyWorkspaceLabels(workspace);setTimeout(()=>applyWorkspaceLabels(workspace),100);setTimeout(()=>applyWorkspaceLabels(workspace),600);return}if(attempt<120)setTimeout(()=>activateWorkspaceModule(workspace,attempt+1),25)};
   const select=(workspace,userInitiated=false)=>{if(!["inventory","packing","planning","schedule","sales"].includes(workspace))workspace="inventory";shell.dataset.workspace=workspace;nav.querySelectorAll("button").forEach(button=>button.classList.toggle("active",button.dataset.workspace===workspace));try{sessionStorage.setItem("technics-workspace-v130",workspace);const url=new URL(location.href);url.searchParams.set("workspace",workspace);history.replaceState(null,"",url)}catch{}activateWorkspaceModule(workspace);const title=document.getElementById("planningTitle"),result=document.getElementById("planningResult"),directResult=document.getElementById("scheduleDirectResult");if(title)title.textContent=workspace==="schedule"?"VERIFICA OP":"PRELIEVO MAGAZZINO · OP / OV";if(result&&(workspace==="planning"||workspace==="schedule"))result.innerHTML="";if(userInitiated&&directResult)directResult.innerHTML="";window.dispatchEvent(new CustomEvent("technics-workspace-change",{detail:{workspace,userInitiated}}));window.scrollTo({top:0,behavior:"instant"})};
   nav.addEventListener("click",event=>{const button=event.target.closest("button[data-workspace]");if(!button)return;try{sessionStorage.removeItem("technics-refresh-context-v1323");localStorage.removeItem("technics-mobile-view-v1222");const url=new URL(location.href);for(const key of["inventoryKind","inventoryValue","inventoryLot"])url.searchParams.delete(key);history.replaceState(null,"",url)}catch{}if(typeof resetSearch==="function")resetSearch();select(button.dataset.workspace,true)});
-  let initial=new URLSearchParams(location.search).get("workspace")||"inventory";try{initial=new URLSearchParams(location.search).get("workspace")||sessionStorage.getItem("technics-workspace-v130")||initial}catch{}select(initial);
+  const isReload=(performance.getEntriesByType("navigation")[0]?.type||"navigate")==="reload";
+  let initial="inventory";if(isReload){try{initial=new URLSearchParams(location.search).get("workspace")||sessionStorage.getItem("technics-workspace-v130")||initial}catch{}}select(initial);
 })();
 </script>
 <script id="workspace-refresh-restore-v1323">
 (()=>{
-  const refreshKey="technics-refresh-context-v1323",viewKey="technics-mobile-view-v1222";
+  const refreshKey="technics-refresh-context-v1323";
+  const isReload=(performance.getEntriesByType("navigation")[0]?.type||"navigate")==="reload";
   const byId=id=>document.getElementById(id);
-  const readState=()=>{const params=new URLSearchParams(location.search),inventoryValue=params.get("inventoryValue");if(params.get("workspace")==="inventory"&&inventoryValue){const kind=params.get("inventoryKind")==="lot"?"lot":"code";return {mode:"inventory",op:"",code:kind==="code"?inventoryValue:"",lot:kind==="lot"?inventoryValue:(params.get("inventoryLot")||""),scrollY:0}}let value=null;try{value=sessionStorage.getItem(refreshKey)||localStorage.getItem(viewKey)}catch{}try{return JSON.parse(value||"null")}catch{return null}};
+  const readState=()=>{if(!isReload)return null;const params=new URLSearchParams(location.search),inventoryValue=params.get("inventoryValue");if(params.get("workspace")==="inventory"&&inventoryValue){const kind=params.get("inventoryKind")==="lot"?"lot":"code";return {mode:"inventory",op:"",code:kind==="code"?inventoryValue:"",lot:kind==="lot"?inventoryValue:(params.get("inventoryLot")||""),scrollY:0}}let value=null;try{value=sessionStorage.getItem(refreshKey)}catch{}try{return JSON.parse(value||"null")}catch{return null}};
   const waitFor=(condition,done,attempt=0)=>{if(condition())return done();if(attempt<120)setTimeout(()=>waitFor(condition,done,attempt+1),100)};
   const restore=()=>{
     const shell=document.querySelector("main.shell"),saved=readState();

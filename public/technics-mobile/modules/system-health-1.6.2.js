@@ -56,7 +56,7 @@
     else{check();setInterval(check,20000)}
     checkFunctions();setInterval(checkFunctions,60000);
   };
-  window.TechnicsSystemHealth=Object.freeze({check,diagnostics:()=>Object.freeze({...state}),version:"1.7.37"});
-  document.documentElement.dataset.systemHealth="1.7.37";
+  window.TechnicsSystemHealth=Object.freeze({check,diagnostics:()=>Object.freeze({...state}),version:"1.7.38"});
+  document.documentElement.dataset.systemHealth="1.7.38";
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
 })();
