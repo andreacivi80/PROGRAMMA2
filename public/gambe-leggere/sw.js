@@ -1,4 +1,4 @@
-const CACHE = "gambe-leggere-v252";
+const CACHE = "gambe-leggere-v253";
 
 self.addEventListener("install", () => {
   self.skipWaiting();
