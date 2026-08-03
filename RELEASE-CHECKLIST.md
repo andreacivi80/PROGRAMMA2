@@ -1,13 +1,14 @@
-# English Coach 10.6 — stato verificato
+# English Coach 10.7 — stato verificato
 
 Legenda: **IMPLEMENTATO**, **VERIFICATO**, **NON APPLICABILE**, **RINVIATO CON MOTIVAZIONE**.
 
 ## 1. Versione e consegna
 
-- **VERIFICATO** — sorgenti e versione web usano la stessa build 10.6, con data e identificativo visibili; la pubblicazione viene aggiornata soltanto dopo il collaudo completo.
+- **VERIFICATO** — sorgenti e versione web usano la stessa build 10.7, con data e identificativo visibili; la pubblicazione viene aggiornata soltanto dopo il collaudo completo.
 - **VERIFICATO** — revisione editoriale finale su contenuti, risposte, duplicati, impaginazione, persistenza, offline e confini del progetto.
 - **VERIFICATO** — nel Milionario risposta corretta, risposta errata e soluzione rivelata hanno stati visivi distinti e testati separatamente.
 - **VERIFICATO** — matrice obbligatoria per 19 famiglie di esercizi e stress test combinatorio su risposta corretta, errata, salto, doppio click e reset.
+- **VERIFICATO** — stress test multimediale reale su avvio, pausa, ripresa e stop, transcript sincronizzato, velocità, microfono, risposte vocali corrette ed errate, video, layout A1–C1 e 50 richieste audio simultanee.
 - **VERIFICATO** — il portafoglio personale confronta produzioni e frasi esclusivamente sul dispositivo corrente, senza sincronizzazione.
 - **VERIFICATO** — il ripasso dilazionato distingue gli errori occasionali dalle lacune ricorrenti e accorcia gli intervalli quando serve.
 - **VERIFICATO** — l’ascolto offre una scala volontaria: solo audio, parole chiave e trascrizione sincronizzata.

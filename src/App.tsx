@@ -160,9 +160,9 @@ function OfflinePanel() {
   );
 }
 
-const APP_VERSION = "10.6";
-const BUILD_DATE = "2 agosto 2026";
-const BUILD_ID = "EC-10.6-0802";
+const APP_VERSION = "10.7";
+const BUILD_DATE = "3 agosto 2026";
+const BUILD_ID = "EC-10.7-0803";
 type View =
   | "start"
   | "home"
@@ -3273,7 +3273,10 @@ export default function Home() {
       (readingCorrect / reading.questions.length) * 100,
     );
   return (
-    <main className={`app mode-${colorMode} text-${textSize}`}>
+    <main
+      className={`app level-${selectedLevel.toLowerCase()} mode-${colorMode} text-${textSize}`}
+      data-learning-level={selectedLevel}
+    >
       <header>
         <button className="brand" onClick={() => setView("home")}>
           <span className="logo">EC</span>

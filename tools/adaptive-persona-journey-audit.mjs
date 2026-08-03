@@ -20,8 +20,9 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 const checks = {};
 const check = (name, ok, detail = "") => { checks[name] = { ok: Boolean(ok), detail }; };
 const adaptiveSource = readFileSync("src/App.tsx", "utf8");
+const spacedReviewSource = readFileSync("src/spacedReview.ts", "utf8");
 check("review-priority-uses-errors-overdue-and-streak", adaptiveSource.includes("overdueDays * 4") && adaptiveSource.includes("wrongCount ?? 1") && adaptiveSource.includes("correctStreak ?? 0"));
-check("all-review-paths-use-thirty-day-consolidation", (adaptiveSource.match(/\[1, 3, 7, 14, 30\]/g) ?? []).length >= 2);
+check("all-review-paths-use-thirty-day-consolidation", spacedReviewSource.includes("recurring?[1,2,4,7,14,30]:[1,3,7,14,30]") && spacedReviewSource.includes("nextStreak>delays.length"));
 const storedBase = overrides => ({ schemaVersion: 14, deviceId: "persona-audit", currentDay: 3, streak: 2, weeklyGoal: 3, days: {}, activity: {}, reading: {}, reviews: {}, themePacks: {}, wordGames: {}, lessonFeedback: {}, learningGoal: "Conversazione quotidiana", savedPhrases: [], weeklyChallenges: {}, monthlyChecks: {}, smartReview: {}, ...overrides });
 const prepare = (progress, lessonId, view = "home", checkpoint = null) => {
   localStorage.clear(); sessionStorage.clear();
