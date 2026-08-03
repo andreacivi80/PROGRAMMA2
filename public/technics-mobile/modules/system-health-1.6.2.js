@@ -35,9 +35,10 @@
   };
   const paint=()=>{
     const node=document.getElementById("net");if(!node)return;
-    const healthy=state.ok&&state.database===true;
-    node.classList.toggle("off",!healthy);
-    node.innerHTML=healthy?`<i></i>Sola lettura · Online`:`<i></i>${state.failures<2?"Verifica dati…":state.database===false?"Gestionale non raggiungibile":"Collegamento in ripristino"}`;
+    const healthy=state.ok&&state.database===true,degraded=state.ok&&state.database!==true,level=healthy?"ok":degraded?"warn":state.failures<2?"wait":"bad";
+    node.classList.toggle("off",level==="bad");node.classList.toggle("warn",level==="warn");node.dataset.level=level;document.documentElement.dataset.connectionLevel=level;
+    const label=healthy?"Sola lettura · Online":degraded?(state.database===false?"Ponte online · Gestionale non verificato":"Verifica gestionale…"):state.failures<2?"Verifica collegamento…":"Collegamento in ripristino";
+    node.innerHTML=`<i></i>${label}`;
     node.title=`Ponte ${state.version||"—"} · controllo ${state.lastCheck||"in corso"}`;
     node.setAttribute("role","button");node.setAttribute("tabindex","0");node.setAttribute("aria-label","Apri diagnostica collegamento Technics");paintPanel();
   };
@@ -52,12 +53,12 @@
     finally{clearTimeout(timer);state.latencyMs=Math.round(performance.now()-started);state.lastCheck=new Date().toLocaleTimeString("it-IT");state.functions.database=state.database;paintFunctionLights();paint();document.dispatchEvent(new CustomEvent("technics:health",{detail:{...state}}));healthBusy=false}
   };
   const start=()=>{
-    loadIssues();ensurePanel();paint();const node=document.getElementById("net");node?.addEventListener("click",()=>{document.getElementById("systemDiagnostics")?.classList.remove("hidden");loadNodes()});node?.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();node.click()}});
+    loadIssues();ensurePanel();const statusStyle=document.createElement("style");statusStyle.id="technics-connection-levels-v1744";statusStyle.textContent=".top .status.warn{color:#735817;background:#fff4cf;border-color:#e4ca77}.top .status.warn i{background:#d4a849;box-shadow:0 0 0 3px #f7e8b8}.top .status[data-level=wait] i{background:#9eaaa5}";document.head.appendChild(statusStyle);paint();const node=document.getElementById("net");node?.addEventListener("click",()=>{document.getElementById("systemDiagnostics")?.classList.remove("hidden");loadNodes()});node?.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();node.click()}});
     if(window.TechnicsLiveSync)TechnicsLiveSync.create({interval:20000,maxDelay:60000,immediate:true,active:()=>navigator.onLine,task:check}).start();
     else{check();setInterval(check,20000)}
     setTimeout(checkFunctions,2500);setInterval(checkFunctions,45000);setInterval(paintFunctionLights,5000);
   };
-  window.TechnicsSystemHealth=Object.freeze({check,diagnostics:()=>Object.freeze({...state}),version:"1.7.40"});
-  document.documentElement.dataset.systemHealth="1.7.40";
+  window.TechnicsSystemHealth=Object.freeze({check,diagnostics:()=>Object.freeze({...state}),version:"1.7.44"});
+  document.documentElement.dataset.systemHealth="1.7.44";
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
 })();

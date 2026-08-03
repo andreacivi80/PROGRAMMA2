@@ -13,8 +13,8 @@
   const paint=()=>{
     const target=ensure();if(!target)return;
     const stamp=parse(state.dataTime)||parse(state.serverTime),age=stamp?Math.max(0,Math.round((Date.now()-stamp)/1000)):Infinity;
-    state.level=age<=30?"fresh":age<=90?"aging":"stale";target.className=`datafreshness ${state.level}`;
-    target.querySelector("span").textContent=Number.isFinite(age)?`Dati ${age}s`:"Dati in verifica";
+    const continuity=/mirror|copia/i.test(String(state.source||""));state.level=continuity?"aging":age<=30?"fresh":age<=90?"aging":"stale";target.className=`datafreshness ${state.level}`;
+    target.querySelector("span").textContent=continuity?"Dati di continuità":Number.isFinite(age)?`Dati ${age}s`:"Dati in verifica";
     const detail=`Fonte: ${labelSource(state.source)} · lettura: ${stamp?new Date(stamp).toLocaleString("it-IT"):"in verifica"} · risposta: ${state.latencyMs} ms${state.cached?" · cache breve verificata":""}`;
     target.title=detail;target.setAttribute("aria-label",detail);
   };
