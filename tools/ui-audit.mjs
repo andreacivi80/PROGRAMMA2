@@ -189,6 +189,13 @@ themeQuestions:pack.includes("Salta domanda")
   touchTargets:css.includes("min-height:42px")||css.includes("min-height:44px"),
   transcriptContained:css.includes("overscroll-behavior:contain"),
   audioGrid:css.includes(".guidedPlayer .audioActions")
+ },
+ sessionExperience:{
+  visibleLevel:app.includes("activeLevelBadge")&&css.includes(".activeLevelBadge"),
+  previewBeforeStart:app.includes("sessionPreviewSheet")&&app.includes("startUnit(preview.unit,preview.target)"),
+  sixSkills:app.includes("lessonSkills")&&app.includes("LessonSkillIcons"),
+  reversibleFocus:app.includes("setFocusMode((active)=>!active)")&&css.includes(".app.focus-mode>header{display:none}"),
+  mobilePreview:css.includes(".sessionPreviewSkills{grid-template-columns:repeat(2,1fr)}")
  }
 };
 const failed=[
@@ -205,7 +212,8 @@ const failed=[
  ...Object.entries(checks.learningClarity).filter(([,value])=>!value).map(([name])=>`learning-clarity:${name}`),
  ...Object.entries(checks.languageFocus).filter(([,value])=>!value).map(([name])=>`language-focus:${name}`),
  ...Object.entries(checks.professionalEnglish).filter(([,value])=>!value).map(([name])=>`professional-english:${name}`),
- ...Object.entries(checks.responsive).filter(([,value])=>!value).map(([name])=>`responsive:${name}`)
+ ...Object.entries(checks.responsive).filter(([,value])=>!value).map(([name])=>`responsive:${name}`),
+ ...Object.entries(checks.sessionExperience).filter(([,value])=>!value).map(([name])=>`session-experience:${name}`)
 ];
 console.log(JSON.stringify({...checks,failed},null,2));
 if(failed.length)process.exitCode=1;
