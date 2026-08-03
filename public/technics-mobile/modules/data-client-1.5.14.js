@@ -1,11 +1,13 @@
 (()=>{
   "use strict";
   const incompleteMessage="Il collegamento dati ha risposto in modo incompleto. Riprova tra pochi secondi.";
-  const state={requests:0,retries:0,recovered:0,failures:0,timeouts:0,deduplicated:0,cached:0,discarded:0,lastFailure:"",lastSuccessAt:"",lastLatencyMs:0,lastRequestId:"",lastServerTime:"",lastDataTime:"",lastSource:""};
+  const state={requests:0,retries:0,recovered:0,failures:0,timeouts:0,offlineWaits:0,httpRetries:0,deduplicated:0,cached:0,discarded:0,lastFailure:"",lastSuccessAt:"",lastLatencyMs:0,lastRequestId:"",lastServerTime:"",lastDataTime:"",lastSource:""};
   const inFlight=new Map(),latestSequence=new Map(),responseCache=new Map(),activeControllers=new Map(),routeTimings=new Map();
   let normalActive=0;const normalQueue=[];
   const acquireSlot=urgent=>urgent?Promise.resolve(()=>{}):new Promise(resolve=>{const enter=()=>{normalActive++;let released=false;resolve(()=>{if(released)return;released=true;normalActive--;normalQueue.shift()?.()})};if(normalActive<2)enter();else normalQueue.push(enter)});
   const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+  const waitForNetwork=async(maxMs=2500)=>{if(navigator.onLine!==false)return;state.offlineWaits++;await Promise.race([new Promise(resolve=>globalThis.addEventListener?.("online",resolve,{once:true})),pause(maxMs)])};
+  const transientStatus=status=>[408,425,429,500,502,503,504].includes(Number(status));
   const requestId=()=>globalThis.crypto?.randomUUID?.()||`tm-${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const clone=value=>globalThis.structuredClone?structuredClone(value):JSON.parse(JSON.stringify(value));
   const canonicalRequestKey=(method,url)=>{
@@ -53,12 +55,14 @@
     document.dispatchEvent(new CustomEvent("technics:data-success",{detail:{url:String(url),dataTime:state.lastDataTime,serverTime:state.lastServerTime,source:state.lastSource,latencyMs:Number(latencyMs||0),cached:Boolean(cached)}}));
   };
   const runFetch=async(url,options,settings,key,sequence)=>{
-    const attempts=Math.max(1,Number(settings.attempts||3)),timeoutMs=Math.max(3000,Number(settings.timeoutMs||15000));let lastError;
+    const method=String(options.method||"GET").toUpperCase(),safe=method==="GET"||method==="HEAD"||settings.retryUnsafe===true,attempts=safe?Math.max(1,Number(settings.attempts||3)):1,timeoutMs=Math.max(3000,Number(settings.timeoutMs||15000));let lastError;
     for(let attempt=0;attempt<attempts;attempt++){
+      if(attempt)await waitForNetwork();
       const id=requestId(),controller=new AbortController(),scope=String(settings.scope||document.querySelector("main.shell")?.dataset.workspace||"global"),urgent=/\/api\/(items\/lookup|barcodes\/resolve)/.test(String(url)),releaseSlot=await acquireSlot(urgent),timer=setTimeout(()=>controller.abort("timeout"),timeoutMs),started=performance.now();state.requests++;state.lastRequestId=id;activeControllers.set(controller,scope);
       try{
         const headers=new Headers(options.headers||{});headers.set("X-Technics-Request-Id",id);headers.set("X-Technics-Priority",urgent?"urgent":"normal");
         const response=await fetch(url,{...options,headers,signal:controller.signal,priority:urgent?"high":"auto"}),payload=validateShape(validateMeta(await read(response,settings.message),id),url);
+        if(!response.ok&&transientStatus(response.status)){state.httpRetries++;const error=new Error(payload?.error||`Servizio temporaneamente non disponibile (${response.status}).`);error.status=response.status;error.transient=true;throw error}
         if(key&&latestSequence.get(key)!==sequence){state.discarded++;const error=new Error("Risposta superata da una richiesta più recente.");error.staleResponse=true;throw error}
         state.lastLatencyMs=Math.round(performance.now()-started);state.lastSuccessAt=new Date().toISOString();recordTiming(url,state.lastLatencyMs);announceSuccess(url,payload,state.lastLatencyMs,false);
         if(attempt){state.recovered++;document.dispatchEvent(new CustomEvent("technics:data-recovered",{detail:{url,attempt:attempt+1}}))}
@@ -67,7 +71,8 @@
         if(controller.signal.aborted&&controller.signal.reason==="workspace-change"){state.discarded++;error.staleResponse=true;throw error}
         lastError=error;state.lastFailure=String(error?.message||error);if(error?.name==="AbortError"||error==="timeout")state.timeouts++;
         if(error?.staleResponse)throw error;
-        if(attempt<attempts-1){state.retries++;await pause(300*Math.pow(2,attempt));continue}
+        const retryable=error?.transient||error?.incompleteResponse||error?.name==="AbortError"||Number(error?.status||0)===0||transientStatus(error?.status);
+        if(retryable&&attempt<attempts-1){state.retries++;await pause(Math.round(250*Math.pow(2,attempt)+Math.random()*150));continue}
       }finally{clearTimeout(timer);activeControllers.delete(controller);releaseSlot()}
     }
     state.failures++;document.dispatchEvent(new CustomEvent("technics:data-failure",{detail:{url,message:state.lastFailure}}));throw lastError||new Error("Collegamento dati non disponibile.");
