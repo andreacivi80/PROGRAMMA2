@@ -153,6 +153,7 @@ html.resume-production body:after{content:"Riapro packing list…";position:fixe
 </style>
 <script id="resume-mask-start-v123">
 try{
+  navigator.serviceWorker?.getRegistration("/PROGRAMMA2/").then(registration=>registration?.update()).catch(()=>{});
   const navType=performance.getEntriesByType("navigation")[0]?.type||"navigate";
   const saved=navType==="reload"?JSON.parse(sessionStorage.getItem("technics-refresh-context-v1323")||"null"):null;
   localStorage.removeItem("technics-mobile-view-v1222");

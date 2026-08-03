@@ -1,4 +1,4 @@
-const CACHE = "english-coach-v108";
+const CACHE = "english-coach-v109";
 const AUDIO_CACHE = "english-coach-audio-v1";
 const BASE = "/PROGRAMMA2/";
 self.addEventListener("install", event => {
@@ -66,6 +66,15 @@ self.addEventListener("message", event => {
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
   const networkUrl = new URL(event.request.url);
+  if (networkUrl.pathname.startsWith(`${BASE}technics-mobile/`)) {
+    event.respondWith(fetch(new Request(networkUrl, {
+      cache: "no-store",
+      headers: event.request.headers,
+      credentials: event.request.credentials,
+      redirect: event.request.redirect
+    })));
+    return;
+  }
   if (event.request.mode === "navigate") networkUrl.searchParams.set("__ec_network", CACHE);
   const freshRequest = new Request(networkUrl, { cache: "no-store", headers: event.request.headers, credentials: event.request.credentials, redirect: event.request.redirect });
   event.respondWith(fetch(freshRequest).then(response => {
