@@ -11,5 +11,6 @@
   message?.setAttribute("aria-live","polite");
   document.getElementById("packingMsg")?.setAttribute("aria-live","polite");
   document.getElementById("planningResult")?.setAttribute("aria-live","polite");
-  document.documentElement.dataset.uxModule="1.4";
+  const compact=document.createElement("style");compact.id="technics-mobile-density-v1749";compact.textContent="@media(max-width:720px){.shell{padding-bottom:max(68px,env(safe-area-inset-bottom))}.stock strong,.stock b,.pickrow strong,.packrow strong{overflow-wrap:normal;word-break:normal}.stock .location,.stock [class*=location]{white-space:nowrap;font-size:clamp(10px,2.8vw,14px)}button,input,select{touch-action:manipulation}.modules{scroll-snap-type:x proximity}.modules button{scroll-snap-align:start}}";document.head.appendChild(compact);
+  document.documentElement.dataset.uxModule="1.7.49";
 })();

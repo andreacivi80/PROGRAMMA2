@@ -78,7 +78,7 @@
     if(key&&cacheMs){const cached=responseCache.get(key);if(cached&&Date.now()-cached.savedAt<=cacheMs){state.cached++;const result={...cached.result,payload:clone(cached.result.payload),cached:true};announceSuccess(url,result.payload,result.latencyMs,true);return Promise.resolve(result)}if(cached)responseCache.delete(key)}
     if(key&&inFlight.has(key)){state.deduplicated++;return inFlight.get(key)}
     const sequence=(latestSequence.get(key)||0)+1;if(key)latestSequence.set(key,sequence);
-    const promise=runFetch(url,options,settings,key,sequence).then(result=>{if(key&&cacheMs)responseCache.set(key,{savedAt:Date.now(),result:{...result,payload:clone(result.payload)}});return result}).finally(()=>{if(key&&inFlight.get(key)===promise)inFlight.delete(key)});
+    const promise=runFetch(url,options,settings,key,sequence).then(result=>{if(key&&cacheMs)responseCache.set(key,{savedAt:Date.now(),result:{...result,payload:clone(result.payload)}});if(method!=="GET")document.dispatchEvent(new CustomEvent("technics:data-mutated",{detail:{url:String(url),method}}));return result}).finally(()=>{if(key&&inFlight.get(key)===promise)inFlight.delete(key)});
     if(key)inFlight.set(key,promise);return promise;
   };
   const invalidate=()=>responseCache.clear();

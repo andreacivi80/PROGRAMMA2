@@ -16,6 +16,7 @@
     stage.scrollLeft=Math.max(0,stage.scrollLeft+delta);
     return stage.scrollLeft;
   };
-  window.TechnicsPrintCore=Object.freeze({scaleFor,fit,center,version:"1.4.3"});
-  document.documentElement.dataset.printCore="1.4.3";
+  const prepare=async(stage,sheet)=>{try{await Promise.race([document.fonts?.ready||Promise.resolve(),new Promise(resolve=>setTimeout(resolve,1200))])}catch{}await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));const scale=fit(stage,sheet);center(stage,sheet);return scale};
+  window.TechnicsPrintCore=Object.freeze({scaleFor,fit,center,prepare,version:"1.7.48"});
+  document.documentElement.dataset.printCore="1.7.48";
 })();
