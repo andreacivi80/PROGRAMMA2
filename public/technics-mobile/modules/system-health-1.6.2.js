@@ -44,7 +44,7 @@
     if(window.TechnicsLiveSync)TechnicsLiveSync.create({interval:20000,maxDelay:60000,immediate:true,active:()=>navigator.onLine,task:check}).start();
     else{check();setInterval(check,20000)}
   };
-  window.TechnicsSystemHealth=Object.freeze({check,diagnostics:()=>Object.freeze({...state}),version:"1.7.25"});
-  document.documentElement.dataset.systemHealth="1.7.25";
+  window.TechnicsSystemHealth=Object.freeze({check,diagnostics:()=>Object.freeze({...state}),version:"1.7.26"});
+  document.documentElement.dataset.systemHealth="1.7.26";
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
 })();
