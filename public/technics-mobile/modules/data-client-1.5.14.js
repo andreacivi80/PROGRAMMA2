@@ -1,8 +1,10 @@
 (()=>{
   "use strict";
   const incompleteMessage="Il collegamento dati ha risposto in modo incompleto. Riprova tra pochi secondi.";
-  const state={requests:0,retries:0,recovered:0,failures:0,timeouts:0,deduplicated:0,cached:0,discarded:0,lastFailure:"",lastSuccessAt:"",lastLatencyMs:0,lastRequestId:""};
-  const inFlight=new Map(),latestSequence=new Map(),responseCache=new Map();
+  const state={requests:0,retries:0,recovered:0,failures:0,timeouts:0,deduplicated:0,cached:0,discarded:0,lastFailure:"",lastSuccessAt:"",lastLatencyMs:0,lastRequestId:"",lastServerTime:"",lastDataTime:"",lastSource:""};
+  const inFlight=new Map(),latestSequence=new Map(),responseCache=new Map(),activeControllers=new Map();
+  let normalActive=0;const normalQueue=[];
+  const acquireSlot=urgent=>urgent?Promise.resolve(()=>{}):new Promise(resolve=>{const enter=()=>{normalActive++;let released=false;resolve(()=>{if(released)return;released=true;normalActive--;normalQueue.shift()?.()})};if(normalActive<2)enter();else normalQueue.push(enter)});
   const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   const requestId=()=>globalThis.crypto?.randomUUID?.()||`tm-${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const clone=value=>globalThis.structuredClone?structuredClone(value):JSON.parse(JSON.stringify(value));
@@ -28,36 +30,56 @@
     if(!Number.isFinite(serverTime)||serverTime>Date.now()+300000)throw new Error("Risposta dati con data non valida.");
     return payload;
   };
+  const validateShape=(payload,url)=>{
+    if(payload.ok===false)return payload;
+    const path=(()=>{try{return new URL(String(url),location.href).pathname}catch{return String(url)}})();
+    let valid=true;
+    if(path==="/health")valid=payload.ok===true&&typeof payload.version==="string";
+    else if(path==="/api/items/lookup")valid=Object.prototype.hasOwnProperty.call(payload,"item");
+    else if(/^\/api\/planning\/(op|ov|schedule)$/.test(path))valid=Object.prototype.hasOwnProperty.call(payload,"result");
+    else if(path==="/api/packing/open"||path==="/api/picking/open")valid=Array.isArray(payload.sessions)&&Array.isArray(payload.closedSessions);
+    if(!valid){const error=new Error(incompleteMessage);error.incompleteResponse=true;error.invalidShape=true;throw error}
+    return payload;
+  };
+  const announceSuccess=(url,payload,latencyMs,cached=false)=>{
+    const dataTime=payload?.readAt||payload?.result?.readAt||payload?.order?.readAt||payload?.meta?.serverTime||new Date().toISOString();
+    const source=payload?.result?.source||payload?.store?.source||payload?.meta?.source||"TechnicsBridge";
+    state.lastServerTime=String(payload?.meta?.serverTime||"");state.lastDataTime=String(dataTime||"");state.lastSource=String(source||"");
+    document.dispatchEvent(new CustomEvent("technics:data-success",{detail:{url:String(url),dataTime:state.lastDataTime,serverTime:state.lastServerTime,source:state.lastSource,latencyMs:Number(latencyMs||0),cached:Boolean(cached)}}));
+  };
   const runFetch=async(url,options,settings,key,sequence)=>{
     const attempts=Math.max(1,Number(settings.attempts||3)),timeoutMs=Math.max(3000,Number(settings.timeoutMs||15000));let lastError;
     for(let attempt=0;attempt<attempts;attempt++){
-      const id=requestId(),controller=new AbortController(),timer=setTimeout(()=>controller.abort("timeout"),timeoutMs),started=performance.now();state.requests++;state.lastRequestId=id;
+      const id=requestId(),controller=new AbortController(),scope=String(settings.scope||document.querySelector("main.shell")?.dataset.workspace||"global"),urgent=/\/api\/(items\/lookup|barcodes\/resolve)/.test(String(url)),releaseSlot=await acquireSlot(urgent),timer=setTimeout(()=>controller.abort("timeout"),timeoutMs),started=performance.now();state.requests++;state.lastRequestId=id;activeControllers.set(controller,scope);
       try{
-        const headers=new Headers(options.headers||{}),urgent=/\/api\/(items\/lookup|barcodes\/resolve)/.test(String(url));headers.set("X-Technics-Request-Id",id);headers.set("X-Technics-Priority",urgent?"urgent":"normal");
-        const response=await fetch(url,{...options,headers,signal:controller.signal,priority:urgent?"high":"auto"}),payload=validateMeta(await read(response,settings.message),id);
+        const headers=new Headers(options.headers||{});headers.set("X-Technics-Request-Id",id);headers.set("X-Technics-Priority",urgent?"urgent":"normal");
+        const response=await fetch(url,{...options,headers,signal:controller.signal,priority:urgent?"high":"auto"}),payload=validateShape(validateMeta(await read(response,settings.message),id),url);
         if(key&&latestSequence.get(key)!==sequence){state.discarded++;const error=new Error("Risposta superata da una richiesta più recente.");error.staleResponse=true;throw error}
-        state.lastLatencyMs=Math.round(performance.now()-started);state.lastSuccessAt=new Date().toISOString();
+        state.lastLatencyMs=Math.round(performance.now()-started);state.lastSuccessAt=new Date().toISOString();announceSuccess(url,payload,state.lastLatencyMs,false);
         if(attempt){state.recovered++;document.dispatchEvent(new CustomEvent("technics:data-recovered",{detail:{url,attempt:attempt+1}}))}
         return {response,payload,attempt:attempt+1,requestId:id,latencyMs:state.lastLatencyMs};
       }catch(error){
+        if(controller.signal.aborted&&controller.signal.reason==="workspace-change"){state.discarded++;error.staleResponse=true;throw error}
         lastError=error;state.lastFailure=String(error?.message||error);if(error?.name==="AbortError"||error==="timeout")state.timeouts++;
         if(error?.staleResponse)throw error;
         if(attempt<attempts-1){state.retries++;await pause(300*Math.pow(2,attempt));continue}
-      }finally{clearTimeout(timer)}
+      }finally{clearTimeout(timer);activeControllers.delete(controller);releaseSlot()}
     }
     state.failures++;document.dispatchEvent(new CustomEvent("technics:data-failure",{detail:{url,message:state.lastFailure}}));throw lastError||new Error("Collegamento dati non disponibile.");
   };
   const fetchJson=(url,options={},settings={})=>{
     const method=String(options.method||"GET").toUpperCase(),dedupe=settings.dedupe!==false&&method==="GET",key=dedupe?`${method}:${url}`:"",cacheMs=method==="GET"?Math.max(0,Number(settings.cacheMs||0)):0;
     if(method!=="GET")responseCache.clear();
-    if(key&&cacheMs){const cached=responseCache.get(key);if(cached&&Date.now()-cached.savedAt<=cacheMs){state.cached++;return Promise.resolve({...cached.result,payload:clone(cached.result.payload),cached:true})}if(cached)responseCache.delete(key)}
+    if(key&&cacheMs){const cached=responseCache.get(key);if(cached&&Date.now()-cached.savedAt<=cacheMs){state.cached++;const result={...cached.result,payload:clone(cached.result.payload),cached:true};announceSuccess(url,result.payload,result.latencyMs,true);return Promise.resolve(result)}if(cached)responseCache.delete(key)}
     if(key&&inFlight.has(key)){state.deduplicated++;return inFlight.get(key)}
     const sequence=(latestSequence.get(key)||0)+1;if(key)latestSequence.set(key,sequence);
     const promise=runFetch(url,options,settings,key,sequence).then(result=>{if(key&&cacheMs)responseCache.set(key,{savedAt:Date.now(),result:{...result,payload:clone(result.payload)}});return result}).finally(()=>{if(key&&inFlight.get(key)===promise)inFlight.delete(key)});
     if(key)inFlight.set(key,promise);return promise;
   };
   const invalidate=()=>responseCache.clear();
-  const diagnostics=()=>Object.freeze({...state,inFlight:inFlight.size,cacheEntries:responseCache.size});
+  const cancelObsolete=workspace=>{for(const [controller,scope] of activeControllers)if(scope!=="global"&&scope!==workspace)controller.abort("workspace-change")};
+  window.addEventListener("technics-workspace-change",event=>cancelObsolete(String(event.detail?.workspace||"")));
+  const diagnostics=()=>Object.freeze({...state,inFlight:inFlight.size,activeControllers:activeControllers.size,normalActive,normalQueued:normalQueue.length,cacheEntries:responseCache.size});
   window.TechnicsDataClient=Object.freeze({parseText,read,fetchJson,invalidate,diagnostics,incompleteMessage,version:"1.5.14"});
   document.documentElement.dataset.dataClient="1.5.14";
 })();
