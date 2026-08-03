@@ -1,4 +1,4 @@
-const CACHE = "gambe-leggere-v248";
+const CACHE = "gambe-leggere-v249";
 
 self.addEventListener("install", () => {
   self.skipWaiting();
@@ -15,7 +15,7 @@ self.addEventListener("activate", (event) => {
         Promise.all(
           clients.map((client) => {
             const url = new URL(client.url);
-            url.searchParams.set("revisione", "248");
+            url.searchParams.set("revisione", "249");
             return client.navigate(url.toString());
           }),
         ),
