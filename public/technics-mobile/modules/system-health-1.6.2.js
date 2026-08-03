@@ -2,7 +2,7 @@
   "use strict";
   const testBridge=location.hostname==="127.0.0.1"?new URLSearchParams(location.search).get("testBridge"):"";
   const bridge=/^dev\d+$/.test(testBridge||"")?`http://127.0.0.1:${testBridge.slice(3)}`:"https://student-tarot-occultist.ngrok-free.dev";
-  const state={ok:false,database:null,databaseLatencyMs:null,failures:0,lastCheck:"",lastSuccessAt:"",latencyMs:0,version:"",message:"Avvio controllo",errorCode:"CHECK-IN-CORSO"};
+  const state={ok:false,database:null,databaseLatencyMs:null,failures:0,lastCheck:"",lastSuccessAt:"",latencyMs:0,version:"",nodeId:"",nodeRole:"",message:"Avvio controllo",errorCode:"CHECK-IN-CORSO"};
   let cycle=0;
   const classify=error=>{
     if(!navigator.onLine)return "BROWSER-OFFLINE";
@@ -10,8 +10,8 @@
     if(/json/i.test(String(error?.message||"")))return "JSON-INVALIDO";
     return "BRIDGE-OFFLINE";
   };
-  const diagnosticText=()=>[`Technics Mobile ${state.version||"—"}`,`Codice: ${state.errorCode}`,`Ponte HTTPS: ${state.ok?"online":"non disponibile"}`,`Database: ${state.database===true?"online":state.database===false?"non disponibile":"in verifica"}`,`Latenza ponte: ${state.latencyMs} ms`,`Latenza database: ${state.databaseLatencyMs??"—"} ms`,`Ultimo controllo: ${state.lastCheck||"—"}`,`Ultimo successo: ${state.lastSuccessAt?new Date(state.lastSuccessAt).toLocaleString("it-IT"):"—"}`,`Nodo attivo: ${state.ok?"rilevato dal link pubblico":"non rilevato"}`,`Nodo secondario: non esposto dal ponte`].join("\n");
-  const paintPanel=()=>{const body=document.getElementById("systemDiagnosticsBody");if(!body)return;body.innerHTML=`<div><small>CODICE STATO</small><strong class="diagnosticcode">${state.errorCode}</strong></div><div><small>PONTE HTTPS</small><strong>${state.ok?"Online":"Non disponibile"}</strong></div><div><small>GESTIONALE</small><strong>${state.database===true?"Online":state.database===false?"Non disponibile":"In verifica"}</strong></div><div><small>VERSIONE</small><strong>${state.version||"—"}</strong></div><div><small>ULTIMO CONTROLLO</small><strong>${state.lastCheck||"—"}</strong></div><div><small>LATENZA</small><strong>${state.latencyMs} ms${state.databaseLatencyMs!=null?` · DB ${state.databaseLatencyMs} ms`:""}</strong></div><p><b>Nodo attivo:</b> ${state.ok?"rilevato dal link pubblico":"non rilevato"}<br><b>Nodo secondario:</b> non esposto dal ponte</p>`};
+  const diagnosticText=()=>[`Technics Mobile ${state.version||"—"}`,`Codice: ${state.errorCode}`,`Ponte HTTPS: ${state.ok?"online":"non disponibile"}`,`Database: ${state.database===true?"online":state.database===false?"non disponibile":"in verifica"}`,`Latenza ponte: ${state.latencyMs} ms`,`Latenza database: ${state.databaseLatencyMs??"—"} ms`,`Ultimo controllo: ${state.lastCheck||"—"}`,`Ultimo successo: ${state.lastSuccessAt?new Date(state.lastSuccessAt).toLocaleString("it-IT"):"—"}`,`Nodo attivo: ${state.nodeId|| (state.ok?"rilevato dal link pubblico":"non rilevato")}`,`Ruolo nodo: ${state.nodeRole||"—"}`].join("\n");
+  const paintPanel=()=>{const body=document.getElementById("systemDiagnosticsBody");if(!body)return;body.innerHTML=`<div><small>CODICE STATO</small><strong class="diagnosticcode">${state.errorCode}</strong></div><div><small>PONTE HTTPS</small><strong>${state.ok?"Online":"Non disponibile"}</strong></div><div><small>GESTIONALE</small><strong>${state.database===true?"Online":state.database===false?"Non disponibile":"In verifica"}</strong></div><div><small>VERSIONE</small><strong>${state.version||"—"}</strong></div><div><small>ULTIMO CONTROLLO</small><strong>${state.lastCheck||"—"}</strong></div><div><small>LATENZA</small><strong>${state.latencyMs} ms${state.databaseLatencyMs!=null?` · DB ${state.databaseLatencyMs} ms`:""}</strong></div><p><b>Nodo attivo:</b> ${state.nodeId||(state.ok?"rilevato dal link pubblico":"non rilevato")}<br><b>Ruolo:</b> ${state.nodeRole||"—"}</p>`};
   const ensurePanel=()=>{
     if(document.getElementById("systemDiagnostics"))return;
     const panel=document.createElement("div");panel.id="systemDiagnostics";panel.className="systemdiagnostics hidden";panel.setAttribute("role","dialog");panel.setAttribute("aria-modal","true");panel.setAttribute("aria-labelledby","systemDiagnosticsTitle");
@@ -35,7 +35,7 @@
       const response=await fetch(`${bridge}/health?deep=${deep?1:0}&fresh=${Date.now()}`,{cache:"no-store",headers:{"Cache-Control":"no-store","ngrok-skip-browser-warning":"1"},signal:controller.signal});
       const payload=await response.json();
       if(!response.ok||!payload?.ok||!payload?.version)throw new Error("Controllo ponte non valido");
-      state.ok=true;state.failures=0;state.version=String(payload.version);state.database=deep?Boolean(payload.database?.ok):state.database;state.databaseLatencyMs=deep&&payload.database?.latencyMs!=null?Number(payload.database.latencyMs):state.databaseLatencyMs;state.lastSuccessAt=new Date().toISOString();state.message="Sistema operativo";state.errorCode=state.database===false?"DB-OFFLINE":"OK";
+      state.ok=true;state.failures=0;state.version=String(payload.version);state.nodeId=String(payload.node?.nodeId||"");state.nodeRole=String(payload.node?.role||"");state.database=deep?Boolean(payload.database?.ok):state.database;state.databaseLatencyMs=deep&&payload.database?.latencyMs!=null?Number(payload.database.latencyMs):state.databaseLatencyMs;state.lastSuccessAt=new Date().toISOString();state.message="Sistema operativo";state.errorCode=state.database===false?"DB-OFFLINE":"OK";
     }catch(error){state.ok=false;state.failures++;state.message=String(error?.message||error);state.errorCode=classify(error)}
     finally{clearTimeout(timer);state.latencyMs=Math.round(performance.now()-started);state.lastCheck=new Date().toLocaleTimeString("it-IT");paint();document.dispatchEvent(new CustomEvent("technics:health",{detail:{...state}}))}
   };
@@ -44,7 +44,7 @@
     if(window.TechnicsLiveSync)TechnicsLiveSync.create({interval:20000,maxDelay:60000,immediate:true,active:()=>navigator.onLine,task:check}).start();
     else{check();setInterval(check,20000)}
   };
-  window.TechnicsSystemHealth=Object.freeze({check,diagnostics:()=>Object.freeze({...state}),version:"1.7.20"});
-  document.documentElement.dataset.systemHealth="1.7.20";
+  window.TechnicsSystemHealth=Object.freeze({check,diagnostics:()=>Object.freeze({...state}),version:"1.7.21"});
+  document.documentElement.dataset.systemHealth="1.7.21";
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
 })();
