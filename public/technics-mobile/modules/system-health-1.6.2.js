@@ -43,7 +43,7 @@
       if(!response.ok||!payload?.ok||!payload?.version)throw new Error("Controllo ponte non valido");
       state.ok=true;state.failures=0;state.version=String(payload.version);state.nodeId=String(payload.node?.nodeId||"");state.nodeRole=String(payload.node?.role||"");state.database=deep?Boolean(payload.database?.ok):state.database;state.databaseLatencyMs=deep&&payload.database?.latencyMs!=null?Number(payload.database.latencyMs):state.databaseLatencyMs;state.lastSuccessAt=new Date().toISOString();state.message="Sistema operativo";state.errorCode=state.database===false?"DB-OFFLINE":"OK";
     }catch(error){state.ok=false;state.failures++;state.message=String(error?.message||error);state.errorCode=classify(error)}
-    finally{clearTimeout(timer);state.latencyMs=Math.round(performance.now()-started);state.lastCheck=new Date().toLocaleTimeString("it-IT");paint();document.dispatchEvent(new CustomEvent("technics:health",{detail:{...state}}))}
+    finally{clearTimeout(timer);state.latencyMs=Math.round(performance.now()-started);state.lastCheck=new Date().toLocaleTimeString("it-IT");state.functions.database=state.database;paintFunctionLights();paint();document.dispatchEvent(new CustomEvent("technics:health",{detail:{...state}}))}
   };
   const start=()=>{
     ensurePanel();paint();const node=document.getElementById("net");node?.addEventListener("click",()=>{document.getElementById("systemDiagnostics")?.classList.remove("hidden");loadNodes()});node?.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();node.click()}});
