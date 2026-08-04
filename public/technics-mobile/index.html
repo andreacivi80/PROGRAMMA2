@@ -198,7 +198,7 @@ try{
 <script id="technics-system-health-v162" src="modules/system-health-1.6.2.js"></script>
 <script id="technics-mobile-compat-v1741" src="modules/mobile-compat-1.7.41.js"></script>
 <script type="module">
-const APP_VERSION="1.8.3";
+const APP_VERSION="1.8.17";
 const localBridgeTest=new URLSearchParams(location.search).get("testBridge"),BRIDGE_URL=location.hostname==="127.0.0.1"&&/^dev\d+$/.test(localBridgeTest||"")?`http://127.0.0.1:${localBridgeTest.slice(3)}`:"https://student-tarot-occultist.ngrok-free.dev";async function readJsonResponse(response){return TechnicsDataClient.read(response,"Collegamento dati in ripristino automatico. Riprova tra pochi secondi.")}
 const scannerModules=Promise.all([import("https://cdn.jsdelivr.net/npm/@zxing/browser@0.2.1/+esm"),import("https://cdn.jsdelivr.net/npm/@zxing/library@0.23.0/+esm")]);
 const $=id=>document.getElementById(id);let controls=null,imageReader=null,nativeTimer=null,zoomTimer=null,lastCode="",lastKind="code",lastLot="",scanLocked=false,refreshTimer=null,busyLookup=false,busyProduction=false,nativeBusy=false,activeModule="inventory",currentItem=null,currentOrder=null,packingItems=[],scanPurpose="lookup",expectedMaterialCode="",packingConfirmed=false,packingSyncTimer=null,packingRevision=0,pendingMaterial=null,pendingBarcode="",pendingLocation="",pendingLocationCandidates=[],stableScanValue="",stableScanCount=0,stableScanAt=0,awaitingBarcodeLot=false,packingLiveSync=null;const scannerConsensus=TechnicsScannerCore.createConsensus(1500);
@@ -248,7 +248,7 @@ async function startNativeDetector(){if(!window.BarcodeDetector)return;try{const
 async function camera(){stableScanValue="";stableScanCount=0;stableScanAt=0;document.querySelector(".camhead strong").textContent=scanPurpose==="material"?(expectedMaterialCode?"Scansiona "+expectedMaterialCode:"Scansiona materiale"):"Centra il codice";$("camhint").textContent="Avvio rapido della fotocamera…";$("camera").classList.remove("hidden");try{const [{BrowserMultiFormatReader},{DecodeHintType}]=await scannerModules;const hints=new Map([[DecodeHintType.TRY_HARDER,true],[DecodeHintType.ALSO_INVERTED,true]]);const reader=new BrowserMultiFormatReader(hints,{delayBetweenScanAttempts:8,delayBetweenScanSuccess:75});imageReader=reader;controls=await reader.decodeFromConstraints({audio:false,video:{facingMode:{ideal:"environment"},width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30,max:60}}},$("preview"),(r)=>{if(r)acceptScan(r.getText())});await tuneCamera(false);await startNativeDetector();zoomTimer=setTimeout(()=>tuneCamera(true),1200);$("camhint").textContent="Centra tutto il barcode, compresi i margini bianchi."}catch(e){controls?.stop();controls=null;$("camhint").textContent=e?.name==="NotAllowedError"?"Consenti la fotocamera nelle impostazioni del browser e riprova.":"Fotocamera non disponibile. Chiudi e riprova.";}}
 fitPrintPreview=function(){const stage=$("printPreview").querySelector(".printstage"),sheet=$("printContent");TechnicsPrintCore.fit(stage,sheet)};
 window.__openTechnicsCamera=camera;
-$("openPackingByOp").onclick=openPackingFromManualOp;$("manualOp").addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();openPackingFromManualOp()}});document.querySelector("footer span:last-child").textContent="Versione 1.8.3";
+$("openPackingByOp").onclick=openPackingFromManualOp;$("manualOp").addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();openPackingFromManualOp()}});document.querySelector("footer span:last-child").textContent="Versione 1.8.17";
 window.__openPlanningCamera=()=>{scanPurpose="planning";expectedMaterialCode="";camera()};
 function stop(){controls?.stop();controls=null;clearInterval(nativeTimer);clearTimeout(zoomTimer);nativeTimer=null;zoomTimer=null;nativeBusy=false;scannerConsensus.reset();$("camera").classList.add("hidden");setTimeout(()=>scanLocked=false,350)}
 function loadScript(src){return new Promise((ok,fail)=>{const old=document.querySelector(`script[src="${src}"]`);if(old)return old.dataset.ready?ok():old.addEventListener("load",ok,{once:true});const s=document.createElement("script");s.src=src;s.async=true;s.onload=()=>{s.dataset.ready="1";ok()};s.onerror=fail;document.head.appendChild(s)})}
@@ -406,7 +406,7 @@ window.__technicsTestScan=acceptScan;$("code").addEventListener("input",()=>{awa
 </style>
 <script>
 const byId1214=id=>document.getElementById(id);
-let printPreviewObjectUrls1217=[];
+let printPreviewObjectUrls1217=[],packingPrintOperationId1214="";
 const packingPreviewWarm1217=new Map();
 const packingPrintBridge1217=()=>window.__technicsPackingHooks?.bridgeUrl?.()||"https://student-tarot-occultist.ngrok-free.dev";
 async function fetchPrintBridge1217(url,options={},attempts=4){
@@ -516,7 +516,7 @@ async function sendPackingPrint1216(){
       method:"POST",
       cache:"no-store",
       headers:{"Content-Type":"application/json","Cache-Control":"no-store","ngrok-skip-browser-warning":"1"},
-      body:JSON.stringify({opBarcode:barcode})
+      body:JSON.stringify({opBarcode:barcode,operationId:packingPrintOperationId1214||(packingPrintOperationId1214=crypto.randomUUID?.()||`${Date.now()}-${Math.random()}`)})
     });
     const p=await TechnicsDataClient.read(r,"Collegamento dati in ripristino automatico. Riprova tra pochi secondi.");
     if(!r.ok||!p.ok)throw new Error(p.error||"Stampa non riuscita.");
@@ -534,7 +534,7 @@ async function sendPackingPrint1216(){
       if(status.ready)break;
       if(Date.now()+700>=deadline)throw new Error("La stampante sta impiegando troppo tempo. Verifica la coda e riprova.");
     }
-    box.textContent="Documento inviato alla stampante.";
+    packingPrintOperationId1214="";box.textContent="Documento inviato alla stampante.";
     byId1214("printingVeil").querySelector("strong").textContent="Documento inviato";
     byId1214("printingVeil").querySelector("small").textContent="La stampa è nella coda aziendale";
     await new Promise(resolve=>setTimeout(resolve,900));
@@ -799,7 +799,7 @@ window.addEventListener("resize",fitCustomerName1221);
   const deletePickingSession=async(opNumber,year)=>{let lastError;for(const bridge of bridges){try{const response=await fetch(`${bridge}/api/picking/session`,{method:"POST",cache:"no-store",headers:{"Content-Type":"application/json","Cache-Control":"no-store","ngrok-skip-browser-warning":"1"},body:JSON.stringify({action:"delete",opNumber,year:Number(year),deviceId:planningDeviceId})}),payload=await TechnicsDataClient.read(response,"Risposta non valida durante l’eliminazione.");if(!response.ok||!payload.ok)throw new Error(payload.error||"Eliminazione non riuscita.");return payload}catch(error){lastError=error}}throw lastError||new Error("Eliminazione non disponibile.")};
   let pickingPrintTarget=null,pickingPreviewUrls=[];
   const pickingPrintBody=target=>target?.groupId?{groupId:target.groupId}:{opNumber:target?.opNumber,year:target?.year};
-  const postPickingPrint=async(path,target)=>{let lastError;for(const bridge of bridges){try{const response=await fetch(`${bridge}${path}`,{method:"POST",cache:"no-store",headers:{"Content-Type":"application/json","Cache-Control":"no-store","ngrok-skip-browser-warning":"1"},body:JSON.stringify(pickingPrintBody(target))}),payload=await TechnicsDataClient.read(response,"Risposta di stampa non valida.");if(!response.ok||!payload.ok)throw new Error(payload.error||"Stampa non disponibile.");return payload}catch(error){lastError=error}}throw lastError||new Error("Ponte di stampa non disponibile.")};
+  const postPickingPrint=async(path,target)=>{let lastError;const operationId=crypto.randomUUID?.()||`${Date.now()}-${Math.random()}`;for(const bridge of bridges){try{const response=await fetch(`${bridge}${path}`,{method:"POST",cache:"no-store",headers:{"Content-Type":"application/json","Cache-Control":"no-store","ngrok-skip-browser-warning":"1"},body:JSON.stringify({...pickingPrintBody(target),operationId})}),payload=await TechnicsDataClient.read(response,"Risposta di stampa non valida.");if(!response.ok||!payload.ok)throw new Error(payload.error||"Stampa non disponibile.");return payload}catch(error){lastError=error}}throw lastError||new Error("Ponte di stampa non disponibile.")};
   const waitPickingJob=async(path,id)=>{for(let attempt=0;attempt<180;attempt++){const status=await api(`${path}?id=${encodeURIComponent(id)}&fresh=${Date.now()}`);if(status.ready)return status;await new Promise(resolve=>setTimeout(resolve,400))}throw new Error("La preparazione ha superato il tempo previsto.")};
   const loadPickingPreviewImage=async(id,page)=>{let lastError;for(const bridge of bridges){try{const response=await fetch(`${bridge}/api/packing/print-preview-image?id=${encodeURIComponent(id)}&page=${page}&fresh=${Date.now()}`,{cache:"no-store",headers:{"Cache-Control":"no-store","ngrok-skip-browser-warning":"1"}});if(!response.ok)throw new Error("Pagina anteprima non disponibile.");return URL.createObjectURL(await response.blob())}catch(error){lastError=error}}throw lastError};
   const warmedPickingPreviews=new Map,previewKey=target=>target?.groupId?`g:${target.groupId}:${pickingGroup?.revision||0}`:`s:${target?.opNumber}:${target?.year}:${pickingSession?.revision||0}`;

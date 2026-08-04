@@ -1,7 +1,7 @@
 (()=>{
   "use strict";
   const incompleteMessage="Il collegamento dati ha risposto in modo incompleto. Riprova tra pochi secondi.";
-  const state={requests:0,retries:0,recovered:0,failures:0,timeouts:0,offlineWaits:0,httpRetries:0,deduplicated:0,cached:0,discarded:0,lastFailure:"",lastSuccessAt:"",lastLatencyMs:0,lastRequestId:"",lastServerTime:"",lastDataTime:"",lastSource:""};
+  const state={requests:0,retries:0,recovered:0,failures:0,timeouts:0,offlineWaits:0,httpRetries:0,deduplicated:0,cached:0,discarded:0,integrityFailures:0,lastFailure:"",lastSuccessAt:"",lastLatencyMs:0,lastRequestId:"",lastServerTime:"",lastDataTime:"",lastSource:"",lastNodeId:"",lastNodeRole:"",lastBridgeVersion:""};
   const inFlight=new Map(),latestSequence=new Map(),responseCache=new Map(),activeControllers=new Map(),routeTimings=new Map();
   let normalActive=0;const normalQueue=[];
   const acquireSlot=urgent=>urgent?Promise.resolve(()=>{}):new Promise(resolve=>{const enter=()=>{normalActive++;let released=false;resolve(()=>{if(released)return;released=true;normalActive--;normalQueue.shift()?.()})};if(normalActive<2)enter();else normalQueue.push(enter)});
@@ -26,13 +26,15 @@
     return payload;
   };
   const read=async(response,message)=>parseText(await response.text(),response,message);
-  const validateMeta=(payload,expectedId)=>{
-    if(!payload.meta)return payload;
+  const validateMeta=(payload,expectedId,response)=>{
+    if(!payload.meta){state.integrityFailures++;const error=new Error("Risposta priva della tracciabilità Technics.");error.incompleteResponse=true;throw error}
     const meta=payload.meta;
-    if(!meta.requestId||!meta.serverTime||!meta.version)throw new Error(incompleteMessage);
+    if(!meta.requestId||!meta.serverTime||!meta.version||!meta.nodeId||!meta.nodeRole||meta.dataAuthority!=="Technics"||meta.readOnly!==true){state.integrityFailures++;const error=new Error("Risposta con tracciabilità Technics incompleta.");error.incompleteResponse=true;throw error}
     if(expectedId&&String(meta.requestId)!==String(expectedId)){
-      state.discarded++;const error=new Error("Risposta dati non coerente: identificativo richiesta differente.");error.staleResponse=true;throw error;
+      state.discarded++;state.integrityFailures++;const error=new Error("Risposta dati non coerente: identificativo richiesta differente.");error.staleResponse=true;throw error;
     }
+    const headerRequestId=response?.headers?.get?.("X-Technics-Request-Id"),headerNode=response?.headers?.get?.("X-Technics-Node"),headerVersion=response?.headers?.get?.("X-Technics-Version");
+    if((headerRequestId&&headerRequestId!==String(meta.requestId))||(headerNode&&headerNode!==String(meta.nodeId))||(headerVersion&&headerVersion!==String(meta.version))){state.integrityFailures++;const error=new Error("Risposta Technics non coerente tra intestazioni e contenuto.");error.incompleteResponse=true;throw error}
     const serverTime=Date.parse(meta.serverTime);
     if(!Number.isFinite(serverTime)||serverTime>Date.now()+300000)throw new Error("Risposta dati con data non valida.");
     return payload;
@@ -51,8 +53,8 @@
   const announceSuccess=(url,payload,latencyMs,cached=false)=>{
     const dataTime=payload?.readAt||payload?.result?.readAt||payload?.order?.readAt||payload?.meta?.serverTime||new Date().toISOString();
     const source=payload?.result?.source||payload?.store?.source||payload?.meta?.source||"TechnicsBridge";
-    state.lastServerTime=String(payload?.meta?.serverTime||"");state.lastDataTime=String(dataTime||"");state.lastSource=String(source||"");
-    document.dispatchEvent(new CustomEvent("technics:data-success",{detail:{url:String(url),dataTime:state.lastDataTime,serverTime:state.lastServerTime,source:state.lastSource,latencyMs:Number(latencyMs||0),cached:Boolean(cached)}}));
+    state.lastServerTime=String(payload?.meta?.serverTime||"");state.lastDataTime=String(dataTime||"");state.lastSource=String(source||"");state.lastNodeId=String(payload?.meta?.nodeId||"");state.lastNodeRole=String(payload?.meta?.nodeRole||"");state.lastBridgeVersion=String(payload?.meta?.version||"");
+    document.dispatchEvent(new CustomEvent("technics:data-success",{detail:{url:String(url),dataTime:state.lastDataTime,serverTime:state.lastServerTime,source:state.lastSource,nodeId:state.lastNodeId,nodeRole:state.lastNodeRole,bridgeVersion:state.lastBridgeVersion,requestId:state.lastRequestId,latencyMs:Number(latencyMs||0),cached:Boolean(cached)}}));
   };
   const runFetch=async(url,options,settings,key,sequence)=>{
     const method=String(options.method||"GET").toUpperCase(),safe=method==="GET"||method==="HEAD"||settings.retryUnsafe===true,attempts=safe?Math.max(1,Number(settings.attempts||3)):1,timeoutMs=Math.max(3000,Number(settings.timeoutMs||15000));let lastError;
@@ -61,7 +63,7 @@
       const id=requestId(),controller=new AbortController(),scope=String(settings.scope||document.querySelector("main.shell")?.dataset.workspace||"global"),urgent=/\/api\/(items\/lookup|barcodes\/resolve)/.test(String(url)),releaseSlot=await acquireSlot(urgent),timer=setTimeout(()=>controller.abort("timeout"),timeoutMs),started=performance.now();state.requests++;state.lastRequestId=id;activeControllers.set(controller,scope);
       try{
         const headers=new Headers(options.headers||{});headers.set("X-Technics-Request-Id",id);headers.set("X-Technics-Priority",urgent?"urgent":"normal");
-        const response=await fetch(url,{...options,headers,signal:controller.signal,priority:urgent?"high":"auto"}),payload=validateShape(validateMeta(await read(response,settings.message),id),url);
+        const response=await fetch(url,{...options,headers,signal:controller.signal,priority:urgent?"high":"auto"}),payload=validateShape(validateMeta(await read(response,settings.message),id,response),url);
         if(!response.ok&&transientStatus(response.status)){state.httpRetries++;const error=new Error(payload?.error||`Servizio temporaneamente non disponibile (${response.status}).`);error.status=response.status;error.transient=true;throw error}
         if(key&&latestSequence.get(key)!==sequence){state.discarded++;const error=new Error("Risposta superata da una richiesta più recente.");error.staleResponse=true;throw error}
         state.lastLatencyMs=Math.round(performance.now()-started);state.lastSuccessAt=new Date().toISOString();recordTiming(url,state.lastLatencyMs);announceSuccess(url,payload,state.lastLatencyMs,false);
