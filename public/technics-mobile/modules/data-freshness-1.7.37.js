@@ -2,10 +2,11 @@
   "use strict";
   const state={dataTime:"",serverTime:"",source:"",latencyMs:0,cached:false,lastReceivedAt:"",healthVerifiedAt:0,level:"waiting"};
   let badge=null,timer=0;
+  const ensureStyle=()=>{if(document.getElementById("technics-data-freshness-layout"))return;const style=document.createElement("style");style.id="technics-data-freshness-layout";style.textContent="#dataFreshness{box-sizing:border-box;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:5px;width:104px;min-width:104px;max-width:104px;height:34px;min-height:34px;max-height:34px;padding:0 8px!important;line-height:1!important;white-space:nowrap;vertical-align:middle}#dataFreshness i{display:block;flex:0 0 auto;margin:0!important}#dataFreshness span{display:block;flex:0 0 auto;margin:0!important;padding:0!important;line-height:1!important;white-space:nowrap;text-align:center;transform:none!important}";document.head.appendChild(style)};
   const parse=value=>{const n=Date.parse(String(value||""));return Number.isFinite(n)?n:0};
   const labelSource=value=>({server:"Server condiviso",mirror:"Copia di continuità",TechnicsBridge:"Gestionale Technics","scadenziario-ov.sql":"Scadenziario OV"}[value]||value||"Gestionale Technics");
   const ensure=()=>{
-    if(badge?.isConnected)return badge;
+    ensureStyle();if(badge?.isConnected)return badge;
     const top=document.querySelector("header.top");if(!top)return null;
     badge=document.createElement("button");badge.type="button";badge.id="dataFreshness";badge.className="datafreshness waiting";badge.innerHTML="<i></i><span>Dati in verifica</span>";
     badge.addEventListener("click",()=>document.getElementById("net")?.click());top.insertBefore(badge,document.getElementById("net")||null);return badge;
