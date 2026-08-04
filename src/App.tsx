@@ -69,6 +69,26 @@ const Deferred = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<div className="loading">Caricamento…</div>}>{children}</Suspense>
 );
 
+const lessonSkills = [
+  { icon: "Aa", label: "Grammatica" },
+  { icon: "◆", label: "Vocabolario" },
+  { icon: "♫", label: "Ascolto" },
+  { icon: "◉", label: "Pronuncia" },
+  { icon: "✎", label: "Scrittura" },
+  { icon: "✓", label: "Verifica" },
+] as const;
+
+function LessonSkillIcons({ compact = false }: { compact?: boolean }) {
+  const skills = compact ? lessonSkills.slice(0, 4) : lessonSkills;
+  return (
+    <span className={`lessonSkillIcons ${compact ? "compact" : ""}`} aria-label={skills.map((skill) => skill.label).join(", ")}>
+      {skills.map((skill) => (
+        <i key={skill.label} title={skill.label} aria-hidden="true">{skill.icon}</i>
+      ))}
+    </span>
+  );
+}
+
 type OfflineMessage = {
   type: "OFFLINE_STATUS" | "OFFLINE_PROGRESS" | "OFFLINE_READY" | "OFFLINE_ERROR";
   cached?: number;
@@ -160,9 +180,9 @@ function OfflinePanel() {
   );
 }
 
-const APP_VERSION = "10.8";
+const APP_VERSION = "10.9";
 const BUILD_DATE = "3 agosto 2026";
-const BUILD_ID = "EC-10.8-0803";
+const BUILD_ID = "EC-10.9-0803";
 type View =
   | "start"
   | "home"
@@ -1773,6 +1793,11 @@ export default function Home() {
       unit: MobileUnit;
       checkpoint: SessionCheckpoint;
     } | null>(null),
+    [sessionPreview, setSessionPreview] = useState<{
+      unit: MobileUnit;
+      target: 5 | 15 | 30 | null;
+    } | null>(null),
+    [focusMode, setFocusMode] = useState(false),
     [resetConfirm, setResetConfirm] = useState(false),
     [reading, setReading] = useState<ReadingPassage>(readingPassages.find((passage) => passage.id === initialReading?.id) ?? readingPassages[0]),
     [readingStep, setReadingStep] = useState<"text" | "questions" | "result">(
@@ -1846,6 +1871,9 @@ export default function Home() {
     },
     [recordedAudioUrl],
   );
+  useEffect(() => {
+    if (!["lesson", "reading", "review", "smartReview", "recoveryDrill", "themePack"].includes(view)) setFocusMode(false);
+  }, [view]);
   const themeResultsRef = useRef<HTMLElement | null>(null),
     writingRef = useRef<HTMLTextAreaElement | null>(null),
     finishingRef = useRef(false);
@@ -2136,7 +2164,7 @@ export default function Home() {
     delete all[unitId];
     localStorage.setItem("english-coach-checkpoints-v1", JSON.stringify(all));
   };
-  const open = (u: MobileUnit, target: 5 | 15 | 30 | null = null) => {
+  const startUnit = (u: MobileUnit, target: 5 | 15 | 30 | null = null) => {
     setSessionMinutes(target);
     let checkpoint: SessionCheckpoint | undefined;
     try {
@@ -2157,6 +2185,10 @@ export default function Home() {
     }
     if (checkpoint) removeCheckpoint(u.id);
     beginUnit(u, undefined, target);
+  };
+  const open = (u: MobileUnit, target: 5 | 15 | 30 | null = null) => {
+    stopActiveAudio?.();
+    setSessionPreview({ unit: u, target });
   };
   const chooseLevel = (level: Cefr) => {
     setSelectedLevel(level);
@@ -3271,10 +3303,11 @@ export default function Home() {
     ),
     readingPercent = Math.round(
       (readingCorrect / reading.questions.length) * 100,
-    );
+    ),
+    studyView = ["lesson", "reading", "review", "smartReview", "recoveryDrill", "themePack"].includes(view);
   return (
     <main
-      className={`app level-${selectedLevel.toLowerCase()} mode-${colorMode} text-${textSize}`}
+      className={`app level-${selectedLevel.toLowerCase()} mode-${colorMode} text-${textSize}${studyView ? " study-mode" : ""}${focusMode && studyView ? " focus-mode" : ""}`}
       data-learning-level={selectedLevel}
     >
       <header>
@@ -3285,10 +3318,58 @@ export default function Home() {
             <small>Versione {APP_VERSION} · Un passo al giorno</small>
           </span>
         </button>
-        <span className={`sync ${sync}`} role="status" aria-live="polite">
-          {sync === "saving" ? "Salvataggio…" : "Salvato qui"}
-        </span>
+        <div className="headerStatus">
+          <span className="activeLevelBadge" aria-label={`Livello attivo ${selectedLevel}`}>{selectedLevel}</span>
+          <span className={`sync ${sync}`} role="status" aria-live="polite">
+            {sync === "saving" ? "Salvataggio…" : "Salvato qui"}
+          </span>
+        </div>
       </header>
+      {studyView && (
+        <button
+          type="button"
+          className={`focusToggle ${focusMode ? "active" : ""}`}
+          aria-pressed={focusMode}
+          onClick={() => setFocusMode((active) => !active)}
+        >
+          <span aria-hidden="true">{focusMode ? "×" : "◎"}</span>
+          {focusMode ? "Esci" : "Focus"}
+        </button>
+      )}
+      {sessionPreview && (
+        <div className="confirmBackdrop sessionPreviewBackdrop" role="dialog" aria-modal="true" aria-labelledby="session-preview-title">
+          <section className="confirmSheet sessionPreviewSheet">
+            <button className="sessionPreviewClose" type="button" aria-label="Chiudi anteprima" onClick={() => setSessionPreview(null)}>×</button>
+            <span className="eyebrow">Anteprima della sessione</span>
+            <div className="sessionPreviewTitle">
+              <span>{sessionPreview.unit.cefr}</span>
+              <div>
+                <h2 id="session-preview-title">{sessionPreview.unit.title}</h2>
+                <small>{sessionPreview.target ?? sessionPreview.unit.minutes} minuti · sessione guidata</small>
+              </div>
+            </div>
+            <p>{sessionPreview.unit.grammar.explanationIt[0]}</p>
+            <div className="sessionPreviewSkills">
+              {lessonSkills.map((skill) => (
+                <span key={skill.label}><i aria-hidden="true">{skill.icon}</i>{skill.label}</span>
+              ))}
+            </div>
+            <div className="sessionPreviewSummary">
+              <span><b>{practiceFor(sessionPreview.unit).length + listeningQuizFor(sessionPreview.unit).length + finalQuizFor(sessionPreview.unit).length}</b><small>verifiche</small></span>
+              <span><b>{sessionPreview.unit.vocabulary.length}</b><small>parole chiave</small></span>
+              <span><b>{sessionPreview.unit.listening.questions.length}</b><small>prove d’ascolto</small></span>
+            </div>
+            <div className="confirmActions sessionPreviewActions">
+              <button className="primary" autoFocus onClick={() => {
+                const preview = sessionPreview;
+                setSessionPreview(null);
+                startUnit(preview.unit, preview.target);
+              }}>Inizia la sessione <b>→</b></button>
+              <button className="quiet" onClick={() => setSessionPreview(null)}>Torna alla scelta</button>
+            </div>
+          </section>
+        </div>
+      )}
       {resumePrompt && (
         <div
           className="confirmBackdrop"
@@ -3636,6 +3717,7 @@ export default function Home() {
                   </div>
                   <h2>{selectedStarter.title}</h2>
                   <p>{selectedStarter.grammar.explanationIt[0]}</p>
+                  <LessonSkillIcons />
                   <div className="exerciseMix">
                     <span>
                       <b>
@@ -3813,6 +3895,7 @@ export default function Home() {
                               Sessione {choice.position} · {choice.unit.minutes}{" "}
                               min{done ? ` · ${done.score}%` : ""}
                             </small>
+                            <LessonSkillIcons compact />
                           </span>
                           <i>›</i>
                         </button>

@@ -105,7 +105,15 @@ try {
   fireEvent.click(homeFocus.querySelector(".dailyLevelPicker>summary"));
   fireEvent.click(within(homeFocus).getByRole("button", { name: "A1" })); await sleep(20);
   fireEvent.click(within(freePathAgain).getByRole("button", { name: /Inizia questa sessione/ })); await sleep(30);
+  check("session-preview-shows-purpose-and-skills", Boolean(document.querySelector(".sessionPreviewBackdrop[role='dialog']")) && document.querySelectorAll(".sessionPreviewSkills>span").length === 6);
+  fireEvent.click(document.querySelector(".sessionPreviewActions .primary")); await sleep(30);
   check("lesson-opens-at-grammar", currentPhase() === "Grammatica");
+  check("active-level-is-always-visible", document.querySelector(".activeLevelBadge")?.textContent?.trim() === "A1");
+  const focusButton = screen.getByRole("button", { name: "Focus" });
+  fireEvent.click(focusButton); await sleep(10);
+  check("focus-mode-reduces-chrome", document.querySelector("main.app")?.classList.contains("focus-mode") && focusButton.getAttribute("aria-pressed") === "true");
+  fireEvent.click(screen.getByRole("button", { name: "Esci" })); await sleep(10);
+  check("focus-mode-is-reversible", !document.querySelector("main.app")?.classList.contains("focus-mode"));
   fireEvent.click(screen.getByRole("button", { name: /Salta questa parte/ })); await sleep(10);
   check("skip-moves-one-stage", currentPhase() === "Esempi");
   fireEvent.click(screen.getByRole("button", { name: /Indietro/ })); await sleep(10);
@@ -132,6 +140,7 @@ try {
   check("due-error-becomes-primary-home-action", Boolean(document.querySelector(".dailyFocusHome.dailyReview")) && Boolean(screen.getByRole("button", { name: /Inizia il ripasso/ })));
   const homePath = document.querySelector("details.freeChoice");
   fireEvent.click(within(homePath).getByRole("button", { name: /Inizia questa sessione/ })); await sleep(20);
+  fireEvent.click(document.querySelector(".sessionPreviewActions .primary")); await sleep(20);
   check("reopening-interrupted-lesson-offers-choice", Boolean(screen.getByText("Vuoi continuare?")));
   fireEvent.click(screen.getByRole("button", { name: "Riprendi dal punto interrotto" })); await sleep(20);
   check("resume-returns-exact-question", currentLessonTitle() === "Completa la frase" && Boolean(screen.getByText(/Domanda 2 di/)));

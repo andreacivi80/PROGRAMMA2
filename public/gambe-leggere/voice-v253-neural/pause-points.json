@@ -1,0 +1,1062 @@
+{
+  "ankle-alphabet-alt-guide": [
+    4.881,
+    11.51,
+    15.273
+  ],
+  "ankle-alphabet-guide": [
+    4.919,
+    12.188,
+    17.356
+  ],
+  "ankle-cross-alt-guide": [
+    1.86,
+    3.255,
+    4.934
+  ],
+  "ankle-cross-guide": [
+    4.489,
+    9.102,
+    14.245
+  ],
+  "ankle-eversion-alt-guide": [
+    2.251,
+    4.935,
+    6.679
+  ],
+  "ankle-eversion-guide": [
+    4.646,
+    9.595,
+    12.539
+  ],
+  "ankle-inout-alt-guide": [
+    2.003,
+    3.802,
+    5.507
+  ],
+  "ankle-inout-guide": [
+    4.008,
+    9.297,
+    15.078
+  ],
+  "ankle-inversion-alt-guide": [
+    2.303,
+    4.089,
+    5.832
+  ],
+  "ankle-inversion-guide": [
+    4.294,
+    8.073,
+    12.057
+  ],
+  "back-leg-alt-guide": [
+    2.511,
+    4.661,
+    6.602
+  ],
+  "back-leg-guide": [
+    3.032,
+    6.602,
+    10.182
+  ],
+  "back-tap-alt-guide": [
+    2.511,
+    3.945,
+    5.43
+  ],
+  "back-tap-guide": [
+    4.685,
+    10.234,
+    14.87
+  ],
+  "bicycle-crunch-alt-guide": [
+    2.12,
+    4.805,
+    7.018
+  ],
+  "bicycle-crunch-guide": [
+    6.755,
+    12.174,
+    18.372
+  ],
+  "bird-dog-crunch-alt-guide": [
+    3.084,
+    5.391,
+    9.622
+  ],
+  "bird-dog-crunch-guide": [
+    5.063,
+    12.057,
+    20.651
+  ],
+  "bottle-calf-alt-guide": [
+    2.12,
+    4.309,
+    6.535
+  ],
+  "bottle-calf-guide": [
+    4.737,
+    9.023,
+    13.32
+  ],
+  "bottle-seated-extension-alt-guide": [
+    2.549,
+    4.701,
+    7.083
+  ],
+  "bottle-seated-extension-guide": [
+    4.542,
+    9.154,
+    14.271
+  ],
+  "bottle-squat-alt-guide": [
+    2.068,
+    5.012,
+    7.383
+  ],
+  "bottle-squat-guide": [
+    5.662,
+    10.99,
+    14.947
+  ],
+  "breathe-alt-guide": [
+    2.849,
+    4.987,
+    7.852
+  ],
+  "breathe-guide": [
+    3.799,
+    7.201,
+    12.617
+  ],
+  "bridge-alt-guide": [
+    2.211,
+    5.195,
+    7.474
+  ],
+  "bridge-guide": [
+    3.708,
+    7.461,
+    11.536
+  ],
+  "bridge-march-alt-guide": [
+    2.146,
+    4.609,
+    6.836
+  ],
+  "bridge-march-guide": [
+    3.396,
+    7.786,
+    10.768
+  ],
+  "butterfly-alt-guide": [
+    2.003,
+    4.049,
+    5.586
+  ],
+  "butterfly-guide": [
+    4.749,
+    9.57,
+    16.224
+  ],
+  "calf-pulse-alt-guide": [
+    2.068,
+    3.645,
+    5.729
+  ],
+  "calf-pulse-guide": [
+    5.454,
+    11.693,
+    16.823
+  ],
+  "calf-stretch-alt-guide": [
+    1.977,
+    5.065,
+    8.164
+  ],
+  "calf-stretch-guide": [
+    4.165,
+    8.451,
+    12.539
+  ],
+  "clam-alt-guide": [
+    2.563,
+    4.934,
+    7.056
+  ],
+  "clam-guide": [
+    3.643,
+    7.5,
+    10.715
+  ],
+  "clock-tap-alt-guide": [
+    1.938,
+    3.711,
+    5.247
+  ],
+  "clock-tap-guide": [
+    4.685,
+    10.443,
+    15.885
+  ],
+  "copenhagen-knee-alt-guide": [
+    2.889,
+    6.016,
+    8.345
+  ],
+  "copenhagen-knee-guide": [
+    8.304,
+    15.846,
+    23.697
+  ],
+  "cross-tap-alt-guide": [
+    1.938,
+    3.372,
+    4.909
+  ],
+  "cross-tap-guide": [
+    4.724,
+    10.547,
+    16.237
+  ],
+  "dead-bug-alt-guide": [
+    2.876,
+    7.018,
+    10.586
+  ],
+  "dead-bug-guide": [
+    5.869,
+    12.122,
+    17.252
+  ],
+  "donkey-kick-alt-guide": [
+    2.732,
+    5.508,
+    7.448
+  ],
+  "donkey-kick-guide": [
+    3.865,
+    8.568,
+    12.981
+  ],
+  "donkey-kick-pulse-alt-guide": [
+    2.823,
+    6.185,
+    9.14
+  ],
+  "donkey-kick-pulse-guide": [
+    6.404,
+    14.063,
+    21.641
+  ],
+  "fire-hydrant-alt-guide": [
+    2.107,
+    4.362,
+    6.576
+  ],
+  "fire-hydrant-guide": [
+    5.258,
+    10.677,
+    16.25
+  ],
+  "flow-alt-guide": [
+    1.886,
+    4.036,
+    6.77
+  ],
+  "flow-guide": [
+    2.406,
+    6.145,
+    9.323
+  ],
+  "frog-pump-alt-guide": [
+    4.282,
+    7.721,
+    10.728
+  ],
+  "frog-pump-guide": [
+    5.544,
+    10.013,
+    17.16
+  ],
+  "front-tap-alt-guide": [
+    2.381,
+    3.815,
+    5.352
+  ],
+  "front-tap-guide": [
+    4.204,
+    9.18,
+    13.555
+  ],
+  "glute-squeeze-alt-guide": [
+    2.264,
+    3.957,
+    6.211
+  ],
+  "glute-squeeze-guide": [
+    4.776,
+    10.039,
+    14.531
+  ],
+  "heel-dig-alt-guide": [
+    2.003,
+    3.88,
+    5.624
+  ],
+  "heel-dig-guide": [
+    4.567,
+    9.505,
+    14.596
+  ],
+  "heel-drop-step-alt-guide": [
+    2.55,
+    5.013,
+    6.953
+  ],
+  "heel-drop-step-guide": [
+    4.464,
+    8.047,
+    11.431
+  ],
+  "heel-slide-alt-guide": [
+    2.706,
+    5.078,
+    7.265
+  ],
+  "heel-slide-guide": [
+    2.953,
+    6.679,
+    10.495
+  ],
+  "heel-taps-abs-alt-guide": [
+    3.032,
+    6.327,
+    8.516
+  ],
+  "heel-taps-abs-guide": [
+    5.544,
+    12.383,
+    18.125
+  ],
+  "heel-toe-alt-guide": [
+    2.29,
+    4.4,
+    6.797
+  ],
+  "heel-toe-guide": [
+    3.826,
+    7.942,
+    11.081
+  ],
+  "heel-walk-alt-guide": [
+    2.211,
+    3.646,
+    5.272
+  ],
+  "heel-walk-guide": [
+    5.428,
+    10.221,
+    14.31
+  ],
+  "heels-alt-guide": [
+    2.12,
+    5.078,
+    7.435
+  ],
+  "heels-guide": [
+    3.305,
+    7.279,
+    12.369
+  ],
+  "hip-circle-alt-guide": [
+    2.706,
+    4.635,
+    6.562
+  ],
+  "hip-circle-guide": [
+    2.146,
+    6.563,
+    9.596
+  ],
+  "hip-thrust-alt-guide": [
+    4.099,
+    8.489,
+    12.539
+  ],
+  "hip-thrust-guide": [
+    7.979,
+    16.158,
+    22.578
+  ],
+  "hip-thrust-hold-alt-guide": [
+    2.927,
+    6.224,
+    9.166
+  ],
+  "hip-thrust-hold-guide": [
+    5.895,
+    10.832,
+    18.281
+  ],
+  "hip-thrust-march-alt-guide": [
+    2.902,
+    5.403,
+    7.773
+  ],
+  "hip-thrust-march-guide": [
+    4.868,
+    10.872,
+    16.224
+  ],
+  "hip-thrust-narrow-alt-guide": [
+    2.732,
+    4.973,
+    8.554
+  ],
+  "hip-thrust-narrow-guide": [
+    6.026,
+    13.008,
+    19.648
+  ],
+  "hip-thrust-one-half-alt-guide": [
+    2.393,
+    5.13,
+    7.916
+  ],
+  "hip-thrust-one-half-guide": [
+    8.851,
+    15.038,
+    21.016
+  ],
+  "hip-thrust-pulse-alt-guide": [
+    2.889,
+    6.042,
+    8.788
+  ],
+  "hip-thrust-pulse-guide": [
+    5.869,
+    12.421,
+    19.701
+  ],
+  "hip-thrust-single-alt-guide": [
+    2.706,
+    6.445,
+    9.739
+  ],
+  "hip-thrust-single-guide": [
+    5.739,
+    12.617,
+    18.163
+  ],
+  "hip-thrust-staggered-alt-guide": [
+    2.81,
+    6.68,
+    9.908
+  ],
+  "hip-thrust-staggered-guide": [
+    7.458,
+    13.918,
+    21.927
+  ],
+  "hip-thrust-step-alt-guide": [
+    2.941,
+    5.846,
+    9.075
+  ],
+  "hip-thrust-step-guide": [
+    5.7,
+    11.418,
+    16.979
+  ],
+  "hip-thrust-wide-alt-guide": [
+    2.12,
+    4.361,
+    6.705
+  ],
+  "hip-thrust-wide-guide": [
+    5.804,
+    12.577,
+    18.138
+  ],
+  "knee-curl-alt-guide": [
+    1.899,
+    4.804,
+    7.005
+  ],
+  "knee-curl-guide": [
+    2.342,
+    5.169,
+    9.009
+  ],
+  "knee-fall-alt-guide": [
+    2.198,
+    3.633,
+    5.339
+  ],
+  "knee-fall-guide": [
+    3.097,
+    5.781,
+    8.216
+  ],
+  "knee-hug-alt-guide": [
+    2.38,
+    4.022,
+    5.846
+  ],
+  "knee-hug-guide": [
+    4.255,
+    9.674,
+    14.948
+  ],
+  "knee-lift-hold-alt-guide": [
+    2.029,
+    3.477,
+    5.013
+  ],
+  "knee-lift-hold-guide": [
+    4.763,
+    10.833,
+    15.299
+  ],
+  "lateral-lunge-alt-guide": [
+    2.368,
+    4.674,
+    6.615
+  ],
+  "lateral-lunge-guide": [
+    3.696,
+    7.89,
+    12.226
+  ],
+  "leg-open-alt-guide": [
+    1.847,
+    3.515,
+    5.246
+  ],
+  "leg-open-guide": [
+    4.684,
+    9.921,
+    14.74
+  ],
+  "line-alt-guide": [
+    1.964,
+    3.958,
+    6.576
+  ],
+  "line-guide": [
+    3.149,
+    7.057,
+    9.791
+  ],
+  "march-alt-guide": [
+    2.303,
+    5.026,
+    7.487
+  ],
+  "march-guide": [
+    3.539,
+    7.266,
+    11.081
+  ],
+  "mini-squat-alt-guide": [
+    2.654,
+    4.765,
+    7.344
+  ],
+  "mini-squat-guide": [
+    3.395,
+    6.016,
+    10.715
+  ],
+  "mountain-climber-alt-guide": [
+    2.485,
+    6.211,
+    10.117
+  ],
+  "mountain-climber-guide": [
+    4.503,
+    10.742,
+    16.641
+  ],
+  "pedal-alt-guide": [
+    2.315,
+    4.544,
+    6.667
+  ],
+  "pedal-guide": [
+    3.669,
+    7.76,
+    10.559
+  ],
+  "pelvic-tilt-alt-guide": [
+    1.794,
+    3.919,
+    5.663
+  ],
+  "pelvic-tilt-guide": [
+    5.361,
+    10.651,
+    16.159
+  ],
+  "plank-shoulder-taps-alt-guide": [
+    2.719,
+    5.651,
+    8.033
+  ],
+  "plank-shoulder-taps-guide": [
+    4.542,
+    10.012,
+    15.521
+  ],
+  "prone-hip-extension-alt-guide": [
+    2.224,
+    4.388,
+    6.575
+  ],
+  "prone-hip-extension-guide": [
+    3.695,
+    8.151,
+    11.861
+  ],
+  "pumps-alt-guide": [
+    2.576,
+    5.312,
+    7.461
+  ],
+  "pumps-guide": [
+    3.825,
+    6.25,
+    10.885
+  ],
+  "quad-press-alt-guide": [
+    2.706,
+    4.128,
+    5.871
+  ],
+  "quad-press-guide": [
+    4.333,
+    9.844,
+    15.247
+  ],
+  "rest-alt-guide": [
+    3.058,
+    5.182,
+    7.278
+  ],
+  "rest-guide": [
+    3.527,
+    6.016,
+    9.661
+  ],
+  "reverse-crunch-alt-guide": [
+    2.862,
+    6.315,
+    9.74
+  ],
+  "reverse-crunch-guide": [
+    4.997,
+    11.901,
+    16.667
+  ],
+  "reverse-lunge-wall-alt-guide": [
+    2.472,
+    4.779,
+    6.719
+  ],
+  "reverse-lunge-wall-guide": [
+    3.292,
+    7.148,
+    11.08
+  ],
+  "seated-ankle-stretch-alt-guide": [
+    2.745,
+    5.182,
+    7.018
+  ],
+  "seated-ankle-stretch-guide": [
+    3.617,
+    6.432,
+    11.263
+  ],
+  "seated-heel-raise-alt-guide": [
+    2.719,
+    4.427,
+    6.783
+  ],
+  "seated-heel-raise-guide": [
+    3.865,
+    8.255,
+    12.069
+  ],
+  "seated-heel-slide-alt-guide": [
+    2.758,
+    4.426,
+    6.341
+  ],
+  "seated-heel-slide-guide": [
+    3.734,
+    6.718,
+    10.117
+  ],
+  "seated-knee-extension-alt-guide": [
+    2.159,
+    4.453,
+    6.744
+  ],
+  "seated-knee-extension-guide": [
+    3.852,
+    7.279,
+    10.612
+  ],
+  "seated-march-alt-guide": [
+    2.368,
+    4.817,
+    6.94
+  ],
+  "seated-march-guide": [
+    3.969,
+    8.06,
+    12.174
+  ],
+  "seated-side-step-alt-guide": [
+    2.003,
+    3.88,
+    5.938
+  ],
+  "seated-side-step-guide": [
+    2.953,
+    6.836,
+    10.391
+  ],
+  "seated-toe-raise-alt-guide": [
+    2.42,
+    4.023,
+    6.146
+  ],
+  "seated-toe-raise-guide": [
+    3.37,
+    7.487,
+    10.286
+  ],
+  "shake-out-alt-guide": [
+    2.016,
+    3.671,
+    5.195
+  ],
+  "shake-out-guide": [
+    4.451,
+    10.39,
+    15.417
+  ],
+  "side-adduction-alt-guide": [
+    2.836,
+    5.247,
+    7.304
+  ],
+  "side-adduction-guide": [
+    5.661,
+    9.753,
+    13.28
+  ],
+  "side-inner-pulse-alt-guide": [
+    2.237,
+    4.986,
+    7.681
+  ],
+  "side-inner-pulse-guide": [
+    7.145,
+    13.216,
+    19.686
+  ],
+  "side-leg-alt-guide": [
+    2.705,
+    4.831,
+    6.888
+  ],
+  "side-leg-guide": [
+    2.459,
+    5.794,
+    10.456
+  ],
+  "side-plank-dips-alt-guide": [
+    2.393,
+    5.638,
+    7.968
+  ],
+  "side-plank-dips-guide": [
+    6.351,
+    11.458,
+    19.648
+  ],
+  "side-plank-leg-lift-alt-guide": [
+    3.851,
+    8.138,
+    11.848
+  ],
+  "side-plank-leg-lift-guide": [
+    7.08,
+    12.76,
+    21.016
+  ],
+  "side-reach-alt-guide": [
+    2.029,
+    3.893,
+    5.378
+  ],
+  "side-reach-guide": [
+    5.661,
+    11.901,
+    16.771
+  ],
+  "side-step-alt-guide": [
+    2.003,
+    3.88,
+    5.938
+  ],
+  "side-step-guide": [
+    2.511,
+    6.197,
+    9.414
+  ],
+  "single-balance-alt-guide": [
+    2.054,
+    4.335,
+    6.445
+  ],
+  "single-balance-guide": [
+    4.139,
+    8.32,
+    12.747
+  ],
+  "sit-to-stand-alt-guide": [
+    2.459,
+    5.832,
+    7.669
+  ],
+  "sit-to-stand-guide": [
+    4.633,
+    8.958,
+    12.422
+  ],
+  "soft-walk-alt-guide": [
+    2.251,
+    3.918,
+    5.378
+  ],
+  "soft-walk-guide": [
+    3.097,
+    7.811,
+    14.166
+  ],
+  "squat-calf-alt-guide": [
+    2.249,
+    4.596,
+    7.253
+  ],
+  "squat-calf-guide": [
+    3.774,
+    7.617,
+    12.083
+  ],
+  "standing-adduction-wall-alt-guide": [
+    2.054,
+    5.611,
+    7.969
+  ],
+  "standing-adduction-wall-guide": [
+    6.56,
+    12.982,
+    18.906
+  ],
+  "standing-pump-alt-guide": [
+    2.159,
+    3.75,
+    5.286
+  ],
+  "standing-pump-guide": [
+    5.402,
+    11.549,
+    17.825
+  ],
+  "standing-side-pulse-alt-guide": [
+    2.054,
+    4.271,
+    6.536
+  ],
+  "standing-side-pulse-guide": [
+    5.883,
+    11.874,
+    17.839
+  ],
+  "step-jack-alt-guide": [
+    2.016,
+    4.258,
+    6.315
+  ],
+  "step-jack-guide": [
+    3.292,
+    7.188,
+    11.693
+  ],
+  "step-up-alt-guide": [
+    2.693,
+    5.286,
+    7.655
+  ],
+  "step-up-guide": [
+    3.982,
+    8.84,
+    12.968
+  ],
+  "straight-leg-alt-guide": [
+    2.171,
+    5.285,
+    8.034
+  ],
+  "straight-leg-guide": [
+    2.888,
+    6.849,
+    10.611
+  ],
+  "sumo-squat-alt-guide": [
+    1.964,
+    4.271,
+    6.576
+  ],
+  "sumo-squat-guide": [
+    6.027,
+    11.68,
+    17.265
+  ],
+  "supine-hamstring-alt-guide": [
+    2.315,
+    4.648,
+    6.848
+  ],
+  "supine-hamstring-guide": [
+    3.031,
+    6.862,
+    11.471
+  ],
+  "tabletop-toe-taps-alt-guide": [
+    2.589,
+    5.612,
+    9.844
+  ],
+  "tabletop-toe-taps-guide": [
+    8.291,
+    16.094,
+    23.164
+  ],
+  "toe-walk-alt-guide": [
+    2.341,
+    3.776,
+    5.403
+  ],
+  "toe-walk-guide": [
+    4.073,
+    7.669,
+    13.88
+  ],
+  "toe-wave-alt-guide": [
+    2.471,
+    4.14,
+    5.951
+  ],
+  "toe-wave-guide": [
+    4.372,
+    8.88,
+    13.893
+  ],
+  "wall-ankle-alt-guide": [
+    1.86,
+    3.932,
+    5.417
+  ],
+  "wall-ankle-guide": [
+    5.402,
+    10.534,
+    15.885
+  ],
+  "wall-hamstring-alt-guide": [
+    2.159,
+    4.27,
+    6.171
+  ],
+  "wall-hamstring-guide": [
+    4.607,
+    11.38,
+    16.042
+  ],
+  "wall-hip-flex-alt-guide": [
+    2.303,
+    4.036,
+    5.793
+  ],
+  "wall-hip-flex-guide": [
+    4.777,
+    9.674,
+    16.158
+  ],
+  "wall-lunge-alt-guide": [
+    1.899,
+    3.633,
+    5.39
+  ],
+  "wall-lunge-guide": [
+    4.777,
+    10.091,
+    15.832
+  ],
+  "wall-march-alt-guide": [
+    2.185,
+    3.762,
+    5.443
+  ],
+  "wall-march-guide": [
+    5.87,
+    12.318,
+    17.995
+  ],
+  "wall-side-bend-alt-guide": [
+    2.003,
+    4.035,
+    5.964
+  ],
+  "wall-side-bend-guide": [
+    2.146,
+    5.052,
+    7.5
+  ],
+  "wall-sit-heels-alt-guide": [
+    2.341,
+    4.766,
+    7.07
+  ],
+  "wall-sit-heels-guide": [
+    3.369,
+    7.526,
+    11.548
+  ],
+  "wall-weight-alt-guide": [
+    2.862,
+    4.297,
+    6.003
+  ],
+  "wall-weight-guide": [
+    4.841,
+    9.96,
+    15.781
+  ],
+  "wide-shift-alt-guide": [
+    1.847,
+    3.423,
+    5.104
+  ],
+  "wide-shift-guide": [
+    5.193,
+    11.693,
+    17.331
+  ]
+}
