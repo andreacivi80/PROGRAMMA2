@@ -1,4 +1,4 @@
-const CACHE = "gambe-leggere-v254";
+const CACHE = "gambe-leggere-v255";
 const CACHE_PREFIX = "gambe-leggere-";
 
 self.addEventListener("install", () => {
