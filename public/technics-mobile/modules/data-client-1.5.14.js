@@ -57,7 +57,7 @@
     document.dispatchEvent(new CustomEvent("technics:data-success",{detail:{url:String(url),dataTime:state.lastDataTime,serverTime:state.lastServerTime,source:state.lastSource,nodeId:state.lastNodeId,nodeRole:state.lastNodeRole,bridgeVersion:state.lastBridgeVersion,requestId:state.lastRequestId,latencyMs:Number(latencyMs||0),cached:Boolean(cached)}}));
   };
   const runFetch=async(url,options,settings,key,sequence)=>{
-    const method=String(options.method||"GET").toUpperCase(),safe=method==="GET"||method==="HEAD"||settings.retryUnsafe===true,attempts=safe?Math.max(1,Number(settings.attempts||3)):1,timeoutMs=Math.max(3000,Number(settings.timeoutMs||15000));let lastError;
+    const method=String(options.method||"GET").toUpperCase(),safe=method==="GET"||method==="HEAD"||settings.retryUnsafe===true,attempts=safe?Math.max(1,Number(settings.attempts||8)):1,timeoutMs=Math.max(3000,Number(settings.timeoutMs||15000));let lastError;
     for(let attempt=0;attempt<attempts;attempt++){
       if(attempt)await waitForNetwork();
       const id=requestId(),controller=new AbortController(),scope=String(settings.scope||document.querySelector("main.shell")?.dataset.workspace||"global"),urgent=/\/api\/(items\/lookup|barcodes\/resolve)/.test(String(url)),releaseSlot=await acquireSlot(urgent),timer=setTimeout(()=>controller.abort("timeout"),timeoutMs),started=performance.now();state.requests++;state.lastRequestId=id;activeControllers.set(controller,scope);
@@ -74,7 +74,7 @@
         lastError=error;state.lastFailure=String(error?.message||error);if(error?.name==="AbortError"||error==="timeout")state.timeouts++;
         if(error?.staleResponse)throw error;
         const retryable=error?.transient||error?.incompleteResponse||error?.name==="AbortError"||Number(error?.status||0)===0||transientStatus(error?.status);
-        if(retryable&&attempt<attempts-1){state.retries++;await pause(Math.round(250*Math.pow(2,attempt)+Math.random()*150));continue}
+        if(retryable&&attempt<attempts-1){state.retries++;await pause(Math.round(Math.min(550,120*(attempt+1))+Math.random()*80));continue}
       }finally{clearTimeout(timer);activeControllers.delete(controller);releaseSlot()}
     }
     state.failures++;document.dispatchEvent(new CustomEvent("technics:data-failure",{detail:{url,message:state.lastFailure}}));throw lastError||new Error("Collegamento dati non disponibile.");
