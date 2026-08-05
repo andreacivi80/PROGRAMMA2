@@ -15,8 +15,10 @@
     const target=ensure();if(!target)return;
     const stamp=parse(state.dataTime)||parse(state.serverTime),age=stamp?Math.max(0,Math.round((Date.now()-stamp)/1000)):Infinity;
     const verified=Number(state.healthVerifiedAt||0)>0&&Date.now()-Number(state.healthVerifiedAt)<60000;
-    const continuity=/mirror|copia/i.test(String(state.source||""));state.level=!stamp?(verified?"fresh":"waiting"):continuity?"aging":verified&&age<=30?"fresh":age<=90?"aging":"stale";target.className=`datafreshness ${state.level}`;
-    target.querySelector("span").textContent=continuity?"Dati di continuità":!stamp&&verified?"Dati verificati":Number.isFinite(age)?`Dati ${age}s`:"Dati in verifica";
+    const continuity=/mirror|copia/i.test(String(state.source||""));
+    state.level=continuity?"aging":verified?"fresh":!stamp?"waiting":age<=90?"aging":"stale";
+    target.className=`datafreshness ${state.level}`;
+    target.querySelector("span").textContent=continuity?"Dati di continuità":verified?"Dati verificati":Number.isFinite(age)?`Dati ${age}s`:"Dati in verifica";
     const detail=`Fonte: ${labelSource(state.source)} · lettura: ${stamp?new Date(stamp).toLocaleString("it-IT"):"in verifica"} · risposta: ${state.latencyMs} ms${state.cached?" · cache breve verificata":""}`;
     target.title=detail;target.setAttribute("aria-label",detail);
   };
@@ -24,6 +26,6 @@
   document.addEventListener("technics:health-ready",()=>{state.healthVerifiedAt=Date.now();paint()});
   const start=()=>{ensure();paint();clearInterval(timer);timer=setInterval(paint,1000)};
   document.readyState==="loading"?document.addEventListener("DOMContentLoaded",start,{once:true}):start();
-  window.TechnicsDataFreshness=Object.freeze({diagnostics:()=>Object.freeze({...state}),version:"1.7.37"});
-  document.documentElement.dataset.dataFreshness="1.7.37";
+  window.TechnicsDataFreshness=Object.freeze({diagnostics:()=>Object.freeze({...state}),version:"1.8.55"});
+  document.documentElement.dataset.dataFreshness="1.8.55";
 })();
