@@ -1,7 +1,7 @@
 (()=>{
   "use strict";
   const incompleteMessage="Il collegamento dati ha risposto in modo incompleto. Riprova tra pochi secondi.";
-  const state={requests:0,retries:0,recovered:0,failures:0,timeouts:0,offlineWaits:0,httpRetries:0,deduplicated:0,cached:0,discarded:0,integrityFailures:0,lastFailure:"",lastSuccessAt:"",lastLatencyMs:0,lastRequestId:"",lastServerTime:"",lastDataTime:"",lastSource:"",lastNodeId:"",lastNodeRole:"",lastBridgeVersion:""};
+  const state={requests:0,retries:0,recovered:0,failures:0,timeouts:0,offlineWaits:0,httpRetries:0,deduplicated:0,cached:0,discarded:0,integrityFailures:0,lastFailure:"",lastSuccessAt:"",lastLatencyMs:0,lastRequestId:"",lastServerTime:"",lastDataTime:"",lastSource:"",lastNodeId:"",lastNodeRole:"",lastLeaseEpoch:"",lastBridgeVersion:""};
   const inFlight=new Map(),latestSequence=new Map(),responseCache=new Map(),activeControllers=new Map(),routeTimings=new Map();
   let normalActive=0;const normalQueue=[];
   const acquireSlot=urgent=>urgent?Promise.resolve(()=>{}):new Promise(resolve=>{const enter=()=>{normalActive++;let released=false;resolve(()=>{if(released)return;released=true;normalActive--;normalQueue.shift()?.()})};if(normalActive<2)enter();else normalQueue.push(enter)});
@@ -29,12 +29,12 @@
   const validateMeta=(payload,expectedId,response)=>{
     if(!payload.meta){state.integrityFailures++;const error=new Error("Risposta priva della tracciabilità Technics.");error.incompleteResponse=true;throw error}
     const meta=payload.meta;
-    if(!meta.requestId||!meta.serverTime||!meta.version||!meta.nodeId||!meta.nodeRole||meta.dataAuthority!=="Technics"||meta.readOnly!==true){state.integrityFailures++;const error=new Error("Risposta con tracciabilità Technics incompleta.");error.incompleteResponse=true;throw error}
+    if(!meta.requestId||!meta.serverTime||!meta.version||!meta.nodeId||!meta.nodeRole||!meta.leaseEpoch||meta.dataAuthority!=="Technics"||meta.readOnly!==true){state.integrityFailures++;const error=new Error("Risposta con tracciabilità Technics incompleta.");error.incompleteResponse=true;throw error}
     if(expectedId&&String(meta.requestId)!==String(expectedId)){
       state.discarded++;state.integrityFailures++;const error=new Error("Risposta dati non coerente: identificativo richiesta differente.");error.staleResponse=true;throw error;
     }
-    const headerRequestId=response?.headers?.get?.("X-Technics-Request-Id"),headerNode=response?.headers?.get?.("X-Technics-Node"),headerVersion=response?.headers?.get?.("X-Technics-Version");
-    if((headerRequestId&&headerRequestId!==String(meta.requestId))||(headerNode&&headerNode!==String(meta.nodeId))||(headerVersion&&headerVersion!==String(meta.version))){state.integrityFailures++;const error=new Error("Risposta Technics non coerente tra intestazioni e contenuto.");error.incompleteResponse=true;throw error}
+    const headerRequestId=response?.headers?.get?.("X-Technics-Request-Id"),headerNode=response?.headers?.get?.("X-Technics-Node"),headerRole=response?.headers?.get?.("X-Technics-Node-Role"),headerVersion=response?.headers?.get?.("X-Technics-Version"),headerEpoch=response?.headers?.get?.("X-Technics-Lease-Epoch"),headerTime=response?.headers?.get?.("X-Technics-Server-Time");
+    if(!headerRequestId||!headerNode||!headerRole||!headerVersion||!headerEpoch||!headerTime||headerRequestId!==String(meta.requestId)||headerNode!==String(meta.nodeId)||headerRole!==String(meta.nodeRole)||headerVersion!==String(meta.version)||headerEpoch!==String(meta.leaseEpoch)||headerTime!==String(meta.serverTime)){state.integrityFailures++;document.dispatchEvent(new CustomEvent("technics:identity-mismatch",{detail:{code:"NODE-IDENTITY-MISMATCH",nodeId:String(meta.nodeId||"")}}));const error=new Error("NODE-IDENTITY-MISMATCH: risposta Technics non coerente.");error.incompleteResponse=true;throw error}
     const serverTime=Date.parse(meta.serverTime);
     if(!Number.isFinite(serverTime)||serverTime>Date.now()+300000)throw new Error("Risposta dati con data non valida.");
     return payload;
@@ -53,7 +53,7 @@
   const announceSuccess=(url,payload,latencyMs,cached=false)=>{
     const dataTime=payload?.readAt||payload?.result?.readAt||payload?.order?.readAt||payload?.meta?.serverTime||new Date().toISOString();
     const source=payload?.result?.source||payload?.store?.source||payload?.meta?.source||"TechnicsBridge";
-    state.lastServerTime=String(payload?.meta?.serverTime||"");state.lastDataTime=String(dataTime||"");state.lastSource=String(source||"");state.lastNodeId=String(payload?.meta?.nodeId||"");state.lastNodeRole=String(payload?.meta?.nodeRole||"");state.lastBridgeVersion=String(payload?.meta?.version||"");
+    const previousNode=state.lastNodeId;state.lastServerTime=String(payload?.meta?.serverTime||"");state.lastDataTime=String(dataTime||"");state.lastSource=String(source||"");state.lastNodeId=String(payload?.meta?.nodeId||"");state.lastNodeRole=String(payload?.meta?.nodeRole||"");state.lastLeaseEpoch=String(payload?.meta?.leaseEpoch||"");state.lastBridgeVersion=String(payload?.meta?.version||"");if(previousNode&&previousNode!==state.lastNodeId)document.dispatchEvent(new CustomEvent("technics:node-switch",{detail:{code:"UNEXPECTED-NODE-SWITCH",from:previousNode,to:state.lastNodeId,at:new Date().toISOString()}}));
     document.dispatchEvent(new CustomEvent("technics:data-success",{detail:{url:String(url),dataTime:state.lastDataTime,serverTime:state.lastServerTime,source:state.lastSource,nodeId:state.lastNodeId,nodeRole:state.lastNodeRole,bridgeVersion:state.lastBridgeVersion,requestId:state.lastRequestId,latencyMs:Number(latencyMs||0),cached:Boolean(cached)}}));
   };
   const runFetch=async(url,options,settings,key,sequence)=>{
