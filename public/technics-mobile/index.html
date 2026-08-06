@@ -202,8 +202,9 @@ try{
 <script id="technics-system-health-v162" src="modules/system-health-1.6.2.js"></script>
 <script id="technics-mobile-compat-v1741" src="modules/mobile-compat-1.7.41.js"></script>
 <script id="technics-progressive-feedback-v1839" src="modules/progressive-feedback-1.8.39.js"></script>
+<style id="brand-readable-v1864">header.top>.brand{overflow:visible!important}header.top>.brand strong{overflow:visible!important;text-overflow:clip!important;white-space:nowrap!important;font-size:11px!important;letter-spacing:-.02em!important}@media(max-width:350px){header.top>.brand strong{font-size:9.5px!important;letter-spacing:-.035em!important}}</style><meta name="technics-version-label" content="Versione 1.8.64">
 <script type="module">
-const APP_VERSION="1.8.63";
+const APP_VERSION="1.8.64";
 const localBridgeTest=new URLSearchParams(location.search).get("testBridge"),BRIDGE_URL=location.hostname==="127.0.0.1"&&/^dev\d+$/.test(localBridgeTest||"")?`http://127.0.0.1:${localBridgeTest.slice(3)}`:"https://student-tarot-occultist.ngrok-free.dev";async function readJsonResponse(response){return TechnicsDataClient.read(response,"Collegamento dati in ripristino automatico. Riprova tra pochi secondi.")}
 const scannerModules=Promise.all([import("https://cdn.jsdelivr.net/npm/@zxing/browser@0.2.1/+esm"),import("https://cdn.jsdelivr.net/npm/@zxing/library@0.23.0/+esm")]);
 const $=id=>document.getElementById(id);let controls=null,imageReader=null,nativeTimer=null,zoomTimer=null,lastCode="",lastKind="code",lastLot="",scanLocked=false,refreshTimer=null,busyLookup=false,busyProduction=false,nativeBusy=false,activeModule="inventory",currentItem=null,currentOrder=null,packingItems=[],scanPurpose="lookup",expectedMaterialCode="",packingConfirmed=false,packingSyncTimer=null,packingRevision=0,pendingMaterial=null,pendingBarcode="",pendingLocation="",pendingLocationCandidates=[],stableScanValue="",stableScanCount=0,stableScanAt=0,awaitingBarcodeLot=false,packingLiveSync=null;const scannerConsensus=TechnicsScannerCore.createConsensus(1500);
