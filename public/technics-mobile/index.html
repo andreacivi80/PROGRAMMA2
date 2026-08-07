@@ -10,14 +10,14 @@
 <meta property="og:description" content="Magazzino Technics in tempo reale, in sola lettura.">
 <meta property="og:url" content="https://andreacivi80.github.io/PROGRAMMA2/technics-mobile/">
 <title>Technics Mobile</title>
-<meta name="technics-build-version" content="1.8.77">
+<meta name="technics-build-version" content="1.8.78">
 <style id="version-gate-v1865">
 html.version-gate-pending body{visibility:hidden!important}
 html.version-gate-pending:before{content:"TECHNICS MOBILE\A Verifica aggiornamento…";white-space:pre;position:fixed;inset:0;z-index:2147483647;display:grid;place-content:center;gap:8px;padding:24px;background:#f5f7f4;color:#123c34;font:900 15px/1.7 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.06em;text-align:center}
 </style>
 <script id="version-gate-script-v1865">
 document.documentElement.classList.add("version-gate-pending");
-(()=>{const build="1.8.77",root=document.documentElement,reveal=()=>root.classList.remove("version-gate-pending"),parts=v=>String(v||"").split(".").map(n=>Number(n)||0),compare=(a,b)=>{const x=parts(a),y=parts(b);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d}return 0},check=async()=>{try{const response=await fetch(`version.json?boot=${Date.now()}`,{cache:"no-store",headers:{"Cache-Control":"no-cache"}});if(!response.ok)throw new Error("version");const remote=String((await response.json()).version||"").trim();if(!remote||compare(remote,build)<=0){reveal();return}root.dataset.waitingVersion=remote;const target=new URL(location.href);target.searchParams.set("v",remote);target.searchParams.set("boot",Date.now());location.replace(target.href)}catch{setTimeout(reveal,2500)}};check()})();
+(()=>{const build="1.8.78",root=document.documentElement,reveal=()=>root.classList.remove("version-gate-pending"),parts=v=>String(v||"").split(".").map(n=>Number(n)||0),compare=(a,b)=>{const x=parts(a),y=parts(b);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d}return 0},check=async()=>{try{const response=await fetch(`version.json?boot=${Date.now()}`,{cache:"no-store",headers:{"Cache-Control":"no-cache"}});if(!response.ok)throw new Error("version");const remote=String((await response.json()).version||"").trim();if(!remote||compare(remote,build)<=0){reveal();return}root.dataset.waitingVersion=remote;const target=new URL(location.href);target.searchParams.set("v",remote);target.searchParams.set("boot",Date.now());location.replace(target.href)}catch{setTimeout(reveal,2500)}};check()})();
 </script>
 <link rel="stylesheet" href="modules/mobile-label-fix-1.8.35.css">
 <style>
@@ -215,8 +215,8 @@ try{
 <style id="lot-totals-v1865">.lottotals{margin:9px 0 10px;padding:10px;border:1px solid #cdded6;border-radius:14px;background:#f6faf8}.lottotalshead{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px}.lottotalshead strong{color:#17483e;font-size:11px}.lottotalshead small{color:#71827c;font-size:7.5px;font-weight:850}.lottotalsgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.lottotal{min-width:0;padding:9px 10px;border:1px solid #d7e4de;border-radius:11px;background:#fff}.lottotal small,.lottotal em{display:block;color:#71827c;font-size:7px;font-style:normal;font-weight:900;letter-spacing:.07em;text-transform:uppercase}.lottotal strong{display:block;margin:3px 0;color:#17483e;font:750 16px/1 Georgia,serif;white-space:nowrap}.lottotal span{display:block;color:#17483e;font-size:12px;font-weight:950;white-space:nowrap}.lottotal em{margin-top:4px;font-size:6.5px;letter-spacing:.03em;text-transform:none}@media(max-width:340px){.lottotals{padding:8px}.lottotalsgrid{gap:5px}.lottotal{padding:8px}.lottotal strong{font-size:14px}.lottotal span{font-size:11px}}</style><meta name="technics-version-label-lots" content="Versione 1.8.65">
 <script type="module">
 document.head.insertAdjacentHTML("beforeend",`<style id="packing-overuse-v1866">#production .packrow.overused{border-color:#c0544d!important;background:#fff6f4!important;box-shadow:inset 4px 0 #b53e38!important}#production .lotusage.overused{background:#943a36!important;box-shadow:inset 0 0 0 2px #efb0aa!important}#production .lotusage.overused .lotusedfield{background:#fff2f026!important}#production .lotusage.overused .lotusedfield input{border:2px solid #c14b44!important;background:#fff5f3!important;color:#9b2f2a!important}#production .packtotals.overused{border:1px solid #d68b84!important;background:#fff0ed!important;color:#8e302b!important}#production .packtotals.overused strong{color:#a52f29!important}</style>`);
-const CURRENT_VERSION_LABEL="Versione 1.8.77";
-const APP_VERSION="1.8.77";
+const CURRENT_VERSION_LABEL="Versione 1.8.78";
+const APP_VERSION="1.8.78";
 function parsePackingQuantity(value){const normalized=String(value??"").trim().replace(/\s/g,"").replace(",",".");const number=Number(normalized);return Number.isFinite(number)?Math.max(0,number):0}
 const localBridgeTest=new URLSearchParams(location.search).get("testBridge"),BRIDGE_URL=location.hostname==="127.0.0.1"&&/^dev\d+$/.test(localBridgeTest||"")?`http://127.0.0.1:${localBridgeTest.slice(3)}`:"https://student-tarot-occultist.ngrok-free.dev";async function readJsonResponse(response){return TechnicsDataClient.read(response,"Collegamento dati in ripristino automatico. Riprova tra pochi secondi.")}
 const scannerModules=Promise.all([import("https://cdn.jsdelivr.net/npm/@zxing/browser@0.2.1/+esm"),import("https://cdn.jsdelivr.net/npm/@zxing/library@0.23.0/+esm")]);
@@ -1416,5 +1416,5 @@ if(location.hostname==="127.0.0.1"){
  for(const event of ['pointerdown','keydown','touchstart'])document.addEventListener(event,acquire,{passive:true,once:true});
  acquire();
 })();
-</script><script src="modules/expiry-schedule-1.8.68.js?v=1.8.77"></script><script src="modules/technical-panel-1.5.12.js"></script><script src="modules/formulas-1.8.77.js?v=1.8.77"></script>
+</script><script src="modules/expiry-schedule-1.8.68.js?v=1.8.78"></script><script src="modules/technical-panel-1.5.12.js"></script><script src="modules/formulas-1.8.78.js?v=1.8.78"></script>
 </body></html>
