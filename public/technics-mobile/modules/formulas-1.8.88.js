@@ -28,6 +28,33 @@
   const relatedStockStyle = document.createElement("style");
   relatedStockStyle.textContent = `.formulanodeopen{padding:3px 7px 0}.formulainventorylink{min-height:12px;padding:0 7px 2px;font-size:6px}.formulaparent{padding:3px 5px}.formulaparent[data-formula-related-id] .formulaparentsuffix{display:block!important}.formulaparent[data-formula-related-id] .formulaparentsuffix::after{content:' ›';font-size:11px}.formulaparentstock{grid-row:2;grid-column:1;color:#55716a!important;font-size:6px!important;font-weight:900;line-height:1!important;white-space:nowrap!important}.formulaparentdesc{grid-row:1/3;grid-column:2;align-self:center;line-height:1.08}.formulaparentsuffix{grid-row:1/3;grid-column:3;align-self:center}`;
   document.head.append(relatedStockStyle);
+  const integrityStyle = document.createElement("style");
+  integrityStyle.id = "formulas-integrity-v1890";
+  integrityStyle.textContent = `
+  body.formula-detail-open{overflow:hidden!important;overscroll-behavior:none!important}
+  .formulanodedetail{overscroll-behavior:contain;touch-action:pan-y}
+  .formulaunit{overscroll-behavior:contain;touch-action:pan-y;scrollbar-gutter:stable}
+  .formulaunit>div,[data-formula-tree-list]{min-width:0}
+  .formulainci{grid-template-columns:minmax(92px,.9fr) minmax(0,1.1fr) auto;align-items:start}
+  .formulainci b,.formulainci span,.formulainci small{min-width:0;max-width:100%}
+  .formulainci b{font-size:clamp(6.7px,2vw,8px);line-height:1.22;white-space:normal;word-break:normal;overflow-wrap:break-word;hyphens:none}
+  .formulainci>span{font-size:clamp(6.3px,1.85vw,7px);line-height:1.22;white-space:normal;word-break:normal;overflow-wrap:break-word;hyphens:none}
+  .formulainci .formulacas{line-height:1.2;overflow-wrap:normal;word-break:normal}
+  .formuladoc{align-items:start}
+  .formuladoc b{padding-top:4px}
+  .formuladoc span{display:block!important;overflow:visible!important;font-size:clamp(6.2px,1.8vw,7px)!important;line-height:1.22!important;text-overflow:clip!important;white-space:normal!important;word-break:normal!important;overflow-wrap:break-word!important;hyphens:none!important}
+  .formuladoc button{align-self:center}
+  .formulastock{grid-template-columns:minmax(0,1fr) auto!important;column-gap:12px!important;row-gap:3px!important}
+  .formulastockplace{min-width:0;padding-top:1px;line-height:1.2;white-space:normal!important;word-break:normal!important;overflow-wrap:break-word!important}
+  .formulastockwarehouse{min-width:0;padding-top:2px;border-top:1px solid #e5efec;line-height:1.22;white-space:normal!important;word-break:normal!important;overflow-wrap:break-word!important;hyphens:none!important}
+  .formuladetailhead span{display:-webkit-box;overflow:hidden;text-overflow:clip;white-space:normal;word-break:normal;overflow-wrap:break-word;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;line-height:1.18}
+  .formulaparentdesc,.formulanodeopen strong,.formularoottitle span{white-space:normal;word-break:normal;overflow-wrap:break-word;hyphens:none}
+  @media(max-width:430px){
+    .formulainci{grid-template-columns:minmax(84px,.92fr) minmax(0,1.08fr) auto}
+    .formuladoc{grid-template-columns:52px minmax(0,1fr) 34px}
+    .formulastock{column-gap:10px!important}
+  }`;
+  document.head.append(integrityStyle);
   const fitFormulaNavigation = () => {
     const mobile = matchMedia("(max-width:430px)").matches;
     for (const [name, value] of Object.entries(
@@ -76,6 +103,11 @@
     lastExpandedButton = null,
     formulaScrollY = 0;
   const detailHistory = new WeakMap();
+  const syncDetailScrollLock = () =>
+    document.body.classList.toggle(
+      "formula-detail-open",
+      Boolean(result?.querySelector(".formulanodedetail:not(.hidden)")),
+    );
   const resetFormulaSession = () => {
     clearTimeout(refreshTimer);
     requestToken += 1;
@@ -88,6 +120,7 @@
     status.textContent = "Inserisci il codice della formula.";
     viewer.classList.add("hidden");
     viewer.querySelector(".formuladocumentpages").innerHTML = "";
+    document.body.classList.remove("formula-detail-open");
     backButton.dataset.mode = "formula";
     backButton.classList.add("hidden");
     try {
@@ -246,6 +279,7 @@
       button.setAttribute("aria-expanded", "false");
       if (lastExpandedButton === button) lastExpandedButton = null;
       updateBackButton();
+      syncDetailScrollLock();
       return;
     }
     result
@@ -270,9 +304,11 @@
       button.setAttribute("aria-expanded", "true");
       lastExpandedButton = button;
       updateBackButton();
+      syncDetailScrollLock();
     } catch (error) {
       detail.innerHTML = `<div class="formulaempty">${esc(error.message)}</div>`;
       detail.classList.remove("hidden");
+      syncDetailScrollLock();
     } finally {
       button.disabled = false;
     }
@@ -423,6 +459,7 @@
       if (lastExpandedButton === openButton) lastExpandedButton = null;
       if (detail) detailHistory.delete(detail);
       updateBackButton();
+      syncDetailScrollLock();
       return;
     }
     const relatedBack = event.target.closest("[data-formula-related-back]");
