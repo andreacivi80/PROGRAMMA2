@@ -65,7 +65,7 @@
     form = section.querySelector("#formulaSearch");
   const bridges = () =>
     window.TECHNICS_BRIDGES || [
-      "https://student-tarot-occultist.ngrok-free.dev",
+      "https://pittsburgh-heart-starsmerchant-portal.trycloudflare.com",
     ];
   let currentCode = "",
     currentData = null,
