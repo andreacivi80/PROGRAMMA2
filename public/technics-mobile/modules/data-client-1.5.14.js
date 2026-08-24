@@ -31,7 +31,7 @@
     const meta=payload.meta;
     if(!meta.requestId||!meta.serverTime||!meta.version||!meta.nodeId||!meta.nodeRole||!meta.leaseEpoch||meta.dataAuthority!=="Technics"||meta.readOnly!==true){state.integrityFailures++;const error=new Error("Risposta con tracciabilità Technics incompleta.");error.incompleteResponse=true;throw error}
     if(expectedId&&String(meta.requestId)!==String(expectedId)){
-      state.discarded++;state.integrityFailures++;const error=new Error("Risposta dati non coerente: identificativo richiesta differente.");error.staleResponse=true;throw error;
+      state.discarded++;state.integrityFailures++;const error=new Error("Risposta dati temporaneamente non allineata: recupero automatico in corso.");error.incompleteResponse=true;error.transient=true;throw error;
     }
     const headerRequestId=response?.headers?.get?.("X-Technics-Request-Id"),headerNode=response?.headers?.get?.("X-Technics-Node"),headerRole=response?.headers?.get?.("X-Technics-Node-Role"),headerVersion=response?.headers?.get?.("X-Technics-Version"),headerEpoch=response?.headers?.get?.("X-Technics-Lease-Epoch"),headerTime=response?.headers?.get?.("X-Technics-Server-Time");
     if(!headerRequestId||!headerNode||!headerRole||!headerVersion||!headerEpoch||!headerTime||headerRequestId!==String(meta.requestId)||headerNode!==String(meta.nodeId)||headerRole!==String(meta.nodeRole)||headerVersion!==String(meta.version)||headerEpoch!==String(meta.leaseEpoch)||headerTime!==String(meta.serverTime)){state.integrityFailures++;document.dispatchEvent(new CustomEvent("technics:identity-mismatch",{detail:{code:"NODE-IDENTITY-MISMATCH",nodeId:String(meta.nodeId||"")}}));const error=new Error("NODE-IDENTITY-MISMATCH: risposta Technics non coerente.");error.incompleteResponse=true;throw error}
@@ -92,6 +92,6 @@
   const cancelObsolete=workspace=>{for(const [controller,scope] of activeControllers)if(scope!=="global"&&scope!==workspace)controller.abort("workspace-change")};
   window.addEventListener("technics-workspace-change",event=>cancelObsolete(String(event.detail?.workspace||"")));
   const diagnostics=()=>Object.freeze({...state,inFlight:inFlight.size,activeControllers:activeControllers.size,normalActive,normalQueued:normalQueue.length,cacheEntries:responseCache.size,routes:[...routeTimings].map(([route,values])=>({route,samples:values.length,lastMs:values.at(-1)||0,averageMs:values.length?Math.round(values.reduce((sum,value)=>sum+value,0)/values.length):0,maxMs:values.length?Math.max(...values):0}))});
-  window.TechnicsDataClient=Object.freeze({parseText,read,fetchJson,invalidate,diagnostics,incompleteMessage,version:"1.5.14"});
-  document.documentElement.dataset.dataClient="1.5.14";
+  window.TechnicsDataClient=Object.freeze({parseText,read,fetchJson,invalidate,diagnostics,incompleteMessage,version:"1.8.92"});
+  document.documentElement.dataset.dataClient="1.8.92";
 })();

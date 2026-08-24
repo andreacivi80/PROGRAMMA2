@@ -49,6 +49,7 @@
   .formulastockwarehouse{min-width:0;padding-top:2px;border-top:1px solid #e5efec;line-height:1.22;white-space:normal!important;word-break:normal!important;overflow-wrap:break-word!important;hyphens:none!important}
   .formuladetailhead span{display:-webkit-box;overflow:hidden;text-overflow:clip;white-space:normal;word-break:normal;overflow-wrap:break-word;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;line-height:1.18}
   .formulaparentdesc,.formulanodeopen strong,.formularoottitle span{white-space:normal;word-break:normal;overflow-wrap:break-word;hyphens:none}
+  .formuladoccheck{display:grid;gap:4px;padding:5px!important;background:#f6faf8}.formuladocprogress{display:flex;align-items:center;justify-content:space-between;gap:6px;color:#58716a;font-size:6.5px;font-weight:900}.formuladocprogress b{color:#15564f;font-size:7px}.formuladocbadges{display:flex!important;flex-wrap:wrap;gap:3px!important;padding:0!important}.formuladocbadge{padding:3px 5px;border:1px solid #d2dfdb;border-radius:99px;background:#fff;color:#778883;font-size:6px;font-weight:900;white-space:nowrap}.formuladocbadge.present{border-color:#a9d4c4;background:#e5f5ee;color:#17634f}.formuladocsearch{width:100%;height:29px;padding:0 8px;border:1px solid #bad3cd;border-radius:7px;color:#173e35;font-size:7px;font-weight:850}.formuladoclist{display:grid;gap:2px!important;padding:4px!important}.formuladoc.current{border-left:3px solid #42a879}.formuladoc.previous{border-left:3px solid #bdc9c5;opacity:.82}.formuladocmeta{display:block!important;color:#71847d!important;font-size:5.8px!important}.formuladocstate{display:inline-block;margin-left:4px;padding:2px 4px;border-radius:5px;background:#e5f5ee;color:#17634f;font-size:5.5px;font-weight:950}.formuladocstate.previous{background:#eef1f0;color:#70807b}.formuladocprevious{margin:2px 4px 4px;border-top:1px solid #dce8e4}.formuladocprevious summary{padding:6px 3px;color:#5d746d;font-size:6.5px;font-weight:950;cursor:pointer}
   @media(max-width:430px){
     .formulainci{grid-template-columns:minmax(84px,.92fr) minmax(0,1.08fr) auto}
     .formuladoc{grid-template-columns:52px minmax(0,1fr) 34px}
@@ -92,7 +93,9 @@
     form = section.querySelector("#formulaSearch");
   const bridges = () =>
     window.TECHNICS_BRIDGES || [
-      "https://pittsburgh-heart-starsmerchant-portal.trycloudflare.com",
+      location.hostname === "127.0.0.1"
+        ? "http://127.0.0.1:8792"
+        : "https://pittsburgh-heart-starsmerchant-portal.trycloudflare.com",
     ];
   let currentCode = "",
     currentData = null,
@@ -103,6 +106,7 @@
     lastExpandedButton = null,
     formulaScrollY = 0;
   const detailHistory = new WeakMap();
+  const documentChecklistTokens = new WeakMap();
   const syncDetailScrollLock = () =>
     document.body.classList.toggle(
       "formula-detail-open",
@@ -220,6 +224,39 @@
   };
   const renderRelated = (item, suffix = "Apri") =>
     `<button type="button" class="formulaparent" data-formula-related-id="${Number(item.id) || 0}"><b>${esc(item.code)}</b><span class="formulaparentdesc">${esc(item.description)}</span><small class="formulaparentsuffix">${esc(suffix)}</small><span class="formulaparentstock">Giacenza ${num2(item.totalStock)} ${esc(item.unit || "")}</span></button>`;
+  const checklistLabels = ["Scheda di sicurezza", "Scheda tecnica", "Halal", "Kosher", "Solventi", "Composizione", "Allergeni", "OGM / GMO", "Origine animale / BSE-TSE", "REACH", "ISO 16128", "Dossier regolatorio", "Dichiarazione", "PIF"];
+  const documentButton = (document, articleId, previous = false) => {
+    const categories = (document.analysis?.categories || []).map((item) => item.label),
+      search = [document.name, document.description, document.category, document.analysis?.revision, ...categories].join(" ").toLocaleUpperCase("it-IT");
+    return `<article class="formuladoc ${previous ? "previous" : "current"}" data-formula-document-row data-search="${esc(search)}"><b>${esc(displayDate(document.date))}<span class="formuladocmeta">${esc(document.source || "ARCHIVIO")}${document.analysis?.pageCount ? ` · ${document.analysis.pageCount} pag.` : ""}</span></b><span title="${esc(document.name)}">${esc(document.name)}${document.analysis?.revision ? `<i class="formuladocstate${previous ? " previous" : ""}">REV. ${esc(document.analysis.revision)}</i>` : previous ? '<i class="formuladocstate previous">REVISIONE PRECEDENTE</i>' : ""}</span><button type="button" data-formula-document="${esc(document.key)}" data-article="${articleId}" data-attachment="${document.attachmentId || 0}" data-source="${esc(document.source)}" data-name="${esc(document.name)}">Apri</button></article>`;
+  };
+  const renderDocumentChecklist = (section, payload, articleId) => {
+    if (!section) return;
+    const documents = Array.isArray(payload?.documents) ? payload.documents : [],
+      current = documents.filter((item) => item.revisionState !== "previous"),
+      previous = documents.filter((item) => item.revisionState === "previous"),
+      found = new Set(documents.flatMap((item) => (item.analysis?.categories || []).map((category) => category.label))),
+      analyzed = documents.filter((item) => item.analysis).length;
+    section.innerHTML = `<h4>DOCUMENTI · CHECKLIST E REVISIONI</h4><div class="formuladoccheck"><div class="formuladocprogress"><span>Analisi contenuto reale</span><b>${payload?.complete ? "COMPLETA" : `${analyzed}/${documents.length} · IN CORSO`}</b></div><div class="formuladocbadges">${checklistLabels.map((label) => `<span class="formuladocbadge ${found.has(label) ? "present" : ""}">${found.has(label) ? "✓ " : ""}${esc(label)}</span>`).join("")}</div><input class="formuladocsearch" type="search" placeholder="Cerca documento, categoria o revisione" aria-label="Cerca tra i documenti"></div><div class="formuladoclist">${current.length ? current.map((item) => documentButton(item, articleId)).join("") : '<div class="formulaempty">Nessun file apribile collegato.</div>'}</div>${previous.length ? `<details class="formuladocprevious"><summary>REVISIONI PRECEDENTI · ${previous.length}</summary><div class="formuladoclist">${previous.map((item) => documentButton(item, articleId, true)).join("")}</div></details>` : ""}`;
+  };
+  const loadDocumentChecklist = async (detail, articleId) => {
+    const token = (documentChecklistTokens.get(detail) || 0) + 1;
+    documentChecklistTokens.set(detail, token);
+    let remaining = 1;
+    while (remaining > 0 && detail.isConnected && !detail.classList.contains("hidden") && documentChecklistTokens.get(detail) === token) {
+      try {
+        const payload = await api(`/api/formulas/document-checklist?articleId=${articleId}&limit=1&fresh=${Date.now()}`, true);
+        if (documentChecklistTokens.get(detail) !== token) return;
+        renderDocumentChecklist(detail.querySelector('[data-formula-part="docs"]'), payload.result, articleId);
+        remaining = Number(payload.result?.remaining || 0);
+        if (remaining > 0) await new Promise((resolve) => setTimeout(resolve, 250));
+      } catch (error) {
+        const target = detail.querySelector(".formuladocprogress b");
+        if (target) target.textContent = "RIPRESA AUTOMATICA";
+        return;
+      }
+    }
+  };
   const renderDetail = (data, canGoBack = false) => {
     const docs = (Array.isArray(data.documents) ? data.documents : [])
         .filter((d) => d.exists !== false)
@@ -252,7 +289,7 @@
       children.sort(
         (a, b) => Number(b.percentage || 0) - Number(a.percentage || 0),
       );
-    return `<header class="formuladetailhead">${canGoBack ? '<button type="button" class="formuladetailback" data-formula-related-back aria-label="Torna alla distinta precedente">←</button>' : ""}<b>${esc(data.article.code)}</b><span>${esc(data.article.description)}</span><button type="button" class="formuladetailclose" data-formula-close-detail aria-label="Chiudi scheda">×</button></header><div class="formuladetailnav"><button class="${active("docs")}" type="button" data-formula-jump="docs">Documenti ${docs.length}</button><button class="${active("inci")}" type="button" data-formula-jump="inci">INCI ${inci.length}</button><button class="${active("stock")}" type="button" data-formula-jump="stock">Giacenze ${stock.length}</button><button type="button" data-formula-jump="tree">${treeLabel} ${children.length || parents.length}</button></div><section class="formulaunit ${hidden("docs")}" data-formula-part="docs"><h4>DOCUMENTI · DAL PIÙ RECENTE</h4><div>${docs.length ? docs.map((d) => `<article class="formuladoc"><b>${esc(displayDate(d.date))}</b><span title="${esc(d.name)}">${esc(d.name)}</span><button type="button" data-formula-document="${esc(d.key)}" data-article="${data.article.id}" data-attachment="${d.attachmentId || 0}" data-source="${esc(d.source)}" data-name="${esc(d.name)}">Apri</button></article>`).join("") : '<div class="formulaempty">Nessun file apribile collegato.</div>'}</div></section><section class="formulaunit ${hidden("inci")}" data-formula-part="inci"><h4>COMPOSIZIONE INCI</h4><div>${inci.length ? inci.map((i) => `<article class="formulainci"><b>${esc(i.name || "INCI")}</b><span>${i.cas ? `<span class="formulacas">CAS ${esc(i.cas)}</span>` : ""}${i.function ? esc(i.function) : ""}</span><small>${i.composition == null ? "" : `${pct(i.composition)}%`}</small></article>`).join("") : '<div class="formulaempty">Nessun INCI collegato.</div>'}</div></section><section class="formulaunit ${hidden("stock")}" data-formula-part="stock"><h4 class="formulastockheading"><span>GIACENZE POSITIVE · LOTTI · UBICAZIONI</span><strong>TOTALE ${num2(stockTotal)} ${esc(data.article.unit)}</strong></h4><div>${stock.length ? stock.map((s) => `<article class="formulastock"><b class="formulastocklot">LOTTO ${esc(s.lot || "—")}</b><strong class="formulastockqty">${num2(s.quantity)} ${esc(data.article.unit)}</strong><span class="formulastockplace">UBICAZIONE ${esc(s.location || "NON INDICATA")}</span><span class="formulastockwarehouse">${esc(s.warehouse || "")}</span></article>`).join("") : '<div class="formulaempty">Nessuna giacenza positiva.</div>'}</div></section><section class="formulaunit hidden" data-formula-part="tree"><h4>${children.length ? (isPackaged ? "DISTINTA BASE DEL CONFEZIONATO · BULK E PACKAGING" : "DISTINTA BASE · COMPOSIZIONE E PERCENTUALI") : "PASSAGGI SUCCESSIVI"}</h4><div class="formulatreefilterrow"><input class="formulatreefilter" type="search" placeholder="Cerca per codice o descrizione" aria-label="Cerca per codice o descrizione"></div><div data-formula-tree-list>${children.map((x) => renderRelated(x, isPackaged ? "Documenti" : `${pct(x.percentage)}%`)).join("")}${parents.length ? (children.length ? `<details class="formularelations"><summary>PASSAGGI SUCCESSIVI · ${parents.length}</summary>${parents.map((x) => renderRelated(x)).join("")}</details>` : parents.map((x) => renderRelated(x)).join("")) : ""}${!children.length && !parents.length ? '<div class="formulaempty">Nessun ulteriore collegamento.</div>' : ""}</div></section>`;
+    return `<header class="formuladetailhead">${canGoBack ? '<button type="button" class="formuladetailback" data-formula-related-back aria-label="Torna alla distinta precedente">←</button>' : ""}<b>${esc(data.article.code)}</b><span>${esc(data.article.description)}</span><button type="button" class="formuladetailclose" data-formula-close-detail aria-label="Chiudi scheda">×</button></header><div class="formuladetailnav"><button class="${active("docs")}" type="button" data-formula-jump="docs">Documenti ${docs.length}</button><button class="${active("inci")}" type="button" data-formula-jump="inci">INCI ${inci.length}</button><button class="${active("stock")}" type="button" data-formula-jump="stock">Giacenze ${stock.length}</button><button type="button" data-formula-jump="tree">${treeLabel} ${children.length || parents.length}</button></div><section class="formulaunit ${hidden("docs")}" data-formula-part="docs"><h4>DOCUMENTI · CHECKLIST E REVISIONI</h4><div class="formuladoccheck"><div class="formuladocprogress"><span>Analisi contenuto reale</span><b>AVVIO…</b></div></div><div class="formuladoclist">${docs.length ? docs.map((d) => documentButton(d, data.article.id)).join("") : '<div class="formulaempty">Nessun file apribile collegato.</div>'}</div></section><section class="formulaunit ${hidden("inci")}" data-formula-part="inci"><h4>COMPOSIZIONE INCI</h4><div>${inci.length ? inci.map((i) => `<article class="formulainci"><b>${esc(i.name || "INCI")}</b><span>${i.cas ? `<span class="formulacas">CAS ${esc(i.cas)}</span>` : ""}${i.function ? esc(i.function) : ""}</span><small>${i.composition == null ? "" : `${pct(i.composition)}%`}</small></article>`).join("") : '<div class="formulaempty">Nessun INCI collegato.</div>'}</div></section><section class="formulaunit ${hidden("stock")}" data-formula-part="stock"><h4 class="formulastockheading"><span>GIACENZE POSITIVE · LOTTI · UBICAZIONI</span><strong>TOTALE ${num2(stockTotal)} ${esc(data.article.unit)}</strong></h4><div>${stock.length ? stock.map((s) => `<article class="formulastock"><b class="formulastocklot">LOTTO ${esc(s.lot || "—")}</b><strong class="formulastockqty">${num2(s.quantity)} ${esc(data.article.unit)}</strong><span class="formulastockplace">UBICAZIONE ${esc(s.location || "NON INDICATA")}</span><span class="formulastockwarehouse">${esc(s.warehouse || "")}</span></article>`).join("") : '<div class="formulaempty">Nessuna giacenza positiva.</div>'}</div></section><section class="formulaunit hidden" data-formula-part="tree"><h4>${children.length ? (isPackaged ? "DISTINTA BASE DEL CONFEZIONATO · BULK E PACKAGING" : "DISTINTA BASE · COMPOSIZIONE E PERCENTUALI") : "PASSAGGI SUCCESSIVI"}</h4><div class="formulatreefilterrow"><input class="formulatreefilter" type="search" placeholder="Cerca per codice o descrizione" aria-label="Cerca per codice o descrizione"></div><div data-formula-tree-list>${children.map((x) => renderRelated(x, isPackaged ? "Documenti" : `${pct(x.percentage)}%`)).join("")}${parents.length ? (children.length ? `<details class="formularelations"><summary>PASSAGGI SUCCESSIVI · ${parents.length}</summary>${parents.map((x) => renderRelated(x)).join("")}</details>` : parents.map((x) => renderRelated(x)).join("")) : ""}${!children.length && !parents.length ? '<div class="formulaempty">Nessun ulteriore collegamento.</div>' : ""}</div></section>`;
   };
   const showDefaultDetailPart = (detail, data) => {
     if (!detail || !Array.isArray(data?.components) || !data.components.length)
@@ -301,6 +338,7 @@
       showDefaultDetailPart(detail, payload.result);
       detailHistory.set(detail, []);
       detail.classList.remove("hidden");
+      loadDocumentChecklist(detail, payload.result.article.id);
       button.setAttribute("aria-expanded", "true");
       lastExpandedButton = button;
       updateBackButton();
@@ -492,6 +530,7 @@
         detailHistory.set(detail, history);
         detail.innerHTML = renderDetail(payload.result, true);
         showDefaultDetailPart(detail, payload.result);
+        loadDocumentChecklist(detail, payload.result.article.id);
       } catch (error) {
         history.pop();
         detailHistory.set(detail, history);
@@ -586,6 +625,14 @@
       `<div class="formuladocumentmessage">${esc(last?.message || "Documento non disponibile.")}</div>`;
   });
   result.addEventListener("input", (event) => {
+    const documentSearch = event.target.closest(".formuladocsearch");
+    if (documentSearch) {
+      const query = documentSearch.value.trim().toLocaleUpperCase("it-IT"), unit = documentSearch.closest('[data-formula-part="docs"]');
+      unit?.querySelectorAll("[data-formula-document-row]").forEach((row) => row.classList.toggle("hidden", Boolean(query) && !String(row.dataset.search || "").includes(query)));
+      const previous = unit?.querySelector(".formuladocprevious");
+      if (previous && query) previous.open = Boolean(previous.querySelector('[data-formula-document-row]:not(.hidden)'));
+      return;
+    }
     const filter = event.target.closest(".formulatreefilter");
     if (!filter) return;
     const query = filter.value.trim().toLocaleUpperCase("it-IT"),
