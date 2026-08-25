@@ -15,7 +15,7 @@
   const interactionStyle = document.createElement("style");
   interactionStyle.textContent = `
   .formulanodedetail .formuladetailhead .formuladetailback,.formulanodedetail .formuladetailhead .formuladetailclose,body .formulaviewer header button{display:grid!important;width:26px!important;min-width:26px!important;max-width:26px!important;height:26px!important;min-height:26px!important;max-height:26px!important;box-sizing:border-box!important;flex:0 0 26px!important;place-items:center!important;padding:0!important;margin:0!important;border:1px solid #b9d8d2!important;border-radius:50%!important;background:#fff!important;color:#15564f!important;font-family:Arial,sans-serif!important;font-size:14px!important;font-weight:900!important;line-height:1!important;aspect-ratio:1/1!important}
-  .formulahead{gap:5px;padding:8px 9px;border-radius:11px}.formulahead h2{font-size:17px}.formulasearch input{height:39px}.formulastatus{min-height:12px}
+  .formulahead{gap:5px;padding:8px 9px;border-radius:11px}.formulahead h2{font-size:17px}.formulasearch input{height:39px}.formulastatus{min-height:12px}.formulasuggestions{display:grid;max-height:210px;overflow:auto;border:1px solid #b9d8d2;border-radius:9px;background:#fff;box-shadow:0 8px 22px #163f3622}.formulasuggestions.hidden{display:none}.formulasuggestions button{display:grid;grid-template-columns:minmax(62px,.4fr) minmax(0,1.6fr) auto;gap:5px;align-items:center;min-height:34px;padding:5px 7px;border:0;border-bottom:1px solid #e4eeeb;background:#fff;text-align:left}.formulasuggestions button:last-child{border-bottom:0}.formulasuggestions button:focus,.formulasuggestions button:hover{background:#edf7f4}.formulasuggestions b{color:#15564f;font-size:8px;white-space:nowrap}.formulasuggestions span{min-width:0;color:#314c45;font-size:7.5px;font-weight:850}.formulasuggestions small{color:#9b352e;font-size:5.5px;white-space:nowrap}
   .formularoot>header{display:flex;align-items:flex-start;gap:7px;padding:8px 9px}.formularoottitle{display:grid;min-width:0;flex:1;gap:2px}.formularoottitle b{font-size:15px;line-height:1;white-space:nowrap}.formularoottitle span{min-width:0;overflow:visible;font-size:9px;font-weight:850;line-height:1.2;white-space:normal;overflow-wrap:break-word}.formularootactions{display:flex;flex:none;align-items:center;gap:4px}.formularootactions small{padding:3px 5px;border-radius:6px;background:#ffffff1f;font-size:6px;font-weight:950;white-space:nowrap}.formularootactions .formulaactive{background:#dff4e9;color:#155b47}.formularootopen{min-height:27px;padding:3px 7px;border:1px solid #ffffff66;border-radius:7px;background:#fff;color:#15564f;font-size:7px;font-weight:950}
   .formulameta button{display:flex;min-width:0;align-items:center;justify-content:center;gap:4px;padding:5px 3px;border:0;background:#f8fbfa;color:#667b75;font-size:6px;text-transform:uppercase}.formulameta button:focus,.formulameta button:hover{background:#edf7f4;color:#15564f}.formulameta b{color:#173e35;font-size:10px;white-space:nowrap}.formulasection>h3{padding:6px 8px}.formulanodehead{display:block!important;padding:0!important}.formulanodeopen{display:grid;grid-template-columns:minmax(62px,.55fr) minmax(0,1.45fr) 45px;gap:1px 6px;align-items:center;width:100%;padding:4px 7px 2px;border:0;background:#fff;text-align:left}.formulanodeopen[aria-expanded="true"]{background:#eef8f5}.formulanodeopen b{color:#15564f;font-size:9px;white-space:nowrap}.formulanodeopen strong{min-width:0;color:#243e37;font-size:7.5px;line-height:1.08}.formulanodeopen .formulapct{font-size:7.5px}.formulainventorylink{display:flex;width:100%;min-height:18px;align-items:center;justify-content:flex-start;gap:3px;padding:0 7px 2px;border:0;background:#fff;color:#55716a;font-size:6.5px;font-weight:900;line-height:1;text-align:left;white-space:nowrap}.formulainventorylink::after{content:'›';color:#17685f;font-size:11px;line-height:.6}.formulainventorylink:hover,.formulainventorylink:focus{background:#edf7f4;color:#15564f}
   .formulanodedetail{position:fixed;z-index:19980;inset:max(62px,env(safe-area-inset-top)) max(8px,calc((100vw - 680px)/2)) max(8px,env(safe-area-inset-bottom));display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:4px;overflow:hidden;padding:6px;border:1px solid #a9c9c2;border-radius:14px;background:#f5faf8;box-shadow:0 16px 60px #102b2580}.formulanodedetail.hidden{display:none}.formuladetailhead{display:flex;align-items:center;gap:6px;min-width:0;padding:2px 2px 5px}.formuladetailhead b{flex:none;color:#15564f;font-size:11px;white-space:nowrap}.formuladetailhead span{min-width:0;flex:1;overflow:hidden;color:#304c44;font-size:8px;font-weight:850;text-overflow:ellipsis;white-space:nowrap}.formuladetailclose{display:grid!important;width:25px!important;min-width:25px!important;max-width:25px!important;height:25px!important;min-height:25px!important;max-height:25px!important;aspect-ratio:1/1;box-sizing:border-box;padding:0!important;margin-right:6px;flex:0 0 25px!important;place-items:center;border:1px solid #b9d8d2;border-radius:999px!important;background:#fff;color:#15564f;font-size:14px;line-height:1}.formuladetailnav{gap:3px}.formuladetailnav button{min-height:28px;padding:2px;font-size:6.5px}.formulaunit{min-height:0;overflow:auto}.formulaunit h4{position:sticky;z-index:1;top:0;padding:4px 6px;font-size:7px}.formulastockheading{display:flex;align-items:center;justify-content:space-between;gap:6px}.formulastockheading span{min-width:0}.formulastockheading strong{flex:none;color:#15564f;font-size:8px;white-space:nowrap}.formulaunit>div{gap:2px;padding:4px}.formulainci,.formulastock,.formuladoc,.formulaparent{gap:2px 5px;padding:4px 5px;border-radius:5px}.formuladoc{grid-template-columns:58px minmax(0,1fr) 36px}.formuladoc b{font-size:6.5px;white-space:nowrap}.formuladoc span{overflow:hidden;font-size:6.5px;text-overflow:ellipsis;white-space:nowrap}.formuladoc button{min-height:24px;padding:2px;font-size:6px}.formulastock{padding:5px 6px!important}.formulastocklot,.formulastockqty{font-size:9px!important}.formulastockplace{font-size:6.5px!important}.formulastockwarehouse{font-size:6px!important}.formulaparent small{display:none}.formulatreefilterrow{position:sticky;z-index:2;top:0;padding:3px!important;background:#fff}.formulatreefilter{width:100%;height:31px;padding:0 8px;border:1px solid #bad3cd;border-radius:7px;color:#173e35;font-size:8px;font-weight:850}
@@ -52,6 +52,8 @@
   .formuladoccheck{display:grid;gap:4px;padding:5px!important;background:#f6faf8}.formuladocprogress{display:flex;align-items:center;justify-content:space-between;gap:6px;color:#58716a;font-size:6.5px;font-weight:900}.formuladocprogress b{color:#15564f;font-size:7px}.formuladocbadges{display:flex!important;flex-wrap:wrap;gap:3px!important;padding:0!important}.formuladocbadge{padding:3px 5px;border:1px solid #d2dfdb;border-radius:99px;background:#fff;color:#778883;font-size:6px;font-weight:900;white-space:nowrap}.formuladocbadge.present{border-color:#a9d4c4;background:#e5f5ee;color:#17634f;cursor:pointer}.formuladocbadge.present:focus{outline:1px solid #17634f;outline-offset:1px}.formuladocsearch{display:block;width:100%;height:17px;margin-top:8px;padding:0 8px;border:1px solid #bad3cd;border-radius:7px;color:#173e35;font-size:6.3px;font-weight:850}.formuladocsectiontitle{margin:5px 4px 1px;color:#315f55;font-size:6px;font-weight:950;letter-spacing:.35px;text-transform:uppercase}.formuladocsectiontitle.obsolete{margin-top:7px;padding-top:5px;border-top:1px solid #dce8e4;color:#71817c}.formuladoclist{display:grid;gap:2px!important;padding:4px!important}.formuladoc.current{border-left:3px solid #42a879}.formuladoc.previous{border-left:3px solid #bdc9c5;opacity:.82}.formuladoc.current,.formuladoc.previous{grid-template-columns:52px minmax(0,1fr) 34px;align-items:start}.formuladoc.current>button,.formuladoc.previous>button{align-self:center;width:34px;min-width:34px;height:24px;min-height:24px;padding:0}.formuladocmeta{display:block!important;color:#71847d!important;font-size:5.8px!important}.formuladocstate{display:inline-block;margin-left:4px;padding:2px 4px;border-radius:5px;background:#e5f5ee;color:#17634f;font-size:5.5px;font-weight:950}.formuladocstate.previous{background:#eef1f0;color:#70807b}.formuladocobsolete{margin:0 0 4px}.formuladocprevious{margin:0}
   .formuladoccategorychoices{display:grid;gap:3px;padding:4px;border:1px solid #b9d8d2;border-radius:7px;background:#fff}.formuladoccategorychoices.hidden{display:none}.formuladoccategoryhead{display:flex;align-items:center;justify-content:space-between;gap:7px;min-height:27px;color:#15564f;font-size:6.2px;font-weight:950}.formuladoccategoryhead .formuladetailclose{margin:0!important}.formuladoccategorylist{display:grid;gap:3px}.formuladoccategorychoice{display:grid;grid-template-columns:58px minmax(0,1fr);gap:7px;align-items:center;width:100%;min-height:29px;padding:4px 6px;border:0;border-left:3px solid #42a879;border-radius:5px;background:#f6faf8;color:#314c45;text-align:left}.formuladoccategorychoice.previous{border-left-color:#bdc9c5;opacity:.8}.formuladoccategorychoice b{display:grid;gap:2px;align-content:center;font-size:5.8px;line-height:1.1;white-space:nowrap}.formuladoccategorychoice span{min-width:0;font-size:6.2px;line-height:1.25;white-space:normal;overflow-wrap:break-word}.formuladoccategorychoice small{display:block;color:#71847d;font-size:5.3px;font-weight:900;line-height:1.1}
   .formuladocsubcategorytitle{margin:2px 1px;color:#58716a;font-size:5.8px;font-weight:950;text-transform:uppercase}
+  .formulametacost{display:grid;gap:1px;min-width:64px;padding:3px 5px;border-radius:7px;background:#dff4e9;color:#155b47;font-size:5.5px;font-weight:950;text-align:center;white-space:nowrap}.formulametacost b{font-size:8px}.formulaprice{display:grid;grid-column:3;grid-row:1/3;align-self:center;gap:1px;text-align:right;white-space:nowrap}.formulaprice b{color:#15564f;font-size:7px}.formulaprice small{color:#647a73;font-size:5.7px;font-weight:900}.formulainventorylink{font-size:7px!important;font-weight:950!important}.formulaalternative{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:2px 6px;align-items:center;width:100%;padding:5px 6px;border:0;border-bottom:1px solid #e3ece9;background:#fff;text-align:left}.formulaalternative:last-child{border-bottom:0}.formulaalternative b{color:#15564f;font-size:8px;white-space:nowrap}.formulaalternative span{min-width:0;color:#304c44;font-size:7px;font-weight:850}.formulaalternative strong{color:#15564f;font-size:7px;white-space:nowrap}.formulaalternative small{grid-column:1/3;color:#647a73;font-size:6px}.formulaalternative em{grid-column:3;grid-row:2;color:#55716a;font-size:6px;font-style:normal;font-weight:900;white-space:nowrap}.formulaalternative.cheaper strong{color:#17714f}.formulaalternative.cheaper::after{content:'PREZZO INFERIORE';grid-column:1/4;color:#17714f;font-size:5.5px;font-weight:950;text-align:right}.formulameta{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .formulaalternativelog{overflow:hidden;border:1px solid #b9d8d2;border-radius:11px;background:#fff}.formulaalternativelog>summary{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:8px 9px;color:#15564f;font-size:8px;font-weight:950;cursor:pointer;list-style:none}.formulaalternativelog>summary::-webkit-details-marker{display:none}.formulaalternativelog>summary::after{content:'+';font-size:14px}.formulaalternativelog[open]>summary::after{content:'−'}.formulaalternativelog>summary b{margin-left:auto;padding:3px 5px;border-radius:6px;background:#e8f5ef;color:#17654f;font-size:6px}.formulaaltfilters{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:6px;border-top:1px solid #e0ebe8;background:#f8fbfa}.formulaaltfilters input{min-width:0;height:32px;padding:0 6px;border:1px solid #bad3cd;border-radius:7px;color:#173e35;font-size:7px;font-weight:850}.formulaaltfilters input[type='search']{grid-column:1/3}.formulaaltfilters button{height:29px;border:0;border-radius:7px;background:#17685f;color:#fff;font-size:6.5px;font-weight:950}.formulaaltfilters button.secondary{border:1px solid #bad3cd;background:#fff;color:#17685f}.formulaaltstatus{grid-column:1/3;color:#647a73;font-size:6px;font-weight:850}.formulaaltrows{display:grid;max-height:330px;overflow:auto}.formulaaltrow{display:grid;grid-template-columns:50px minmax(0,1fr) 50px;gap:2px 5px;align-items:center;padding:5px 7px;border-top:1px solid #e5eeeb}.formulaaltrow time{color:#647a73;font-size:6px;font-weight:900}.formulaaltrow b{color:#15564f;font-size:7.5px;white-space:nowrap}.formulaaltrow strong{min-width:0;color:#304c44;font-size:7px}.formulaaltrow .formulaaltarrow{grid-column:1;color:#71847d;font-size:10px;text-align:center}.formulaaltrow .formulaaltdesc{grid-column:2;color:#536c65;font-size:6.5px}.formulaaltrow .formulaaltmetrics{grid-column:3;grid-row:1/3;color:#15564f;font-size:5.8px;font-weight:900;text-align:right;white-space:nowrap}.formulaaltrow small{grid-column:1/4;color:#71847d;font-size:5.5px}
   @media(max-width:430px){
     .formulainci{grid-template-columns:minmax(84px,.92fr) minmax(0,1.08fr) auto}
     .formuladoc{grid-template-columns:52px minmax(0,1fr) 34px}
@@ -78,7 +80,7 @@
   const section = document.createElement("section");
   section.id = "formulaWorkspace";
   section.className = "formulaworkspace";
-  section.innerHTML = `<div class="formulahead"><header><h2>Formule</h2><small>DISTINTE · DOCUMENTI · GIACENZE</small></header><form id="formulaSearch" class="formulasearch"><input name="code" autocomplete="off" spellcheck="false" placeholder="Codice formula o RS" aria-label="Codice formula o ricerca e sviluppo"><button>Cerca</button></form><div id="formulaStatus" class="formulastatus">Inserisci il codice della formula.</div></div><div id="formulaResult" class="formularesult"></div>`;
+  section.innerHTML = `<div class="formulahead"><header><h2>Formule</h2><small>DISTINTE · DOCUMENTI · GIACENZE</small></header><form id="formulaSearch" class="formulasearch"><input name="code" autocomplete="off" spellcheck="false" placeholder="Codice o descrizione formula / RS" aria-label="Codice o descrizione formula o ricerca e sviluppo"><button>Cerca</button></form><div class="formulasuggestions hidden" data-formula-suggestions></div><div id="formulaStatus" class="formulastatus">Inserisci il codice o parte della descrizione.</div></div><details class="formulaalternativelog"><summary>Nuovi alternativi materie prime <b>ULTIMI 3 MESI</b></summary><div class="formulaaltfilters"><input type="date" data-alt-from aria-label="Data iniziale alternativi"><input type="date" data-alt-to aria-label="Data finale alternativi"><input type="search" data-alt-query placeholder="Cerca codice o descrizione" aria-label="Cerca alternativo per codice o descrizione"><button type="button" data-alt-show>Mostra periodo</button><button type="button" class="secondary" data-alt-reset>Ultimi 3 mesi</button><div class="formulaaltstatus" data-alt-status>Apri per verificare i nuovi alternativi.</div></div><div class="formulaaltrows" data-alt-rows></div></details><div id="formulaResult" class="formularesult"></div>`;
   nav.insertAdjacentElement("afterend", section);
   const viewer = document.createElement("div");
   viewer.className = "formulaviewer hidden";
@@ -165,6 +167,13 @@
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }).format(Number(value) || 0),
+    euro = (value) =>
+      new Intl.NumberFormat("it-IT", {
+        style: "currency",
+        currency: "EUR",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 4,
+      }).format(Number(value) || 0),
     displayDate = (value) => {
       const raw = String(value || "").trim();
       if (!raw) return "—";
@@ -190,7 +199,7 @@
             },
           },
           {
-            cacheMs: quiet ? 0 : 12000,
+            cacheMs: quiet || /\/api\/formulas\/(search|suggest)/.test(path) ? 0 : 12000,
             attempts: quiet ? 1 : 2,
             message: "Dati formula temporaneamente non disponibili.",
           },
@@ -207,7 +216,7 @@
     throw last || new Error("Ponte Technics non disponibile.");
   };
   const nodeRow = (node, relation = "component") =>
-    `<article class="formulanode" data-formula-id="${node.id}"><div class="formulanodehead"><button type="button" class="formulanodeopen" data-formula-expand="${node.id}" aria-expanded="false"><b>${esc(node.code)}</b><strong>${esc(node.description)}</strong><span class="formulapct">${relation === "component" ? `${pct(node.percentage)}%` : esc(node.type || "Apri")}</span></button><button type="button" class="formulainventorylink" data-formula-inventory="${esc(node.code)}">Giacenza ${num2(node.totalStock)} ${esc(node.unit || "")}</button></div><div class="formulanodedetail hidden"></div></article>`;
+    `<article class="formulanode" data-formula-id="${node.id}"><div class="formulanodehead"><button type="button" class="formulanodeopen" data-formula-expand="${node.id}" aria-expanded="false"><b>${esc(node.code)}</b><strong>${esc(node.description)}</strong><span class="formulaprice">${relation === "component" ? `<b>${pct(node.percentage)}%</b><small>${euro(node.unitCost)}/${esc(node.unit || "UM")} · quota ${euro(node.costContribution)}</small>` : `<b>${esc(node.type || "Apri")}</b>`}</span></button><button type="button" class="formulainventorylink" data-formula-inventory="${esc(node.code)}">Giacenza ${num2(node.totalStock)} ${esc(node.unit || "")}</button></div><div class="formulanodedetail hidden"></div></article>`;
   const sectionBlock = (title, items, relation) => {
     const ordered = relation === "component"
       ? [...items].sort(
@@ -223,7 +232,8 @@
       packaged = parents.filter((parent) =>
         String(parent.code).toUpperCase().startsWith(prefix),
       );
-    result.innerHTML = `<article class="formularoot"><header><div class="formularoottitle"><b>${esc(a.code)}</b><span>${esc(a.description)}</span></div><div class="formularootactions"><small>${esc(a.type)}</small><small class="formulaactive ${a.active ? "" : "inactive"}">${a.active ? "ATTIVO" : "NON ATTIVO"}</small><button type="button" class="formularootopen" data-formula-expand="${a.id}" aria-expanded="false">Scheda</button></div></header><div class="formulameta"><button type="button" data-formula-summary="component">Distinta<b>${a.componentCount}</b></button><button type="button" data-formula-summary="parent">Confezionati<b>${packaged.length}</b></button><button type="button" data-formula-summary="inci">INCI<b>${a.inciCount}</b></button><button type="button" data-formula-summary="stock">Giacenza<b>${num2(a.totalStock)} ${esc(a.unit)}</b></button></div><div class="formulanodedetail hidden" data-root-detail></div></article>${sectionBlock("DISTINTA BASE · MATERIE PRIME", data.components || [], "component")}${sectionBlock("CONFEZIONATI", packaged, "parent")}`;
+    const alternatives = Array.isArray(data.alternatives) ? data.alternatives : [];
+    result.innerHTML = `<article class="formularoot"><header><div class="formularoottitle"><b>${esc(a.code)}</b><span>${esc(a.description)}</span></div><div class="formularootactions"><span class="formulametacost">COSTO FORMULA<b>${euro(data.formulaCost)}/${esc(a.unit || "UM")}</b></span><small>${esc(a.type)}</small><small class="formulaactive ${a.active ? "" : "inactive"}">${a.active ? "ATTIVO" : "NON ATTIVO"}</small><button type="button" class="formularootopen" data-formula-expand="${a.id}" aria-expanded="false">Scheda</button></div></header><div class="formulameta"><button type="button" data-formula-summary="component">Distinta<b>${a.componentCount}</b></button><button type="button" data-formula-summary="parent">Confezionati<b>${packaged.length}</b></button><button type="button" data-formula-summary="inci">INCI<b>${a.inciCount}</b></button><button type="button" data-formula-summary="alternative">Alternativi<b>${alternatives.length}</b></button><button type="button" data-formula-summary="stock">Giacenza<b>${num2(a.totalStock)} ${esc(a.unit)}</b></button></div><div class="formulanodedetail hidden" data-root-detail></div></article>${sectionBlock("DISTINTA BASE · MATERIE PRIME", data.components || [], "component")}${sectionBlock("CONFEZIONATI", packaged, "parent")}`;
     updateBackButton();
   };
   const renderRelated = (item, suffix = "Apri") =>
@@ -291,6 +301,7 @@
         0,
       ),
       inci = Array.isArray(data.inci) ? data.inci : [],
+      alternatives = Array.isArray(data.alternatives) ? data.alternatives : [],
       children = Array.isArray(data.components) ? data.components : [],
       parents = Array.isArray(data.parents) ? data.parents : [],
       isPackaged = String(data.article.code || "").includes("-") ||
@@ -309,7 +320,8 @@
       children.sort(
         (a, b) => Number(b.percentage || 0) - Number(a.percentage || 0),
       );
-    return `<header class="formuladetailhead">${canGoBack ? '<button type="button" class="formuladetailback" data-formula-related-back aria-label="Torna alla distinta precedente">←</button>' : ""}<b>${esc(data.article.code)}</b><span>${esc(data.article.description)}</span><button type="button" class="formuladetailclose" data-formula-close-detail aria-label="Chiudi scheda">×</button></header><div class="formuladetailnav"><button class="${active("docs")}" type="button" data-formula-jump="docs">Documenti ${docs.length}</button><button class="${active("inci")}" type="button" data-formula-jump="inci">INCI ${inci.length}</button><button class="${active("stock")}" type="button" data-formula-jump="stock">Giacenze ${stock.length}</button><button type="button" data-formula-jump="tree">${treeLabel} ${children.length || parents.length}</button></div><section class="formulaunit ${hidden("docs")}" data-formula-part="docs"><h4>DOCUMENTI · CHECKLIST E REVISIONI</h4><div class="formuladoccheck"><div class="formuladocprogress"><span>Analisi contenuto reale</span><b>AVVIO…</b></div></div><div class="formuladoclist">${docs.length ? docs.map((d) => documentButton(d, data.article.id)).join("") : '<div class="formulaempty">Nessun file apribile collegato.</div>'}</div></section><section class="formulaunit ${hidden("inci")}" data-formula-part="inci"><h4>COMPOSIZIONE INCI</h4><div>${inci.length ? inci.map((i) => `<article class="formulainci"><b>${esc(i.name || "INCI")}</b><span>${i.cas ? `<span class="formulacas">CAS ${esc(i.cas)}</span>` : ""}${i.function ? esc(i.function) : ""}</span><small>${i.composition == null ? "" : `${pct(i.composition)}%`}</small></article>`).join("") : '<div class="formulaempty">Nessun INCI collegato.</div>'}</div></section><section class="formulaunit ${hidden("stock")}" data-formula-part="stock"><h4 class="formulastockheading"><span>GIACENZE POSITIVE · LOTTI · UBICAZIONI</span><strong>TOTALE ${num2(stockTotal)} ${esc(data.article.unit)}</strong></h4><div>${stock.length ? stock.map((s) => `<article class="formulastock"><b class="formulastocklot">LOTTO ${esc(s.lot || "—")}</b><strong class="formulastockqty">${num2(s.quantity)} ${esc(data.article.unit)}</strong><span class="formulastockplace">UBICAZIONE ${esc(s.location || "NON INDICATA")}</span><span class="formulastockwarehouse">${esc(s.warehouse || "")}</span></article>`).join("") : '<div class="formulaempty">Nessuna giacenza positiva.</div>'}</div></section><section class="formulaunit hidden" data-formula-part="tree"><h4>${children.length ? (isPackaged ? "DISTINTA BASE DEL CONFEZIONATO · BULK E PACKAGING" : "DISTINTA BASE · COMPOSIZIONE E PERCENTUALI") : "PASSAGGI SUCCESSIVI"}</h4><div class="formulatreefilterrow"><input class="formulatreefilter" type="search" placeholder="Cerca per codice o descrizione" aria-label="Cerca per codice o descrizione"></div><div data-formula-tree-list>${children.map((x) => renderRelated(x, isPackaged ? "Documenti" : `${pct(x.percentage)}%`)).join("")}${parents.length ? (children.length ? `<details class="formularelations"><summary>PASSAGGI SUCCESSIVI · ${parents.length}</summary>${parents.map((x) => renderRelated(x)).join("")}</details>` : parents.map((x) => renderRelated(x)).join("")) : ""}${!children.length && !parents.length ? '<div class="formulaempty">Nessun ulteriore collegamento.</div>' : ""}</div></section>`;
+    const alternativeRows = alternatives.map((item) => `<button type="button" class="formulaalternative${Number(item.unitCost) > 0 && Number(data.article.unitCost) > 0 && Number(item.unitCost) < Number(data.article.unitCost) ? " cheaper" : ""}" data-formula-related-id="${Number(item.id) || 0}"><b>${esc(item.code)}</b><span>${esc(item.description)}</span><strong>${euro(item.unitCost)}/${esc(item.unit || "UM")}</strong><small>Giacenza ${num2(item.totalStock)} ${esc(item.unit || "")}${item.relation ? ` · ${esc(item.relation)}` : ""}</small><em>${Number(data.article.unitCost) > 0 ? `${Number(item.unitCost) - Number(data.article.unitCost) >= 0 ? "+" : ""}${euro(Number(item.unitCost) - Number(data.article.unitCost))}` : ""}</em></button>`).join("");
+    return `<header class="formuladetailhead">${canGoBack ? '<button type="button" class="formuladetailback" data-formula-related-back aria-label="Torna alla distinta precedente">←</button>' : ""}<b>${esc(data.article.code)}</b><span>${esc(data.article.description)}</span><button type="button" class="formuladetailclose" data-formula-close-detail aria-label="Chiudi scheda">×</button></header><div class="formuladetailnav"><button class="${active("docs")}" type="button" data-formula-jump="docs">Documenti ${docs.length}</button><button class="${active("inci")}" type="button" data-formula-jump="inci">INCI ${inci.length}</button><button class="${active("stock")}" type="button" data-formula-jump="stock">Giacenze ${stock.length}</button><button type="button" data-formula-jump="alternative">Alternativi ${alternatives.length}</button><button type="button" data-formula-jump="tree">${treeLabel} ${children.length || parents.length}</button></div><section class="formulaunit ${hidden("docs")}" data-formula-part="docs"><h4>DOCUMENTI · CHECKLIST E REVISIONI</h4><div class="formuladoccheck"><div class="formuladocprogress"><span>Analisi contenuto reale</span><b>AVVIO…</b></div></div><div class="formuladoclist">${docs.length ? docs.map((d) => documentButton(d, data.article.id)).join("") : '<div class="formulaempty">Nessun file apribile collegato.</div>'}</div></section><section class="formulaunit ${hidden("inci")}" data-formula-part="inci"><h4>COMPOSIZIONE INCI</h4><div>${inci.length ? inci.map((i) => `<article class="formulainci"><b>${esc(i.name || "INCI")}</b><span>${i.cas ? `<span class="formulacas">CAS ${esc(i.cas)}</span>` : ""}${i.function ? esc(i.function) : ""}</span><small>${i.composition == null ? "" : `${pct(i.composition)}%`}</small></article>`).join("") : '<div class="formulaempty">Nessun INCI collegato.</div>'}</div></section><section class="formulaunit ${hidden("stock")}" data-formula-part="stock"><h4 class="formulastockheading"><span>GIACENZE POSITIVE · LOTTI · UBICAZIONI</span><strong>TOTALE ${num2(stockTotal)} ${esc(data.article.unit)}</strong></h4><div>${stock.length ? stock.map((s) => `<article class="formulastock"><b class="formulastocklot">LOTTO ${esc(s.lot || "—")}</b><strong class="formulastockqty">${num2(s.quantity)} ${esc(data.article.unit)}</strong><span class="formulastockplace">UBICAZIONE ${esc(s.location || "NON INDICATA")}</span><span class="formulastockwarehouse">${esc(s.warehouse || "")}</span></article>`).join("") : '<div class="formulaempty">Nessuna giacenza positiva.</div>'}</div></section><section class="formulaunit hidden" data-formula-part="alternative"><h4>ALTERNATIVI TECHNICS · PREZZO E GIACENZA</h4><div>${alternativeRows || '<div class="formulaempty">Nessun alternativo collegato.</div>'}</div></section><section class="formulaunit hidden" data-formula-part="tree"><h4>${children.length ? (isPackaged ? "DISTINTA BASE DEL CONFEZIONATO · BULK E PACKAGING" : "DISTINTA BASE · COMPOSIZIONE E PERCENTUALI") : "PASSAGGI SUCCESSIVI"}</h4><div class="formulatreefilterrow"><input class="formulatreefilter" type="search" placeholder="Cerca per codice o descrizione" aria-label="Cerca per codice o descrizione"></div><div data-formula-tree-list>${children.map((x) => renderRelated(x, isPackaged ? "Documenti" : `${pct(x.percentage)}%`)).join("")}${parents.length ? (children.length ? `<details class="formularelations"><summary>PASSAGGI SUCCESSIVI · ${parents.length}</summary>${parents.map((x) => renderRelated(x)).join("")}</details>` : parents.map((x) => renderRelated(x)).join("")) : ""}${!children.length && !parents.length ? '<div class="formulaempty">Nessun ulteriore collegamento.</div>' : ""}</div></section>`;
   };
   const showDefaultDetailPart = (detail, data) => {
     if (!detail || !Array.isArray(data?.components) || !data.components.length)
@@ -380,7 +392,7 @@
     }
     try {
       const payload = await api(
-        `/api/formulas/search?code=${encodeURIComponent(code)}${quiet ? `&fresh=${Date.now()}` : ""}`,
+        `/api/formulas/search?code=${encodeURIComponent(code)}&fresh=${Date.now()}`,
         quiet,
       );
       if (token !== requestToken) return;
@@ -432,6 +444,82 @@
     } catch {}
     load(code);
   });
+  const suggestions = section.querySelector("[data-formula-suggestions]");
+  let suggestionTimer = 0, suggestionToken = 0;
+  const closeSuggestions = () => { suggestions.classList.add("hidden"); suggestions.innerHTML = ""; };
+  form.elements.code.addEventListener("input", () => {
+    clearTimeout(suggestionTimer);
+    const query = form.elements.code.value.trim();
+    if (query.length < 2) { closeSuggestions(); return; }
+    const token = ++suggestionToken;
+    suggestionTimer = setTimeout(async () => {
+      try {
+        const payload = await api(`/api/formulas/suggest?q=${encodeURIComponent(query)}&fresh=${Date.now()}`, true);
+        if (token !== suggestionToken) return;
+        const rows = Array.isArray(payload.suggestions) ? payload.suggestions : [];
+        suggestions.innerHTML = rows.length ? rows.map(item => `<button type="button" data-formula-suggestion="${esc(item.code)}"><b>${esc(item.code)}</b><span>${esc(item.description)}</span>${item.active ? "" : "<small>NON ATTIVO</small>"}</button>`).join("") : '<div class="formulaempty">Nessuna formula corrispondente.</div>';
+        suggestions.classList.remove("hidden");
+      } catch { closeSuggestions(); }
+    }, 220);
+  });
+  suggestions.addEventListener("click", event => {
+    const button = event.target.closest("[data-formula-suggestion]");
+    if (!button) return;
+    const code = button.dataset.formulaSuggestion;
+    form.elements.code.value = code;
+    currentCode = code;
+    closeSuggestions();
+    load(code);
+  });
+  const alternativeLog = section.querySelector(".formulaalternativelog"),
+    alternativeFrom = section.querySelector("[data-alt-from]"),
+    alternativeTo = section.querySelector("[data-alt-to]"),
+    alternativeQuery = section.querySelector("[data-alt-query]"),
+    alternativeStatus = section.querySelector("[data-alt-status]"),
+    alternativeRows = section.querySelector("[data-alt-rows]");
+  let alternativeLogTimer = 0, alternativeLogToken = 0;
+  const inputDate = (date) => {
+    const year = date.getFullYear(), month = String(date.getMonth() + 1).padStart(2, "0"), day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+  const resetAlternativePeriod = () => {
+    const to = new Date(), from = new Date(to);
+    from.setMonth(from.getMonth() - 3);
+    alternativeFrom.value = inputDate(from);
+    alternativeTo.value = inputDate(to);
+    alternativeQuery.value = "";
+  };
+  const scheduleAlternativeLog = () => {
+    clearTimeout(alternativeLogTimer);
+    alternativeLogTimer = setTimeout(() => {
+      if (alternativeLog.open && !document.hidden && shell.dataset.workspace === "formulas") loadAlternativeLog(true);
+      else scheduleAlternativeLog();
+    }, 15000);
+  };
+  const renderAlternativeLog = (data) => {
+    const rows = Array.isArray(data?.rows) ? data.rows : [];
+    alternativeStatus.textContent = `${rows.length} collegamenti · Technics verificato ${new Date(data.readAt).toLocaleTimeString("it-IT")} · sola lettura`;
+    alternativeRows.innerHTML = rows.length ? rows.map((row) => `<button type="button" class="formulaaltrow" data-alt-open="${esc(row.source.code)}"><time>${esc(displayDate(row.date))}</time><b>${esc(row.source.code)}</b><strong>${esc(row.source.description)}</strong><span class="formulaaltarrow">↓</span><span class="formulaaltdesc">Alternativo: <b>${esc(row.alternative.code)}</b> · ${esc(row.alternative.description)}</span><span class="formulaaltmetrics">${euro(row.alternative.unitCost)}/${esc(row.alternative.unit || "UM")}<br>Giac. ${num2(row.alternative.stock)}</span><small>${row.user ? `Utente ${esc(row.user)}` : "Utente non registrato nel collegamento Technics"}</small></button>`).join("") : '<div class="formulaempty">Nessun nuovo alternativo nel periodo selezionato.</div>';
+  };
+  const loadAlternativeLog = async (quiet = false) => {
+    const token = ++alternativeLogToken;
+    if (!quiet) alternativeStatus.textContent = "Lettura nuovi alternativi…";
+    try {
+      const payload = await api(`/api/formulas/alternatives-log?from=${encodeURIComponent(alternativeFrom.value)}&to=${encodeURIComponent(alternativeTo.value)}&q=${encodeURIComponent(alternativeQuery.value.trim())}&fresh=${Date.now()}`, true);
+      if (token !== alternativeLogToken) return;
+      renderAlternativeLog(payload.result);
+    } catch (error) {
+      if (token !== alternativeLogToken) return;
+      alternativeStatus.textContent = error.message || "Nuovi alternativi non disponibili.";
+    }
+    scheduleAlternativeLog();
+  };
+  resetAlternativePeriod();
+  alternativeLog.addEventListener("toggle", () => { if (alternativeLog.open) loadAlternativeLog(); else clearTimeout(alternativeLogTimer); });
+  section.querySelector("[data-alt-show]").addEventListener("click", () => loadAlternativeLog());
+  section.querySelector("[data-alt-reset]").addEventListener("click", () => { resetAlternativePeriod(); loadAlternativeLog(); });
+  alternativeQuery.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); loadAlternativeLog(); } });
+  alternativeRows.addEventListener("click", (event) => { const button = event.target.closest("[data-alt-open]"); if (!button) return; const code = button.dataset.altOpen; form.elements.code.value = code; currentCode = code; load(code); result.scrollIntoView({ block: "start", behavior: "smooth" }); });
   let pdfLibraryPromise;
   const pdfWorkerUrl = new URL("vendor/pdfjs/pdf.worker.mjs", document.baseURI)
     .href;
