@@ -61,7 +61,7 @@
   `;
   document.head.append(rawMaterialStyle);
   const integrityStyle = document.createElement("style");
-  integrityStyle.id = "formulas-integrity-v1895";
+  integrityStyle.id = "formulas-integrity-v1896";
   integrityStyle.textContent = `
   body.formula-detail-open{overflow:hidden!important;overscroll-behavior:none!important}
   .formulanodedetail{overscroll-behavior:contain;touch-action:pan-y}
@@ -248,8 +248,9 @@
             },
           },
           {
-            cacheMs: quiet || /\/api\/formulas\/(search|suggest)/.test(path) ? 0 : 12000,
-            attempts: quiet ? 1 : 2,
+            cacheMs: /\/api\/formulas\/(material-audit|raw-materials)/.test(path) ? 15000 : quiet || /\/api\/formulas\/(search|suggest)/.test(path) ? 0 : 12000,
+            attempts: /\/api\/formulas\/(material-audit|raw-materials)/.test(path) ? (quiet ? 2 : 3) : quiet ? 1 : 2,
+            timeoutMs: /\/api\/formulas\/(material-audit|raw-materials)/.test(path) ? 25000 : 15000,
             message: "Dati formula temporaneamente non disponibili.",
           },
         );
@@ -678,8 +679,9 @@
       ? `${rows.length} materie prime · Technics verificato ${new Date(data.readAt).toLocaleTimeString("it-IT")} · sola lettura`
       : "Seleziona una linea prodotto oppure cerca un codice o una descrizione.";
     rawMaterialRows.innerHTML = rows.length ? rows.map((row) => {
-      const uses = Array.isArray(row.formulas) ? row.formulas : row.formulas ? [row.formulas] : [];
-      return `<article class="rawmaterialrow"><button type="button" class="rawmaterialmain" data-raw-formula="${esc(row.code)}"><b>${esc(row.code)}</b><strong>${esc(row.description)}</strong><em>${euro(row.unitCost)}/${esc(row.unit || "UM")}</em><span class="rawmaterialline">${esc(row.lineProduct || "Linea prodotto non indicata")}</span></button><div class="rawmaterialmetrics"><button type="button" data-raw-stock="${esc(row.code)}">Giacenza<br>${num2(row.totalStock)} ${esc(row.unit || "UM")}</button><span>Formule<br>${row.formulaCount}</span><span>Alternativi<br>${row.alternativeCount}</span></div>${uses.length ? `<details class="rawmaterialuses"><summary>${uses.length} formul${uses.length === 1 ? "a" : "e"} di utilizzo · apri</summary>${uses.map((use) => `<button type="button" class="rawmaterialuse" data-raw-formula="${esc(use.code)}"><b>${esc(use.code)}</b><span>${esc(use.description)}</span></button>`).join("")}</details>` : ""}</article>`;
+      const uses = Array.isArray(row.formulas) ? row.formulas : row.formulas ? [row.formulas] : [],
+        alternatives = Array.isArray(row.alternatives) ? row.alternatives : row.alternatives ? [row.alternatives] : [];
+      return `<article class="rawmaterialrow"><button type="button" class="rawmaterialmain" data-raw-formula="${esc(row.code)}"><b>${esc(row.code)}</b><strong>${esc(row.description)}</strong><em>${euro(row.unitCost)}/${esc(row.unit || "UM")}</em><span class="rawmaterialline">${esc(row.lineProduct || "Linea prodotto non indicata")}</span></button><div class="rawmaterialmetrics"><button type="button" data-raw-stock="${esc(row.code)}">Giacenza<br>${num2(row.totalStock)} ${esc(row.unit || "UM")}</button><span>Formule<br>${uses.length}</span><button type="button" data-raw-alt-toggle="${esc(row.code)}">Alternativi<br>${alternatives.length}</button></div>${uses.length ? `<details class="rawmaterialuses"><summary>${uses.length} formul${uses.length === 1 ? "a" : "e"} di utilizzo · apri</summary>${uses.map((use) => `<button type="button" class="rawmaterialuse" data-raw-formula="${esc(use.code)}"><b>${esc(use.code)}</b><span>${esc(use.description)}</span></button>`).join("")}</details>` : ""}${alternatives.length ? `<div class="rawmaterialuses hidden" data-raw-alt-list="${esc(row.code)}"><strong>${alternatives.length} alternativ${alternatives.length === 1 ? "o" : "i"}</strong>${alternatives.map((alternative) => `<button type="button" class="rawmaterialuse" data-raw-formula="${esc(alternative.code)}"><b>${esc(alternative.code)}</b><span>${esc(alternative.description)}</span><small>${euro(alternative.unitCost)}/${esc(alternative.unit || "UM")} · giacenza ${num2(alternative.totalStock)} ${esc(alternative.unit || "UM")}</small></button>`).join("")}</div>` : ""}</article>`;
     }).join("") : '<div class="formulaempty">Nessuna materia prima per i filtri selezionati.</div>';
   };
   const loadRawMaterials = async (quiet = false) => {
@@ -688,7 +690,7 @@
       query = rawMaterialForm.elements.query.value.trim();
     if (!quiet) rawMaterialStatus.textContent = "Lettura linee prodotto e materie prime in Technics…";
     try {
-      const payload = await api(`/api/formulas/raw-materials?lineId=${encodeURIComponent(lineId)}&q=${encodeURIComponent(query)}&fresh=${Date.now()}`, true);
+      const payload = await api(`/api/formulas/raw-materials?lineId=${encodeURIComponent(lineId)}&q=${encodeURIComponent(query)}`, quiet);
       if (token !== rawMaterialToken) return;
       renderRawMaterials(payload.result);
     } catch (error) {
@@ -702,6 +704,13 @@
   rawMaterialRows.addEventListener("click", (event) => {
     const stock = event.target.closest("[data-raw-stock]");
     if (stock) { openInventoryByCode(stock.dataset.rawStock); return; }
+    const alternatives = event.target.closest("[data-raw-alt-toggle]");
+    if (alternatives) {
+      const list = rawMaterialRows.querySelector(`[data-raw-alt-list="${CSS.escape(alternatives.dataset.rawAltToggle)}"]`);
+      list?.classList.toggle("hidden");
+      alternatives.setAttribute("aria-expanded", String(Boolean(list && !list.classList.contains("hidden"))));
+      return;
+    }
     const formula = event.target.closest("[data-raw-formula]");
     if (formula) openFormulaByCode(formula.dataset.rawFormula);
   });
@@ -761,7 +770,7 @@
     const alternativesHtml = alternatives.length
       ? `<details class="formulaauditalts"><summary>${alternatives.length} alternativ${alternatives.length === 1 ? "o" : "i"} collegat${alternatives.length === 1 ? "o" : "i"} · apri</summary>${alternatives.map((alternative) => `<button type="button" class="formulaauditalt" data-audit-alt-open="${esc(alternative.code)}"><b>${esc(alternative.code)}</b><span>${esc(alternative.description)}</span><small>${euro(alternative.unitCost)}/${esc(alternative.unit || "UM")} · giac. ${num2(alternative.totalStock)}</small></button>`).join("")}</details>`
       : "";
-    return `<article class="formulaauditrow ${kind === "old" ? "old" : kind === "move" ? "move" : "warn"}"><button type="button" class="formulaauditmain" data-audit-open="${esc(row.code)}"><b>${esc(row.code)}</b><strong>${esc(row.description)}</strong><em>${esc(statusLabel)}</em><small class="formulaauditfacts">${facts}</small></button><button type="button" class="formulaauditstock" data-audit-stock="${esc(row.code)}">Giacenza complessiva ${num2(familyStock)} ${esc(row.unit || "UM")} · codice ${num2(directStock)}</button>${formulasHtml}${movementsHtml}${alternativesHtml}</article>`;
+    return `<article class="formulaauditrow ${kind === "old" ? "old" : kind === "move" ? "move" : "warn"}"><button type="button" class="formulaauditmain" data-audit-open="${esc(row.code)}"><b>${esc(row.code)}</b><strong>${esc(row.description)}</strong><em>${esc(statusLabel)}</em><small class="formulaauditfacts">${facts}</small></button><button type="button" class="formulaauditstock" data-audit-stock="${esc(row.code)}">Giacenza complessiva ${num2(familyStock)} ${esc(row.unit || "UM")}</button>${formulasHtml}${movementsHtml}${alternativesHtml}</article>`;
   };
   const materialAuditDefinitions = [
     ["neverPurchasedNeverFormula", "Mai acquistate e mai movimentate · mai in formula", "never"],
@@ -800,7 +809,7 @@
       query = materialAuditQuery.value.trim();
     if (!quiet) materialAuditStatus.textContent = "Controllo materie prime in Technics…";
     try {
-      const payload = await api(`/api/formulas/material-audit?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&q=${encodeURIComponent(query)}&fresh=${Date.now()}`, true);
+      const payload = await api(`/api/formulas/material-audit?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&q=${encodeURIComponent(query)}`, quiet);
       if (token !== materialAuditToken) return;
       const data = payload.result,
         signature = JSON.stringify([data.counts, ...materialAuditDefinitions.map(([key]) => (data[key] || []).map((row) => [row.id, row.familyLastPurchase, row.familyFormulaCount, row.familyMovementCount, row.familyStock, (row.alternatives || []).map((alternative) => [alternative.id, alternative.unitCost, alternative.totalStock])]))]);
