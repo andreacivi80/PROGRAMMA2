@@ -45,6 +45,8 @@
   .formulaalternativelog{margin-top:1px}.formulaaltfilters{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:5px!important;padding:7px!important}.formulaaltfilters input{width:100%;height:34px!important;padding:0 7px!important;font-size:8px!important;line-height:34px}.formulaaltfilters input[type='date']{min-width:0;color-scheme:light}.formulaaltrow{grid-template-columns:66px minmax(0,1fr) 62px!important;gap:3px 7px!important;padding:7px 8px!important;text-align:left}.formulaaltrow time{font-size:7px!important;white-space:nowrap}.formulaaltrow>b{font-size:9px!important}.formulaaltrow>strong{font-size:8px!important;line-height:1.18!important;white-space:normal;overflow-wrap:break-word}.formulaaltrow .formulaaltdesc{font-size:7.5px!important;line-height:1.2!important;white-space:normal}.formulaaltrow .formulaaltmetrics{font-size:7px!important;line-height:1.35}.formulaaltrow small{font-size:6.5px!important}
   .formulaaltrow .formulaaltarrow{display:none!important}.formulaaltrow .formulaaltdesc{grid-column:1/3!important;padding-top:2px}.formulaaltrow small{grid-column:1/4!important}
   .formulaaltrow>time{grid-column:1;grid-row:1}.formulaaltrow>b{grid-column:2;grid-row:1}.formulaaltrow>strong{grid-column:1/3;grid-row:2}.formulaaltrow .formulaaltdesc{grid-row:3}.formulaaltrow .formulaaltmetrics{grid-column:3;grid-row:1/5!important}.formulaaltrow>small{grid-column:1/3!important;grid-row:4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .formulaaltgroup{overflow:hidden;border-top:1px solid #dfeae7;background:#fff}.formulaaltgroup:first-child{border-top:0}.formulaaltgrouphead{display:grid;grid-template-columns:66px minmax(0,1fr) 76px;gap:2px 7px;width:100%;padding:7px 8px;border:0;background:#f5faf8;text-align:left}.formulaaltgrouphead time{color:#667d76;font-size:7px}.formulaaltgrouphead b{color:#15564f;font-size:9px}.formulaaltgrouphead strong{grid-column:1/3;min-width:0;color:#2d4941;font-size:8px;line-height:1.18}.formulaaltgrouphead em{grid-column:3;grid-row:1/3;color:#174f46;font-size:6.5px;font-style:normal;font-weight:950;text-align:right;white-space:nowrap}.formulaaltgrouphead small{grid-column:1/4;color:#6b7e78;font-size:6.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.formulaaltgroup h4{margin:0;padding:4px 8px;background:#e8f3f0;color:#15564f;font-size:6.5px;text-transform:uppercase}.formulaaltchoice{display:grid;grid-template-columns:66px minmax(0,1fr) 76px;gap:2px 7px;width:100%;padding:6px 8px;border:0;border-top:1px solid #e5eeeb;background:#fff;text-align:left}.formulaaltchoice>b{color:#15564f;font-size:8.5px}.formulaaltchoice>strong{min-width:0;color:#304c44;font-size:7.5px;line-height:1.16}.formulaaltchoice>span{grid-column:3;grid-row:1/3;color:#174f46;font-size:6.5px;font-weight:950;text-align:right;white-space:nowrap}.formulaaltchoice>small{grid-column:1/3;color:#70817c;font-size:6.2px}
+  .formulamaterialaudit{overflow:hidden;margin-top:1px;border:1px solid #c8d8d3;border-radius:11px;background:#fff}.formulamaterialaudit>summary{display:flex;align-items:center;gap:6px;padding:8px 9px;color:#15564f;font-size:8px;font-weight:950;cursor:pointer;list-style:none}.formulamaterialaudit>summary::-webkit-details-marker{display:none}.formulamaterialaudit>summary::after{content:'+';margin-left:3px;font-size:14px}.formulamaterialaudit[open]>summary::after{content:'−'}.formulamaterialaudit>summary b{margin-left:auto;padding:3px 5px;border-radius:6px;background:#eef3f1;color:#536b64;font-size:6px}.formulaauditfilters{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:5px!important;padding:7px!important;border-top:1px solid #e0ebe8;background:#f8fbfa}.formulaauditfilters>input[type='search']{grid-column:1/3;width:100%;height:34px;padding:0 8px;border:1px solid #bad3cd;border-radius:7px;color:#173e35;font-size:8px;font-weight:850}.formulaauditfilters button{height:32px;border:0;border-radius:7px;background:#17685f;color:#fff;font-size:7px;font-weight:950}.formulaauditfilters button.secondary{border:1px solid #bad3cd;background:#fff;color:#17685f}.formulaauditstatus{grid-column:1/3;color:#647a73;font-size:6.5px;font-weight:850}.formulaauditgroups{display:grid;gap:3px;padding:5px;background:#f6faf8}.formulaauditgroup{overflow:hidden;border:1px solid #d8e4e0;border-radius:8px;background:#fff}.formulaauditgroup>summary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;padding:7px;color:#294b42;font-size:7.5px;font-weight:950;cursor:pointer;list-style:none}.formulaauditgroup>summary b{font-size:9px}.formulaauditrow{display:grid;grid-template-columns:64px minmax(0,1fr) 64px;gap:2px 7px;width:100%;padding:6px 7px;border:0;border-top:1px solid #e5eeeb;background:#fff;text-align:left}.formulaauditrow>b{color:#15564f;font-size:9px;white-space:nowrap}.formulaauditrow>strong{min-width:0;color:#304c44;font-size:8px;line-height:1.18}.formulaauditrow>em{color:#6b4339;font-size:6.5px;font-style:normal;font-weight:950;text-align:right}.formulaauditrow>small{grid-column:1/4;color:#697c76;font-size:6.3px;white-space:normal}.formulaauditrow.warn{border-left:3px solid #bd694f}.formulaauditrow.old{border-left:3px solid #bd9a4f}
   .formularoot>header{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:5px!important}.formularoottitle{grid-column:1;width:100%}.formularoottitle span{font-size:9px!important}.formularootactions{grid-column:1;display:flex!important;width:100%;align-items:center;gap:4px!important}.formularootactions .formulametacost{display:flex;min-width:0;flex:1;align-items:baseline;justify-content:center;gap:5px;padding:4px 7px}.formularootactions .formulametacost b{font-size:10px}
   @media(max-width:360px){.formulacolheads,.formulanodeopen{grid-template-columns:64px minmax(0,1fr) 58px!important}.formulanodehead{grid-template-columns:94px minmax(0,1fr)!important}.formulacosts{gap:7px;padding-right:6px;font-size:7px}.formulacosts b{font-size:8px}.formulainventorylink{font-size:7px!important}}
   `;
@@ -109,6 +111,10 @@
   section.querySelector("#formulaSearch input").placeholder = "Codice o descrizione";
   const alternativePanel = section.querySelector(".formulaalternativelog");
   alternativePanel.innerHTML = `<summary>Nuovi alternativi materie prime <b>ULTIMI 3 MESI</b></summary><form id="formulaAlternativeRange" class="schedulerange formulaaltfilters"><label>Dal <input name="from" type="date" lang="it-IT" data-alt-from required><output data-alt-date="from">gg/mm/aaaa</output></label><label>Al <input name="to" type="date" lang="it-IT" data-alt-to required><output data-alt-date="to">gg/mm/aaaa</output></label><input type="search" data-alt-query placeholder="Cerca codice o descrizione" aria-label="Cerca alternativo per codice o descrizione"><button type="button" data-alt-show>Mostra periodo</button><button type="button" class="secondary" data-alt-reset>Ultimi 3 mesi</button><div class="formulaaltstatus" data-alt-status>Apri per verificare i nuovi alternativi.</div></form><div class="formulaaltrows" data-alt-rows></div>`;
+  const materialAuditPanel = document.createElement("details");
+  materialAuditPanel.className = "formulamaterialaudit";
+  materialAuditPanel.innerHTML = `<summary>Materie prime codificate da verificare <b>7000–7999</b></summary><form id="formulaMaterialAuditRange" class="schedulerange formulaauditfilters"><label>Dal <input name="from" type="date" lang="it-IT"><output data-audit-date="from">gg/mm/aaaa</output></label><label>Al <input name="to" type="date" lang="it-IT"><output data-audit-date="to">gg/mm/aaaa</output></label><input type="search" data-audit-query placeholder="Cerca codice o descrizione"><button type="button" data-audit-show>Mostra</button><button type="button" class="secondary" data-audit-reset>Azzera filtri</button><div class="formulaauditstatus" data-audit-status>Apri per eseguire il controllo Technics.</div></form><div class="formulaauditgroups" data-audit-groups></div>`;
+  alternativePanel.insertAdjacentElement("afterend", materialAuditPanel);
   const viewer = document.createElement("div");
   viewer.className = "formulaviewer hidden";
   viewer.innerHTML =
@@ -532,10 +538,48 @@
       else scheduleAlternativeLog();
     }, 15000);
   };
+  const groupAlternativeRows = (rows) => {
+    const byDate = new Map();
+    for (const row of rows) {
+      if (!byDate.has(row.date)) byDate.set(row.date, []);
+      byDate.get(row.date).push(row);
+    }
+    const groups = [];
+    for (const [date, dateRows] of byDate) {
+      const adjacency = new Map(), articles = new Map();
+      for (const row of dateRows) {
+        articles.set(row.source.id, row.source);
+        articles.set(row.alternative.id, row.alternative);
+        if (!adjacency.has(row.source.id)) adjacency.set(row.source.id, new Set());
+        if (!adjacency.has(row.alternative.id)) adjacency.set(row.alternative.id, new Set());
+        adjacency.get(row.source.id).add(row.alternative.id);
+        adjacency.get(row.alternative.id).add(row.source.id);
+      }
+      const visited = new Set();
+      for (const start of adjacency.keys()) {
+        if (visited.has(start)) continue;
+        const stack = [start], ids = [];
+        while (stack.length) {
+          const id = stack.pop();
+          if (visited.has(id)) continue;
+          visited.add(id); ids.push(id);
+          for (const neighbor of adjacency.get(id) || []) if (!visited.has(neighbor)) stack.push(neighbor);
+        }
+        const rootId = ids.reduce((best, id) => id > best ? id : best, ids[0]),
+          root = articles.get(rootId),
+          alternatives = ids.filter((id) => id !== rootId).map((id) => articles.get(id)).sort((a, b) => a.code.localeCompare(b.code, "it")),
+          rootRows = dateRows.filter((row) => row.source.id === rootId),
+          anyRows = dateRows.filter((row) => ids.includes(row.source.id) && ids.includes(row.alternative.id)),
+          user = rootRows.find((row) => row.user)?.user || anyRows.find((row) => row.user)?.user || null;
+        groups.push({ date, root, alternatives, user });
+      }
+    }
+    return groups.sort((a, b) => String(b.date).localeCompare(String(a.date)) || b.root.id - a.root.id);
+  };
   const renderAlternativeLog = (data) => {
-    const rows = Array.isArray(data?.rows) ? data.rows : [];
-    alternativeStatus.textContent = `${rows.length} collegamenti · Technics verificato ${new Date(data.readAt).toLocaleTimeString("it-IT")} · sola lettura`;
-    alternativeRows.innerHTML = rows.length ? rows.map((row) => `<button type="button" class="formulaaltrow" data-alt-open="${esc(row.source.code)}"><time>${esc(displayDate(row.date))}</time><b>${esc(row.source.code)}</b><strong>${esc(row.source.description)}</strong><span class="formulaaltarrow">↓</span><span class="formulaaltdesc">Alternativo: <b>${esc(row.alternative.code)}</b> · ${esc(row.alternative.description)}</span><span class="formulaaltmetrics">${euro(row.alternative.unitCost)}/${esc(row.alternative.unit || "UM non indicata")}<br>Giac. ${num2(row.alternative.stock)} ${esc(row.alternative.unit || "UM non indicata")}</span><small>${row.user ? `Utente ${esc(row.user.name || row.user.login || row.user.id)}${row.user.login && row.user.name ? ` · ${esc(row.user.login)}` : ""}` : "Utente non presente nel log Technics"}</small></button>`).join("") : '<div class="formulaempty">Nessun nuovo alternativo nel periodo selezionato.</div>';
+    const rows = Array.isArray(data?.rows) ? data.rows : [], groups = groupAlternativeRows(rows);
+    alternativeStatus.textContent = `${groups.length} codici · ${rows.length} collegamenti · Technics verificato ${new Date(data.readAt).toLocaleTimeString("it-IT")} · sola lettura`;
+    alternativeRows.innerHTML = groups.length ? groups.map((group) => `<article class="formulaaltgroup"><button type="button" class="formulaaltgrouphead" data-alt-open="${esc(group.root.code)}"><time>${esc(displayDate(group.date))}</time><b>${esc(group.root.code)}</b><strong>${esc(group.root.description)}</strong><em>Prezzo codice<br>${euro(group.root.unitCost)}/${esc(group.root.unit || "UM")}</em><small>${group.user ? `Utente ${esc(group.user.name || group.user.login || group.user.id)}${group.user.login && group.user.name ? ` · ${esc(group.user.login)}` : ""}` : "Utente non presente nel log Technics"}</small></button><h4>${group.alternatives.length} alternativ${group.alternatives.length === 1 ? "o" : "i"}</h4>${group.alternatives.map((alternative) => `<button type="button" class="formulaaltchoice" data-alt-open="${esc(alternative.code)}"><b>${esc(alternative.code)}</b><strong>${esc(alternative.description)}</strong><span>Prezzo alternativo<br>${euro(alternative.unitCost)}/${esc(alternative.unit || "UM")}</span><small>Giacenza ${num2(alternative.stock)} ${esc(alternative.unit || "UM")}</small></button>`).join("")}</article>`).join("") : '<div class="formulaempty">Nessun nuovo alternativo nel periodo selezionato.</div>';
   };
   const loadAlternativeLog = async (quiet = false) => {
     const token = ++alternativeLogToken;
@@ -558,6 +602,95 @@
   section.querySelector("[data-alt-reset]").addEventListener("click", () => { alternativeCalendar?.reset(); resetAlternativePeriod(); loadAlternativeLog(); });
   alternativeQuery.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); loadAlternativeLog(); } });
   alternativeRows.addEventListener("click", (event) => { const button = event.target.closest("[data-alt-open]"); if (!button) return; const code = button.dataset.altOpen; form.elements.code.value = code; currentCode = code; load(code); result.scrollIntoView({ block: "start", behavior: "smooth" }); });
+  const materialAuditRange = section.querySelector("#formulaMaterialAuditRange"),
+    materialAuditQuery = section.querySelector("[data-audit-query]"),
+    materialAuditStatus = section.querySelector("[data-audit-status]"),
+    materialAuditGroups = section.querySelector("[data-audit-groups]");
+  let materialAuditTimer = 0,
+    materialAuditToken = 0,
+    materialAuditSignature = "",
+    materialAuditData = null;
+  const updateMaterialAuditDates = () => {
+    for (const output of materialAuditRange.querySelectorAll("[data-audit-date]")) {
+      const value = materialAuditRange.elements[output.dataset.auditDate]?.value || "";
+      output.textContent = value ? value.split("-").reverse().join("/") : "gg/mm/aaaa";
+    }
+  };
+  const materialAuditRow = (row, kind) => {
+    const statusLabel = kind === "old"
+      ? `Ultimo acquisto ${displayDate(row.lastPurchase)}`
+      : row.formulaCount > 0
+        ? `Mai acquistata · ${row.formulaCount} formul${row.formulaCount === 1 ? "a" : "e"}`
+        : "Mai acquistata · mai in formula";
+    const facts = [
+      row.articleDate ? `Codificata ${displayDate(row.articleDate)}` : "",
+      `${euro(row.unitCost)}/${esc(row.unit || "UM")}`,
+      row.alternativeCount ? `${row.alternativeCount} alternativ${row.alternativeCount === 1 ? "o" : "i"}` : "Nessun alternativo",
+    ].filter(Boolean).join(" · ");
+    return `<button type="button" class="formulaauditrow ${kind === "old" ? "old" : "warn"}" data-audit-open="${esc(row.code)}"><b>${esc(row.code)}</b><strong>${esc(row.description)}</strong><em>${esc(statusLabel)}</em><small>${facts}</small></button>`;
+  };
+  const materialAuditDefinitions = [
+    ["neverPurchasedNeverFormula", "Mai acquistate · mai entrate in formula", "never"],
+    ["neverPurchasedInFormula", "Mai acquistate · presenti in formula", "formula"],
+    ["purchasedBefore2018", "Ultimo acquisto precedente al 2018", "old"],
+  ];
+  const populateMaterialAuditGroup = (details) => {
+    if (!details.open || details.dataset.loaded === "1" || !materialAuditData) return;
+    const definition = materialAuditDefinitions.find(([key]) => key === details.dataset.auditGroup),
+      rows = definition ? materialAuditData[definition[0]] || [] : [],
+      container = details.querySelector("[data-audit-list]");
+    container.innerHTML = rows.length
+      ? rows.map((row) => materialAuditRow(row, definition[2])).join("")
+      : '<div class="formulaempty">Nessuna materia prima in questa categoria.</div>';
+    details.dataset.loaded = "1";
+  };
+  const renderMaterialAudit = (data) => {
+    materialAuditData = data;
+    const total = materialAuditDefinitions.reduce((sum, [key]) => sum + Number(data?.counts?.[key] || 0), 0);
+    materialAuditPanel.querySelector(":scope > summary b").textContent = `${total} RISULTATI`;
+    materialAuditStatus.textContent = `${total} materie prime · Technics verificato ${new Date(data.readAt).toLocaleTimeString("it-IT")} · sola lettura`;
+    materialAuditGroups.innerHTML = materialAuditDefinitions.map(([key, label]) => `<details class="formulaauditgroup" data-audit-group="${key}"><summary><span>${label}</span><b>${Number(data?.counts?.[key] || 0)}</b></summary><div data-audit-list></div></details>`).join("");
+  };
+  const scheduleMaterialAudit = () => {
+    clearTimeout(materialAuditTimer);
+    materialAuditTimer = setTimeout(() => {
+      if (materialAuditPanel.open && !document.hidden && shell.dataset.workspace === "formulas") loadMaterialAudit(true);
+      else scheduleMaterialAudit();
+    }, 15000);
+  };
+  const loadMaterialAudit = async (quiet = false) => {
+    const token = ++materialAuditToken,
+      from = materialAuditRange.elements.from.value,
+      to = materialAuditRange.elements.to.value,
+      query = materialAuditQuery.value.trim();
+    if (!quiet) materialAuditStatus.textContent = "Controllo materie prime in Technics…";
+    try {
+      const payload = await api(`/api/formulas/material-audit?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&q=${encodeURIComponent(query)}&fresh=${Date.now()}`, true);
+      if (token !== materialAuditToken) return;
+      const data = payload.result,
+        signature = JSON.stringify([data.counts, ...materialAuditDefinitions.map(([key]) => (data[key] || []).map((row) => [row.id, row.lastPurchase, row.formulaCount, row.alternativeCount]))]);
+      if (!quiet || signature !== materialAuditSignature) {
+        materialAuditSignature = signature;
+        renderMaterialAudit(data);
+      } else {
+        const total = materialAuditDefinitions.reduce((sum, [key]) => sum + Number(data?.counts?.[key] || 0), 0);
+        materialAuditStatus.textContent = `${total} materie prime · Technics verificato ${new Date(data.readAt).toLocaleTimeString("it-IT")} · sola lettura`;
+      }
+    } catch (error) {
+      if (token !== materialAuditToken) return;
+      materialAuditStatus.textContent = error.message || "Controllo materie prime non disponibile.";
+    }
+    scheduleMaterialAudit();
+  };
+  updateMaterialAuditDates();
+  const materialAuditCalendar = window.TechnicsRangeCalendar?.attach(materialAuditRange, { onApply: () => { updateMaterialAuditDates(); loadMaterialAudit(); } });
+  materialAuditRange.addEventListener("change", updateMaterialAuditDates);
+  materialAuditPanel.addEventListener("toggle", () => { if (materialAuditPanel.open) loadMaterialAudit(); else clearTimeout(materialAuditTimer); });
+  materialAuditGroups.addEventListener("toggle", (event) => { const details = event.target.closest("[data-audit-group]"); if (details) populateMaterialAuditGroup(details); }, true);
+  materialAuditGroups.addEventListener("click", (event) => { const button = event.target.closest("[data-audit-open]"); if (!button) return; const code = button.dataset.auditOpen; form.elements.code.value = code; currentCode = code; load(code); result.scrollIntoView({ block: "start", behavior: "smooth" }); });
+  section.querySelector("[data-audit-show]").addEventListener("click", () => loadMaterialAudit());
+  section.querySelector("[data-audit-reset]").addEventListener("click", () => { materialAuditCalendar?.reset(); materialAuditRange.elements.from.value = ""; materialAuditRange.elements.to.value = ""; materialAuditQuery.value = ""; updateMaterialAuditDates(); loadMaterialAudit(); });
+  materialAuditQuery.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); loadMaterialAudit(); } });
   let pdfLibraryPromise;
   const pdfWorkerUrl = new URL("vendor/pdfjs/pdf.worker.mjs", document.baseURI)
     .href;
