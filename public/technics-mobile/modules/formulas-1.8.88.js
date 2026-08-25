@@ -61,7 +61,7 @@
   `;
   document.head.append(rawMaterialStyle);
   const integrityStyle = document.createElement("style");
-  integrityStyle.id = "formulas-integrity-v1911";
+  integrityStyle.id = "formulas-integrity-v1912";
   integrityStyle.textContent = `
   body.formula-detail-open{overflow:hidden!important;overscroll-behavior:none!important}
   .formulanodedetail{overscroll-behavior:contain;touch-action:pan-y}
@@ -167,6 +167,9 @@
     );
   const resetFormulaSession = () => {
     clearTimeout(refreshTimer);
+    clearTimeout(suggestionTimer);
+    suggestionToken += 1;
+    closeSuggestions();
     requestToken += 1;
     currentCode = "";
     currentData = null;
