@@ -45,14 +45,14 @@
   .formulaalternativelog{margin-top:1px}.formulaaltfilters{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:5px!important;padding:7px!important}.formulaaltfilters input{width:100%;height:34px!important;padding:0 7px!important;font-size:8px!important;line-height:34px}.formulaaltfilters input[type='date']{min-width:0;color-scheme:light}.formulaaltrow{grid-template-columns:66px minmax(0,1fr) 62px!important;gap:3px 7px!important;padding:7px 8px!important;text-align:left}.formulaaltrow time{font-size:7px!important;white-space:nowrap}.formulaaltrow>b{font-size:9px!important}.formulaaltrow>strong{font-size:8px!important;line-height:1.18!important;white-space:normal;overflow-wrap:break-word}.formulaaltrow .formulaaltdesc{font-size:7.5px!important;line-height:1.2!important;white-space:normal}.formulaaltrow .formulaaltmetrics{font-size:7px!important;line-height:1.35}.formulaaltrow small{font-size:6.5px!important}
   .formulaaltrow .formulaaltarrow{display:none!important}.formulaaltrow .formulaaltdesc{grid-column:1/3!important;padding-top:2px}.formulaaltrow small{grid-column:1/4!important}
   .formulaaltrow>time{grid-column:1;grid-row:1}.formulaaltrow>b{grid-column:2;grid-row:1}.formulaaltrow>strong{grid-column:1/3;grid-row:2}.formulaaltrow .formulaaltdesc{grid-row:3}.formulaaltrow .formulaaltmetrics{grid-column:3;grid-row:1/5!important}.formulaaltrow>small{grid-column:1/3!important;grid-row:4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .formulaaltgroup{overflow:hidden;border-top:1px solid #dfeae7;background:#fff}.formulaaltgroup:first-child{border-top:0}.formulaaltgrouphead{display:grid;grid-template-columns:66px minmax(0,1fr) 76px;gap:2px 7px;width:100%;padding:7px 8px;border:0;background:#f5faf8;text-align:left}.formulaaltgrouphead time{color:#667d76;font-size:7px}.formulaaltgrouphead b{color:#15564f;font-size:9px}.formulaaltgrouphead strong{grid-column:1/3;min-width:0;color:#2d4941;font-size:8px;line-height:1.18}.formulaaltgrouphead em{grid-column:3;grid-row:1/3;color:#174f46;font-size:6.5px;font-style:normal;font-weight:950;text-align:right;white-space:nowrap}.formulaaltgrouphead small{grid-column:1/4;color:#6b7e78;font-size:6.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.formulaaltgroup h4{margin:0;padding:4px 8px;background:#e8f3f0;color:#15564f;font-size:6.5px;text-transform:uppercase}.formulaaltchoice{display:grid;grid-template-columns:66px minmax(0,1fr) 76px;gap:2px 7px;width:100%;padding:6px 8px;border:0;border-top:1px solid #e5eeeb;background:#fff;text-align:left}.formulaaltchoice>b{color:#15564f;font-size:8.5px}.formulaaltchoice>strong{min-width:0;color:#304c44;font-size:7.5px;line-height:1.16}.formulaaltchoice>span{grid-column:3;grid-row:1/3;color:#174f46;font-size:6.5px;font-weight:950;text-align:right;white-space:nowrap}.formulaaltchoice>small{grid-column:1/3;color:#70817c;font-size:6.2px}
-  .formulamaterialaudit{overflow:hidden;margin-top:1px;border:1px solid #c8d8d3;border-radius:11px;background:#fff}.formulamaterialaudit>summary{display:flex;align-items:center;gap:6px;padding:8px 9px;color:#15564f;font-size:8px;font-weight:950;cursor:pointer;list-style:none}.formulamaterialaudit>summary::-webkit-details-marker{display:none}.formulamaterialaudit>summary::after{content:'+';margin-left:3px;font-size:14px}.formulamaterialaudit[open]>summary::after{content:'−'}.formulamaterialaudit>summary b{margin-left:auto;padding:3px 5px;border-radius:6px;background:#eef3f1;color:#536b64;font-size:6px}.formulaauditfilters{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:5px!important;padding:7px!important;border-top:1px solid #e0ebe8;background:#f8fbfa}.formulaauditfilters>input[type='search']{grid-column:1/3;width:100%;height:34px;padding:0 8px;border:1px solid #bad3cd;border-radius:7px;color:#173e35;font-size:8px;font-weight:850}.formulaauditfilters button{height:32px;border:0;border-radius:7px;background:#17685f;color:#fff;font-size:7px;font-weight:950}.formulaauditfilters button.secondary{border:1px solid #bad3cd;background:#fff;color:#17685f}.formulaauditstatus{grid-column:1/3;color:#647a73;font-size:6.5px;font-weight:850}.formulaauditgroups{display:grid;gap:3px;padding:5px;background:#f6faf8}.formulaauditgroup{overflow:hidden;border:1px solid #d8e4e0;border-radius:8px;background:#fff}.formulaauditgroup>summary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;padding:7px;color:#294b42;font-size:7.5px;font-weight:950;cursor:pointer;list-style:none}.formulaauditgroup>summary b{font-size:9px}.formulaauditrow{display:grid;grid-template-columns:64px minmax(0,1fr) 64px;gap:2px 7px;width:100%;padding:6px 7px;border:0;border-top:1px solid #e5eeeb;background:#fff;text-align:left}.formulaauditrow>b{color:#15564f;font-size:9px;white-space:nowrap}.formulaauditrow>strong{min-width:0;color:#304c44;font-size:8px;line-height:1.18}.formulaauditrow>em{color:#6b4339;font-size:6.5px;font-style:normal;font-weight:950;text-align:right}.formulaauditrow>small{grid-column:1/4;color:#697c76;font-size:6.3px;white-space:normal}.formulaauditrow.warn{border-left:3px solid #bd694f}.formulaauditrow.old{border-left:3px solid #bd9a4f}
-  .formularoot>header{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:5px!important}.formularoottitle{grid-column:1;width:100%}.formularoottitle span{font-size:9px!important}.formularootactions{grid-column:1;display:flex!important;width:100%;align-items:center;gap:4px!important}.formularootactions .formulametacost{display:flex;min-width:0;flex:1;align-items:baseline;justify-content:center;gap:5px;padding:4px 7px}.formularootactions .formulametacost b{font-size:10px}
+  .formulaaltrows{gap:7px!important;padding:6px!important;background:#edf5f2}.formulaaltgroup{overflow:hidden;border:2px solid #83b8ad;border-radius:10px;background:#fff;box-shadow:0 2px 7px #174f4614}.formulaaltgroup:first-child{border-top:2px solid #83b8ad}.formulaaltgrouphead{display:grid;grid-template-columns:66px minmax(0,1fr) 82px;gap:3px 7px;width:100%;padding:8px;border:0;background:linear-gradient(135deg,#e3f2ee,#f8fbfa);text-align:left}.formulaaltgrouphead time{color:#526f67;font-size:7px;font-weight:900}.formulaaltgrouphead b{color:#0d5f53;font-size:10px}.formulaaltgrouphead strong{grid-column:1/3;min-width:0;color:#203f37;font-size:8.5px;line-height:1.18}.formulaaltgrouphead em{grid-column:3;grid-row:1/3;color:#174f46;font-size:6.5px;font-style:normal;font-weight:950;text-align:right;white-space:nowrap}.formulaaltgrouphead small{grid-column:1/3;color:#315d53;font-size:7.3px;font-weight:950;white-space:normal}.formulaaltgrouphead u{grid-column:3;grid-row:3;color:#17685f;font-size:6.8px;font-weight:950;text-align:right;text-decoration-style:dotted}.formulaaltgroup h4{margin:0;padding:5px 8px;border-top:1px solid #b9d7d0;border-bottom:1px solid #d6e6e2;background:#17685f;color:#fff;font-size:7px;text-transform:uppercase}.formulaaltchoices{display:grid;margin:5px;border:1px solid #cbded9;border-radius:7px;background:#fff}.formulaaltchoice{display:grid;grid-template-columns:66px minmax(0,1fr) 82px;gap:2px 7px;width:100%;padding:6px 7px;border:0;border-top:1px solid #e5eeeb;background:#fff;text-align:left}.formulaaltchoice:first-child{border-top:0}.formulaaltchoice>b{color:#15564f;font-size:8.5px}.formulaaltchoice>strong{min-width:0;color:#304c44;font-size:7.5px;line-height:1.16}.formulaaltchoice>span{grid-column:3;grid-row:1/3;color:#174f46;font-size:6.5px;font-weight:950;text-align:right;white-space:nowrap}.formulaaltchoice>small{grid-column:1/3;color:#37675c;font-size:7px;font-weight:900;text-decoration:underline;text-decoration-style:dotted}
+  .formulamaterialaudit{overflow:hidden;margin-top:1px;border:1px solid #c8d8d3;border-radius:11px;background:#fff}.formulamaterialaudit>summary{display:flex;align-items:center;gap:6px;padding:8px 9px;color:#15564f;font-size:8px;font-weight:950;cursor:pointer;list-style:none}.formulamaterialaudit>summary::-webkit-details-marker{display:none}.formulamaterialaudit>summary::after{content:'+';margin-left:3px;font-size:14px}.formulamaterialaudit[open]>summary::after{content:'−'}.formulamaterialaudit>summary b{margin-left:auto;padding:3px 5px;border-radius:6px;background:#eef3f1;color:#536b64;font-size:6px}.formulaauditfilters{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:5px!important;padding:7px!important;border-top:1px solid #e0ebe8;background:#f8fbfa}.formulaauditfilters>input[type='search']{grid-column:1/3;width:100%;height:34px;padding:0 8px;border:1px solid #bad3cd;border-radius:7px;color:#173e35;font-size:8px;font-weight:850}.formulaauditfilters button{height:32px;border:0;border-radius:7px;background:#17685f;color:#fff;font-size:7px;font-weight:950}.formulaauditfilters button.secondary{border:1px solid #bad3cd;background:#fff;color:#17685f}.formulaauditstatus{grid-column:1/3;color:#647a73;font-size:6.5px;font-weight:850}.formulaauditgroups{display:grid;gap:4px;padding:5px;background:#f6faf8}.formulaauditgroup{overflow:hidden;border:1px solid #d8e4e0;border-radius:8px;background:#fff}.formulaauditgroup>summary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;padding:7px;color:#294b42;font-size:7.5px;font-weight:950;cursor:pointer;list-style:none}.formulaauditgroup>summary b{font-size:9px}.formulaauditrow{display:grid;grid-template-columns:64px minmax(0,1fr) 72px;gap:2px 7px;padding:6px 7px;border-top:1px solid #e5eeeb;background:#fff}.formulaauditmain{display:contents}.formulaauditmain>b{color:#15564f;font-size:9px;white-space:nowrap}.formulaauditmain>strong{min-width:0;color:#304c44;font-size:8px;line-height:1.18}.formulaauditmain>em{color:#6b4339;font-size:6.5px;font-style:normal;font-weight:950;text-align:right}.formulaauditfacts{grid-column:1/3;color:#697c76;font-size:6.3px}.formulaauditstock{grid-column:3;grid-row:2;padding:2px 0;border:0;background:transparent;color:#17685f;font-size:6.5px;font-weight:950;text-align:right;text-decoration:underline;text-decoration-style:dotted}.formulaauditalts{grid-column:1/4;margin-top:3px;border:1px solid #cddfda;border-radius:7px;background:#f7fbfa}.formulaauditalts>summary{padding:5px 7px;color:#15564f;font-size:6.8px;font-weight:950;cursor:pointer}.formulaauditalt{display:grid;grid-template-columns:62px minmax(0,1fr) 70px;gap:2px 6px;width:100%;padding:5px 6px;border:0;border-top:1px solid #e1ebe8;background:#fff;text-align:left}.formulaauditalt b{color:#15564f;font-size:7.5px}.formulaauditalt span{min-width:0;color:#344f47;font-size:6.7px}.formulaauditalt small{color:#17685f;font-size:6.2px;font-weight:950;text-align:right}.formulaauditrow.warn{border-left:3px solid #bd694f}.formulaauditrow.old{border-left:3px solid #bd9a4f}.formulaauditrow.move{border-left:3px solid #7b62aa}
+  .formularoot>header{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:5px!important}.formularoottitle{grid-column:1;width:100%}.formularoottitle span{font-size:9px!important}.formularootactions{grid-column:1;display:flex!important;width:100%;align-items:center;gap:4px!important}.formularootactions .formulametacost{display:grid;min-width:0;flex:1;grid-template-columns:auto auto;align-items:baseline;justify-content:center;gap:1px 5px;padding:4px 7px}.formularootactions .formulametacost>span{font-size:6.5px}.formularootactions .formulametacost b{font-size:10px}.formularootactions .formulametacost small{grid-column:1/3;color:#397166;font-size:6px;font-weight:900;text-align:center;white-space:normal}
   @media(max-width:360px){.formulacolheads,.formulanodeopen{grid-template-columns:64px minmax(0,1fr) 58px!important}.formulanodehead{grid-template-columns:94px minmax(0,1fr)!important}.formulacosts{gap:7px;padding-right:6px;font-size:7px}.formulacosts b{font-size:8px}.formulainventorylink{font-size:7px!important}}
   `;
   document.head.append(costLayoutStyle);
   const integrityStyle = document.createElement("style");
-  integrityStyle.id = "formulas-integrity-v1890";
+  integrityStyle.id = "formulas-integrity-v1893";
   integrityStyle.textContent = `
   body.formula-detail-open{overflow:hidden!important;overscroll-behavior:none!important}
   .formulanodedetail{overscroll-behavior:contain;touch-action:pan-y}
@@ -248,15 +248,19 @@
     }
     throw last || new Error("Ponte Technics non disponibile.");
   };
-  const nodeRow = (node, relation = "component") =>
-    `<article class="formulanode" data-formula-id="${node.id}"><div class="formulanodehead"><button type="button" class="formulanodeopen" data-formula-expand="${node.id}" aria-expanded="false"><b>${esc(node.code)}</b><strong>${esc(node.description)}</strong>${relation === "component" ? `<span class="formulapct">${pct(node.percentage)}%</span>` : `<span class="formulapct">${esc(node.type || "Apri")}</span>`}</button><button type="button" class="formulainventorylink" data-formula-inventory="${esc(node.code)}">Giacenza ${num2(node.totalStock)} ${esc(node.unit || "")}</button>${relation === "component" ? `<span class="formulacosts"><span>Prezzo/kg <b>${euro(node.unitCost)}</b></span><span>Quota <b>${euro(node.costContribution)}</b></span></span>` : ""}</div><div class="formulanodedetail hidden"></div></article>`;
+  const nodeRow = (node, relation = "component") => {
+    const quantityCost = relation === "component" && node.costBasis === "quantity",
+      measure = quantityCost ? `${num2(node.quantity)} ${esc(node.bomUnit || node.unit || "UM")}` : `${pct(node.percentage)}%`,
+      contributionLabel = quantityCost ? "Costo riga" : "Quota formula";
+    return `<article class="formulanode" data-formula-id="${node.id}"><div class="formulanodehead"><button type="button" class="formulanodeopen" data-formula-expand="${node.id}" aria-expanded="false"><b>${esc(node.code)}</b><strong>${esc(node.description)}</strong>${relation === "component" ? `<span class="formulapct">${measure}</span>` : `<span class="formulapct">${esc(node.type || "Apri")}</span>`}</button><button type="button" class="formulainventorylink" data-formula-inventory="${esc(node.code)}">Giacenza ${num2(node.totalStock)} ${esc(node.unit || "")}</button>${relation === "component" ? `<span class="formulacosts"><span>Prezzo unitario <b>${euro(node.unitCost)}</b></span><span>${contributionLabel} <b>${euro(node.costContribution)}</b></span></span>` : ""}</div><div class="formulanodedetail hidden"></div></article>`;
+  };
   const sectionBlock = (title, items, relation) => {
     const ordered = relation === "component"
       ? [...items].sort(
           (a, b) => Number(b.percentage || 0) - Number(a.percentage || 0),
         )
       : items;
-    return `<section class="formulasection" data-formula-section="${relation}"><h3>${esc(title)} · ${ordered.length}</h3>${ordered.length ? `${relation === "component" ? '<div class="formulacolheads"><span>Codice</span><span>Componente</span><span>%</span></div>' : ""}<div class="formulanodes">${ordered.map((x) => nodeRow(x, relation)).join("")}</div>` : '<div class="formulaempty">Nessun collegamento presente in Technics.</div>'}</section>`;
+    return `<section class="formulasection" data-formula-section="${relation}"><h3>${esc(title)} · ${ordered.length}</h3>${ordered.length ? `${relation === "component" ? '<div class="formulacolheads"><span>Codice</span><span>Componente</span><span>Quantità</span></div>' : ""}<div class="formulanodes">${ordered.map((x) => nodeRow(x, relation)).join("")}</div>` : '<div class="formulaempty">Nessun collegamento presente in Technics.</div>'}</section>`;
   };
   const renderRoot = (data) => {
     const a = data.article,
@@ -266,7 +270,10 @@
         String(parent.code).toUpperCase().startsWith(prefix),
       );
     const alternatives = Array.isArray(data.alternatives) ? data.alternatives : [];
-    result.innerHTML = `<article class="formularoot"><header><div class="formularoottitle"><b>${esc(a.code)}</b><span>${esc(a.description)}</span></div><div class="formularootactions"><span class="formulametacost">COSTO FORMULA<b>${euro(data.formulaCost)}/${esc(a.unit || "UM")}</b></span><small>${esc(a.type)}</small><small class="formulaactive ${a.active ? "" : "inactive"}">${a.active ? "ATTIVO" : "NON ATTIVO"}</small><button type="button" class="formularootopen" data-formula-expand="${a.id}" aria-expanded="false">Scheda</button></div></header><div class="formulameta"><button type="button" data-formula-summary="component">Distinta<b>${a.componentCount}</b></button><button type="button" data-formula-summary="parent">Confezionati<b>${packaged.length}</b></button><button type="button" data-formula-summary="inci">INCI<b>${a.inciCount}</b></button><button type="button" data-formula-summary="alternative">Alternativi<b>${alternatives.length}</b></button><button type="button" data-formula-summary="stock">Giacenza<b>${num2(a.totalStock)} ${esc(a.unit)}</b></button></div><div class="formulanodedetail hidden" data-root-detail></div></article>${sectionBlock("DISTINTA BASE · MATERIE PRIME", data.components || [], "component")}${sectionBlock("CONFEZIONATI", packaged, "parent")}`;
+    const finished = data.costMode === "finishedProduct",
+      costTitle = finished ? "COSTO PRODOTTO FINITO" : "COSTO FORMULA",
+      costBreakdown = finished ? `<small>Formula ${euro(data.formulaBulkCost)} · Packaging ${euro(data.formulaPackagingCost)}</small>` : "";
+    result.innerHTML = `<article class="formularoot"><header><div class="formularoottitle"><b>${esc(a.code)}</b><span>${esc(a.description)}</span></div><div class="formularootactions"><span class="formulametacost"><span>${costTitle}</span><b>${euro(data.formulaCost)}/${esc(a.unit || "UM")}</b>${costBreakdown}</span><small>${esc(a.type)}</small><small class="formulaactive ${a.active ? "" : "inactive"}">${a.active ? "ATTIVO" : "NON ATTIVO"}</small><button type="button" class="formularootopen" data-formula-expand="${a.id}" aria-expanded="false">Scheda</button></div></header><div class="formulameta"><button type="button" data-formula-summary="component">Distinta<b>${a.componentCount}</b></button><button type="button" data-formula-summary="parent">Confezionati<b>${packaged.length}</b></button><button type="button" data-formula-summary="inci">INCI<b>${a.inciCount}</b></button><button type="button" data-formula-summary="alternative">Alternativi<b>${alternatives.length}</b></button><button type="button" data-formula-summary="stock">Giacenza<b>${num2(a.totalStock)} ${esc(a.unit)}</b></button></div><div class="formulanodedetail hidden" data-root-detail></div></article>${sectionBlock(finished ? "DISTINTA BASE · FORMULA E PACKAGING" : "DISTINTA BASE · MATERIE PRIME", data.components || [], "component")}${sectionBlock("CONFEZIONATI", packaged, "parent")}`;
     updateBackButton();
   };
   const renderRelated = (item, suffix = "Apri") =>
@@ -579,7 +586,7 @@
   const renderAlternativeLog = (data) => {
     const rows = Array.isArray(data?.rows) ? data.rows : [], groups = groupAlternativeRows(rows);
     alternativeStatus.textContent = `${groups.length} codici · ${rows.length} collegamenti · Technics verificato ${new Date(data.readAt).toLocaleTimeString("it-IT")} · sola lettura`;
-    alternativeRows.innerHTML = groups.length ? groups.map((group) => `<article class="formulaaltgroup"><button type="button" class="formulaaltgrouphead" data-alt-open="${esc(group.root.code)}"><time>${esc(displayDate(group.date))}</time><b>${esc(group.root.code)}</b><strong>${esc(group.root.description)}</strong><em>Prezzo codice<br>${euro(group.root.unitCost)}/${esc(group.root.unit || "UM")}</em><small>${group.user ? `Utente ${esc(group.user.name || group.user.login || group.user.id)}${group.user.login && group.user.name ? ` · ${esc(group.user.login)}` : ""}` : "Utente non presente nel log Technics"}</small></button><h4>${group.alternatives.length} alternativ${group.alternatives.length === 1 ? "o" : "i"}</h4>${group.alternatives.map((alternative) => `<button type="button" class="formulaaltchoice" data-alt-open="${esc(alternative.code)}"><b>${esc(alternative.code)}</b><strong>${esc(alternative.description)}</strong><span>Prezzo alternativo<br>${euro(alternative.unitCost)}/${esc(alternative.unit || "UM")}</span><small>Giacenza ${num2(alternative.stock)} ${esc(alternative.unit || "UM")}</small></button>`).join("")}</article>`).join("") : '<div class="formulaempty">Nessun nuovo alternativo nel periodo selezionato.</div>';
+    alternativeRows.innerHTML = groups.length ? groups.map((group) => `<article class="formulaaltgroup"><button type="button" class="formulaaltgrouphead" data-alt-open="${esc(group.root.code)}"><time>${esc(displayDate(group.date))}</time><b>${esc(group.root.code)}</b><strong>${esc(group.root.description)}</strong><em>Prezzo codice<br>${euro(group.root.unitCost)}/${esc(group.root.unit || "UM")}</em><small>${group.user ? `Utente che ha modificato: ${esc(group.user.name || group.user.login || group.user.id)}${group.user.login && group.user.name ? ` · ${esc(group.user.login)}` : ""}` : "Utente non presente nel log Technics"}</small><u role="button" data-alt-stock="${esc(group.root.code)}">Giacenza ${num2(group.root.stock)} ${esc(group.root.unit || "UM")}</u></button><h4>${group.alternatives.length} alternativ${group.alternatives.length === 1 ? "o" : "i"} collegati a ${esc(group.root.code)}</h4><div class="formulaaltchoices">${group.alternatives.map((alternative) => `<button type="button" class="formulaaltchoice" data-alt-open="${esc(alternative.code)}"><b>${esc(alternative.code)}</b><strong>${esc(alternative.description)}</strong><span>Prezzo alternativo<br>${euro(alternative.unitCost)}/${esc(alternative.unit || "UM")}</span><small role="button" data-alt-stock="${esc(alternative.code)}">Giacenza ${num2(alternative.stock)} ${esc(alternative.unit || "UM")}</small></button>`).join("")}</div></article>`).join("") : '<div class="formulaempty">Nessun nuovo alternativo nel periodo selezionato.</div>';
   };
   const loadAlternativeLog = async (quiet = false) => {
     const token = ++alternativeLogToken;
@@ -601,7 +608,31 @@
   section.querySelector("[data-alt-show]").addEventListener("click", () => loadAlternativeLog());
   section.querySelector("[data-alt-reset]").addEventListener("click", () => { alternativeCalendar?.reset(); resetAlternativePeriod(); loadAlternativeLog(); });
   alternativeQuery.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); loadAlternativeLog(); } });
-  alternativeRows.addEventListener("click", (event) => { const button = event.target.closest("[data-alt-open]"); if (!button) return; const code = button.dataset.altOpen; form.elements.code.value = code; currentCode = code; load(code); result.scrollIntoView({ block: "start", behavior: "smooth" }); });
+  const openInventoryByCode = (code) => {
+    if (!code) return;
+    formulaScrollY = window.scrollY;
+    backButton.dataset.mode = "inventory";
+    document.querySelector('.departmentnav [data-workspace="inventory"]')?.click();
+    setTimeout(() => {
+      const inventoryForm = document.getElementById("form"), codeInput = inventoryForm?.elements?.code, lotInput = inventoryForm?.elements?.lot;
+      if (!inventoryForm || !codeInput) return;
+      codeInput.value = code;
+      if (lotInput) lotInput.value = "";
+      codeInput.dispatchEvent(new Event("input", { bubbles: true }));
+      codeInput.value = code;
+      inventoryForm.requestSubmit();
+      updateBackButton();
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }, 80);
+  };
+  alternativeRows.addEventListener("click", (event) => {
+    const stock = event.target.closest("[data-alt-stock]");
+    if (stock) { event.preventDefault(); event.stopPropagation(); openInventoryByCode(stock.dataset.altStock); return; }
+    const button = event.target.closest("[data-alt-open]");
+    if (!button) return;
+    const code = button.dataset.altOpen;
+    form.elements.code.value = code; currentCode = code; load(code); result.scrollIntoView({ block: "start", behavior: "smooth" });
+  });
   const materialAuditRange = section.querySelector("#formulaMaterialAuditRange"),
     materialAuditQuery = section.querySelector("[data-audit-query]"),
     materialAuditStatus = section.querySelector("[data-audit-status]"),
@@ -617,22 +648,37 @@
     }
   };
   const materialAuditRow = (row, kind) => {
-    const statusLabel = kind === "old"
-      ? `Ultimo acquisto ${displayDate(row.lastPurchase)}`
-      : row.formulaCount > 0
-        ? `Mai acquistata · ${row.formulaCount} formul${row.formulaCount === 1 ? "a" : "e"}`
-        : "Mai acquistata · mai in formula";
+    const familyFormulaCount = Number(row.familyFormulaCount || 0),
+      directFormulaCount = Number(row.formulaCount || 0),
+      familyMovementCount = Number(row.familyMovementCount || 0),
+      directMovementCount = Number(row.movementCount || 0),
+      familyStock = Number(row.familyStock || 0),
+      directStock = Number(row.totalStock || 0),
+      alternatives = Array.isArray(row.alternatives) ? row.alternatives : [],
+      statusLabel = kind === "old"
+        ? `Ultimo acquisto famiglia ${displayDate(row.familyLastPurchase || row.lastPurchase)}`
+        : kind === "move"
+          ? `Mai acquistata · ${familyMovementCount} moviment${familyMovementCount === 1 ? "o" : "i"} di magazzino`
+          : familyFormulaCount > 0
+            ? `Mai acquistata · presente in ${familyFormulaCount} formul${familyFormulaCount === 1 ? "a" : "e"}`
+            : "Mai acquistata · mai presente in formula";
     const facts = [
       row.articleDate ? `Codificata ${displayDate(row.articleDate)}` : "",
       `${euro(row.unitCost)}/${esc(row.unit || "UM")}`,
-      row.alternativeCount ? `${row.alternativeCount} alternativ${row.alternativeCount === 1 ? "o" : "i"}` : "Nessun alternativo",
+      `Formula diretta ${directFormulaCount} · famiglia ${familyFormulaCount}`,
+      `Movimenti diretti ${directMovementCount} · famiglia ${familyMovementCount}`,
+      row.familyLastMovement ? `Ultimo movimento ${displayDate(row.familyLastMovement)}` : "Nessun movimento di magazzino",
     ].filter(Boolean).join(" · ");
-    return `<button type="button" class="formulaauditrow ${kind === "old" ? "old" : "warn"}" data-audit-open="${esc(row.code)}"><b>${esc(row.code)}</b><strong>${esc(row.description)}</strong><em>${esc(statusLabel)}</em><small>${facts}</small></button>`;
+    const alternativesHtml = alternatives.length
+      ? `<details class="formulaauditalts"><summary>${alternatives.length} alternativ${alternatives.length === 1 ? "o" : "i"} collegat${alternatives.length === 1 ? "o" : "i"} · apri</summary>${alternatives.map((alternative) => `<button type="button" class="formulaauditalt" data-audit-alt-open="${esc(alternative.code)}"><b>${esc(alternative.code)}</b><span>${esc(alternative.description)}</span><small>${euro(alternative.unitCost)}/${esc(alternative.unit || "UM")} · giac. ${number(alternative.totalStock)}</small></button>`).join("")}</details>`
+      : "";
+    return `<article class="formulaauditrow ${kind === "old" ? "old" : kind === "move" ? "move" : "warn"}"><button type="button" class="formulaauditmain" data-audit-open="${esc(row.code)}"><b>${esc(row.code)}</b><strong>${esc(row.description)}</strong><em>${esc(statusLabel)}</em><small class="formulaauditfacts">${facts}</small></button><button type="button" class="formulaauditstock" data-audit-stock="${esc(row.code)}">Giacenza codice ${number(directStock)} · famiglia ${number(familyStock)}</button>${alternativesHtml}</article>`;
   };
   const materialAuditDefinitions = [
-    ["neverPurchasedNeverFormula", "Mai acquistate · mai entrate in formula", "never"],
-    ["neverPurchasedInFormula", "Mai acquistate · presenti in formula", "formula"],
-    ["purchasedBefore2018", "Ultimo acquisto precedente al 2018", "old"],
+    ["neverPurchasedNeverFormula", "Mai acquistate e mai movimentate · mai in formula", "never"],
+    ["neverPurchasedInFormula", "Mai acquistate e mai movimentate · presenti in formula", "formula"],
+    ["movementWithoutPurchase", "Movimentate senza acquisto fornitore documentato", "move"],
+    ["purchasedBefore2018", "Ultimo acquisto della famiglia precedente al 2018", "old"],
   ];
   const populateMaterialAuditGroup = (details) => {
     if (!details.open || details.dataset.loaded === "1" || !materialAuditData) return;
@@ -668,7 +714,7 @@
       const payload = await api(`/api/formulas/material-audit?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&q=${encodeURIComponent(query)}&fresh=${Date.now()}`, true);
       if (token !== materialAuditToken) return;
       const data = payload.result,
-        signature = JSON.stringify([data.counts, ...materialAuditDefinitions.map(([key]) => (data[key] || []).map((row) => [row.id, row.lastPurchase, row.formulaCount, row.alternativeCount]))]);
+        signature = JSON.stringify([data.counts, ...materialAuditDefinitions.map(([key]) => (data[key] || []).map((row) => [row.id, row.familyLastPurchase, row.familyFormulaCount, row.familyMovementCount, row.familyStock, (row.alternatives || []).map((alternative) => [alternative.id, alternative.unitCost, alternative.totalStock])]))]);
       if (!quiet || signature !== materialAuditSignature) {
         materialAuditSignature = signature;
         renderMaterialAudit(data);
@@ -687,7 +733,15 @@
   materialAuditRange.addEventListener("change", updateMaterialAuditDates);
   materialAuditPanel.addEventListener("toggle", () => { if (materialAuditPanel.open) loadMaterialAudit(); else clearTimeout(materialAuditTimer); });
   materialAuditGroups.addEventListener("toggle", (event) => { const details = event.target.closest("[data-audit-group]"); if (details) populateMaterialAuditGroup(details); }, true);
-  materialAuditGroups.addEventListener("click", (event) => { const button = event.target.closest("[data-audit-open]"); if (!button) return; const code = button.dataset.auditOpen; form.elements.code.value = code; currentCode = code; load(code); result.scrollIntoView({ block: "start", behavior: "smooth" }); });
+  materialAuditGroups.addEventListener("click", (event) => {
+    const stock = event.target.closest("[data-audit-stock]");
+    if (stock) { event.preventDefault(); openInventoryByCode(stock.dataset.auditStock); return; }
+    const alternative = event.target.closest("[data-audit-alt-open]"),
+      button = alternative || event.target.closest("[data-audit-open]");
+    if (!button) return;
+    const code = alternative ? alternative.dataset.auditAltOpen : button.dataset.auditOpen;
+    form.elements.code.value = code; currentCode = code; load(code); result.scrollIntoView({ block: "start", behavior: "smooth" });
+  });
   section.querySelector("[data-audit-show]").addEventListener("click", () => loadMaterialAudit());
   section.querySelector("[data-audit-reset]").addEventListener("click", () => { materialAuditCalendar?.reset(); materialAuditRange.elements.from.value = ""; materialAuditRange.elements.to.value = ""; materialAuditQuery.value = ""; updateMaterialAuditDates(); loadMaterialAudit(); });
   materialAuditQuery.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); loadMaterialAudit(); } });
@@ -821,25 +875,7 @@
     }
     const inventoryLink = event.target.closest("[data-formula-inventory]");
     if (inventoryLink) {
-      const code = inventoryLink.dataset.formulaInventory;
-      formulaScrollY = window.scrollY;
-      backButton.dataset.mode = "inventory";
-      document
-        .querySelector('.departmentnav [data-workspace="inventory"]')
-        ?.click();
-      setTimeout(() => {
-        const inventoryForm = document.getElementById("form"),
-          codeInput = inventoryForm?.elements?.code,
-          lotInput = inventoryForm?.elements?.lot;
-        if (!inventoryForm || !codeInput) return;
-        codeInput.value = code;
-        if (lotInput) lotInput.value = "";
-        codeInput.dispatchEvent(new Event("input", { bubbles: true }));
-        codeInput.value = code;
-        inventoryForm.requestSubmit();
-        updateBackButton();
-        window.scrollTo({ top: 0, behavior: "instant" });
-      }, 80);
+      openInventoryByCode(inventoryLink.dataset.formulaInventory);
       return;
     }
     const expandButton = event.target.closest("[data-formula-expand]");
