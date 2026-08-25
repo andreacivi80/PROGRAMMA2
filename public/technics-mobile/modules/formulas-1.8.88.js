@@ -51,8 +51,20 @@
   @media(max-width:360px){.formulacolheads,.formulanodeopen{grid-template-columns:64px minmax(0,1fr) 58px!important}.formulanodehead{grid-template-columns:94px minmax(0,1fr)!important}.formulacosts{gap:7px;padding-right:6px;font-size:7px}.formulacosts b{font-size:8px}.formulainventorylink{font-size:7px!important}}
   `;
   document.head.append(costLayoutStyle);
+  const detailCostStyle = document.createElement("style");
+  detailCostStyle.id = "formulas-detail-cost-v1915";
+  detailCostStyle.textContent = `
+  .formulanodeopen.formulaparentmain{grid-template-columns:74px minmax(0,1fr)!important;grid-template-rows:auto auto!important;align-items:start!important;padding-bottom:4px!important}
+  .formulanodeopen.formulaparentmain>b{grid-column:1!important;grid-row:1!important}.formulanodeopen.formulaparentmain>strong{grid-column:2!important;grid-row:1!important;white-space:normal!important;overflow-wrap:break-word!important}
+  .formulanodeopen.formulaparentmain>.formulapct{grid-column:1/-1!important;grid-row:2!important;justify-self:start!important;max-width:100%!important;margin-top:3px;padding:2px 5px;border-radius:5px;background:#e8f5ef;color:#15564f!important;font-size:7px!important;line-height:1.15!important;text-align:left!important;white-space:nowrap!important}
+  .formulanodedetail{grid-template-rows:auto auto auto minmax(0,1fr)!important}
+  .formuladetailcost{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 7px;align-items:center;padding:5px 7px;border:1px solid #b9d8d2;border-radius:8px;background:#e8f5ef;color:#15564f}.formuladetailcost.hidden{display:none!important}.formuladetailcost>span{font-size:6.3px;font-weight:950;line-height:1.15}.formuladetailcost>b{font-size:10px;line-height:1.1;white-space:nowrap}.formuladetailcost>small{grid-column:1/-1;color:#397166;font-size:6px;font-weight:900;line-height:1.15;text-align:right}
+  .formulaunit{height:100%!important;min-height:0!important;overflow-x:hidden!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;overscroll-behavior:contain!important;touch-action:pan-y!important}
+  body.formula-detail-open{position:fixed!important;left:0!important;right:0!important;width:100%!important;overflow:hidden!important;overscroll-behavior:none!important}
+  `;
+  document.head.append(detailCostStyle);
   const finishedBomStyle = document.createElement("style");
-  finishedBomStyle.id = "formulas-finished-bom-v1914";
+  finishedBomStyle.id = "formulas-finished-bom-v1915";
   finishedBomStyle.textContent = `
   .formularoot>header{overflow:visible!important}.formularoottitle,.formularoottitle span{width:100%;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;overflow-wrap:break-word!important}.formularoottitle b{font-size:14px!important}.formularoottitle span{font-size:9px!important;line-height:1.25!important}.formularootactions{display:grid!important;grid-template-columns:minmax(0,1fr) auto auto auto!important;align-items:center!important;width:100%!important}.formularootactions .formulametacost{grid-column:1/-1!important;width:100%!important;box-sizing:border-box!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:2px!important;justify-content:stretch!important;padding:5px 7px!important;text-align:center!important}.formularootactions .formulametacost>span{grid-column:1!important;font-size:6.5px!important;line-height:1.15!important;text-align:center!important;white-space:normal!important}.formularootactions .formulametacost>b{grid-column:1!important;font-size:11px!important;line-height:1.15!important;text-align:center!important}.formularootactions .formulametacost>small{grid-column:1!important;width:100%!important;text-align:center!important;white-space:normal!important}.formularootactions>small{min-width:0!important;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;line-height:1.2!important}.formularootopen{white-space:nowrap!important}
   .formulacolheads{display:grid!important;grid-template-columns:74px minmax(0,1fr)!important;gap:6px!important;padding:5px 8px!important}.formulacolheads span:last-child{text-align:left!important}.formulabomitem .formulanodehead{display:grid!important;grid-template-columns:minmax(0,1fr)!important;padding:0!important}.formulabommain{display:grid!important;grid-template-columns:74px minmax(0,1fr)!important;gap:6px!important;width:100%!important;padding:7px 8px 5px!important}.formulabommain>b{grid-column:1!important;grid-row:1!important;font-size:10px!important;white-space:nowrap!important}.formulabommain>strong{grid-column:2!important;grid-row:1!important;font-size:8.5px!important;line-height:1.2!important;white-space:normal!important;overflow-wrap:break-word!important}.formulabommetrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;border-top:1px solid #e5eeeb;border-bottom:1px solid #e5eeeb;background:#f5faf8}.formulabommetrics>span{display:grid;gap:2px;min-width:0;padding:5px 4px;color:#61746e;font-size:6px;font-weight:900;text-align:center;text-transform:uppercase}.formulabommetrics>span+span{border-left:1px solid #dce9e5}.formulabommetrics b{color:#174f46;font-size:9px;line-height:1.15;white-space:nowrap}.formulabomitem .formulainventorylink{grid-column:1!important;grid-row:auto!important;width:100%!important;min-height:24px!important;padding:4px 8px!important;font-size:7.5px!important;overflow:visible!important;text-overflow:clip!important}
@@ -70,7 +82,7 @@
   `;
   document.head.append(rawMaterialStyle);
   const integrityStyle = document.createElement("style");
-  integrityStyle.id = "formulas-integrity-v1914";
+  integrityStyle.id = "formulas-integrity-v1915";
   integrityStyle.textContent = `
   body.formula-detail-open{overflow:hidden!important;overscroll-behavior:none!important}
   .formulanodedetail{overscroll-behavior:contain;touch-action:pan-y}
@@ -164,14 +176,29 @@
     activeBridge = "",
     documentObjectUrl = "",
     lastExpandedButton = null,
-    formulaScrollY = 0;
+    formulaScrollY = 0,
+    detailBodyScrollY = 0;
   const detailHistory = new WeakMap();
   const documentChecklistTokens = new WeakMap();
   const documentCategoryMaps = new WeakMap();
   const documentTopicMaps = new WeakMap();
+  const setDetailScrollLock = (locked) => {
+    const alreadyLocked = document.body.classList.contains("formula-detail-open");
+    if (locked && !alreadyLocked) {
+      detailBodyScrollY = Math.max(0, window.scrollY || 0);
+      document.body.style.top = `-${detailBodyScrollY}px`;
+      document.body.classList.add("formula-detail-open");
+      return;
+    }
+    if (!locked && alreadyLocked) {
+      const restoreY = detailBodyScrollY;
+      document.body.classList.remove("formula-detail-open");
+      document.body.style.removeProperty("top");
+      requestAnimationFrame(() => window.scrollTo({ top: restoreY, left: 0, behavior: "instant" }));
+    }
+  };
   const syncDetailScrollLock = () =>
-    document.body.classList.toggle(
-      "formula-detail-open",
+    setDetailScrollLock(
       Boolean(result?.querySelector(".formulanodedetail:not(.hidden)")),
     );
   const resetFormulaSession = () => {
@@ -189,7 +216,7 @@
     status.textContent = "Inserisci il codice della formula.";
     viewer.classList.add("hidden");
     viewer.querySelector(".formuladocumentpages").innerHTML = "";
-    document.body.classList.remove("formula-detail-open");
+    setDetailScrollLock(false);
     backButton.dataset.mode = "formula";
     backButton.classList.add("hidden");
     try {
@@ -295,7 +322,7 @@
       : relation === "parent" && Number(node.formulaCost) > 0
         ? `<span class="formulacosts"><span>Costo finito <b>${euro(node.formulaCost)}/${esc(node.unit || "Pz")}</b></span><span>Bulk ${euro(node.formulaBulkCost)} · Packaging ${euro(node.formulaPackagingCost)}</span></span>`
         : "";
-    return `<article class="formulanode" data-formula-id="${node.id}"><div class="formulanodehead"><button type="button" class="formulanodeopen" data-formula-expand="${node.id}" aria-expanded="false"><b>${esc(node.code)}</b><strong>${esc(node.description)}</strong>${relation === "component" ? `<span class="formulapct">${measure}</span>` : `<span class="formulapct">${esc(node.type || "Apri")}</span>`}</button><button type="button" class="formulainventorylink" data-formula-inventory="${esc(node.code)}">Giacenza ${num2(node.totalStock)} ${esc(node.unit || "")}</button>${costBlock}</div><div class="formulanodedetail hidden"></div></article>`;
+    return `<article class="formulanode" data-formula-id="${node.id}"><div class="formulanodehead"><button type="button" class="formulanodeopen${relation === "parent" ? " formulaparentmain" : ""}" data-formula-expand="${node.id}" aria-expanded="false"><b>${esc(node.code)}</b><strong>${esc(node.description)}</strong>${relation === "component" ? `<span class="formulapct">${measure}</span>` : `<span class="formulapct">${esc(node.type || "Apri")}</span>`}</button><button type="button" class="formulainventorylink" data-formula-inventory="${esc(node.code)}">Giacenza ${num2(node.totalStock)} ${esc(node.unit || "")}</button>${costBlock}</div><div class="formulanodedetail hidden"></div></article>`;
   };
   const sectionBlock = (title, items, relation) => {
     const ordered = relation === "component"
@@ -408,6 +435,15 @@
     const alternativeRows = alternatives.map((item) => `<button type="button" class="formulaalternative${Number(item.unitCost) > 0 && Number(data.article.unitCost) > 0 && Number(item.unitCost) < Number(data.article.unitCost) ? " cheaper" : ""}" data-formula-related-id="${Number(item.id) || 0}"><b>${esc(item.code)}</b><span>${esc(item.description)}</span><strong>${euro(item.unitCost)}/${esc(item.unit || "UM non indicata")}</strong><small>Giacenza ${num2(item.totalStock)} ${esc(item.unit || "UM non indicata")}${item.relation ? ` · ${esc(item.relation)}` : ""}</small><em>${Number(data.article.unitCost) > 0 ? `${Number(item.unitCost) - Number(data.article.unitCost) >= 0 ? "+" : ""}${euro(Number(item.unitCost) - Number(data.article.unitCost))}` : ""}</em></button>`).join("");
     return `<header class="formuladetailhead">${canGoBack ? '<button type="button" class="formuladetailback" data-formula-related-back aria-label="Torna alla distinta precedente">←</button>' : ""}<b>${esc(data.article.code)}</b><span>${esc(data.article.description)}</span><button type="button" class="formuladetailclose" data-formula-close-detail aria-label="Chiudi scheda">×</button></header><div class="formuladetailnav"><button class="${active("docs")}" type="button" data-formula-jump="docs">Documenti ${docs.length}</button><button class="${active("inci")}" type="button" data-formula-jump="inci">INCI ${inci.length}</button><button class="${active("stock")}" type="button" data-formula-jump="stock">Giacenze ${stock.length}</button><button type="button" data-formula-jump="alternative">Alternativi ${alternatives.length}</button><button type="button" data-formula-jump="tree">${treeLabel} ${children.length || parents.length}</button></div><section class="formulaunit ${hidden("docs")}" data-formula-part="docs"><h4>DOCUMENTI · CHECKLIST E REVISIONI</h4><div class="formuladoccheck"><div class="formuladocprogress"><span>Analisi contenuto reale</span><b>AVVIO…</b></div></div><div class="formuladoclist">${docs.length ? docs.map((d) => documentButton(d, data.article.id)).join("") : '<div class="formulaempty">Nessun file apribile collegato.</div>'}</div></section><section class="formulaunit ${hidden("inci")}" data-formula-part="inci"><h4>COMPOSIZIONE INCI</h4><div>${inci.length ? inci.map((i) => `<article class="formulainci"><b>${esc(i.name || "INCI")}</b><span>${i.cas ? `<span class="formulacas">CAS ${esc(i.cas)}</span>` : ""}${i.function ? esc(i.function) : ""}</span><small>${i.composition == null ? "" : `${pct(i.composition)}%`}</small></article>`).join("") : '<div class="formulaempty">Nessun INCI collegato.</div>'}</div></section><section class="formulaunit ${hidden("stock")}" data-formula-part="stock"><h4 class="formulastockheading"><span>GIACENZE POSITIVE · LOTTI · UBICAZIONI</span><strong>TOTALE ${num2(stockTotal)} ${esc(data.article.unit)}</strong></h4><div>${stock.length ? stock.map((s) => `<article class="formulastock"><b class="formulastocklot">LOTTO ${esc(s.lot || "—")}</b><strong class="formulastockqty">${num2(s.quantity)} ${esc(data.article.unit)}</strong><span class="formulastockplace">UBICAZIONE ${esc(s.location || "NON INDICATA")}</span><span class="formulastockwarehouse">${esc(s.warehouse || "")}</span></article>`).join("") : '<div class="formulaempty">Nessuna giacenza positiva.</div>'}</div></section><section class="formulaunit hidden" data-formula-part="alternative"><h4>ALTERNATIVI TECHNICS · PREZZO E GIACENZA</h4><div>${alternativeRows || '<div class="formulaempty">Nessun alternativo collegato.</div>'}</div></section><section class="formulaunit hidden" data-formula-part="tree"><h4>${children.length ? (isPackaged ? "DISTINTA BASE DEL CONFEZIONATO · QUANTITÀ E COSTI" : "DISTINTA BASE · COMPOSIZIONE E PERCENTUALI") : "PASSAGGI SUCCESSIVI"}</h4><div class="formulatreefilterrow"><input class="formulatreefilter" type="search" placeholder="Cerca per codice o descrizione" aria-label="Cerca per codice o descrizione"></div><div data-formula-tree-list>${children.map((x) => isPackaged ? renderBomRelated(x) : renderRelated(x, `${pct(x.percentage)}%`)).join("")}${parents.length ? (children.length ? `<details class="formularelations"><summary>PASSAGGI SUCCESSIVI · ${parents.length}</summary>${parents.map((x) => renderRelated(x)).join("")}</details>` : parents.map((x) => renderRelated(x)).join("")) : ""}${!children.length && !parents.length ? '<div class="formulaempty">Nessun ulteriore collegamento.</div>' : ""}</div></section>`;
   };
+  const injectDetailCostSummary = (detail, data) => {
+    if (!detail || detail.querySelector(".formuladetailcost")) return;
+    const total = Number(data?.formulaCost || 0);
+    if (!(total > 0)) return;
+    const summary = document.createElement("div");
+    summary.className = "formuladetailcost";
+    summary.innerHTML = `<span>COSTO PRODOTTO FINITO</span><b>${euro(total)}/${esc(data.article?.unit || "Pz")}</b><small>Formula ${euro(data.formulaBulkCost)} · Packaging ${euro(data.formulaPackagingCost)}</small>`;
+    detail.querySelector(".formuladetailhead")?.insertAdjacentElement("afterend", summary);
+  };
   const showDefaultDetailPart = (detail, data) => {
     if (!detail || !Array.isArray(data?.components) || !data.components.length)
       return;
@@ -452,6 +488,7 @@
     try {
       const payload = await api(`/api/formulas/item?id=${id}`);
       detail.innerHTML = renderDetail(payload.result);
+      injectDetailCostSummary(detail, payload.result);
       showDefaultDetailPart(detail, payload.result);
       detailHistory.set(detail, []);
       detail.classList.remove("hidden");
@@ -1001,6 +1038,7 @@
         const payload = await api(`/api/formulas/item?id=${id}`);
         detailHistory.set(detail, history);
         detail.innerHTML = renderDetail(payload.result, true);
+        injectDetailCostSummary(detail, payload.result);
         showDefaultDetailPart(detail, payload.result);
         loadDocumentChecklist(detail, payload.result.article.id);
       } catch (error) {
