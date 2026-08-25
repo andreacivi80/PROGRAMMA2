@@ -61,7 +61,7 @@
   `;
   document.head.append(rawMaterialStyle);
   const integrityStyle = document.createElement("style");
-  integrityStyle.id = "formulas-integrity-v1896";
+  integrityStyle.id = "formulas-integrity-v1897";
   integrityStyle.textContent = `
   body.formula-detail-open{overflow:hidden!important;overscroll-behavior:none!important}
   .formulanodedetail{overscroll-behavior:contain;touch-action:pan-y}
@@ -770,7 +770,7 @@
     const alternativesHtml = alternatives.length
       ? `<details class="formulaauditalts"><summary>${alternatives.length} alternativ${alternatives.length === 1 ? "o" : "i"} collegat${alternatives.length === 1 ? "o" : "i"} · apri</summary>${alternatives.map((alternative) => `<button type="button" class="formulaauditalt" data-audit-alt-open="${esc(alternative.code)}"><b>${esc(alternative.code)}</b><span>${esc(alternative.description)}</span><small>${euro(alternative.unitCost)}/${esc(alternative.unit || "UM")} · giac. ${num2(alternative.totalStock)}</small></button>`).join("")}</details>`
       : "";
-    return `<article class="formulaauditrow ${kind === "old" ? "old" : kind === "move" ? "move" : "warn"}"><button type="button" class="formulaauditmain" data-audit-open="${esc(row.code)}"><b>${esc(row.code)}</b><strong>${esc(row.description)}</strong><em>${esc(statusLabel)}</em><small class="formulaauditfacts">${facts}</small></button><button type="button" class="formulaauditstock" data-audit-stock="${esc(row.code)}">Giacenza complessiva ${num2(familyStock)} ${esc(row.unit || "UM")}</button>${formulasHtml}${movementsHtml}${alternativesHtml}</article>`;
+    return `<article class="formulaauditrow ${kind === "old" ? "old" : kind === "move" ? "move" : "warn"}"><button type="button" class="formulaauditmain" data-audit-open="${esc(row.code)}"><b>${esc(row.code)}</b><strong>${esc(row.description)}</strong><em${formulaUses.length ? ' data-audit-show-formulas="1"' : ""}>${esc(statusLabel)}</em><small class="formulaauditfacts">${facts}</small></button><button type="button" class="formulaauditstock" data-audit-stock="${esc(row.code)}">Giacenza complessiva ${num2(familyStock)} ${esc(row.unit || "UM")}</button>${formulasHtml}${movementsHtml}${alternativesHtml}</article>`;
   };
   const materialAuditDefinitions = [
     ["neverPurchasedNeverFormula", "Mai acquistate e mai movimentate · mai in formula", "never"],
@@ -834,6 +834,14 @@
   materialAuditGroups.addEventListener("click", (event) => {
     const summary = event.target.closest("[data-audit-group] > summary");
     if (summary) { setTimeout(() => populateMaterialAuditGroup(summary.parentElement), 0); return; }
+    const formulaStatus = event.target.closest("[data-audit-show-formulas]");
+    if (formulaStatus) {
+      event.preventDefault();
+      event.stopPropagation();
+      const formulas = formulaStatus.closest(".formulaauditrow")?.querySelector(".formulaauditalts");
+      if (formulas) { formulas.open = true; formulas.scrollIntoView({ block: "nearest", behavior: "smooth" }); }
+      return;
+    }
     const stock = event.target.closest("[data-audit-stock]");
     if (stock) { event.preventDefault(); openInventoryByCode(stock.dataset.auditStock); return; }
     const formulaUse = event.target.closest("[data-audit-formula-open]"),
