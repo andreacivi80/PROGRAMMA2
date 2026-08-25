@@ -61,7 +61,7 @@
   `;
   document.head.append(rawMaterialStyle);
   const integrityStyle = document.createElement("style");
-  integrityStyle.id = "formulas-integrity-v1899";
+  integrityStyle.id = "formulas-integrity-v1910";
   integrityStyle.textContent = `
   body.formula-detail-open{overflow:hidden!important;overscroll-behavior:none!important}
   .formulanodedetail{overscroll-behavior:contain;touch-action:pan-y}
