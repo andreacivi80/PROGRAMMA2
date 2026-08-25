@@ -62,7 +62,7 @@
     if(window.TechnicsLiveSync)TechnicsLiveSync.create({interval:20000,maxDelay:60000,immediate:true,active:()=>navigator.onLine,task:check}).start();
     else{check();setInterval(check,20000)}
     document.addEventListener("technics:data-success",event=>{const path=(()=>{try{return new URL(String(event.detail?.url||""),location.href).pathname}catch{return ""}})(),key=path.startsWith("/api/items/")||path.startsWith("/api/barcodes/")?"inventory":path.startsWith("/api/planning/")||path.startsWith("/api/sales/")?"planning":path.startsWith("/api/packing/")?"packing":path.startsWith("/api/picking/")?"picking":"";if(key)applyFunctionResult(key,{ok:true,level:"ok",source:"uso reale verificato"})});
-    setTimeout(checkFunctions,20000+Math.round(Math.random()*2500));setInterval(checkFunctions,300000);setInterval(paintFunctionLights,5000);
+    setTimeout(loadNodes,3500);setInterval(loadNodes,30000);setTimeout(checkFunctions,20000+Math.round(Math.random()*2500));setInterval(checkFunctions,300000);setInterval(paintFunctionLights,5000);
   };
   window.TechnicsSystemHealth=Object.freeze({check,diagnostics:()=>Object.freeze({...state,clientRoutes:clientRoutes()}),version:"1.8.98"});
   document.documentElement.dataset.systemHealth="1.8.98";
