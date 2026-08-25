@@ -50,7 +50,8 @@
   .formuladetailhead span{display:-webkit-box;overflow:hidden;text-overflow:clip;white-space:normal;word-break:normal;overflow-wrap:break-word;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;line-height:1.18}
   .formulaparentdesc,.formulanodeopen strong,.formularoottitle span{white-space:normal;word-break:normal;overflow-wrap:break-word;hyphens:none}
   .formuladoccheck{display:grid;gap:4px;padding:5px!important;background:#f6faf8}.formuladocprogress{display:flex;align-items:center;justify-content:space-between;gap:6px;color:#58716a;font-size:6.5px;font-weight:900}.formuladocprogress b{color:#15564f;font-size:7px}.formuladocbadges{display:flex!important;flex-wrap:wrap;gap:3px!important;padding:0!important}.formuladocbadge{padding:3px 5px;border:1px solid #d2dfdb;border-radius:99px;background:#fff;color:#778883;font-size:6px;font-weight:900;white-space:nowrap}.formuladocbadge.present{border-color:#a9d4c4;background:#e5f5ee;color:#17634f;cursor:pointer}.formuladocbadge.present:focus{outline:1px solid #17634f;outline-offset:1px}.formuladocsearch{display:block;width:100%;height:17px;margin-top:8px;padding:0 8px;border:1px solid #bad3cd;border-radius:7px;color:#173e35;font-size:6.3px;font-weight:850}.formuladocsectiontitle{margin:5px 4px 1px;color:#315f55;font-size:6px;font-weight:950;letter-spacing:.35px;text-transform:uppercase}.formuladocsectiontitle.obsolete{margin-top:7px;padding-top:5px;border-top:1px solid #dce8e4;color:#71817c}.formuladoclist{display:grid;gap:2px!important;padding:4px!important}.formuladoc.current{border-left:3px solid #42a879}.formuladoc.previous{border-left:3px solid #bdc9c5;opacity:.82}.formuladoc.current,.formuladoc.previous{grid-template-columns:52px minmax(0,1fr) 34px;align-items:start}.formuladoc.current>button,.formuladoc.previous>button{align-self:center;width:34px;min-width:34px;height:24px;min-height:24px;padding:0}.formuladocmeta{display:block!important;color:#71847d!important;font-size:5.8px!important}.formuladocstate{display:inline-block;margin-left:4px;padding:2px 4px;border-radius:5px;background:#e5f5ee;color:#17634f;font-size:5.5px;font-weight:950}.formuladocstate.previous{background:#eef1f0;color:#70807b}.formuladocobsolete{margin:0 0 4px}.formuladocprevious{margin:0}
-  .formuladoccategorychoices{display:grid;gap:2px;padding:4px;border:1px solid #b9d8d2;border-radius:7px;background:#fff}.formuladoccategorychoices.hidden{display:none}.formuladoccategoryhead{display:flex;align-items:center;justify-content:space-between;gap:5px;color:#15564f;font-size:6.2px;font-weight:950}.formuladoccategoryhead button{display:grid;width:17px;height:17px;min-width:17px;padding:0;place-items:center;border:1px solid #b9d8d2;border-radius:50%;background:#fff;color:#15564f;font-size:9px}.formuladoccategorylist{display:grid;gap:2px}.formuladoccategorychoice{display:grid;grid-template-columns:48px minmax(0,1fr);gap:5px;align-items:center;width:100%;min-height:23px;padding:3px 5px;border:0;border-left:3px solid #42a879;border-radius:5px;background:#f6faf8;color:#314c45;text-align:left}.formuladoccategorychoice.previous{border-left-color:#bdc9c5;opacity:.8}.formuladoccategorychoice b{font-size:5.8px;white-space:nowrap}.formuladoccategorychoice span{min-width:0;font-size:6.2px;line-height:1.2;white-space:normal;overflow-wrap:break-word}.formuladoccategorychoice small{color:#71847d;font-size:5.3px;font-weight:900}
+  .formuladoccategorychoices{display:grid;gap:3px;padding:4px;border:1px solid #b9d8d2;border-radius:7px;background:#fff}.formuladoccategorychoices.hidden{display:none}.formuladoccategoryhead{display:flex;align-items:center;justify-content:space-between;gap:7px;min-height:27px;color:#15564f;font-size:6.2px;font-weight:950}.formuladoccategoryhead .formuladetailclose{margin:0!important}.formuladoccategorylist{display:grid;gap:3px}.formuladoccategorychoice{display:grid;grid-template-columns:58px minmax(0,1fr);gap:7px;align-items:center;width:100%;min-height:29px;padding:4px 6px;border:0;border-left:3px solid #42a879;border-radius:5px;background:#f6faf8;color:#314c45;text-align:left}.formuladoccategorychoice.previous{border-left-color:#bdc9c5;opacity:.8}.formuladoccategorychoice b{display:grid;gap:2px;align-content:center;font-size:5.8px;line-height:1.1;white-space:nowrap}.formuladoccategorychoice span{min-width:0;font-size:6.2px;line-height:1.25;white-space:normal;overflow-wrap:break-word}.formuladoccategorychoice small{display:block;color:#71847d;font-size:5.3px;font-weight:900;line-height:1.1}
+  .formuladocsubcategorytitle{margin:2px 1px;color:#58716a;font-size:5.8px;font-weight:950;text-transform:uppercase}
   @media(max-width:430px){
     .formulainci{grid-template-columns:minmax(84px,.92fr) minmax(0,1.08fr) auto}
     .formuladoc{grid-template-columns:52px minmax(0,1fr) 34px}
@@ -96,7 +97,7 @@
     window.TECHNICS_BRIDGES || [
       location.hostname === "127.0.0.1"
         ? "http://127.0.0.1:8792"
-        : "https://pittsburgh-heart-starsmerchant-portal.trycloudflare.com",
+        : "https://paintball-california-des-configure.trycloudflare.com",
     ];
   let currentCode = "",
     currentData = null,
@@ -109,6 +110,7 @@
   const detailHistory = new WeakMap();
   const documentChecklistTokens = new WeakMap();
   const documentCategoryMaps = new WeakMap();
+  const documentTopicMaps = new WeakMap();
   const syncDetailScrollLock = () =>
     document.body.classList.toggle(
       "formula-detail-open",
@@ -234,6 +236,9 @@
   };
   const documentActionAttributes = (document, articleId) =>
     `data-formula-document="${esc(document.key)}" data-article="${articleId}" data-attachment="${document.attachmentId || 0}" data-source="${esc(document.source)}" data-name="${esc(document.name)}"`;
+  const categoryDocumentRows = (documents, articleId) => documents.map((item) =>
+    `<button type="button" data-formula-category-choice class="formuladoccategorychoice${item.revisionState === "previous" ? " previous" : ""}" ${documentActionAttributes(item, articleId)}><b><span>${esc(displayDate(item.date))}</span><small>${item.revisionState === "previous" ? "PRECEDENTE" : "CORRENTE"}</small></b><span>${esc(item.name)}</span></button>`
+  ).join("");
   const renderDocumentChecklist = (section, payload, articleId) => {
     if (!section) return;
     const documents = Array.isArray(payload?.documents) ? payload.documents : [],
@@ -254,10 +259,13 @@
   const loadDocumentChecklist = async (detail, articleId) => {
     const token = (documentChecklistTokens.get(detail) || 0) + 1;
     documentChecklistTokens.set(detail, token);
+    const initialCheck = detail.querySelector('[data-formula-part="docs"] .formuladoccheck');
+    if (initialCheck && !initialCheck.querySelector('.formuladocbadges'))
+      initialCheck.insertAdjacentHTML('beforeend', `<div class="formuladocbadges">${checklistLabels.map((label) => `<span class="formuladocbadge">${esc(label)}</span>`).join('')}</div>`);
     let remaining = 1;
     while (remaining > 0 && detail.isConnected && !detail.classList.contains("hidden") && documentChecklistTokens.get(detail) === token) {
       try {
-        const payload = await api(`/api/formulas/document-checklist?articleId=${articleId}&limit=6&fresh=${Date.now()}`, true);
+        const payload = await api(`/api/formulas/document-checklist?articleId=${articleId}&limit=2&fresh=${Date.now()}`, true);
         if (documentChecklistTokens.get(detail) !== token) return;
         renderDocumentChecklist(detail.querySelector('[data-formula-part="docs"]'), payload.result, articleId);
         remaining = Number(payload.result?.remaining || 0);
@@ -603,6 +611,18 @@
       categoryClose.closest("[data-formula-category-choices]")?.classList.add("hidden");
       return;
     }
+    const topic = event.target.closest("[data-formula-topic]");
+    if (topic) {
+      const docsSection = topic.closest('[data-formula-part="docs"]'),
+        picker = topic.closest("[data-formula-category-choices]"),
+        target = picker?.querySelector("[data-formula-topic-results]"),
+        label = topic.dataset.formulaTopic,
+        matches = documentTopicMaps.get(docsSection)?.get(label) || [];
+      if (!target || !matches.length) return;
+      target.innerHTML = `<div class="formuladocsubcategorytitle">${esc(label)} · ${matches.length} DOCUMENTI</div><div class="formuladoccategorylist">${categoryDocumentRows(matches, topic.dataset.article)}</div>`;
+      target.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      return;
+    }
     const category = event.target.closest("[data-formula-category]");
     if (category) {
       const docsSection = category.closest('[data-formula-part="docs"]'),
@@ -610,7 +630,19 @@
         label = category.dataset.formulaCategory,
         matches = documentCategoryMaps.get(docsSection)?.get(label) || [];
       if (!picker || !matches.length) return;
-      picker.innerHTML = `<div class="formuladoccategoryhead"><strong>${esc(label)} · ${matches.length} DOCUMENTI</strong><button type="button" data-formula-category-close aria-label="Chiudi elenco documenti">×</button></div><div class="formuladoccategorylist">${matches.map((item) => `<button type="button" data-formula-category-choice class="formuladoccategorychoice${item.revisionState === "previous" ? " previous" : ""}" ${documentActionAttributes(item, category.dataset.article)}><b>${esc(displayDate(item.date))}<small>${item.revisionState === "previous" ? "PRECEDENTE" : "CORRENTE"}</small></b><span>${esc(item.name)}</span></button>`).join("")}</div>`;
+      const topics = new Map();
+      matches.forEach((item) => (item.analysis?.topics || []).forEach((entry) => {
+        const rows = topics.get(entry.label) || [];
+        if (!rows.includes(item)) rows.push(item);
+        topics.set(entry.label, rows);
+      }));
+      const classified = new Set([...topics.values()].flat()),
+        unclassified = matches.filter((item) => !classified.has(item));
+      if (unclassified.length) topics.set("Altri contenuti verificati", unclassified);
+      if (!topics.size) topics.set("Documenti verificati", matches);
+      documentTopicMaps.set(docsSection, topics);
+      const topicBadges = [...topics.entries()].map(([topicLabel, rows]) => `<span role="button" tabindex="0" class="formuladocbadge present" ${rows.length === 1 ? documentActionAttributes(rows[0], category.dataset.article) : `data-formula-topic="${esc(topicLabel)}" data-article="${category.dataset.article}"`} aria-label="${rows.length === 1 ? "Apri" : "Mostra"} ${esc(topicLabel)}">✓ ${esc(topicLabel)}${rows.length > 1 ? ` · ${rows.length}` : ""}</span>`).join("");
+      picker.innerHTML = `<div class="formuladoccategoryhead"><strong>${esc(label)} · CONTENUTI VERIFICATI</strong><button type="button" class="formuladetailclose" data-formula-category-close aria-label="Chiudi elenco documenti">×</button></div><div class="formuladocsubcategorytitle">Seleziona l'argomento</div><div class="formuladocbadges">${topicBadges}</div><div data-formula-topic-results></div>`;
       picker.classList.remove("hidden");
       picker.scrollIntoView({ block: "nearest", behavior: "smooth" });
       return;

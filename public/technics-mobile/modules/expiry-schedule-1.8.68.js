@@ -1,7 +1,7 @@
 (()=>{
  const form=document.getElementById('form'),shell=document.querySelector('main.shell');if(!form||!shell)return;
  form.addEventListener('submit',()=>{const input=document.getElementById('code'),value=input?.value.trim()||'';if(input&&/^[\d\s]+$/.test(value))input.value=value.replace(/\s+/g,'')},true);
- const bridge=()=>String((window.TECHNICS_BRIDGES||['https://pittsburgh-heart-starsmerchant-portal.trycloudflare.com'])[0]);
+ const bridge=()=>String((window.TECHNICS_BRIDGES||['https://paintball-california-des-configure.trycloudflare.com'])[0]);
  const section=document.createElement('section');section.id='expirySchedule';section.className='expirytool';section.innerHTML=`
  <button class="expiryopen" type="button" aria-expanded="false"><span><b>Scadenziario</b><small>Giacenze con scadenza · dati live Technics</small></span><i>›</i></button>
  <div class="expirybody hidden">
