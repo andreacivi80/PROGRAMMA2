@@ -106,6 +106,8 @@
   section.innerHTML = `<div class="formulahead"><header><h2>Formule</h2><small>DISTINTE · DOCUMENTI · GIACENZE</small></header><form id="formulaSearch" class="formulasearch"><input name="code" autocomplete="off" spellcheck="false" placeholder="Codice o descrizione formula / RS" aria-label="Codice o descrizione formula o ricerca e sviluppo"><button>Cerca</button></form><div class="formulasuggestions hidden" data-formula-suggestions></div><div id="formulaStatus" class="formulastatus">Inserisci il codice o parte della descrizione.</div></div><div id="formulaResult" class="formularesult"></div><details class="formulaalternativelog"><summary>Nuovi alternativi materie prime <b>ULTIMI 3 MESI</b></summary><div class="formulaaltfilters"><input type="date" data-alt-from aria-label="Data iniziale alternativi"><input type="date" data-alt-to aria-label="Data finale alternativi"><input type="search" data-alt-query placeholder="Cerca codice o descrizione" aria-label="Cerca alternativo per codice o descrizione"><button type="button" data-alt-show>Mostra periodo</button><button type="button" class="secondary" data-alt-reset>Ultimi 3 mesi</button><div class="formulaaltstatus" data-alt-status>Apri per verificare i nuovi alternativi.</div></div><div class="formulaaltrows" data-alt-rows></div></details>`;
   nav.insertAdjacentElement("afterend", section);
   section.querySelector("#formulaSearch input").placeholder = "Codice o descrizione";
+  const alternativePanel = section.querySelector(".formulaalternativelog");
+  alternativePanel.innerHTML = `<summary>Nuovi alternativi materie prime <b>ULTIMI 3 MESI</b></summary><form id="formulaAlternativeRange" class="schedulerange formulaaltfilters"><label>Dal <input name="from" type="date" lang="it-IT" data-alt-from required><output data-alt-date="from">gg/mm/aaaa</output></label><label>Al <input name="to" type="date" lang="it-IT" data-alt-to required><output data-alt-date="to">gg/mm/aaaa</output></label><input type="search" data-alt-query placeholder="Cerca codice o descrizione" aria-label="Cerca alternativo per codice o descrizione"><button type="button" data-alt-show>Mostra periodo</button><button type="button" class="secondary" data-alt-reset>Ultimi 3 mesi</button><div class="formulaaltstatus" data-alt-status>Apri per verificare i nuovi alternativi.</div></form><div class="formulaaltrows" data-alt-rows></div>`;
   const viewer = document.createElement("div");
   viewer.className = "formulaviewer hidden";
   viewer.innerHTML =
@@ -496,12 +498,19 @@
     load(code);
   });
   const alternativeLog = section.querySelector(".formulaalternativelog"),
+    alternativeRange = section.querySelector("#formulaAlternativeRange"),
     alternativeFrom = section.querySelector("[data-alt-from]"),
     alternativeTo = section.querySelector("[data-alt-to]"),
     alternativeQuery = section.querySelector("[data-alt-query]"),
     alternativeStatus = section.querySelector("[data-alt-status]"),
     alternativeRows = section.querySelector("[data-alt-rows]");
   let alternativeLogTimer = 0, alternativeLogToken = 0;
+  const updateAlternativeDateDisplays = () => {
+    for (const output of alternativeRange.querySelectorAll("[data-alt-date]")) {
+      const value = alternativeRange.elements[output.dataset.altDate]?.value || "";
+      output.textContent = value ? value.split("-").reverse().join("/") : "gg/mm/aaaa";
+    }
+  };
   const inputDate = (date) => {
     const year = date.getFullYear(), month = String(date.getMonth() + 1).padStart(2, "0"), day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
@@ -512,6 +521,7 @@
     alternativeFrom.value = inputDate(from);
     alternativeTo.value = inputDate(to);
     alternativeQuery.value = "";
+    updateAlternativeDateDisplays();
   };
   const scheduleAlternativeLog = () => {
     clearTimeout(alternativeLogTimer);
@@ -539,9 +549,11 @@
     scheduleAlternativeLog();
   };
   resetAlternativePeriod();
+  const alternativeCalendar = window.TechnicsRangeCalendar?.attach(alternativeRange, { onApply: () => { updateAlternativeDateDisplays(); loadAlternativeLog(); } });
+  alternativeRange.addEventListener("change", updateAlternativeDateDisplays);
   alternativeLog.addEventListener("toggle", () => { if (alternativeLog.open) loadAlternativeLog(); else clearTimeout(alternativeLogTimer); });
   section.querySelector("[data-alt-show]").addEventListener("click", () => loadAlternativeLog());
-  section.querySelector("[data-alt-reset]").addEventListener("click", () => { resetAlternativePeriod(); loadAlternativeLog(); });
+  section.querySelector("[data-alt-reset]").addEventListener("click", () => { alternativeCalendar?.reset(); resetAlternativePeriod(); loadAlternativeLog(); });
   alternativeQuery.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); loadAlternativeLog(); } });
   alternativeRows.addEventListener("click", (event) => { const button = event.target.closest("[data-alt-open]"); if (!button) return; const code = button.dataset.altOpen; form.elements.code.value = code; currentCode = code; load(code); result.scrollIntoView({ block: "start", behavior: "smooth" }); });
   let pdfLibraryPromise;
