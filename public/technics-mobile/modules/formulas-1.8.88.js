@@ -468,6 +468,7 @@
     try {
       sessionStorage.setItem("technics-formula-code-v1875", code);
     } catch {}
+    closeSuggestions();
     load(code);
   });
   const suggestions = section.querySelector("[data-formula-suggestions]");
