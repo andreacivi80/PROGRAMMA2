@@ -80,6 +80,9 @@
     .formulastock{column-gap:10px!important}
   }`;
   document.head.append(integrityStyle);
+  // Il layout mobile dei costi deve essere l'ultima regola applicata: le
+  // regole storiche di integrita non devono ricomprimere titolo e valori.
+  document.head.append(costLayoutStyle);
   const fitFormulaNavigation = () => {
     const mobile = matchMedia("(max-width:430px)").matches;
     for (const [name, value] of Object.entries(
