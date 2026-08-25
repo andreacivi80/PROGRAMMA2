@@ -61,7 +61,7 @@
   `;
   document.head.append(rawMaterialStyle);
   const integrityStyle = document.createElement("style");
-  integrityStyle.id = "formulas-integrity-v1898";
+  integrityStyle.id = "formulas-integrity-v1899";
   integrityStyle.textContent = `
   body.formula-detail-open{overflow:hidden!important;overscroll-behavior:none!important}
   .formulanodedetail{overscroll-behavior:contain;touch-action:pan-y}
@@ -854,7 +854,6 @@
   section.querySelector("[data-audit-show]").addEventListener("click", () => loadMaterialAudit());
   section.querySelector("[data-audit-reset]").addEventListener("click", () => { materialAuditCalendar?.reset(); materialAuditRange.elements.from.value = ""; materialAuditRange.elements.to.value = ""; materialAuditQuery.value = ""; updateMaterialAuditDates(); loadMaterialAudit(); });
   materialAuditQuery.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); loadMaterialAudit(); } });
-  setTimeout(() => { if (!materialAuditData && !document.hidden) loadMaterialAudit(true); }, 700);
   let pdfLibraryPromise;
   const pdfWorkerUrl = new URL("vendor/pdfjs/pdf.worker.mjs", document.baseURI)
     .href;
