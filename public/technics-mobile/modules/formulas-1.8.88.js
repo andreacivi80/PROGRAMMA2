@@ -50,6 +50,7 @@
   .formuladetailhead span{display:-webkit-box;overflow:hidden;text-overflow:clip;white-space:normal;word-break:normal;overflow-wrap:break-word;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;line-height:1.18}
   .formulaparentdesc,.formulanodeopen strong,.formularoottitle span{white-space:normal;word-break:normal;overflow-wrap:break-word;hyphens:none}
   .formuladoccheck{display:grid;gap:4px;padding:5px!important;background:#f6faf8}.formuladocprogress{display:flex;align-items:center;justify-content:space-between;gap:6px;color:#58716a;font-size:6.5px;font-weight:900}.formuladocprogress b{color:#15564f;font-size:7px}.formuladocbadges{display:flex!important;flex-wrap:wrap;gap:3px!important;padding:0!important}.formuladocbadge{padding:3px 5px;border:1px solid #d2dfdb;border-radius:99px;background:#fff;color:#778883;font-size:6px;font-weight:900;white-space:nowrap}.formuladocbadge.present{border-color:#a9d4c4;background:#e5f5ee;color:#17634f;cursor:pointer}.formuladocbadge.present:focus{outline:1px solid #17634f;outline-offset:1px}.formuladocsearch{display:block;width:100%;height:17px;margin-top:8px;padding:0 8px;border:1px solid #bad3cd;border-radius:7px;color:#173e35;font-size:6.3px;font-weight:850}.formuladocsectiontitle{margin:5px 4px 1px;color:#315f55;font-size:6px;font-weight:950;letter-spacing:.35px;text-transform:uppercase}.formuladocsectiontitle.obsolete{margin-top:7px;padding-top:5px;border-top:1px solid #dce8e4;color:#71817c}.formuladoclist{display:grid;gap:2px!important;padding:4px!important}.formuladoc.current{border-left:3px solid #42a879}.formuladoc.previous{border-left:3px solid #bdc9c5;opacity:.82}.formuladoc.current,.formuladoc.previous{grid-template-columns:52px minmax(0,1fr) 34px;align-items:start}.formuladoc.current>button,.formuladoc.previous>button{align-self:center;width:34px;min-width:34px;height:24px;min-height:24px;padding:0}.formuladocmeta{display:block!important;color:#71847d!important;font-size:5.8px!important}.formuladocstate{display:inline-block;margin-left:4px;padding:2px 4px;border-radius:5px;background:#e5f5ee;color:#17634f;font-size:5.5px;font-weight:950}.formuladocstate.previous{background:#eef1f0;color:#70807b}.formuladocobsolete{margin:0 0 4px}.formuladocprevious{margin:0}
+  .formuladoccategorychoices{display:grid;gap:2px;padding:4px;border:1px solid #b9d8d2;border-radius:7px;background:#fff}.formuladoccategorychoices.hidden{display:none}.formuladoccategoryhead{display:flex;align-items:center;justify-content:space-between;gap:5px;color:#15564f;font-size:6.2px;font-weight:950}.formuladoccategoryhead button{display:grid;width:17px;height:17px;min-width:17px;padding:0;place-items:center;border:1px solid #b9d8d2;border-radius:50%;background:#fff;color:#15564f;font-size:9px}.formuladoccategorylist{display:grid;gap:2px}.formuladoccategorychoice{display:grid;grid-template-columns:48px minmax(0,1fr);gap:5px;align-items:center;width:100%;min-height:23px;padding:3px 5px;border:0;border-left:3px solid #42a879;border-radius:5px;background:#f6faf8;color:#314c45;text-align:left}.formuladoccategorychoice.previous{border-left-color:#bdc9c5;opacity:.8}.formuladoccategorychoice b{font-size:5.8px;white-space:nowrap}.formuladoccategorychoice span{min-width:0;font-size:6.2px;line-height:1.2;white-space:normal;overflow-wrap:break-word}.formuladoccategorychoice small{color:#71847d;font-size:5.3px;font-weight:900}
   @media(max-width:430px){
     .formulainci{grid-template-columns:minmax(84px,.92fr) minmax(0,1.08fr) auto}
     .formuladoc{grid-template-columns:52px minmax(0,1fr) 34px}
@@ -107,6 +108,7 @@
     formulaScrollY = 0;
   const detailHistory = new WeakMap();
   const documentChecklistTokens = new WeakMap();
+  const documentCategoryMaps = new WeakMap();
   const syncDetailScrollLock = () =>
     document.body.classList.toggle(
       "formula-detail-open",
@@ -224,7 +226,7 @@
   };
   const renderRelated = (item, suffix = "Apri") =>
     `<button type="button" class="formulaparent" data-formula-related-id="${Number(item.id) || 0}"><b>${esc(item.code)}</b><span class="formulaparentdesc">${esc(item.description)}</span><small class="formulaparentsuffix">${esc(suffix)}</small><span class="formulaparentstock">Giacenza ${num2(item.totalStock)} ${esc(item.unit || "")}</span></button>`;
-  const checklistLabels = ["Scheda di sicurezza", "Scheda tecnica", "Halal", "Kosher", "Solventi", "Composizione", "Allergeni", "OGM / GMO", "Origine animale / BSE-TSE", "REACH", "ISO 16128", "Dossier regolatorio", "Dichiarazione", "PIF"];
+  const checklistLabels = ["Scheda di sicurezza", "Scheda tecnica", "Halal", "Kosher", "Solventi", "Ossido di etilene", "VOC", "Composizione", "Food contact / Additivi", "Allergeni", "Glutine", "OGM / GMO", "Origine animale / BSE-TSE", "Palm oil / RSPO", "Vegano", "CMR / SVHC", "Nanomateriali", "Metalli pesanti", "Microplastiche", "Formaldeide", "Ftalati", "IPA / PAH", "Nitrosammine", "Melamina", "Lattice", "Antibiotici / Ormoni", "PFAS", "Pesticidi", "REACH", "ISO 16128", "Dossier regolatorio", "Dichiarazione", "PIF", "Altri documenti"];
   const documentButton = (document, articleId, previous = false) => {
     const categories = (document.analysis?.categories || []).map((item) => item.label),
       search = [document.name, document.description, document.category, document.analysis?.revision, ...categories].join(" ").toLocaleUpperCase("it-IT");
@@ -237,15 +239,17 @@
     const documents = Array.isArray(payload?.documents) ? payload.documents : [],
       current = documents.filter((item) => item.revisionState !== "previous"),
       previous = documents.filter((item) => item.revisionState === "previous"),
-      found = new Set(documents.flatMap((item) => (item.analysis?.categories || []).map((category) => category.label))),
-      latestByCategory = new Map(),
+      documentsByCategory = new Map(),
       analyzed = documents.filter((item) => item.analysis).length;
     [...current, ...previous]
       .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")))
-      .forEach((item) => (item.analysis?.categories || []).forEach((category) => {
-        if (!latestByCategory.has(category.label)) latestByCategory.set(category.label, item);
+      .forEach((item) => ((item.analysis?.categories || []).length ? item.analysis.categories : [{ label: "Altri documenti" }]).forEach((category) => {
+        const matches = documentsByCategory.get(category.label) || [];
+        if (!matches.includes(item)) matches.push(item);
+        documentsByCategory.set(category.label, matches);
       }));
-    section.innerHTML = `<h4>DOCUMENTI · CHECKLIST E REVISIONI</h4><div class="formuladoccheck"><div class="formuladocprogress"><span>Analisi contenuto reale</span><b>${payload?.complete ? "COMPLETA" : `${analyzed}/${documents.length} · IN CORSO`}</b></div><div class="formuladocbadges">${checklistLabels.map((label) => { const latest = latestByCategory.get(label); return latest ? `<span role="button" tabindex="0" class="formuladocbadge present" ${documentActionAttributes(latest, articleId)} aria-label="Apri ${esc(label)}: ${esc(latest.name)}" title="Apri l'ultima versione: ${esc(latest.name)}">✓ ${esc(label)}</span>` : `<span class="formuladocbadge">${esc(label)}</span>`; }).join("")}</div><input class="formuladocsearch" type="search" placeholder="Cerca documento" aria-label="Cerca documento, categoria o revisione"></div><div class="formuladocsectiontitle">Documenti correnti · ${current.length}</div><div class="formuladoclist">${current.length ? current.map((item) => documentButton(item, articleId)).join("") : '<div class="formulaempty">Nessun documento corrente.</div>'}</div>${previous.length ? `<div class="formuladocobsolete"><div class="formuladocsectiontitle obsolete">Documentazione obsoleta · revisioni superate · ${previous.length}</div><div class="formuladoclist formuladocprevious">${previous.map((item) => documentButton(item, articleId, true)).join("")}</div></div>` : ""}`;
+    documentCategoryMaps.set(section, documentsByCategory);
+    section.innerHTML = `<h4>DOCUMENTI · CHECKLIST E REVISIONI</h4><div class="formuladoccheck"><div class="formuladocprogress"><span>Analisi contenuto reale</span><b>${payload?.complete ? "COMPLETA" : `${analyzed}/${documents.length} · IN CORSO`}</b></div><div class="formuladocbadges">${checklistLabels.map((label) => { const matches = documentsByCategory.get(label) || [], latest = matches[0]; return latest ? `<span role="button" tabindex="0" class="formuladocbadge present" ${matches.length === 1 ? documentActionAttributes(latest, articleId) : `data-formula-category="${esc(label)}" data-article="${articleId}"`} aria-label="${matches.length === 1 ? "Apri" : "Mostra"} ${esc(label)}${matches.length > 1 ? `: ${matches.length} documenti` : `: ${esc(latest.name)}`}" title="${matches.length === 1 ? `Apri: ${esc(latest.name)}` : `Mostra ${matches.length} documenti`}">✓ ${esc(label)}${matches.length > 1 ? ` · ${matches.length}` : ""}</span>` : `<span class="formuladocbadge">${esc(label)}</span>`; }).join("")}</div><div class="formuladoccategorychoices hidden" data-formula-category-choices></div><input class="formuladocsearch" type="search" placeholder="Cerca documento" aria-label="Cerca documento, categoria o revisione"></div><div class="formuladocsectiontitle">Documenti correnti · ${current.length}</div><div class="formuladoclist">${current.length ? current.map((item) => documentButton(item, articleId)).join("") : '<div class="formulaempty">Nessun documento corrente.</div>'}</div>${previous.length ? `<div class="formuladocobsolete"><div class="formuladocsectiontitle obsolete">Documentazione obsoleta · revisioni superate · ${previous.length}</div><div class="formuladoclist formuladocprevious">${previous.map((item) => documentButton(item, articleId, true)).join("")}</div></div>` : ""}`;
   };
   const loadDocumentChecklist = async (detail, articleId) => {
     const token = (documentChecklistTokens.get(detail) || 0) + 1;
@@ -253,7 +257,7 @@
     let remaining = 1;
     while (remaining > 0 && detail.isConnected && !detail.classList.contains("hidden") && documentChecklistTokens.get(detail) === token) {
       try {
-        const payload = await api(`/api/formulas/document-checklist?articleId=${articleId}&limit=3&fresh=${Date.now()}`, true);
+        const payload = await api(`/api/formulas/document-checklist?articleId=${articleId}&limit=6&fresh=${Date.now()}`, true);
         if (documentChecklistTokens.get(detail) !== token) return;
         renderDocumentChecklist(detail.querySelector('[data-formula-part="docs"]'), payload.result, articleId);
         remaining = Number(payload.result?.remaining || 0);
@@ -592,6 +596,23 @@
             part.dataset.formulaPart !== jump.dataset.formulaJump,
           ),
         );
+      return;
+    }
+    const categoryClose = event.target.closest("[data-formula-category-close]");
+    if (categoryClose) {
+      categoryClose.closest("[data-formula-category-choices]")?.classList.add("hidden");
+      return;
+    }
+    const category = event.target.closest("[data-formula-category]");
+    if (category) {
+      const docsSection = category.closest('[data-formula-part="docs"]'),
+        picker = docsSection?.querySelector("[data-formula-category-choices]"),
+        label = category.dataset.formulaCategory,
+        matches = documentCategoryMaps.get(docsSection)?.get(label) || [];
+      if (!picker || !matches.length) return;
+      picker.innerHTML = `<div class="formuladoccategoryhead"><strong>${esc(label)} · ${matches.length} DOCUMENTI</strong><button type="button" data-formula-category-close aria-label="Chiudi elenco documenti">×</button></div><div class="formuladoccategorylist">${matches.map((item) => `<button type="button" data-formula-category-choice class="formuladoccategorychoice${item.revisionState === "previous" ? " previous" : ""}" ${documentActionAttributes(item, category.dataset.article)}><b>${esc(displayDate(item.date))}<small>${item.revisionState === "previous" ? "PRECEDENTE" : "CORRENTE"}</small></b><span>${esc(item.name)}</span></button>`).join("")}</div>`;
+      picker.classList.remove("hidden");
+      picker.scrollIntoView({ block: "nearest", behavior: "smooth" });
       return;
     }
     const doc = event.target.closest("[data-formula-document]");

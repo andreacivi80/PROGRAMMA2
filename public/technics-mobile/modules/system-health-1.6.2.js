@@ -64,7 +64,7 @@
     document.addEventListener("technics:data-success",event=>{const path=(()=>{try{return new URL(String(event.detail?.url||""),location.href).pathname}catch{return ""}})(),key=path.startsWith("/api/items/")||path.startsWith("/api/barcodes/")?"inventory":path.startsWith("/api/planning/")||path.startsWith("/api/sales/")?"planning":path.startsWith("/api/packing/")?"packing":path.startsWith("/api/picking/")?"picking":"";if(key)applyFunctionResult(key,{ok:true,level:"ok",source:"uso reale verificato"})});
     setTimeout(checkFunctions,8000+Math.round(Math.random()*2500));setInterval(checkFunctions,60000);setInterval(paintFunctionLights,5000);
   };
-  window.TechnicsSystemHealth=Object.freeze({check,diagnostics:()=>Object.freeze({...state,clientRoutes:clientRoutes()}),version:"1.8.96"});
-  document.documentElement.dataset.systemHealth="1.8.96";
+  window.TechnicsSystemHealth=Object.freeze({check,diagnostics:()=>Object.freeze({...state,clientRoutes:clientRoutes()}),version:"1.8.97"});
+  document.documentElement.dataset.systemHealth="1.8.97";
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
 })();
