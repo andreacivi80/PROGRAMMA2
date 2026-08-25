@@ -52,7 +52,7 @@
   `;
   document.head.append(costLayoutStyle);
   const integrityStyle = document.createElement("style");
-  integrityStyle.id = "formulas-integrity-v1893";
+  integrityStyle.id = "formulas-integrity-v1894";
   integrityStyle.textContent = `
   body.formula-detail-open{overflow:hidden!important;overscroll-behavior:none!important}
   .formulanodedetail{overscroll-behavior:contain;touch-action:pan-y}
@@ -586,7 +586,7 @@
   const renderAlternativeLog = (data) => {
     const rows = Array.isArray(data?.rows) ? data.rows : [], groups = groupAlternativeRows(rows);
     alternativeStatus.textContent = `${groups.length} codici · ${rows.length} collegamenti · Technics verificato ${new Date(data.readAt).toLocaleTimeString("it-IT")} · sola lettura`;
-    alternativeRows.innerHTML = groups.length ? groups.map((group) => `<article class="formulaaltgroup"><button type="button" class="formulaaltgrouphead" data-alt-open="${esc(group.root.code)}"><time>${esc(displayDate(group.date))}</time><b>${esc(group.root.code)}</b><strong>${esc(group.root.description)}</strong><em>Prezzo codice<br>${euro(group.root.unitCost)}/${esc(group.root.unit || "UM")}</em><small>${group.user ? `Utente che ha modificato: ${esc(group.user.name || group.user.login || group.user.id)}${group.user.login && group.user.name ? ` · ${esc(group.user.login)}` : ""}` : "Utente non presente nel log Technics"}</small><u role="button" data-alt-stock="${esc(group.root.code)}">Giacenza ${num2(group.root.stock)} ${esc(group.root.unit || "UM")}</u></button><h4>${group.alternatives.length} alternativ${group.alternatives.length === 1 ? "o" : "i"} collegati a ${esc(group.root.code)}</h4><div class="formulaaltchoices">${group.alternatives.map((alternative) => `<button type="button" class="formulaaltchoice" data-alt-open="${esc(alternative.code)}"><b>${esc(alternative.code)}</b><strong>${esc(alternative.description)}</strong><span>Prezzo alternativo<br>${euro(alternative.unitCost)}/${esc(alternative.unit || "UM")}</span><small role="button" data-alt-stock="${esc(alternative.code)}">Giacenza ${num2(alternative.stock)} ${esc(alternative.unit || "UM")}</small></button>`).join("")}</div></article>`).join("") : '<div class="formulaempty">Nessun nuovo alternativo nel periodo selezionato.</div>';
+    alternativeRows.innerHTML = groups.length ? groups.map((group) => `<article class="formulaaltgroup"><button type="button" class="formulaaltgrouphead" data-alt-open="${esc(group.root.code)}"><time>${esc(displayDate(group.date))}</time><b>${esc(group.root.code)}</b><strong>${esc(group.root.description)}</strong><em>Prezzo codice<br>${euro(group.root.unitCost)}/${esc(group.root.unit || "UM")}</em><small>${group.user ? `Utente che ha generato il codice: ${esc(group.user.name || group.user.login || group.user.id)}${group.user.login && group.user.name ? ` · ${esc(group.user.login)}` : ""}` : "Utente di prima codifica non presente nel log Technics"}</small><u role="button" data-alt-stock="${esc(group.root.code)}">Giacenza ${num2(group.root.stock)} ${esc(group.root.unit || "UM")}</u></button><h4>${group.alternatives.length} alternativ${group.alternatives.length === 1 ? "o" : "i"} collegati a ${esc(group.root.code)}</h4><div class="formulaaltchoices">${group.alternatives.map((alternative) => `<button type="button" class="formulaaltchoice" data-alt-open="${esc(alternative.code)}"><b>${esc(alternative.code)}</b><strong>${esc(alternative.description)}</strong><span>Prezzo alternativo<br>${euro(alternative.unitCost)}/${esc(alternative.unit || "UM")}</span><small role="button" data-alt-stock="${esc(alternative.code)}">Giacenza ${num2(alternative.stock)} ${esc(alternative.unit || "UM")}</small></button>`).join("")}</div></article>`).join("") : '<div class="formulaempty">Nessun nuovo alternativo nel periodo selezionato.</div>';
   };
   const loadAlternativeLog = async (quiet = false) => {
     const token = ++alternativeLogToken;
@@ -670,9 +670,9 @@
       row.familyLastMovement ? `Ultimo movimento ${displayDate(row.familyLastMovement)}` : "Nessun movimento di magazzino",
     ].filter(Boolean).join(" · ");
     const alternativesHtml = alternatives.length
-      ? `<details class="formulaauditalts"><summary>${alternatives.length} alternativ${alternatives.length === 1 ? "o" : "i"} collegat${alternatives.length === 1 ? "o" : "i"} · apri</summary>${alternatives.map((alternative) => `<button type="button" class="formulaauditalt" data-audit-alt-open="${esc(alternative.code)}"><b>${esc(alternative.code)}</b><span>${esc(alternative.description)}</span><small>${euro(alternative.unitCost)}/${esc(alternative.unit || "UM")} · giac. ${number(alternative.totalStock)}</small></button>`).join("")}</details>`
+      ? `<details class="formulaauditalts"><summary>${alternatives.length} alternativ${alternatives.length === 1 ? "o" : "i"} collegat${alternatives.length === 1 ? "o" : "i"} · apri</summary>${alternatives.map((alternative) => `<button type="button" class="formulaauditalt" data-audit-alt-open="${esc(alternative.code)}"><b>${esc(alternative.code)}</b><span>${esc(alternative.description)}</span><small>${euro(alternative.unitCost)}/${esc(alternative.unit || "UM")} · giac. ${num2(alternative.totalStock)}</small></button>`).join("")}</details>`
       : "";
-    return `<article class="formulaauditrow ${kind === "old" ? "old" : kind === "move" ? "move" : "warn"}"><button type="button" class="formulaauditmain" data-audit-open="${esc(row.code)}"><b>${esc(row.code)}</b><strong>${esc(row.description)}</strong><em>${esc(statusLabel)}</em><small class="formulaauditfacts">${facts}</small></button><button type="button" class="formulaauditstock" data-audit-stock="${esc(row.code)}">Giacenza codice ${number(directStock)} · famiglia ${number(familyStock)}</button>${alternativesHtml}</article>`;
+    return `<article class="formulaauditrow ${kind === "old" ? "old" : kind === "move" ? "move" : "warn"}"><button type="button" class="formulaauditmain" data-audit-open="${esc(row.code)}"><b>${esc(row.code)}</b><strong>${esc(row.description)}</strong><em>${esc(statusLabel)}</em><small class="formulaauditfacts">${facts}</small></button><button type="button" class="formulaauditstock" data-audit-stock="${esc(row.code)}">Giacenza codice ${num2(directStock)} · famiglia ${num2(familyStock)}</button>${alternativesHtml}</article>`;
   };
   const materialAuditDefinitions = [
     ["neverPurchasedNeverFormula", "Mai acquistate e mai movimentate · mai in formula", "never"],
@@ -734,6 +734,8 @@
   materialAuditPanel.addEventListener("toggle", () => { if (materialAuditPanel.open) loadMaterialAudit(); else clearTimeout(materialAuditTimer); });
   materialAuditGroups.addEventListener("toggle", (event) => { const details = event.target.closest("[data-audit-group]"); if (details) populateMaterialAuditGroup(details); }, true);
   materialAuditGroups.addEventListener("click", (event) => {
+    const summary = event.target.closest("[data-audit-group] > summary");
+    if (summary) { setTimeout(() => populateMaterialAuditGroup(summary.parentElement), 0); return; }
     const stock = event.target.closest("[data-audit-stock]");
     if (stock) { event.preventDefault(); openInventoryByCode(stock.dataset.auditStock); return; }
     const alternative = event.target.closest("[data-audit-alt-open]"),
