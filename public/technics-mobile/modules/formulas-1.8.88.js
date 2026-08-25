@@ -61,7 +61,7 @@
   `;
   document.head.append(rawMaterialStyle);
   const integrityStyle = document.createElement("style");
-  integrityStyle.id = "formulas-integrity-v1910";
+  integrityStyle.id = "formulas-integrity-v1911";
   integrityStyle.textContent = `
   body.formula-detail-open{overflow:hidden!important;overscroll-behavior:none!important}
   .formulanodedetail{overscroll-behavior:contain;touch-action:pan-y}
@@ -193,6 +193,12 @@
         : "Torna a Formule";
       return;
     }
+    if (workspace === "rawmaterials" && document.querySelector(".rawmaterialrow")) {
+      backButton.classList.remove("hidden");
+      backButton.dataset.mode = "rawmaterials";
+      backButton.querySelector("b").textContent = "Nuova ricerca";
+      return;
+    }
     backButton.dataset.mode = "formula";
     backButton.classList.toggle(
       "hidden",
@@ -200,7 +206,7 @@
     );
     backButton.querySelector("b").textContent = lastExpandedButton
       ? "Torna alla formula"
-      : "Torna su";
+      : "Nuova ricerca";
   };
   const esc = (value) => {
       const el = document.createElement("div");
@@ -248,7 +254,7 @@
             },
           },
           {
-            cacheMs: /\/api\/formulas\/(material-audit|raw-materials)/.test(path) ? 15000 : quiet || /\/api\/formulas\/(search|suggest)/.test(path) ? 0 : 12000,
+            cacheMs: /\/api\/formulas\/(material-audit|raw-materials|search)/.test(path) ? 15000 : /\/api\/formulas\/item/.test(path) ? 30000 : quiet || /\/api\/formulas\/suggest/.test(path) ? 0 : 12000,
             attempts: /\/api\/formulas\/(material-audit|raw-materials)/.test(path) ? (quiet ? 2 : 3) : quiet ? 1 : 2,
             timeoutMs: /\/api\/formulas\/(material-audit|raw-materials)/.test(path) ? 25000 : 15000,
             message: "Dati formula temporaneamente non disponibili.",
@@ -269,7 +275,12 @@
     const quantityCost = relation === "component" && node.costBasis === "quantity",
       measure = quantityCost ? `${num2(node.quantity)} ${esc(node.bomUnit || node.unit || "UM")}` : `${pct(node.percentage)}%`,
       contributionLabel = quantityCost ? "Costo riga" : "Quota formula";
-    return `<article class="formulanode" data-formula-id="${node.id}"><div class="formulanodehead"><button type="button" class="formulanodeopen" data-formula-expand="${node.id}" aria-expanded="false"><b>${esc(node.code)}</b><strong>${esc(node.description)}</strong>${relation === "component" ? `<span class="formulapct">${measure}</span>` : `<span class="formulapct">${esc(node.type || "Apri")}</span>`}</button><button type="button" class="formulainventorylink" data-formula-inventory="${esc(node.code)}">Giacenza ${num2(node.totalStock)} ${esc(node.unit || "")}</button>${relation === "component" ? `<span class="formulacosts"><span>Prezzo unitario <b>${euro(node.unitCost)}</b></span><span>${contributionLabel} <b>${euro(node.costContribution)}</b></span></span>` : ""}</div><div class="formulanodedetail hidden"></div></article>`;
+    const costBlock = relation === "component"
+      ? `<span class="formulacosts"><span>Prezzo unitario <b>${euro(node.unitCost)}</b></span><span>${contributionLabel} <b>${euro(node.costContribution)}</b></span></span>`
+      : relation === "parent" && Number(node.formulaCost) > 0
+        ? `<span class="formulacosts"><span>Costo finito <b>${euro(node.formulaCost)}/${esc(node.unit || "Pz")}</b></span><span>Bulk ${euro(node.formulaBulkCost)} · Packaging ${euro(node.formulaPackagingCost)}</span></span>`
+        : "";
+    return `<article class="formulanode" data-formula-id="${node.id}"><div class="formulanodehead"><button type="button" class="formulanodeopen" data-formula-expand="${node.id}" aria-expanded="false"><b>${esc(node.code)}</b><strong>${esc(node.description)}</strong>${relation === "component" ? `<span class="formulapct">${measure}</span>` : `<span class="formulapct">${esc(node.type || "Apri")}</span>`}</button><button type="button" class="formulainventorylink" data-formula-inventory="${esc(node.code)}">Giacenza ${num2(node.totalStock)} ${esc(node.unit || "")}</button>${costBlock}</div><div class="formulanodedetail hidden"></div></article>`;
   };
   const sectionBlock = (title, items, relation) => {
     const ordered = relation === "component"
@@ -449,7 +460,7 @@
     }
     try {
       const payload = await api(
-        `/api/formulas/search?code=${encodeURIComponent(code)}&fresh=${Date.now()}`,
+        `/api/formulas/search?code=${encodeURIComponent(code)}`,
         quiet,
       );
       if (token !== requestToken) return;
@@ -683,6 +694,7 @@
         alternatives = Array.isArray(row.alternatives) ? row.alternatives : row.alternatives ? [row.alternatives] : [];
       return `<article class="rawmaterialrow"><button type="button" class="rawmaterialmain" data-raw-formula="${esc(row.code)}"><b>${esc(row.code)}</b><strong>${esc(row.description)}</strong><em>${euro(row.unitCost)}/${esc(row.unit || "UM")}</em><span class="rawmaterialline">${esc(row.lineProduct || "Linea prodotto non indicata")}</span></button><div class="rawmaterialmetrics"><button type="button" data-raw-stock="${esc(row.code)}">Giacenza<br>${num2(row.totalStock)} ${esc(row.unit || "UM")}</button><span>Formule<br>${uses.length}</span><button type="button" data-raw-alt-toggle="${esc(row.code)}">Alternativi<br>${alternatives.length}</button></div>${uses.length ? `<details class="rawmaterialuses"><summary>${uses.length} formul${uses.length === 1 ? "a" : "e"} di utilizzo · apri</summary>${uses.map((use) => `<button type="button" class="rawmaterialuse" data-raw-formula="${esc(use.code)}"><b>${esc(use.code)}</b><span>${esc(use.description)}</span></button>`).join("")}</details>` : ""}${alternatives.length ? `<section class="rawmaterialalternatives hidden" data-raw-alt-list="${esc(row.code)}"><div class="rawmaterialaltheading"><b>${alternatives.length} ALTERNATIV${alternatives.length === 1 ? "O" : "I"}</b><span></span><span>PREZZO/${esc(row.unit || "UM")}</span><span>GIACENZA</span></div>${alternatives.map((alternative) => `<button type="button" class="rawmaterialalternative" data-raw-formula="${esc(alternative.code)}"><b>${esc(alternative.code)}</b><strong title="${esc(alternative.description)}">${esc(alternative.description)}</strong><span>${euro(alternative.unitCost)}</span><span class="rawmaterialaltstock">${num2(alternative.totalStock)} ${esc(alternative.unit || "UM")}</span></button>`).join("")}</section>` : ""}</article>`;
     }).join("") : '<div class="formulaempty">Nessuna materia prima per i filtri selezionati.</div>';
+    updateBackButton();
   };
   const loadRawMaterials = async (quiet = false) => {
     const token = ++rawMaterialToken,
@@ -709,6 +721,7 @@
       const list = rawMaterialRows.querySelector(`[data-raw-alt-list="${CSS.escape(alternatives.dataset.rawAltToggle)}"]`);
       list?.classList.toggle("hidden");
       alternatives.setAttribute("aria-expanded", String(Boolean(list && !list.classList.contains("hidden"))));
+      updateBackButton();
       return;
     }
     const formula = event.target.closest("[data-raw-formula]");
@@ -1146,12 +1159,24 @@
       }, 100);
       return;
     }
+    if (backButton.dataset.mode === "rawmaterials" && shell.dataset.workspace === "rawmaterials") {
+      clearTimeout(rawMaterialTimer);
+      rawMaterialToken += 1;
+      rawMaterialForm.elements.lineId.value = "";
+      rawMaterialForm.elements.query.value = "";
+      rawMaterialRows.innerHTML = "";
+      rawMaterialStatus.textContent = "Seleziona una linea prodotto oppure cerca un codice o una descrizione.";
+      backButton.classList.add("hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     if (lastExpandedButton) {
       const target = lastExpandedButton;
       expand(target);
       target.scrollIntoView({ block: "center", behavior: "smooth" });
       return;
     }
+    resetFormulaSession();
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
   window.addEventListener("technics-workspace-change", (event) => {
