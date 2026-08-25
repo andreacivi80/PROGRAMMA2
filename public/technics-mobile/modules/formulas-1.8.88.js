@@ -320,7 +320,7 @@
           {
             cacheMs: /\/api\/formulas\/(material-audit|raw-materials|search)/.test(path) ? 15000 : /\/api\/formulas\/item/.test(path) ? 30000 : quiet || /\/api\/formulas\/suggest/.test(path) ? 0 : 12000,
             attempts: /\/api\/formulas\/(material-audit|raw-materials)/.test(path) ? (quiet ? 2 : 3) : quiet ? 1 : 2,
-            timeoutMs: /\/api\/formulas\/(material-audit|raw-materials)/.test(path) ? 25000 : 15000,
+            timeoutMs: /\/api\/formulas\/document-checklist/.test(path) ? 210000 : /\/api\/formulas\/(material-audit|raw-materials)/.test(path) ? 25000 : 15000,
             message: "Dati formula temporaneamente non disponibili.",
           },
         );
@@ -409,18 +409,23 @@
     const initialCheck = detail.querySelector('[data-formula-part="docs"] .formuladoccheck');
     if (initialCheck && !initialCheck.querySelector('.formuladocbadges'))
       initialCheck.insertAdjacentHTML('beforeend', `<div class="formuladocbadges">${checklistLabels.map((label) => `<span class="formuladocbadge">${esc(label)}</span>`).join('')}</div>`);
-    let remaining = 1;
+    let remaining = 1,
+      retryCount = 0;
     while (remaining > 0 && detail.isConnected && !detail.classList.contains("hidden") && documentChecklistTokens.get(detail) === token) {
       try {
+        const progress = detail.querySelector(".formuladocprogress b");
+        if (progress && retryCount > 0) progress.textContent = `RIPRESA AUTOMATICA · ${retryCount}`;
         const payload = await api(`/api/formulas/document-checklist?articleId=${articleId}&limit=2&fresh=${Date.now()}`, true);
         if (documentChecklistTokens.get(detail) !== token) return;
         renderDocumentChecklist(detail.querySelector('[data-formula-part="docs"]'), payload.result, articleId);
         remaining = Number(payload.result?.remaining || 0);
+        retryCount = 0;
         if (remaining > 0) await new Promise((resolve) => setTimeout(resolve, 250));
       } catch (error) {
         const target = detail.querySelector(".formuladocprogress b");
-        if (target) target.textContent = "RIPRESA AUTOMATICA";
-        return;
+        retryCount += 1;
+        if (target) target.textContent = `RIPRESA AUTOMATICA · ${retryCount}`;
+        await new Promise((resolve) => setTimeout(resolve, Math.min(8000, 1000 * 2 ** Math.min(retryCount, 3))));
       }
     }
   };
