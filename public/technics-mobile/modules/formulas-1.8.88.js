@@ -113,6 +113,31 @@
     .formulastock{column-gap:10px!important}
   }`;
   document.head.append(integrityStyle);
+  const operatorVisualStyle = document.createElement("style");
+  operatorVisualStyle.id = "formulas-operator-visual-v1917";
+  operatorVisualStyle.textContent = `
+  /* Vista operatore: nessun codice o nome viene mascherato con puntini. */
+  .rawmaterialrow{grid-template-columns:68px minmax(0,1fr) 66px!important;gap:4px 7px!important;padding:7px 8px!important}
+  .rawmaterialmain b{font-size:9.5px!important;align-self:start}
+  .rawmaterialmain strong{min-width:0!important;overflow:visible!important;color:#263f2d!important;font-size:8px!important;line-height:1.25!important;text-overflow:clip!important;white-space:normal!important;word-break:normal!important;overflow-wrap:break-word!important}
+  .rawmaterialmain em{overflow:visible!important;font-size:7px!important;line-height:1.15!important;text-overflow:clip!important;white-space:normal!important;overflow-wrap:break-word!important}
+  .rawmaterialline{grid-column:1/4!important;padding-top:1px;font-size:6.3px!important;line-height:1.2!important;white-space:normal!important;overflow-wrap:break-word!important}
+  .rawmaterialuses,.rawmaterialalternatives,.rawmaterialmetrics{grid-column:1/4!important}
+  .rawmaterialuse{grid-template-columns:68px minmax(0,1fr)!important}.rawmaterialuse span{white-space:normal!important;overflow-wrap:break-word!important}
+  .rawmaterialaltheading{display:grid!important;grid-template-columns:minmax(0,1fr) auto auto!important;gap:7px!important;padding:5px 7px!important;text-align:right!important}
+  .rawmaterialaltheading b{grid-column:1!important;text-align:left!important}.rawmaterialaltheading span:empty{display:none!important}
+  .rawmaterialalternative{display:grid!important;grid-template-columns:68px minmax(0,1fr)!important;grid-template-rows:auto auto!important;gap:3px 7px!important;min-height:0!important;padding:7px!important;align-items:start!important}
+  .rawmaterialalternative b{grid-column:1!important;grid-row:1!important;font-size:8px!important;line-height:1.2!important;white-space:nowrap!important}
+  .rawmaterialalternative strong{grid-column:2!important;grid-row:1!important;min-width:0!important;overflow:visible!important;color:#263f2d!important;font-size:7.4px!important;line-height:1.25!important;text-overflow:clip!important;white-space:normal!important;word-break:normal!important;overflow-wrap:break-word!important}
+  .rawmaterialalternative span{grid-row:2!important;overflow:visible!important;padding-top:2px;border-top:1px solid #edf2ee;font-size:6.7px!important;line-height:1.15!important;text-align:left!important;text-overflow:clip!important;white-space:normal!important}
+  .rawmaterialalternative span:not(.rawmaterialaltstock){grid-column:1!important}.rawmaterialalternative .rawmaterialaltstock{grid-column:2!important;text-align:right!important}
+  .formulaalternative{grid-template-columns:68px minmax(0,1fr) auto!important;gap:3px 7px!important;padding:6px 7px!important;align-items:start!important}
+  .formulaalternative span,.formulaaltrow>strong,.formulaaltrow .formulaaltdesc,.formulaauditalt span,.formulaauditmain>strong{overflow:visible!important;text-overflow:clip!important;white-space:normal!important;word-break:normal!important;overflow-wrap:break-word!important;line-height:1.25!important}
+  .formularootactions .formulalineproduct{max-width:none!important;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;overflow-wrap:break-word!important}
+  .formulaviewer strong{overflow:visible!important;text-overflow:clip!important;white-space:normal!important;overflow-wrap:break-word!important;line-height:1.2!important}
+  @media(max-width:430px){.rawmaterialworkspace{width:100%!important;max-width:100%!important}.rawmaterialrow{grid-template-columns:64px minmax(0,1fr) 62px!important}.rawmaterialalternative{grid-template-columns:64px minmax(0,1fr)!important}}
+  `;
+  document.head.append(operatorVisualStyle);
   // Il layout mobile dei costi deve essere l'ultima regola applicata: le
   // regole storiche di integrita non devono ricomprimere titolo e valori.
   document.head.append(costLayoutStyle);
