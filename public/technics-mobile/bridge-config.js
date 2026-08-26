@@ -7,6 +7,6 @@
  * cancello Verify-ConnectivityContract-1.9.23.ps1.
  */
 window.TECHNICS_BRIDGES=Object.freeze([
-  "https://stephanie-witness-theatre-near.trycloudflare.com"
+  "https://conditions-minerals-elite-passing.trycloudflare.com"
 ]);
 window.__technicsBridgeUrl=window.TECHNICS_BRIDGES[0];

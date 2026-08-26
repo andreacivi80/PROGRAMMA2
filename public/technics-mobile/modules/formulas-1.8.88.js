@@ -188,12 +188,11 @@
   const result = section.querySelector("#formulaResult"),
     status = section.querySelector("#formulaStatus"),
     form = section.querySelector("#formulaSearch");
-  const bridges = () =>
-    window.TECHNICS_BRIDGES || [
-      location.hostname === "127.0.0.1"
-        ? "http://127.0.0.1:8792"
-        : "https://stephanie-witness-theatre-near.trycloudflare.com",
-    ];
+  const bridges = () => [
+    location.hostname === "127.0.0.1"
+      ? "http://127.0.0.1:8792"
+      : window.__technicsBridgeUrl,
+  ];
   let currentCode = "",
     currentData = null,
     refreshTimer = 0,
@@ -1167,7 +1166,7 @@
       (value, index, array) => value && array.indexOf(value) === index,
     )) {
       try {
-        const response = await fetch(`${base}/api/formulas/document?${query}`, {
+        const response = await TechnicsTransport.fetch(`${base}/api/formulas/document?${query}`, {
           cache: "no-store",
           headers: {
             "Cache-Control": "no-store",

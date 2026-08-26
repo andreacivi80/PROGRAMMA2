@@ -1,6 +1,7 @@
 (()=>{
   "use strict";
   const incompleteMessage="Il collegamento dati ha risposto in modo incompleto. Riprova tra pochi secondi.";
+  const rawFetch=globalThis.fetch.bind(globalThis);
   const state={requests:0,retries:0,recovered:0,failures:0,timeouts:0,offlineWaits:0,httpRetries:0,deduplicated:0,cached:0,discarded:0,integrityFailures:0,lastFailure:"",lastSuccessAt:"",lastLatencyMs:0,lastRequestId:"",lastServerTime:"",lastDataTime:"",lastSource:"",lastNodeId:"",lastNodeRole:"",lastLeaseEpoch:"",lastBridgeVersion:""};
   const inFlight=new Map(),latestSequence=new Map(),responseCache=new Map(),activeControllers=new Map(),routeTimings=new Map();
   let normalActive=0;const normalQueue=[];
@@ -57,13 +58,13 @@
     document.dispatchEvent(new CustomEvent("technics:data-success",{detail:{url:String(url),dataTime:state.lastDataTime,serverTime:state.lastServerTime,source:state.lastSource,nodeId:state.lastNodeId,nodeRole:state.lastNodeRole,bridgeVersion:state.lastBridgeVersion,requestId:state.lastRequestId,latencyMs:Number(latencyMs||0),cached:Boolean(cached)}}));
   };
   const runFetch=async(url,options,settings,key,sequence)=>{
-    const method=String(options.method||"GET").toUpperCase(),safe=method==="GET"||method==="HEAD"||settings.retryUnsafe===true,attempts=safe?Math.max(1,Number(settings.attempts||8)):1,timeoutMs=Math.max(3000,Number(settings.timeoutMs||15000));let lastError;
+    const method=String(options.method||"GET").toUpperCase(),safe=method==="GET"||method==="HEAD",attempts=safe?Math.min(2,Math.max(1,Number(settings.attempts||2))):1,timeoutMs=Math.min(8000,Math.max(3000,Number(settings.timeoutMs||6500)));let lastError;
     for(let attempt=0;attempt<attempts;attempt++){
       if(attempt)await waitForNetwork();
       const id=requestId(),controller=new AbortController(),scope=String(settings.scope||document.querySelector("main.shell")?.dataset.workspace||"global"),urgent=/\/api\/(items\/lookup|barcodes\/resolve)/.test(String(url)),releaseSlot=await acquireSlot(urgent),timer=setTimeout(()=>controller.abort("timeout"),timeoutMs),started=performance.now();state.requests++;state.lastRequestId=id;activeControllers.set(controller,scope);
       try{
         const headers=new Headers(options.headers||{});headers.set("X-Technics-Request-Id",id);headers.set("X-Technics-Priority",urgent?"urgent":"normal");
-        const response=await fetch(url,{...options,headers,signal:controller.signal,priority:urgent?"high":"auto"}),payload=validateShape(validateMeta(await read(response,settings.message),id,response),url);
+        const response=await rawFetch(url,{...options,headers,signal:controller.signal,priority:urgent?"high":"auto"}),payload=validateShape(validateMeta(await read(response,settings.message),id,response),url);
         if(!response.ok&&transientStatus(response.status)){state.httpRetries++;const error=new Error(payload?.error||`Servizio temporaneamente non disponibile (${response.status}).`);error.status=response.status;error.transient=true;throw error}
         if(key&&latestSequence.get(key)!==sequence){state.discarded++;const error=new Error("Risposta superata da una richiesta più recente.");error.staleResponse=true;throw error}
         state.lastLatencyMs=Math.round(performance.now()-started);state.lastSuccessAt=new Date().toISOString();recordTiming(url,state.lastLatencyMs);announceSuccess(url,payload,state.lastLatencyMs,false);
@@ -89,9 +90,27 @@
     if(key)inFlight.set(key,promise);return promise;
   };
   const invalidate=()=>responseCache.clear();
+  const transportCircuit={failures:0,openedAt:0};
+  const transportFetch=async(url,options={})=>{
+    const method=String(options.method||"GET").toUpperCase(),safe=method==="GET"||method==="HEAD";
+    if(transportCircuit.openedAt&&Date.now()-transportCircuit.openedAt<10000)throw new Error("Collegamento temporaneamente sospeso dopo errori consecutivi.");
+    if(transportCircuit.openedAt)Object.assign(transportCircuit,{failures:0,openedAt:0});
+    let lastError;
+    for(let attempt=0;attempt<(safe?2:1);attempt++){
+      const controller=new AbortController(),timeout=/\/health(?:[/?]|$)/.test(String(url))?4500:8000,timer=setTimeout(()=>controller.abort("timeout"),timeout);
+      try{
+        const headers=new Headers(options.headers||{});if(!headers.has("X-Technics-Request-Id"))headers.set("X-Technics-Request-Id",requestId());
+        const response=await rawFetch(url,{...options,headers,signal:controller.signal});
+        if(!response.ok&&transientStatus(response.status)&&attempt===0){await pause(180+Math.random()*120);continue}
+        transportCircuit.failures=0;return response;
+      }catch(error){lastError=error;if(!safe||attempt===1)break;await pause(180+Math.random()*120)}finally{clearTimeout(timer)}
+    }
+    transportCircuit.failures++;if(transportCircuit.failures>=5)transportCircuit.openedAt=Date.now();throw lastError||new Error("Collegamento dati non disponibile.");
+  };
   const cancelObsolete=workspace=>{for(const [controller,scope] of activeControllers)if(scope!=="global"&&scope!==workspace)controller.abort("workspace-change")};
   window.addEventListener("technics-workspace-change",event=>cancelObsolete(String(event.detail?.workspace||"")));
   const diagnostics=()=>Object.freeze({...state,inFlight:inFlight.size,activeControllers:activeControllers.size,normalActive,normalQueued:normalQueue.length,cacheEntries:responseCache.size,routes:[...routeTimings].map(([route,values])=>({route,samples:values.length,lastMs:values.at(-1)||0,averageMs:values.length?Math.round(values.reduce((sum,value)=>sum+value,0)/values.length):0,maxMs:values.length?Math.max(...values):0}))});
-  window.TechnicsDataClient=Object.freeze({parseText,read,fetchJson,invalidate,diagnostics,incompleteMessage,version:"1.8.98"});
-  document.documentElement.dataset.dataClient="1.9.25";
+  window.TechnicsTransport=Object.freeze({fetch:transportFetch,diagnostics:()=>({...transportCircuit})});
+  window.TechnicsDataClient=Object.freeze({parseText,read,fetchJson,invalidate,diagnostics,incompleteMessage,version:"1.9.27"});
+  document.documentElement.dataset.dataClient="1.9.27";
 })();
