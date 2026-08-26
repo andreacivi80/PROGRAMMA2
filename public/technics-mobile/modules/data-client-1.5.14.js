@@ -111,6 +111,6 @@
   window.addEventListener("technics-workspace-change",event=>cancelObsolete(String(event.detail?.workspace||"")));
   const diagnostics=()=>Object.freeze({...state,inFlight:inFlight.size,activeControllers:activeControllers.size,normalActive,normalQueued:normalQueue.length,cacheEntries:responseCache.size,routes:[...routeTimings].map(([route,values])=>({route,samples:values.length,lastMs:values.at(-1)||0,averageMs:values.length?Math.round(values.reduce((sum,value)=>sum+value,0)/values.length):0,maxMs:values.length?Math.max(...values):0}))});
   window.TechnicsTransport=Object.freeze({fetch:transportFetch,diagnostics:()=>({...transportCircuit})});
-  window.TechnicsDataClient=Object.freeze({parseText,read,fetchJson,invalidate,diagnostics,incompleteMessage,version:"1.9.28"});
-  document.documentElement.dataset.dataClient="1.9.28";
+  window.TechnicsDataClient=Object.freeze({parseText,read,fetchJson,invalidate,diagnostics,incompleteMessage,version:"1.9.29"});
+  document.documentElement.dataset.dataClient="1.9.29";
 })();
