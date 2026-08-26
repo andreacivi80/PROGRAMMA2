@@ -1,7 +1,7 @@
 (()=>{
   "use strict";
   const testBridge=location.hostname==="127.0.0.1"?new URLSearchParams(location.search).get("testBridge"):"";
-  const bridge=/^dev\d+$/.test(testBridge||"")?`http://127.0.0.1:${testBridge.slice(3)}`:"https://paintball-california-des-configure.trycloudflare.com";
+  const bridge=/^dev\d+$/.test(testBridge||"")?`http://127.0.0.1:${testBridge.slice(3)}`:"https://stephanie-witness-theatre-near.trycloudflare.com";
   const state={ok:false,database:null,databaseLatencyMs:null,failures:0,lastCheck:"",lastSuccessAt:"",latencyMs:0,version:"",nodeId:"",nodeRole:"",activeNode:"",redundancyAvailable:false,nodes:[],functions:{database:null,inventory:null,planning:null,packing:null,picking:null,nodes:null},functionLevels:{database:"wait",inventory:"wait",planning:"wait",packing:"wait",picking:"wait",nodes:"wait"},functionCheckedAt:{},functionSources:{},issues:[],message:"Avvio controllo",errorCode:"CHECK-IN-CORSO"};
   let cycle=0,healthBusy=false,functionsBusy=false;
   const functionFailures={inventory:0,planning:0,packing:0,picking:0};

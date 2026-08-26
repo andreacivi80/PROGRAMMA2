@@ -192,7 +192,7 @@
     window.TECHNICS_BRIDGES || [
       location.hostname === "127.0.0.1"
         ? "http://127.0.0.1:8792"
-        : "https://paintball-california-des-configure.trycloudflare.com",
+        : "https://stephanie-witness-theatre-near.trycloudflare.com",
     ];
   let currentCode = "",
     currentData = null,
