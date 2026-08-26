@@ -7,6 +7,6 @@
  * cancello Verify-ConnectivityContract-1.9.23.ps1.
  */
 window.TECHNICS_BRIDGES=Object.freeze([
-  "https://conditions-minerals-elite-passing.trycloudflare.com"
+  "https://technics-mobile-gateway.andreacivi80.workers.dev"
 ]);
 window.__technicsBridgeUrl=window.TECHNICS_BRIDGES[0];
