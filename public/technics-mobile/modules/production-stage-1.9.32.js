@@ -1,4 +1,4 @@
-/* Production planning classification by OP unit only. No requests or writes. */
+/* Planning phase by OP unit; production subtype by article code. No requests or writes. */
 (() => {
   'use strict';
   const stages=Object.freeze([
@@ -27,8 +27,29 @@
     for(const row of Array.isArray(rows)?rows:[])groups.find(group=>group.stage===classify(row).stage).rows.push(row);
     return groups.filter(group=>group.rows.length);
   }
+  const productionTypes=Object.freeze([
+    Object.freeze({type:'medical-device',label:'Medical device · Dispositivi medici'}),
+    Object.freeze({type:'cosmetics',label:'Cosmetici'}),
+    Object.freeze({type:'active-ingredients',label:'Principi attivi'}),
+    Object.freeze({type:'other',label:'Altre produzioni'}),
+    Object.freeze({type:'unverified',label:'Tipologia da verificare'})
+  ]);
+  function classifyProductionType(rowOrCode) {
+    const input=rowOrCode&&typeof rowOrCode==='object'?rowOrCode.articleCode:rowOrCode;
+    const code=typeof input==='string'?input.trim():typeof input==='number'&&Number.isFinite(input)?String(input):'';
+    const numeric=/^\d+$/.test(code)||/^\d{2}\.\d{3}$/.test(code)?Number(code.replace('.','')):NaN;
+    const family=String(rowOrCode&&typeof rowOrCode==='object'?rowOrCode.family||'':'').trim().toUpperCase();
+    const type=!code?'unverified':numeric>=40000&&numeric<=49999?'medical-device':family.includes('COSMETIC')?'cosmetics':/\bPRINCIP(?:I|IO)\s+ATTIV[IO]\b/.test(family)?'active-ingredients':'other';
+    return {...productionTypes.find(entry=>entry.type===type),code};
+  }
+  function groupProductionRows(rows) {
+    const groups=productionTypes.map(entry=>({...entry,rows:[]}));
+    for(const row of Array.isArray(rows)?rows:[])groups.find(group=>group.type===classifyProductionType(row).type).rows.push(row);
+    return groups.filter(group=>group.rows.length);
+  }
   function renderGroups(rows,renderRow) {
-    return groupRows(rows).map(group=>`<section class="schedulestagegroup schedulestagegroup-${group.stage}" data-schedule-stage="${group.stage}"><header class="schedulestageheading"><h4>${esc(group.label)}</h4><span>${group.rows.length} OP</span></header><div class="scheduletable">${group.rows.map(renderRow).join('')}</div></section>`).join('');
+    const renderTable=items=>`<div class="scheduletable">${items.map(renderRow).join('')}</div>`;
+    return groupRows(rows).map(group=>`<section class="schedulestagegroup schedulestagegroup-${group.stage}" data-schedule-stage="${group.stage}"><header class="schedulestageheading"><h4>${esc(group.label)}</h4><span>${group.rows.length} OP</span></header>${group.stage==='production'?groupProductionRows(group.rows).map(type=>`<section class="scheduleproductiontype scheduleproductiontype-${type.type}" data-production-type="${type.type}"><header class="scheduleproductiontypeheading"><h5>${esc(type.label)}</h5><span>${type.rows.length} OP</span></header>${renderTable(type.rows)}</section>`).join(''):renderTable(group.rows)}</section>`).join('');
   }
   function summarize(rows) {
     const counts={all:0,packing:0,production:0,unverified:0};
@@ -49,6 +70,15 @@
 .schedulestageheading>span{font-size:11px;font-weight:850;white-space:nowrap}
 .schedulestagegroup-production{border-color:#cebfdf}.schedulestagegroup-production>.schedulestageheading{background:#f1eafa;color:#614783;border-color:#cebfdf}
 .schedulestagegroup-unverified{border-color:#dfcfa5}.schedulestagegroup-unverified>.schedulestageheading{background:#fff8e8;color:#795e23;border-color:#dfcfa5}
+.scheduleproductiontype{margin:8px;border:1px solid #d5c6e2;border-radius:7px;overflow:hidden;background:#fff}
+.scheduleproductiontypeheading{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px;background:#eee7f6;color:#563b76;border-bottom:1px solid #d5c6e2}
+.scheduleproductiontypeheading h5{margin:0;min-width:0;font-size:12px;line-height:1.35;font-weight:900;overflow-wrap:anywhere}
+.scheduleproductiontypeheading>span{font-size:11px;font-weight:850;white-space:nowrap}
+.scheduleproductiontype-cosmetics>.scheduleproductiontypeheading{background:#f8edf5;color:#74436a}
+.scheduleproductiontype-active-ingredients>.scheduleproductiontypeheading{background:#e9f3ee;color:#315d49}
+.scheduleproductiontype-other>.scheduleproductiontypeheading{background:#edf0f3;color:#4a5765}
+.scheduleproductiontype-unverified>.scheduleproductiontypeheading{background:#fff8e8;color:#795e23}
+@media(max-width:600px){.scheduleproductiontype{margin:6px}.scheduleproductiontypeheading h5{font-size:13px}.scheduleproductiontypeheading>span{font-size:12px}}
 @media(max-width:600px){.schedulestagegroup{margin:7px}.schedulestageheading{padding:9px 8px}.schedulestageheading h4{font-size:14px}.schedulestageheading>span{font-size:12px}}
 .schedulephase{display:inline-block;margin-top:3px;padding:3px 5px;border:1px solid #c3d6d0;border-radius:5px;font-size:10px;font-weight:850;line-height:1.2;white-space:normal}
 .schedulephase-packing{background:#edf4fb;color:#315d78;border-color:#b4cddd}
@@ -86,5 +116,5 @@
     select.addEventListener('change',()=>onChange(api.get()));
     attached.set(section,api);return api;
   }
-  globalThis.TechnicsProductionStage=Object.freeze({classify,filterRows,groupRows,renderGroups,summarize,renderBadge,normalizeStage,attachFilter,stages});
+  globalThis.TechnicsProductionStage=Object.freeze({classify,filterRows,groupRows,renderGroups,classifyProductionType,groupProductionRows,summarize,renderBadge,normalizeStage,attachFilter,stages});
 })();
