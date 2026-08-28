@@ -13,7 +13,7 @@
       if(!value)return{state:"empty",value,count:0,required:0};
       if(/^\d{12}$/.test(value)){reset();return{state:"incomplete",value,count:0,required:2,message:"Lettura incompleta: manca una cifra. Inquadra anche i margini bianchi."}}
       if(/^\d{13}$/.test(value)&&!validEan13(value)){reset();return{state:"invalid",value,count:0,required:2,message:"Barcode non valido: ricontrollo automatico…"}}
-      const required=value.length>=6?2:3;
+      const required=options.source==="hardware"?1:value.length>=6?2:3;
       if(value===previous&&now-lastAt<windowMs)count++;
       else{previous=value;count=1}
       lastAt=now;
@@ -21,6 +21,6 @@
     };
     return Object.freeze({evaluate,reset,snapshot:()=>({value:previous,count,lastAt})});
   };
-  window.TechnicsScannerCore=Object.freeze({normalize,validEan13,createConsensus,version:"1.7.46"});
-  document.documentElement.dataset.scannerCore="1.7.46";
+  window.TechnicsScannerCore=Object.freeze({normalize,validEan13,createConsensus,version:"1.7.47"});
+  document.documentElement.dataset.scannerCore="1.7.47";
 })();
