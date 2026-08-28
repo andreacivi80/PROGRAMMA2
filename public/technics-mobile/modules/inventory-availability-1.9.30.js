@@ -63,20 +63,22 @@
     const style=document.createElement('style');style.id='inventory-availability-style';
     style.textContent=`
 #result .total.inventoryavailability{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:0;background:none;border:0;box-shadow:none}
-#result .inventoryavailability>span{display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:0;padding:7px 5px;border-radius:8px;text-align:center;color:#fff;background:#164f42}
+#result .inventoryavailability>span{display:grid;grid-template-rows:minmax(2.4em,auto) auto;align-content:center;align-items:center;gap:3px;min-width:0;padding:7px 5px;border-radius:8px;text-align:center;color:#fff;background:#164f42;font-size:10px}
 #result .inventoryavailability>.inventorybalance-free{background:#287257}
 #result .inventoryavailability>.inventorybalance-committed{background:#416b40}
-#result .inventoryavailability small{font-size:9px;font-weight:750;line-height:1.2;color:inherit}
-#result .inventoryavailability b{font-size:clamp(12px,3.4vw,16px);line-height:1.25;overflow-wrap:anywhere;color:inherit}
+#result .inventoryavailability small{font-size:10px;font-weight:750;line-height:1.2;color:inherit;text-align:center;overflow-wrap:anywhere}
+#result .inventoryavailability b{font-size:14px;line-height:1.25;overflow-wrap:anywhere;color:inherit;text-align:center;font-variant-numeric:tabular-nums}
 #result .stockhead{display:grid;grid-template-columns:minmax(84px,.85fr) minmax(0,2fr);gap:6px;align-items:start}
 #result .stockidentity,#result .stockqty{min-width:0}
 #result .stockidentity strong,#result .stock dl dd{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;max-width:none}
 #result .stock dl dd.inventorylonglot{font-size:8px;line-height:9px;word-break:break-all}
 #result .stock dl div:has(.inventorylonglot){padding:4px}
-#result .stockqty.inventoryrowbalance{display:grid;grid-column:1/-1;width:100%;box-sizing:border-box;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;text-align:right;max-width:none}
-#result .inventoryrowbalance>span{display:flex;flex-direction:column;gap:2px;min-width:0}
-#result .inventoryrowbalance small{font-size:9px;line-height:1.2;letter-spacing:0;text-transform:none}
-#result .inventoryrowbalance b{font-size:12px;line-height:1.3;white-space:normal;overflow-wrap:anywhere}
+#result .stockqty.inventoryrowbalance{display:grid;grid-column:1/-1;width:100%;box-sizing:border-box;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;text-align:center;max-width:none}
+#result .inventoryrowbalance>span{display:grid;grid-template-rows:minmax(2.4em,auto) auto;align-items:center;gap:2px;min-width:0;font-size:10px}
+#result .inventoryrowbalance small{font-size:10px;line-height:1.2;letter-spacing:0;text-transform:none;text-align:center;overflow-wrap:anywhere}
+#result .inventoryrowbalance b{font-size:14px;line-height:1.25;white-space:normal;overflow-wrap:anywhere;text-align:center;font-variant-numeric:tabular-nums}
+@media(max-width:420px){#result .inventoryavailability>span{grid-template-rows:minmax(3.6em,auto) auto}}
+@media(max-width:360px){#result .inventoryavailability b,#result .inventoryrowbalance b{font-size:12px}}
 #result .inventoryavailabilitynote{margin:3px 0 6px;font-size:10px;line-height:1.4;color:#456357}
 `;document.head.append(style);
   }
