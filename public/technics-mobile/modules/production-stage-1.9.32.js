@@ -22,6 +22,14 @@
     const source=Array.isArray(rows)?rows:[],selected=normalizeStage(stage);
     return selected?source.filter(row=>classify(row).stage===selected):source.slice();
   }
+  function groupRows(rows) {
+    const groups=stages.filter(entry=>entry.value).map(entry=>({stage:entry.value,label:entry.label,rows:[]}));
+    for(const row of Array.isArray(rows)?rows:[])groups.find(group=>group.stage===classify(row).stage).rows.push(row);
+    return groups.filter(group=>group.rows.length);
+  }
+  function renderGroups(rows,renderRow) {
+    return groupRows(rows).map(group=>`<section class="schedulestagegroup schedulestagegroup-${group.stage}" data-schedule-stage="${group.stage}"><header class="schedulestageheading"><h4>${esc(group.label)}</h4><span>${group.rows.length} OP</span></header><div class="scheduletable">${group.rows.map(renderRow).join('')}</div></section>`).join('');
+  }
   function summarize(rows) {
     const counts={all:0,packing:0,production:0,unverified:0};
     for(const row of Array.isArray(rows)?rows:[]){counts.all++;counts[classify(row).stage]++}
@@ -35,6 +43,13 @@
     if(doc.getElementById('production-stage-style-1932'))return;
     const style=doc.createElement('style');style.id='production-stage-style-1932';
     style.textContent=`
+.schedulestagegroup{margin:9px;border:1px solid #b4cddd;border-radius:9px;overflow:hidden;background:#fff}
+.schedulestageheading{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;background:#edf4fb;color:#254e72;border-bottom:1px solid #b4cddd}
+.schedulestageheading h4{margin:0;font-size:13px;font-weight:900;line-height:1.3}
+.schedulestageheading>span{font-size:11px;font-weight:850;white-space:nowrap}
+.schedulestagegroup-production{border-color:#cebfdf}.schedulestagegroup-production>.schedulestageheading{background:#f1eafa;color:#614783;border-color:#cebfdf}
+.schedulestagegroup-unverified{border-color:#dfcfa5}.schedulestagegroup-unverified>.schedulestageheading{background:#fff8e8;color:#795e23;border-color:#dfcfa5}
+@media(max-width:600px){.schedulestagegroup{margin:7px}.schedulestageheading{padding:9px 8px}.schedulestageheading h4{font-size:14px}.schedulestageheading>span{font-size:12px}}
 .schedulephase{display:inline-block;margin-top:3px;padding:3px 5px;border:1px solid #c3d6d0;border-radius:5px;font-size:10px;font-weight:850;line-height:1.2;white-space:normal}
 .schedulephase-packing{background:#edf4fb;color:#315d78;border-color:#b4cddd}
 .schedulephase-production{background:#f4effb;color:#614783;border-color:#cebfdf}
@@ -71,5 +86,5 @@
     select.addEventListener('change',()=>onChange(api.get()));
     attached.set(section,api);return api;
   }
-  globalThis.TechnicsProductionStage=Object.freeze({classify,filterRows,summarize,renderBadge,normalizeStage,attachFilter,stages});
+  globalThis.TechnicsProductionStage=Object.freeze({classify,filterRows,groupRows,renderGroups,summarize,renderBadge,normalizeStage,attachFilter,stages});
 })();
