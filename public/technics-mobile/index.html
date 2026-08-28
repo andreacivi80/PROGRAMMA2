@@ -625,6 +625,7 @@ let printPreviewObjectUrls1217=[],packingPrintOperationId1214="";
 const packingPreviewWarm1217=new Map();
 const packingPrintBridge1217=()=>window.__technicsPackingHooks?.bridgeUrl?.()||window.__technicsBridgeUrl;
 async function fetchPrintBridge1217(url,options={},attempts=4){
+  if(!["GET","HEAD"].includes(String(options.method||"GET").toUpperCase()))attempts=1;
   let lastError;
   for(let attempt=0;attempt<attempts;attempt++){
     try{return await TechnicsTransport.fetch(url,options)}catch(error){
@@ -666,7 +667,7 @@ function warmServerPrintPreview1217(){
   const key=`${barcode}:${Number(window.__technicsPackingHooks?.revision?.()||0)}`;
   if(packingPreviewWarm1217.has(key))return;
   document.documentElement.dataset.packingWarmStarted=key;
-  const promise=prepareServerPrintPreview1217(barcode).then(prepared=>{document.documentElement.dataset.packingWarmReady=key;return prepared}).catch(()=>{packingPreviewWarm1217.delete(key);document.documentElement.dataset.packingWarmFailed=key;return null});
+  const promise=prepareServerPrintPreview1217(barcode).then(prepared=>{document.documentElement.dataset.packingWarmReady=key;return prepared}).catch(()=>{document.documentElement.dataset.packingWarmFailed=key;return null});
   packingPreviewWarm1217.set(key,promise);
   while(packingPreviewWarm1217.size>3)packingPreviewWarm1217.delete(packingPreviewWarm1217.keys().next().value);
 }
