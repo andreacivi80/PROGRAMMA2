@@ -52,10 +52,10 @@
     return payload;
   };
   const announceSuccess=(url,payload,latencyMs,cached=false)=>{
-    const dataTime=payload?.readAt||payload?.result?.readAt||payload?.order?.readAt||payload?.meta?.serverTime||new Date().toISOString();
+    const dataTime=payload?.readAt||payload?.item?.readAt||payload?.result?.readAt||payload?.order?.readAt||payload?.meta?.serverTime||new Date().toISOString();
     const source=payload?.result?.source||payload?.store?.source||payload?.meta?.source||"TechnicsBridge";
     const previousNode=state.lastNodeId;state.lastServerTime=String(payload?.meta?.serverTime||"");state.lastDataTime=String(dataTime||"");state.lastSource=String(source||"");state.lastNodeId=String(payload?.meta?.nodeId||"");state.lastNodeRole=String(payload?.meta?.nodeRole||"");state.lastLeaseEpoch=String(payload?.meta?.leaseEpoch||"");state.lastBridgeVersion=String(payload?.meta?.version||"");if(previousNode&&previousNode!==state.lastNodeId)document.dispatchEvent(new CustomEvent("technics:node-switch",{detail:{code:"UNEXPECTED-NODE-SWITCH",from:previousNode,to:state.lastNodeId,at:new Date().toISOString()}}));
-    document.dispatchEvent(new CustomEvent("technics:data-success",{detail:{url:String(url),dataTime:state.lastDataTime,serverTime:state.lastServerTime,source:state.lastSource,nodeId:state.lastNodeId,nodeRole:state.lastNodeRole,bridgeVersion:state.lastBridgeVersion,requestId:state.lastRequestId,latencyMs:Number(latencyMs||0),cached:Boolean(cached)}}));
+    document.dispatchEvent(new CustomEvent("technics:data-success",{detail:{ok:true,validated:true,url:String(url),dataTime:state.lastDataTime,serverTime:state.lastServerTime,source:state.lastSource,nodeId:state.lastNodeId,nodeRole:state.lastNodeRole,bridgeVersion:state.lastBridgeVersion,requestId:state.lastRequestId,latencyMs:Number(latencyMs||0),cached:Boolean(cached)}}));
   };
   const runFetch=async(url,options,settings,key,sequence)=>{
     const method=String(options.method||"GET").toUpperCase(),safe=method==="GET"||method==="HEAD",attempts=safe?Math.min(2,Math.max(1,Number(settings.attempts||2))):1,timeoutMs=Math.min(8000,Math.max(3000,Number(settings.timeoutMs||6500)));let lastError;
@@ -67,7 +67,7 @@
         const response=await rawFetch(url,{...options,headers,signal:controller.signal,priority:urgent?"high":"auto"}),payload=validateShape(validateMeta(await read(response,settings.message),id,response),url);
         if(!response.ok&&transientStatus(response.status)){state.httpRetries++;const error=new Error(payload?.error||`Servizio temporaneamente non disponibile (${response.status}).`);error.status=response.status;error.transient=true;throw error}
         if(key&&latestSequence.get(key)!==sequence){state.discarded++;const error=new Error("Risposta superata da una richiesta più recente.");error.staleResponse=true;throw error}
-        state.lastLatencyMs=Math.round(performance.now()-started);state.lastSuccessAt=new Date().toISOString();recordTiming(url,state.lastLatencyMs);announceSuccess(url,payload,state.lastLatencyMs,false);
+        state.lastLatencyMs=Math.round(performance.now()-started);recordTiming(url,state.lastLatencyMs);if(response.ok&&payload.ok===true){state.lastSuccessAt=new Date().toISOString();announceSuccess(url,payload,state.lastLatencyMs,false)}
         if(attempt){state.recovered++;document.dispatchEvent(new CustomEvent("technics:data-recovered",{detail:{url,attempt:attempt+1}}))}
         return {response,payload,attempt:attempt+1,requestId:id,latencyMs:state.lastLatencyMs};
       }catch(error){
@@ -86,7 +86,7 @@
     if(key&&cacheMs){const cached=responseCache.get(key);if(cached&&Date.now()-cached.savedAt<=cacheMs){state.cached++;const result={...cached.result,payload:clone(cached.result.payload),cached:true};announceSuccess(url,result.payload,result.latencyMs,true);return Promise.resolve(result)}if(cached)responseCache.delete(key)}
     if(key&&inFlight.has(key)){state.deduplicated++;return inFlight.get(key)}
     const sequence=(latestSequence.get(key)||0)+1;if(key)latestSequence.set(key,sequence);
-    const promise=runFetch(url,options,settings,key,sequence).then(result=>{if(key&&cacheMs)responseCache.set(key,{savedAt:Date.now(),result:{...result,payload:clone(result.payload)}});if(method!=="GET")document.dispatchEvent(new CustomEvent("technics:data-mutated",{detail:{url:String(url),method}}));return result}).finally(()=>{if(key&&inFlight.get(key)===promise)inFlight.delete(key)});
+    const promise=runFetch(url,options,settings,key,sequence).then(result=>{if(key&&cacheMs&&result.response.ok&&result.payload.ok===true)responseCache.set(key,{savedAt:Date.now(),result:{...result,payload:clone(result.payload)}});if(method!=="GET"&&result.response.ok&&result.payload.ok===true)document.dispatchEvent(new CustomEvent("technics:data-mutated",{detail:{url:String(url),method}}));return result}).finally(()=>{if(key&&inFlight.get(key)===promise)inFlight.delete(key)});
     if(key)inFlight.set(key,promise);return promise;
   };
   const invalidate=()=>responseCache.clear();
