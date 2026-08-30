@@ -80,7 +80,7 @@
     document.addEventListener("technics:data-success",onDataSuccess);
     setTimeout(loadNodes,1000);setInterval(loadNodes,5000);setTimeout(checkFunctions,20000+Math.round(Math.random()*2500));setInterval(checkFunctions,300000);setInterval(paintFunctionLights,5000);
   };
-  window.TechnicsSystemHealth=Object.freeze({check:refreshDiagnostics,diagnostics:()=>Object.freeze({...state,clientRoutes:clientRoutes()}),version:"1.9.32"});
-  document.documentElement.dataset.systemHealth="1.9.32";
+  window.TechnicsSystemHealth=Object.freeze({check:refreshDiagnostics,diagnostics:()=>Object.freeze({...state,clientRoutes:clientRoutes()}),version:"1.9.33"});
+  document.documentElement.dataset.systemHealth="1.9.33";
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
 })();
