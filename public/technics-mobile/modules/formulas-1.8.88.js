@@ -794,8 +794,8 @@
     }
     scheduleRawMaterials();
   };
-  rawMaterialForm.addEventListener("submit", (event) => { event.preventDefault(); loadRawMaterials(); });
-  rawMaterialForm.elements.lineId.addEventListener("change", () => loadRawMaterials());
+  rawMaterialForm.addEventListener("submit", (event) => { event.preventDefault(); clearTimeout(rawMaterialTimer); loadRawMaterials(); });
+  rawMaterialForm.elements.lineId.addEventListener("change", () => { clearTimeout(rawMaterialTimer); loadRawMaterials(); });
   rawMaterialRows.addEventListener("click", (event) => {
     const stock = event.target.closest("[data-raw-stock]");
     if (stock) { openInventoryByCode(stock.dataset.rawStock); return; }
@@ -1266,8 +1266,7 @@
   window.addEventListener("technics-workspace-change", (event) => {
     if (event.detail.workspace === "rawmaterials") {
       clearTimeout(refreshTimer);
-      if (!rawMaterialLoaded) loadRawMaterials();
-      else scheduleRawMaterials();
+      scheduleRawMaterials();
       updateBackButton();
       return;
     }
