@@ -43,7 +43,7 @@
   const applyFunctionResult=(key,result)=>{const transition=TechnicsHealthState.functionTransition({value:state.functions[key],level:state.functionLevels[key],failures:functionFailures[key]||0},result,Date.now());functionFailures[key]=transition.failures;state.functions[key]=transition.value;state.functionLevels[key]=transition.level;state.functionSources[key]=transition.source;state.functionCheckedAt[key]=transition.checkedAt;if(transition.confirmedFailure)recordIssue(`FUNZIONE-${key.toUpperCase()}`,`${functionLabels[key]} non disponibile dopo due controlli espliciti`);paintFunctionLights()};
   const updateDatabaseLight=()=>{const bridgeFailed=!state.ok,confirmedBridgeFailure=bridgeFailed&&state.failures>=2;state.functions.database=bridgeFailed?null:state.database===true?true:state.database===false?false:null;state.functionLevels.database=confirmedBridgeFailure||(!bridgeFailed&&state.database===false)?"bad":!bridgeFailed&&state.database===true?"ok":"warn";state.functionCheckedAt.database=Date.now();state.functionSources.database=confirmedBridgeFailure?"ponte assente":bridgeFailed?"ponte temporaneamente in verifica":state.database===true?"controllo diretto riuscito":state.database===false?"gestionale esplicitamente non disponibile":"verifica gestionale inconcludente"};
   const checkFunctions=async()=>{if(functionsBusy)return;clearTimeout(functionRetryTimer);functionRetryTimer=0;functionsBusy=true;try{ensureFunctionLights();updateDatabaseLight();paintFunctionLights();const tasks=[()=>probe("/api/items/lookup?code=PRO20825"),()=>probe("/api/planning/op?number=521"),probePacking,()=>probe("/api/picking/open")],keys=["inventory","planning","packing","picking"];for(let index=0;index<tasks.length;index++)applyFunctionResult(keys[index],await tasks[index]());await loadNodes();const serviceKeys=["database","inventory","planning","packing","picking","nodes"],allFunctionsReady=serviceKeys.every(key=>state.functions[key]===true&&state.functionLevels[key]==="ok");if(allFunctionsReady)document.dispatchEvent(new CustomEvent("technics:health-ready",{detail:{checkedAt:Date.now(),nodeId:state.activeNode||state.nodeId,redundancyAvailable:state.redundancyAvailable}}));paintPanel()}finally{functionsBusy=false;const failures=Math.max(...Object.values(functionFailures));if(failures>0&&failures<=3)scheduleFunctionRetry(failures*20000)}};
-  const refreshDiagnostics=async()=>{await check();await checkFunctions()};
+  const refreshDiagnostics=async()=>{await check(true);await checkFunctions()};
   const onDataSuccess=event=>{if(event.detail?.cached)return;const path=(()=>{try{return new URL(String(event.detail?.url||""),location.href).pathname}catch{return ""}})(),key=path.startsWith("/api/items/")||path.startsWith("/api/barcodes/")?"inventory":path.startsWith("/api/planning/")||path.startsWith("/api/sales/")?"planning":path.startsWith("/api/packing/")?"packing":path.startsWith("/api/picking/")?"picking":"";if(key)applyFunctionResult(key,{ok:true,level:"ok",source:"lettura reale completata",explicitFailure:false})};
   const ensurePanel=()=>{
     if(document.getElementById("systemDiagnostics"))return;
@@ -63,8 +63,8 @@
     node.title=`Ponte ${state.version||"—"} · controllo ${state.lastCheck||"in corso"}`;
     node.setAttribute("role","button");node.setAttribute("tabindex","0");node.setAttribute("aria-label","Apri diagnostica collegamento Technics");paintPanel();
   };
-  const check=async()=>{if(healthBusy)return;healthBusy=true;
-    cycle++;const deep=cycle===1||cycle%3===0,started=performance.now(),controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
+  const check=async(deep=false)=>{if(healthBusy)return;healthBusy=true;
+    cycle++;const started=performance.now(),controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
     try{
       const response=await TechnicsTransport.fetch(`${bridge}/health?deep=${deep?1:0}&fresh=${Date.now()}`,{cache:"no-store",headers:{"Cache-Control":"no-store","ngrok-skip-browser-warning":"1"},signal:controller.signal});
       const payload=await readPayload(response,"Verifica collegamento temporaneamente non disponibile.");
@@ -79,9 +79,9 @@
     if(window.TechnicsLiveSync)TechnicsLiveSync.create({interval:45000,maxDelay:180000,immediate:true,active:()=>navigator.onLine&&!document.hidden,task:check}).start();
     else{check();setInterval(()=>{if(!document.hidden)check()},45000)}
     document.addEventListener("technics:data-success",onDataSuccess);
-    setTimeout(loadNodes,2500);setInterval(()=>{if(!document.hidden)loadNodes()},60000);setInterval(paintFunctionLights,5000);
+    setTimeout(loadNodes,15000);setInterval(()=>{if(!document.hidden)loadNodes()},60000);setInterval(paintFunctionLights,5000);
   };
-  window.TechnicsSystemHealth=Object.freeze({check:refreshDiagnostics,diagnostics:()=>Object.freeze({...state,clientRoutes:clientRoutes()}),version:"1.9.43"});
-  document.documentElement.dataset.systemHealth="1.9.43";
+  window.TechnicsSystemHealth=Object.freeze({check:refreshDiagnostics,diagnostics:()=>Object.freeze({...state,clientRoutes:clientRoutes()}),version:"1.9.44"});
+  document.documentElement.dataset.systemHealth="1.9.44";
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
 })();
