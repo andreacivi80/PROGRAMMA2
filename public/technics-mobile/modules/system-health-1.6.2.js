@@ -78,7 +78,7 @@
     if(window.TechnicsLiveSync)TechnicsLiveSync.create({interval:20000,maxDelay:60000,immediate:true,active:()=>navigator.onLine,task:check}).start();
     else{check();setInterval(check,20000)}
     document.addEventListener("technics:data-success",onDataSuccess);
-    setTimeout(loadNodes,3500);setInterval(loadNodes,30000);setTimeout(checkFunctions,20000+Math.round(Math.random()*2500));setInterval(checkFunctions,300000);setInterval(paintFunctionLights,5000);
+    setTimeout(loadNodes,1000);setInterval(loadNodes,5000);setTimeout(checkFunctions,20000+Math.round(Math.random()*2500));setInterval(checkFunctions,300000);setInterval(paintFunctionLights,5000);
   };
   window.TechnicsSystemHealth=Object.freeze({check:refreshDiagnostics,diagnostics:()=>Object.freeze({...state,clientRoutes:clientRoutes()}),version:"1.9.30"});
   document.documentElement.dataset.systemHealth="1.9.30";
