@@ -55,7 +55,7 @@
     return units.size>1||rows.some(row=>!finite(row.quantity))?null:rows.reduce((sum,row)=>sum+row.quantity,0);
   }
   function markup(value, summary = false) {
-    return [['total','Totale',value.total],['free',value.productionOnly?(summary?'Libero da impegni produzione':'Libero prod.'):'Libero',value.free],['committed',value.productionOnly?(summary?'Impegnato produzione':'Impegn. prod.'):'Impegnato',value.committed]].map(([key,label,quantity]) =>
+    return [['total','Totale',value.total],['free','Libero',value.free],['committed','Impegnato',value.committed]].map(([key,label,quantity]) =>
       `<span class="inventorybalance-${key}"><small${summary && key === 'total' ? ' id="totallabel"' : ''}>${label}</small><b${summary && key === 'total' ? ' id="total"' : ''}>${esc(format(quantity,value.unit))}</b></span>`).join('');
   }
   function installStyles() {
