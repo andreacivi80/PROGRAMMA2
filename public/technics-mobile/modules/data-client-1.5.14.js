@@ -101,7 +101,7 @@
       try{
         const headers=new Headers(options.headers||{});if(!headers.has("X-Technics-Request-Id"))headers.set("X-Technics-Request-Id",requestId());
         const response=await rawFetch(url,{...options,headers,signal:controller.signal});
-        if(!response.ok&&transientStatus(response.status)&&attempt===0){await pause(180+Math.random()*120);continue}
+        if(!response.ok&&safe&&transientStatus(response.status)&&attempt===0){await pause(180+Math.random()*120);continue}
         transportCircuit.failures=0;return response;
       }catch(error){lastError=error;if(!safe||attempt===1)break;await pause(180+Math.random()*120)}finally{clearTimeout(timer)}
     }
@@ -111,6 +111,6 @@
   window.addEventListener("technics-workspace-change",event=>cancelObsolete(String(event.detail?.workspace||"")));
   const diagnostics=()=>Object.freeze({...state,inFlight:inFlight.size,activeControllers:activeControllers.size,normalActive,normalQueued:normalQueue.length,cacheEntries:responseCache.size,routes:[...routeTimings].map(([route,values])=>({route,samples:values.length,lastMs:values.at(-1)||0,averageMs:values.length?Math.round(values.reduce((sum,value)=>sum+value,0)/values.length):0,maxMs:values.length?Math.max(...values):0}))});
   window.TechnicsTransport=Object.freeze({fetch:transportFetch,diagnostics:()=>({...transportCircuit})});
-  window.TechnicsDataClient=Object.freeze({parseText,read,fetchJson,invalidate,diagnostics,incompleteMessage,version:"1.9.29"});
-  document.documentElement.dataset.dataClient="1.9.29";
+  window.TechnicsDataClient=Object.freeze({parseText,read,fetchJson,invalidate,diagnostics,incompleteMessage,version:"1.9.55"});
+  document.documentElement.dataset.dataClient="1.9.55";
 })();
