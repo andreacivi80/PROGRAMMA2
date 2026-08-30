@@ -44,9 +44,25 @@
     for(const row of Array.isArray(rows)?rows:[])groups.find(group=>group.type===classifyProductionType(row).type).rows.push(row);
     return groups.filter(group=>group.rows.length);
   }
+  const displayOrder=Object.freeze([
+    Object.freeze({stage:'packing',type:'medical-device',label:'Confezionamento Medical device'}),
+    Object.freeze({stage:'production',type:'medical-device',label:'Produzione Medical device'}),
+    Object.freeze({stage:'production',type:'cosmetics',label:'Produzione Cosmetici'}),
+    Object.freeze({stage:'packing',type:'cosmetics',label:'Confezionamento Cosmetici'})
+  ]);
+  function groupDisplayRows(rows) {
+    const groups=displayOrder.map(entry=>({...entry,rows:[]})),unverified={stage:'unverified',type:'',label:'Da verificare',rows:[]};
+    for(const row of Array.isArray(rows)?rows:[]){
+      const stage=classify(row).stage;
+      if(stage==='unverified'){unverified.rows.push(row);continue}
+      const type=classifyProductionType(row).type;
+      groups.find(group=>group.stage===stage&&group.type===type).rows.push(row);
+    }
+    return [...groups.filter(group=>group.rows.length),...(unverified.rows.length?[unverified]:[])];
+  }
   function renderGroups(rows,renderRow) {
     const renderTable=items=>`<div class="scheduletable">${items.map(renderRow).join('')}</div>`;
-    return groupRows(rows).map(group=>`<section class="schedulestagegroup schedulestagegroup-${group.stage}" data-schedule-stage="${group.stage}"><header class="schedulestageheading"><h4>${esc(group.label)}</h4><span>${group.rows.length} OP</span></header>${(group.stage==='production'||group.stage==='packing')?groupProductionRows(group.rows).map(type=>`<section class="scheduleproductiontype scheduleproductiontype-${type.type}" data-production-type="${type.type}"><header class="scheduleproductiontypeheading"><h5>${esc(type.label)}</h5><span>${type.rows.length} OP</span></header>${renderTable(type.rows)}</section>`).join(''):renderTable(group.rows)}</section>`).join('');
+    return groupDisplayRows(rows).map(group=>`<section class="schedulestagegroup schedulestagegroup-${group.stage}${group.type?` scheduleproductiontype-${group.type}`:''}" data-schedule-stage="${group.stage}"${group.type?` data-production-type="${group.type}"`:''}><header class="schedulestageheading"><h4>${esc(group.label)}</h4><span>${group.rows.length} OP</span></header>${renderTable(group.rows)}</section>`).join('');
   }
   function summarize(rows) {
     const counts={all:0,packing:0,production:0,unverified:0};
@@ -110,5 +126,5 @@
     select.addEventListener('change',()=>onChange(api.get()));
     attached.set(section,api);return api;
   }
-  globalThis.TechnicsProductionStage=Object.freeze({classify,filterRows,groupRows,renderGroups,classifyProductionType,groupProductionRows,summarize,renderBadge,normalizeStage,attachFilter,stages});
+  globalThis.TechnicsProductionStage=Object.freeze({classify,filterRows,groupRows,renderGroups,classifyProductionType,groupProductionRows,groupDisplayRows,summarize,renderBadge,normalizeStage,attachFilter,stages,displayOrder});
 })();
