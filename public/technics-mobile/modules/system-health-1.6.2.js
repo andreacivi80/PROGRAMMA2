@@ -50,7 +50,8 @@
     const dataAt=Date.parse(detail.dataTime),age=Date.now()-dataAt;
     if(!Number.isFinite(age)||age< -300000||age>60000)return;
     const path=(()=>{try{return new URL(String(detail.url||""),location.href).pathname}catch{return ""}})(),inventory=path.startsWith("/api/items/")||path.startsWith("/api/barcodes/"),planning=path.startsWith("/api/planning/")||path.startsWith("/api/sales/")||path.startsWith("/api/production/"),key=inventory?"inventory":planning?"planning":path.startsWith("/api/packing/")?"packing":path.startsWith("/api/picking/")?"picking":"";
-    if(inventory||planning){state.ok=true;state.failures=0;state.database=true;state.databaseEvidenceAt=Date.now();state.databaseEvidenceSource="lettura gestionale completata";state.nodeId=String(detail.nodeId);state.activeNode=state.nodeId;state.nodeRole=String(detail.nodeRole||state.nodeRole);state.version=String(detail.bridgeVersion||state.version);state.lastSuccessAt=new Date().toISOString();state.message="Lettura gestionale completata";state.errorCode="OK";updateDatabaseLight();paintFunctionLights();paint()}
+    const formulaRead=["/api/formulas/search","/api/formulas/item","/api/formulas/raw-materials"].includes(path);
+    if(inventory||planning||formulaRead){state.ok=true;state.failures=0;state.database=true;state.databaseEvidenceAt=Date.now();state.databaseEvidenceSource="lettura gestionale completata";state.nodeId=String(detail.nodeId);state.activeNode=state.nodeId;state.nodeRole=String(detail.nodeRole||state.nodeRole);state.version=String(detail.bridgeVersion||state.version);state.lastSuccessAt=new Date().toISOString();state.message="Lettura gestionale completata";state.errorCode="OK";updateDatabaseLight();paintFunctionLights();paint()}
     if(key)applyFunctionResult(key,{ok:true,level:"ok",source:"lettura reale completata",explicitFailure:false});
   };
   const ensurePanel=()=>{
@@ -89,7 +90,7 @@
     document.addEventListener("technics:data-success",onDataSuccess);
     setTimeout(loadNodes,15000);setInterval(()=>{if(!document.hidden)loadNodes()},60000);setInterval(()=>{updateDatabaseLight();paintFunctionLights();paint()},5000);
   };
-  window.TechnicsSystemHealth=Object.freeze({check:refreshDiagnostics,diagnostics:()=>Object.freeze({...state,clientRoutes:clientRoutes()}),version:"1.9.49"});
-  document.documentElement.dataset.systemHealth="1.9.49";
+  window.TechnicsSystemHealth=Object.freeze({check:refreshDiagnostics,diagnostics:()=>Object.freeze({...state,clientRoutes:clientRoutes()}),version:"1.9.50"});
+  document.documentElement.dataset.systemHealth="1.9.50";
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
 })();
