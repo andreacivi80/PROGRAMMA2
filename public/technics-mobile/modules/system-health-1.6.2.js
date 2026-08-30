@@ -90,7 +90,7 @@
     document.addEventListener("technics:data-success",onDataSuccess);
     setTimeout(loadNodes,15000);setInterval(()=>{if(!document.hidden)loadNodes()},60000);setInterval(()=>{updateDatabaseLight();paintFunctionLights();paint()},5000);
   };
-  window.TechnicsSystemHealth=Object.freeze({check:refreshDiagnostics,diagnostics:()=>Object.freeze({...state,clientRoutes:clientRoutes()}),version:"1.9.50"});
-  document.documentElement.dataset.systemHealth="1.9.50";
+  window.TechnicsSystemHealth=Object.freeze({check:refreshDiagnostics,diagnostics:()=>Object.freeze({...state,clientRoutes:clientRoutes()}),version:"1.9.51"});
+  document.documentElement.dataset.systemHealth="1.9.51";
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
 })();
