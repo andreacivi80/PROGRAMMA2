@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "contractId": "technics-packing-list-reader-browser-v1",
+  "candidateOnly": false,
+  "defaultEnabled": false,
+  "configuration": {
+    "file": "bridge-config.js",
+    "global": "TECHNICS_PACKING_READER",
+    "originFields": [
+      "origin",
+      "authorizedOrigin"
+    ],
+    "originRule": "identical-canonical-HTTPS-origins-no-credentials-path-query-fragment",
+    "privateTokenInBrowser": false
+  },
+  "routing": {
+    "method": "GET",
+    "path": "/api/packing/open",
+    "sourceOrigin": "TECHNICS_BRIDGES[0]",
+    "otherRequests": "unchanged",
+    "disabled": "original-url-and-options",
+    "automaticLegacyFallback": false,
+    "redirect": "error",
+    "credentials": "omit"
+  },
+  "identity": {
+    "nodeId": "technics-utente38-packing-reader",
+    "nodeRole": "reader",
+    "expectedFields": [
+      "nodeId",
+      "releaseId",
+      "contractVersion",
+      "buildHash",
+      "coordinatorId"
+    ],
+    "buildHash": "SHA256-64-hex-exact-match",
+    "guidFields": [
+      "bootId",
+      "coordinatorId"
+    ],
+    "capabilities": [
+      "packing-open:get:v1"
+    ],
+    "readOnly": true,
+    "databaseVerified": false,
+    "headerToMeta": {
+      "X-Technics-Node": "nodeId",
+      "X-Technics-Version": "version",
+      "X-Technics-Node-Role": "nodeRole",
+      "X-Technics-Lease-Epoch": "leaseEpoch",
+      "X-Technics-Request-Id": "requestId",
+      "X-Technics-Server-Time": "serverTime"
+    }
+  },
+  "minimumRevisions": {
+    "header": "X-Technics-Minimum-Revisions",
+    "maxEntries": 32,
+    "maxKeyCharacters": 128,
+    "maxUtf8Bytes": 4096,
+    "minimum": 0,
+    "maximum": 2147483647,
+    "integerOnly": true,
+    "observationTtlMs": 1800000,
+    "source": "verified-POST-ACK-or-already-validated-GET-reconciliation-or-applied-server-session",
+    "pendingLocalWrites": "never-registered-or-modified",
+    "persistence": {
+      "storage": "localStorage",
+      "keyPrefix": "technics-packing-confirmed-minima-v1:",
+      "scope": [
+        "main-bridge-origin",
+        "fixed-reader-nodeId"
+      ],
+      "fields": [
+        "opBarcode",
+        "revision",
+        "at"
+      ],
+      "merge": "monotonic-max-on-read-write-storage-event",
+      "invalidOrUnavailable": "explicit-warning-and-certified-reader-blocked-in-current-page",
+      "quotaAfterForcedReload": "persistence-guarantee-unavailable-do-not-claim-preserved",
+      "outboxLifecycle": "unchanged"
+    }
+  },
+  "transport": {
+    "circuitScope": "exact-URL-origin",
+    "failureThreshold": 5,
+    "cooldownMs": 10000,
+    "postAttempts": 1,
+    "globalFetchInterceptor": false
+  },
+  "display": {
+    "metadataIncomplete": "visible-warning-not-database-readiness",
+    "stale409": "explicit-refresh-action-no-legacy-fallback",
+    "cacheBehindMinimum": "do-not-render-rows",
+    "cacheAfterError": "explicit-copy-with-time-never-fresh",
+    "globalDataClientAnnouncement": false
+  }
+}

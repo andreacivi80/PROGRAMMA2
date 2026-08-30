@@ -92,10 +92,13 @@
   };
   const invalidate=()=>responseCache.clear();
   const cancelledRequest=reason=>{const error=new Error(typeof reason==="string"?reason:"Richiesta annullata.");error.name="AbortError";error.cancelled=true;return error};
-  const transportCircuit={failures:0,openedAt:0};
+  const transportCircuits=new Map();let lastTransportOrigin="";
+  const transportOrigin=url=>new URL(String(url),globalThis.location?.href||window.__technicsBridgeUrl).origin;
+  const circuitFor=origin=>{let circuit=transportCircuits.get(origin);if(!circuit){circuit={failures:0,openedAt:0};transportCircuits.set(origin,circuit)}return circuit};
   const transportFetch=async(url,options={})=>{
     const method=String(options.method||"GET").toUpperCase(),safe=method==="GET"||method==="HEAD";
     if(options.signal?.aborted)throw cancelledRequest(options.signal.reason);
+    const origin=transportOrigin(url),transportCircuit=circuitFor(origin);lastTransportOrigin=origin;
     if(transportCircuit.openedAt&&Date.now()-transportCircuit.openedAt<10000)throw new Error("Collegamento temporaneamente sospeso dopo errori consecutivi.");
     if(transportCircuit.openedAt)Object.assign(transportCircuit,{failures:0,openedAt:0});
     let lastError;
@@ -125,7 +128,7 @@
   const cancelObsolete=workspace=>{for(const [controller,scope] of activeControllers)if(scope!=="global"&&scope!==workspace)controller.abort("workspace-change")};
   window.addEventListener("technics-workspace-change",event=>cancelObsolete(String(event.detail?.workspace||"")));
   const diagnostics=()=>Object.freeze({...state,inFlight:inFlight.size,activeControllers:activeControllers.size,normalActive,normalQueued:normalQueue.length,cacheEntries:responseCache.size,routes:[...routeTimings].map(([route,values])=>({route,samples:values.length,lastMs:values.at(-1)||0,averageMs:values.length?Math.round(values.reduce((sum,value)=>sum+value,0)/values.length):0,maxMs:values.length?Math.max(...values):0}))});
-  window.TechnicsTransport=Object.freeze({fetch:transportFetch,diagnostics:()=>({...transportCircuit})});
-  window.TechnicsDataClient=Object.freeze({parseText,read,fetchJson,invalidate,diagnostics,incompleteMessage,version:"1.9.57"});
-  document.documentElement.dataset.dataClient="1.9.57";
+  window.TechnicsTransport=Object.freeze({fetch:transportFetch,diagnostics:url=>{let origin=lastTransportOrigin;try{if(url||window.__technicsBridgeUrl)origin=transportOrigin(url||window.__technicsBridgeUrl)}catch{}const circuit=transportCircuits.get(origin)||{failures:0,openedAt:0};return {...circuit,origin,circuits:[...transportCircuits].map(([key,value])=>({origin:key,...value}))}}});
+  window.TechnicsDataClient=Object.freeze({parseText,read,fetchJson,invalidate,diagnostics,incompleteMessage,version:"1.9.59"});
+  document.documentElement.dataset.dataClient="1.9.59";
 })();
