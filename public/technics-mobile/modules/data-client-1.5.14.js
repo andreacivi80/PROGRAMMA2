@@ -61,8 +61,9 @@
     const method=String(options.method||"GET").toUpperCase(),safe=method==="GET"||method==="HEAD",attempts=safe?Math.min(2,Math.max(1,Number(settings.attempts||2))):1,timeoutMs=Math.min(8000,Math.max(3000,Number(settings.timeoutMs||6500)));let lastError;
     for(let attempt=0;attempt<attempts;attempt++){
       if(attempt)await waitForNetwork();
-      const id=requestId(),controller=new AbortController(),scope=String(settings.scope||document.querySelector("main.shell")?.dataset.workspace||"global"),urgent=/\/api\/(items\/lookup|barcodes\/resolve)/.test(String(url)),releaseSlot=await acquireSlot(urgent),timer=setTimeout(()=>controller.abort("timeout"),timeoutMs),started=performance.now();state.requests++;state.lastRequestId=id;activeControllers.set(controller,scope);
+      const id=requestId(),controller=new AbortController(),scope=String(settings.scope||document.querySelector("main.shell")?.dataset.workspace||"global"),urgent=/\/api\/(items\/lookup|barcodes\/resolve)/.test(String(url));activeControllers.set(controller,scope);const releaseSlot=await acquireSlot(urgent),timer=setTimeout(()=>controller.abort("timeout"),timeoutMs),started=performance.now();state.requests++;state.lastRequestId=id;
       try{
+        if(controller.signal.aborted)throw controller.signal.reason;
         const headers=new Headers(options.headers||{});headers.set("X-Technics-Request-Id",id);headers.set("X-Technics-Priority",urgent?"urgent":"normal");
         const response=await rawFetch(url,{...options,headers,signal:controller.signal,priority:urgent?"high":"auto"}),payload=validateShape(validateMeta(await read(response,settings.message),id,response),url);
         if(!response.ok&&transientStatus(response.status)){state.httpRetries++;const error=new Error(payload?.error||`Servizio temporaneamente non disponibile (${response.status}).`);error.status=response.status;error.transient=true;throw error}
@@ -71,7 +72,7 @@
         if(attempt){state.recovered++;document.dispatchEvent(new CustomEvent("technics:data-recovered",{detail:{url,attempt:attempt+1}}))}
         return {response,payload,attempt:attempt+1,requestId:id,latencyMs:state.lastLatencyMs};
       }catch(error){
-        if(controller.signal.aborted&&controller.signal.reason==="workspace-change"){state.discarded++;error.staleResponse=true;throw error}
+        if(controller.signal.aborted&&controller.signal.reason==="workspace-change"){state.discarded++;const cancelled=cancelledRequest("workspace-change");cancelled.staleResponse=true;throw cancelled}
         lastError=error;state.lastFailure=String(error?.message||error);if(error?.name==="AbortError"||error==="timeout")state.timeouts++;
         if(error?.staleResponse)throw error;
         const retryable=error?.transient||error?.incompleteResponse||error?.name==="AbortError"||Number(error?.status||0)===0||transientStatus(error?.status);
@@ -90,20 +91,34 @@
     if(key)inFlight.set(key,promise);return promise;
   };
   const invalidate=()=>responseCache.clear();
+  const cancelledRequest=reason=>{const error=new Error(typeof reason==="string"?reason:"Richiesta annullata.");error.name="AbortError";error.cancelled=true;return error};
   const transportCircuit={failures:0,openedAt:0};
   const transportFetch=async(url,options={})=>{
     const method=String(options.method||"GET").toUpperCase(),safe=method==="GET"||method==="HEAD";
+    if(options.signal?.aborted)throw cancelledRequest(options.signal.reason);
     if(transportCircuit.openedAt&&Date.now()-transportCircuit.openedAt<10000)throw new Error("Collegamento temporaneamente sospeso dopo errori consecutivi.");
     if(transportCircuit.openedAt)Object.assign(transportCircuit,{failures:0,openedAt:0});
     let lastError;
     for(let attempt=0;attempt<(safe?2:1);attempt++){
-      const controller=new AbortController(),timeout=/\/health(?:[/?]|$)/.test(String(url))?4500:8000,timer=setTimeout(()=>controller.abort("timeout"),timeout);
+      if(options.signal?.aborted)throw cancelledRequest(options.signal.reason);
+      let callerListening=false,responseOwnsCaller=false;
+      const controller=new AbortController(),nativeComposite=options.signal&&typeof AbortSignal!=="undefined"&&typeof AbortSignal.any==="function",detachCaller=()=>{if(callerListening){options.signal.removeEventListener("abort",callerAbort);callerListening=false}},callerAbort=()=>{controller.abort(options.signal.reason);detachCaller()},signal=nativeComposite?AbortSignal.any([controller.signal,options.signal]):controller.signal,timeout=/\/health(?:[/?]|$)/.test(String(url))?4500:8000,timer=setTimeout(()=>controller.abort("timeout"),timeout);
+      if(options.signal&&!nativeComposite){callerListening=true;options.signal.addEventListener("abort",callerAbort,{once:true})}
       try{
         const headers=new Headers(options.headers||{});if(!headers.has("X-Technics-Request-Id"))headers.set("X-Technics-Request-Id",requestId());
-        const response=await rawFetch(url,{...options,headers,signal:controller.signal});
+        const response=await rawFetch(url,{...options,headers,signal});
         if(!response.ok&&safe&&transientStatus(response.status)&&attempt===0){await pause(180+Math.random()*120);continue}
-        transportCircuit.failures=0;return response;
-      }catch(error){lastError=error;if(!safe||attempt===1)break;await pause(180+Math.random()*120)}finally{clearTimeout(timer)}
+        if(options.signal?.aborted)throw cancelledRequest(options.signal.reason);
+        transportCircuit.failures=0;
+        if(options.signal&&!nativeComposite&&response.body){
+          const reader=response.body.getReader();responseOwnsCaller=true;
+          const body=new ReadableStream({async pull(target){try{const next=await reader.read();if(next.done){detachCaller();reader.releaseLock();target.close()}else target.enqueue(next.value)}catch(error){detachCaller();reader.releaseLock();target.error(error)}},async cancel(reason){detachCaller();try{await reader.cancel(reason)}finally{reader.releaseLock()}}},{highWaterMark:0});
+          const wrapped=new Response(body,{status:response.status,statusText:response.statusText,headers:response.headers});
+          for(const key of ["url","redirected","type"])Object.defineProperty(wrapped,key,{value:response[key]});
+          return wrapped;
+        }
+        return response;
+      }catch(error){if(options.signal?.aborted)throw cancelledRequest(options.signal.reason);lastError=error;if(!safe||attempt===1)break;await pause(180+Math.random()*120)}finally{clearTimeout(timer);if(!responseOwnsCaller)detachCaller()}
     }
     transportCircuit.failures++;if(transportCircuit.failures>=5)transportCircuit.openedAt=Date.now();throw lastError||new Error("Collegamento dati non disponibile.");
   };
@@ -111,6 +126,6 @@
   window.addEventListener("technics-workspace-change",event=>cancelObsolete(String(event.detail?.workspace||"")));
   const diagnostics=()=>Object.freeze({...state,inFlight:inFlight.size,activeControllers:activeControllers.size,normalActive,normalQueued:normalQueue.length,cacheEntries:responseCache.size,routes:[...routeTimings].map(([route,values])=>({route,samples:values.length,lastMs:values.at(-1)||0,averageMs:values.length?Math.round(values.reduce((sum,value)=>sum+value,0)/values.length):0,maxMs:values.length?Math.max(...values):0}))});
   window.TechnicsTransport=Object.freeze({fetch:transportFetch,diagnostics:()=>({...transportCircuit})});
-  window.TechnicsDataClient=Object.freeze({parseText,read,fetchJson,invalidate,diagnostics,incompleteMessage,version:"1.9.55"});
-  document.documentElement.dataset.dataClient="1.9.55";
+  window.TechnicsDataClient=Object.freeze({parseText,read,fetchJson,invalidate,diagnostics,incompleteMessage,version:"1.9.57"});
+  document.documentElement.dataset.dataClient="1.9.57";
 })();
