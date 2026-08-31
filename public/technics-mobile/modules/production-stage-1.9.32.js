@@ -34,7 +34,7 @@
   function classifyProductionType(rowOrCode) {
     const input=rowOrCode&&typeof rowOrCode==='object'?rowOrCode.articleCode:rowOrCode;
     const code=typeof input==='string'?input.trim():typeof input==='number'&&Number.isFinite(input)?String(input):'';
-    const match=code.match(/^(4\d{4}|4\d\.\d{3})(?:\s*[A-Za-z][A-Za-z0-9]*)?$/);
+    const match=code.match(/^(4\d{4}|4\d\.\d{3})(?:\s*[A-Za-z*_-][A-Za-z0-9*_. -]*)?$/);
     const numeric=match?Number(match[1].replace('.','')):NaN;
     const type=numeric>=40000&&numeric<=49999?'medical-device':'cosmetics';
     return {...productionTypes.find(entry=>entry.type===type),code};
