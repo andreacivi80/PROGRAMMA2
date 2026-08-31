@@ -95,14 +95,14 @@
   const transportCircuits=new Map();let lastTransportOrigin="";
   const transportOrigin=url=>new URL(String(url),globalThis.location?.href||window.__technicsBridgeUrl).origin;
   const circuitFor=origin=>{let circuit=transportCircuits.get(origin);if(!circuit){circuit={failures:0,openedAt:0};transportCircuits.set(origin,circuit)}return circuit};
-  const transportFetch=async(url,options={})=>{
-    const method=String(options.method||"GET").toUpperCase(),safe=method==="GET"||method==="HEAD";
+  const transportFetch=async(url,options={},controls={})=>{
+    const method=String(options.method||"GET").toUpperCase(),safe=method==="GET"||method==="HEAD",attempts=safe?(controls?.attempts===1?1:2):1;
     if(options.signal?.aborted)throw cancelledRequest(options.signal.reason);
     const origin=transportOrigin(url),transportCircuit=circuitFor(origin);lastTransportOrigin=origin;
-    if(transportCircuit.openedAt&&Date.now()-transportCircuit.openedAt<10000)throw new Error("Collegamento temporaneamente sospeso dopo errori consecutivi.");
+    if(transportCircuit.openedAt&&Date.now()-transportCircuit.openedAt<10000)throw Object.assign(new Error("Collegamento temporaneamente sospeso dopo errori consecutivi."),{code:"TECHNICS_TRANSPORT_CIRCUIT_OPEN",networkFailure:true});
     if(transportCircuit.openedAt)Object.assign(transportCircuit,{failures:0,openedAt:0});
     let lastError;
-    for(let attempt=0;attempt<(safe?2:1);attempt++){
+    for(let attempt=0;attempt<attempts;attempt++){
       if(options.signal?.aborted)throw cancelledRequest(options.signal.reason);
       let callerListening=false,responseOwnsCaller=false;
       const controller=new AbortController(),nativeComposite=options.signal&&typeof AbortSignal!=="undefined"&&typeof AbortSignal.any==="function",detachCaller=()=>{if(callerListening){options.signal.removeEventListener("abort",callerAbort);callerListening=false}},callerAbort=()=>{controller.abort(options.signal.reason);detachCaller()},signal=nativeComposite?AbortSignal.any([controller.signal,options.signal]):controller.signal,timeout=/\/health(?:[/?]|$)/.test(String(url))?4500:8000,timer=setTimeout(()=>controller.abort("timeout"),timeout);
@@ -110,7 +110,7 @@
       try{
         const headers=new Headers(options.headers||{});if(!headers.has("X-Technics-Request-Id"))headers.set("X-Technics-Request-Id",requestId());
         const response=await rawFetch(url,{...options,headers,signal});
-        if(!response.ok&&safe&&transientStatus(response.status)&&attempt===0){await pause(180+Math.random()*120);continue}
+        if(!response.ok&&safe&&transientStatus(response.status)&&attempt<attempts-1){await pause(180+Math.random()*120);continue}
         if(options.signal?.aborted)throw cancelledRequest(options.signal.reason);
         transportCircuit.failures=0;
         if(options.signal&&!nativeComposite&&response.body){
@@ -121,7 +121,7 @@
           return wrapped;
         }
         return response;
-      }catch(error){if(options.signal?.aborted)throw cancelledRequest(options.signal.reason);lastError=error;if(!safe||attempt===1)break;await pause(180+Math.random()*120)}finally{clearTimeout(timer);if(!responseOwnsCaller)detachCaller()}
+      }catch(error){if(options.signal?.aborted)throw cancelledRequest(options.signal.reason);lastError=error;if(attempt>=attempts-1)break;await pause(180+Math.random()*120)}finally{clearTimeout(timer);if(!responseOwnsCaller)detachCaller()}
     }
     transportCircuit.failures++;if(transportCircuit.failures>=5)transportCircuit.openedAt=Date.now();throw lastError||new Error("Collegamento dati non disponibile.");
   };

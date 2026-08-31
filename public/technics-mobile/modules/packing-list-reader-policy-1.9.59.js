@@ -73,10 +73,9 @@
     function cacheUsable(cache){const minimum=minimumRevisions();return Boolean(!(isEnabled()&&(readError||writeError))&&cache&&Array.isArray(cache.open)&&Array.isArray(cache.closed)&&covers(minimum,[...cache.open,...cache.closed],cache.minimumRevisions))}
     function failure(response,payload){
       const code=String(payload?.errorCode||payload?.code||"");
-      if(response.status===409||code==="PACKING_READER_REVISION_NOT_YET_VISIBLE")return stale();
-      if(code==="PACKING_READER_IDENTITY_INVALID")return problem(code,"Identità del lettore elenco non verificata. Premi Aggiorna elenco per riprovare.");
-      if(code==="PACKING_READER_INVALID_MINIMUM_REVISION")return problem(code,"Verifica delle revisioni non accettata dal lettore. Nessun elenco precedente è stato presentato come aggiornato.");
-      return problem(code||"PACKING_READER_UNAVAILABLE","Elenco non disponibile dal lettore. Premi Aggiorna elenco per riprovare; la ricerca OP e le scritture restano sul ponte attuale.");
+      const error=response.status===409||code==="PACKING_READER_REVISION_NOT_YET_VISIBLE"?stale():code==="PACKING_READER_IDENTITY_INVALID"?problem(code,"Identità del lettore elenco non verificata. Premi Ripristina elenco per riprovare."):code==="PACKING_READER_INVALID_MINIMUM_REVISION"?problem(code,"Verifica delle revisioni non accettata dal lettore. Nessun elenco precedente è stato presentato come aggiornato."):problem(code||"PACKING_READER_UNAVAILABLE","Elenco non disponibile dal lettore. Premi Ripristina elenco per riprovare; la ricerca OP e le scritture restano sul ponte attuale.");
+      if(code)error.code=code;
+      return Object.assign(error,{status:response.status,httpStatus:response.status});
     }
     async function request(sourceUrl,options={}){
       const method=String(options.method||"GET").toUpperCase(),source=new URL(sourceUrl,bridgeUrl);
@@ -90,8 +89,13 @@
         target=config.origin+source.pathname+source.search;requestOptions={...options,method:"GET",headers,redirect:"error",credentials:"omit"};
       }
       let response,payload;
-      try{response=await transportFetch(target,requestOptions);payload=await response.json()}
-      catch(error){if(readerUsed)throw problem("PACKING_READER_UNAVAILABLE","Lettore elenco non raggiungibile. Premi Aggiorna elenco per riprovare; nessun ripiego automatico sul ponte principale.");throw error}
+      try{response=await transportFetch(target,requestOptions,listRequest?{attempts:1}:undefined);payload=await response.json()}
+      catch(error){
+        if(!readerUsed||error?.cancelled||options.signal?.aborted)throw error;
+        if(response&&!response.ok)throw failure(response,null);
+        const status=Number(error?.status??error?.httpStatus??response?.status??0),networkFailure=!response&&(error==="timeout"||error?.code==="TECHNICS_TRANSPORT_CIRCUIT_OPEN"||["TypeError","AbortError","TimeoutError"].includes(error?.name)||/^(ECONNRESET|ECONNREFUSED|ETIMEDOUT|EPIPE|UND_ERR_[A-Z_]+)$/.test(String(error?.code||"")));
+        throw Object.assign(problem(error?.code||(response?"PACKING_READER_INVALID_RESPONSE":"PACKING_READER_UNAVAILABLE"),response?"Risposta elenco non leggibile. Nessun elenco sostitutivo è stato caricato.":"Lettore elenco non raggiungibile. Premi Ripristina elenco per riprovare; nessun ripiego automatico sul ponte principale."),{status,httpStatus:status,networkFailure});
+      }
       if(!response.ok||payload?.ok!==true){if(readerUsed)throw failure(response,payload);throw new Error(payload?.error||"Elenco non disponibile.")}
       if(!listRequest)return {response,payload,readerUsed:false};
       if(readerUsed){
@@ -106,9 +110,22 @@
       const proven=Object.create(null);for(const [key,revision] of Object.entries(current))proven[key]=revision;
       return {response,payload,readerUsed,minimumRevisions:proven,metadataIncomplete:readerUsed&&payload.reader.metadataComplete===false,notice:readerUsed&&payload.reader.metadataComplete===false?"Elenco letto dagli archivi: alcuni metadati OP/OV, articolo o cliente non sono disponibili. Non è una verifica del gestionale.":""};
     }
+    async function requestMainFallback(readerFailure,{signal}={}){
+      if(!isEnabled())throw problem("PACKING_MAIN_CONFIGURATION_INVALID","Lettore dedicato non abilitato.");
+      readerConfig();
+      const checkedMinimums=()=>{const value=minimumRevisions();if(readError||writeError)throw problem("PACKING_READER_ACK_PERSISTENCE_UNAVAILABLE",persistenceNotice());return value};
+      const helper=globalThis.TechnicsPackingMainReadFallback;
+      if(!helper)throw problem("PACKING_MAIN_CONFIGURATION_INVALID","Modulo di recupero elenco non disponibile.");
+      const fallback=helper.create({bridgeUrl:bridgeOrigin,getBridges:()=>globalThis.TECHNICS_BRIDGES,fetch:transportFetch});
+      const result=await fallback.fetchOnce({readerFailure,minimumRevisions:checkedMinimums(),getMinimumRevisions:checkedMinimums,signal});
+      if(signal?.aborted)throw Object.assign(problem("PACKING_MAIN_CANCELLED","Lettura annullata."),{cancelled:true});
+      const current=checkedMinimums();
+      if(!covers(current,[...result.payload.sessions,...result.payload.closedSessions],null))throw stale();
+      return {response:result.response,payload:result.payload,readerUsed:false,via:"main-bridge",minimumRevisions:{...current},metadataIncomplete:false,freshnessUnverified:true,notice:"Elenco ricevuto tramite PC38 · aggiornamento dei file non attestato"};
+    }
     readRegistry();
     try{subscribeStorage(event=>{if(event.key!==registryKey&&event.key!==null)return;try{mergeRegistry(event.newValue??null);persistRegistry()}catch{readError="registry-event";warn()}})}catch{readError="registry-subscription";warn()}
-    return Object.freeze({request,installHooks,minimumRevisions,cacheUsable,isEnabled,rememberConfirmed,recordAcknowledged:rememberConfirmed,persistenceNotice,diagnostics:()=>({registryKey,persistenceAvailable:!readError&&!writeError,readError,writeError,entries:minimums.size}),limits:Object.freeze({entries:MAX_ENTRIES,bytes:MAX_BYTES,ttlMs:TTL_MS})});
+    return Object.freeze({request,requestMainFallback,installHooks,minimumRevisions,cacheUsable,isEnabled,rememberConfirmed,recordAcknowledged:rememberConfirmed,persistenceNotice,diagnostics:()=>({registryKey,persistenceAvailable:!readError&&!writeError,readError,writeError,entries:minimums.size}),limits:Object.freeze({entries:MAX_ENTRIES,bytes:MAX_BYTES,ttlMs:TTL_MS})});
   }
   globalThis.TechnicsPackingReaderPolicy=Object.freeze({create,version:"1.9.59"});
 })();
