@@ -7,6 +7,13 @@
   const fail=(code,message)=>Object.assign(new Error(message),{code});
   const validKey=k=>typeof k==='string'&&k.trim().length>0&&k.length<=128&&!/[\u0000-\u001f\u007f]/.test(k)&&!['__proto__','prototype','constructor'].includes(k.toLowerCase());
   const validRevision=n=>typeof n==='number'&&Number.isInteger(n)&&n>=0&&n<=2147483647;
+  const validRequestId=id=>typeof id==='string'&&/^(?:[0-9a-f]{32}|[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/i.test(id);
+  function secureRequestId(){
+    if(typeof globalThis.crypto?.randomUUID==='function')return globalThis.crypto.randomUUID();
+    if(typeof globalThis.crypto?.getRandomValues!=='function')throw fail('PACKING_MAIN_CONFIGURATION_INVALID','Identificativo sicuro della richiesta non disponibile.');
+    const bytes=new Uint8Array(16);globalThis.crypto.getRandomValues(bytes);bytes[6]=(bytes[6]&15)|64;bytes[8]=(bytes[8]&63)|128;
+    const hex=Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');return hex.slice(0,8)+'-'+hex.slice(8,12)+'-'+hex.slice(12,16)+'-'+hex.slice(16,20)+'-'+hex.slice(20);
+  }
   function canFallback(error,signal){
     if(signal?.aborted||error?.cancelled===true)return false;
     const status=error?.status??error?.httpStatus,code=String(error?.code||error?.errorCode||'');
@@ -19,14 +26,16 @@
     const entries=Object.entries(value);if(entries.length>32||new TextEncoder().encode(JSON.stringify(value)).length>4096||entries.some(([k,v])=>!validKey(k)||!validRevision(v)))throw fail('PACKING_MAIN_MINIMUM_INVALID','Revisioni richieste non valide.');
     return Object.fromEntries(entries);
   }
-  function validate(payload,responseHeaders,{minimumRevisions={},expectedIdentity=EXPECTED,now=Date.now()}={}){
+  function validate(payload,responseHeaders,{minimumRevisions={},expectedIdentity=EXPECTED,now=Date.now(),expectedRequestId,requestFreshnessBounded=false}={}){
     const required=minima(minimumRevisions),meta=payload?.meta,headers=new Headers(responseHeaders);
     if(payload?.ok!==true||!meta||!Array.isArray(payload.sessions)||!Array.isArray(payload.closedSessions))throw fail('PACKING_MAIN_SCHEMA_INVALID','Elenco del ponte principale incompleto.');
     if(!expectedIdentity||!['nodeId','nodeRole','version'].every(k=>typeof expectedIdentity[k]==='string'&&expectedIdentity[k].length>0&&meta[k]===expectedIdentity[k])||meta.source!=='TechnicsBridge'||meta.dataAuthority!=='Technics'||meta.readOnly!==true)throw fail('PACKING_MAIN_IDENTITY_INVALID','Identità del ponte principale non verificata.');
     const fields=[['X-Technics-Request-Id','requestId'],['X-Technics-Version','version'],['X-Technics-Node','nodeId'],['X-Technics-Node-Role','nodeRole'],['X-Technics-Lease-Epoch','leaseEpoch'],['X-Technics-Server-Time','serverTime']];
     if(fields.some(([h,k])=>typeof meta[k]!=='string'||!meta[k]||headers.get(h)!==meta[k])||!/^[A-Za-z0-9-]{1,128}$/.test(meta.requestId)||!/^\d{1,20}$/.test(meta.leaseEpoch))throw fail('PACKING_MAIN_IDENTITY_INVALID','Metadati e intestazioni del ponte non corrispondono.');
     const serverAt=Date.parse(meta.serverTime);
-    if(!/^\d{4}-\d{2}-\d{2}T.*Z$/.test(meta.serverTime)||!Number.isFinite(serverAt)||!Number.isFinite(now)||serverAt>now+30000||now-serverAt>30000||payload.stale===true||payload.offline===true||/stale|offline/i.test(headers.get('X-Technics-Cache')||''))throw fail('PACKING_MAIN_FRESHNESS_UNVERIFIED','Risposta precedente o data del ponte non verificabile; elenco non dichiarato aggiornato.');
+    const correlated=expectedRequestId!==undefined;
+    if(correlated&&(!validRequestId(expectedRequestId)||meta.requestId!==expectedRequestId||requestFreshnessBounded!==true))throw fail('PACKING_MAIN_IDENTITY_INVALID','Risposta non corrispondente alla richiesta elenco corrente.');
+    if(!/^\d{4}-\d{2}-\d{2}T.*Z$/.test(meta.serverTime)||!Number.isFinite(serverAt)||(!correlated&&(!Number.isFinite(now)||serverAt>now+30000||now-serverAt>30000))||payload.stale===true||payload.offline===true||/stale|offline/i.test(headers.get('X-Technics-Cache')||''))throw fail('PACKING_MAIN_FRESHNESS_UNVERIFIED','Risposta precedente o data del ponte non verificabile; elenco non dichiarato aggiornato.');
     if(!/application\/json/i.test(headers.get('Content-Type')||''))throw fail('PACKING_MAIN_SCHEMA_INVALID','Formato elenco non verificabile.');
     if(payload.store?.available!==true||payload.store.authoritative!==true||payload.store.source!=='server')throw fail('PACKING_MAIN_STORE_UNAVAILABLE','Archivio comune non confermato dal ponte.');
     const rows=[...payload.sessions,...payload.closedSessions],seen=new Map();
@@ -47,6 +56,7 @@
     allowed();
     async function fetchOnce({readerFailure,minimumRevisions={},getMinimumRevisions,signal}={}){
       allowed();if(!canFallback(readerFailure,signal))throw fail('PACKING_MAIN_FALLBACK_NOT_ALLOWED','Questo errore del lettore richiede verifica; nessun passaggio automatico.');
+      const requestId=secureRequestId();if(!validRequestId(requestId))throw fail('PACKING_MAIN_CONFIGURATION_INVALID','Identificativo sicuro della richiesta non valido.');
       const required=minima(minimumRevisions),controller=new AbortController();let timer,listener;
       const timeout=fail('PACKING_MAIN_TIMEOUT','Il ponte principale non ha completato l’elenco entro il limite.');
       const deadline=clock()+timeoutMs;
@@ -56,12 +66,12 @@
       try{
         if(signal?.aborted){listener();return await boundary}
         const operation=(async()=>{
-          const response=await transportFetch(bridgeUrl+'/api/packing/open?fresh='+encodeURIComponent(String(now())),{method:'GET',cache:'no-store',redirect:'error',credentials:'omit',headers:{'Cache-Control':'no-store','ngrok-skip-browser-warning':'1'},signal:controller.signal},{attempts:1});
+          const response=await transportFetch(bridgeUrl+'/api/packing/open?fresh='+encodeURIComponent(String(now())),{method:'GET',cache:'no-store',redirect:'error',credentials:'omit',headers:{'Cache-Control':'no-store','ngrok-skip-browser-warning':'1','X-Technics-Request-Id':requestId},signal:controller.signal},{attempts:1});
           checkDeadline();
           if(!response?.ok||response.status!==200)throw Object.assign(fail('PACKING_MAIN_UNAVAILABLE','Elenco del ponte principale non disponibile.'),{status:response?.status});
           let payload;try{payload=await response.json()}catch(error){if(error?.name==="SyntaxError")throw fail("PACKING_MAIN_SCHEMA_INVALID","Risposta del ponte principale non leggibile.");throw error}checkDeadline();
           if(getMinimumRevisions!==undefined){if(typeof getMinimumRevisions!=='function')throw fail('PACKING_MAIN_MINIMUM_INVALID','Verifica revisioni correnti non valida.');for(const [op,revision]of Object.entries(minima(getMinimumRevisions())))required[op]=Math.max(required[op]??0,revision);}
-          allowed();const verified=validate(payload,response.headers,{minimumRevisions:required,expectedIdentity,now:now()});
+          allowed();const verified=validate(payload,response.headers,{minimumRevisions:required,expectedIdentity,now:now(),expectedRequestId:requestId,requestFreshnessBounded:true});
           return {...verified,response};
         })();
         return await Promise.race([operation,boundary]);
