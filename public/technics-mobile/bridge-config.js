@@ -17,9 +17,9 @@ window.TECHNICS_PACKING_READER=Object.freeze({
   "authorizedOrigin": "https://technics-packing-list-reader-candidate.andreacivi80.workers.dev",
   "expectedIdentity": {
     "nodeId": "technics-utente38-packing-reader",
-    "releaseId": "technics-packing-reader-emergency-1.9.60-20260831T064823Z",
+    "releaseId": "technics-packing-reader-1.9.63-candidate-20260831T104422Z",
     "contractVersion": "packing-open-readonly-v1",
-    "buildHash": "2f983f399205aa3fe35f2229f2b8bfe49bec1642de7988412c9c7e046cadb62f",
-    "coordinatorId": "27928f7b-2145-4b59-b8e9-025ac39c213e"
+    "buildHash": "b41eed6e3dcca702d79ee00afe0e73f8d4bc59638a989e926a929e07e4aa20ec",
+    "coordinatorId": "c5cd28af-3f66-5c1f-a5d9-fbd6ec671744"
   }
 });
