@@ -16,9 +16,9 @@
     const stamp=parse(state.dataTime)||parse(state.serverTime),age=stamp?Math.max(0,Math.round((Date.now()-stamp)/1000)):Infinity;
     const verified=Number(state.healthVerifiedAt||0)>0&&Date.now()-Number(state.healthVerifiedAt)<60000;
     const continuity=/mirror|copia/i.test(String(state.source||""));
-    state.level=continuity?"aging":verified?(age<=90?"fresh":"aging"):!stamp?"waiting":age<=90?"aging":"stale";
+    state.level=continuity?"aging":!stamp?"waiting":verified?(age<=90?"fresh":"aging"):age<=90?"aging":"stale";
     const pc=/utente73/i.test(state.nodeId)?"PC73":/utente38/i.test(state.nodeId)?"PC38":"";target.className=`datafreshness ${state.level}`;
-    target.querySelector("span").textContent=continuity?(pc?`${pc} · CONTINUITÀ`:"Dati di continuità"):verified?(age<=90?(pc?`${pc} · DATI VERIFICATI`:"Dati verificati"):(pc?`${pc} ONLINE · ${age}s`:`Online · dati ${age}s`)):Number.isFinite(age)?`${pc?pc+" · ":""}Dati ${age}s`:(pc?`${pc} · CONTROLLO`:"Dati in verifica");
+    target.querySelector("span").textContent=continuity?(pc?`${pc} · CONTINUITÀ`:"Dati di continuità"):!stamp?(pc?`${pc} · DATI DA VERIFICARE`:"Dati da verificare"):verified?(age<=90?(pc?`${pc} · DATI VERIFICATI`:"Dati verificati"):(pc?`${pc} ONLINE · ${age}s`:`Online · dati ${age}s`)):`${pc?pc+" · ":""}Dati ${age}s`;
     const detail=`Fonte: ${labelSource(state.source)} · lettura: ${stamp?new Date(stamp).toLocaleString("it-IT"):"in verifica"} · risposta: ${state.latencyMs} ms${state.cached?" · cache breve verificata":""}`;
     target.title=detail;target.setAttribute("aria-label",detail);
   };
