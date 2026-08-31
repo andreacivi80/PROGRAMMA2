@@ -88,11 +88,30 @@
         const headers=new Headers(options.headers||{});headers.set("X-Technics-Minimum-Revisions",serialized);
         target=config.origin+source.pathname+source.search;requestOptions={...options,method:"GET",headers,redirect:"error",credentials:"omit"};
       }
-      let response,payload;
-      try{response=await transportFetch(target,requestOptions,listRequest?{attempts:1}:undefined);payload=await response.json()}
+      let response,payload,readerDeadlineError=null;
+      try{
+        if(!readerUsed){response=await transportFetch(target,requestOptions,listRequest?{attempts:1}:undefined);payload=await response.json()}
+        else{
+          const controller=new AbortController(),deadline=performance.now()+8000,timeout=Object.assign(problem("READER_TIMEOUT","Il lettore non ha completato l'elenco entro 8 secondi."),{status:0,httpStatus:0,networkFailure:true});
+          let timer,listener,finished=false;
+          const cancellation=()=>Object.assign(problem("PACKING_READER_CANCELLED","Lettura elenco annullata."),{cancelled:true});
+          const expire=()=>{readerDeadlineError=timeout;controller.abort(timeout);return timeout};
+          const check=()=>{if(options.signal?.aborted)throw cancellation();if(finished||performance.now()>=deadline)throw expire();if(controller.signal.aborted)throw controller.signal.reason};
+          const boundary=new Promise((_,reject)=>{timer=setTimeout(()=>reject(expire()),8000);listener=()=>{const error=cancellation();controller.abort(error);reject(error)};options.signal?.addEventListener("abort",listener,{once:true})});
+          try{
+            if(options.signal?.aborted){listener();await boundary}
+            const operation=(async()=>{
+              const received=await transportFetch(target,{...requestOptions,signal:controller.signal},{attempts:1});response=received;check();
+              const decoded=await response.json();check();return decoded;
+            })();
+            payload=await Promise.race([operation,boundary]);
+          }finally{finished=true;clearTimeout(timer);options.signal?.removeEventListener("abort",listener)}
+        }
+      }
       catch(error){
         if(!readerUsed||error?.cancelled||options.signal?.aborted)throw error;
         if(response&&!response.ok)throw failure(response,null);
+        if(readerDeadlineError)throw readerDeadlineError;
         const status=Number(error?.status??error?.httpStatus??response?.status??0),networkFailure=!response&&(error==="timeout"||error?.code==="TECHNICS_TRANSPORT_CIRCUIT_OPEN"||["TypeError","AbortError","TimeoutError"].includes(error?.name)||/^(ECONNRESET|ECONNREFUSED|ETIMEDOUT|EPIPE|UND_ERR_[A-Z_]+)$/.test(String(error?.code||"")));
         throw Object.assign(problem(error?.code||(response?"PACKING_READER_INVALID_RESPONSE":"PACKING_READER_UNAVAILABLE"),response?"Risposta elenco non leggibile. Nessun elenco sostitutivo è stato caricato.":"Lettore elenco non raggiungibile. Premi Ripristina elenco per riprovare; nessun ripiego automatico sul ponte principale."),{status,httpStatus:status,networkFailure});
       }
