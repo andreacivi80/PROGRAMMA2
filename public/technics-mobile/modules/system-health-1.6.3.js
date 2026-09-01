@@ -49,6 +49,7 @@
   const updateDatabaseLight=()=>{const databaseAge=Date.now()-Number(state.databaseEvidenceAt);if(state.database===true&&(!state.databaseEvidenceAt||!Number.isFinite(databaseAge)||databaseAge<0||databaseAge>60000))state.database=null;const bridgeFailed=!state.ok,confirmedBridgeFailure=bridgeFailed&&state.failures>=2;state.functions.database=bridgeFailed?null:state.database===true?true:state.database===false?false:null;state.functionLevels.database=confirmedBridgeFailure||(!bridgeFailed&&state.database===false)?"bad":!bridgeFailed&&state.database===true?"ok":"warn";state.functionCheckedAt.database=Date.now();state.functionSources.database=confirmedBridgeFailure?"ponte assente":bridgeFailed?"ponte temporaneamente in verifica":state.database===true?(state.databaseEvidenceSource||"controllo diretto riuscito"):state.database===false?"gestionale esplicitamente non disponibile":"verifica gestionale inconcludente"};
   const checkFunctions=async()=>{if(functionsBusy)return;clearTimeout(functionRetryTimer);functionRetryTimer=0;functionsBusy=true;try{ensureFunctionLights();updateDatabaseLight();paintFunctionLights();const tasks=[()=>probe("/api/items/lookup?code=PRO20825"),()=>probe("/api/planning/op?number=521"),probePacking,()=>probe("/api/picking/open")],keys=["inventory","planning","packing","picking"];for(let index=0;index<tasks.length;index++)applyFunctionResult(keys[index],await tasks[index]());await loadNodes();const serviceKeys=["database","inventory","planning","packing","picking","nodes"],allFunctionsReady=serviceKeys.every(key=>state.functions[key]===true&&state.functionLevels[key]==="ok");if(allFunctionsReady)document.dispatchEvent(new CustomEvent("technics:health-ready",{detail:{checkedAt:Date.now(),nodeId:state.activeNode||state.nodeId,redundancyAvailable:state.redundancyAvailable}}));paintPanel()}finally{functionsBusy=false;const failures=Math.max(...Object.values(functionFailures));if(failures>0&&failures<=3)scheduleFunctionRetry(failures*20000)}};
   const refreshDiagnostics=async()=>{await check(true);await checkFunctions()};
+  const initialReadiness=async()=>{if(healthBusy){setTimeout(initialReadiness,250);return}await refreshDiagnostics()};
   const onDataSuccess=event=>{
     const detail=event.detail||{};
     if(detail.cached||detail.ok!==true||detail.validated!==true||!detail.nodeId)return;
@@ -102,9 +103,9 @@
     else{check();setInterval(()=>{if(!document.hidden)check()},45000)}
     document.addEventListener("technics:data-success",onDataSuccess);
     document.addEventListener("technics:packing-list-read",onPackingListRead);
-    setTimeout(loadNodes,15000);setInterval(()=>{if(!document.hidden)loadNodes()},60000);setInterval(()=>{updateDatabaseLight();paintFunctionLights();paint()},5000);
+    setTimeout(initialReadiness,250);setInterval(()=>{if(!document.hidden)loadNodes()},60000);setInterval(()=>{updateDatabaseLight();paintFunctionLights();paint()},5000);
   };
-  window.TechnicsSystemHealth=Object.freeze({check:refreshDiagnostics,diagnostics:()=>Object.freeze({...state,clientRoutes:clientRoutes()}),version:"1.9.52"});
-  document.documentElement.dataset.systemHealth="1.9.52";
+  window.TechnicsSystemHealth=Object.freeze({check:refreshDiagnostics,diagnostics:()=>Object.freeze({...state,clientRoutes:clientRoutes()}),version:"1.9.53"});
+  document.documentElement.dataset.systemHealth="1.9.53";
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
 })();
