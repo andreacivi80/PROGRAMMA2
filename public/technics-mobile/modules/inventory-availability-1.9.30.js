@@ -74,9 +74,11 @@
 #result .stock dl dd.inventorylonglot{font-size:8px;line-height:9px;word-break:break-all}
 #result .stock dl div:has(.inventorylonglot){padding:4px}
 #result .stockqty.inventoryrowbalance{display:grid;grid-column:1/-1;width:100%;box-sizing:border-box;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;text-align:center;max-width:none}
-#result .inventoryrowbalance>span{display:grid;grid-template-rows:minmax(2.4em,auto) auto;align-items:center;gap:2px;min-width:0;font-size:10px}
-#result .inventoryrowbalance small{font-size:10px;line-height:1.2;letter-spacing:0;text-transform:none;text-align:center;overflow-wrap:anywhere}
-#result .inventoryrowbalance b{font-size:14px;line-height:1.25;white-space:normal;overflow-wrap:anywhere;text-align:center;font-variant-numeric:tabular-nums}
+#result .inventoryrowbalance>span{display:grid;grid-template-rows:minmax(2.4em,auto) auto;align-items:center;align-content:center;gap:2px;min-width:0;padding:6px 4px;border-radius:7px;background:#164f42;color:#fff;font-size:10px}
+#result .inventoryrowbalance>.inventorybalance-free{background:#287257}
+#result .inventoryrowbalance>.inventorybalance-committed{background:#416b40}
+#result .inventoryrowbalance small{font-size:10px;line-height:1.2;letter-spacing:0;text-transform:none;text-align:center;overflow-wrap:anywhere;color:inherit}
+#result .inventoryrowbalance b{font-size:14px;line-height:1.25;white-space:normal;overflow-wrap:anywhere;text-align:center;font-variant-numeric:tabular-nums;color:inherit}
 @media(max-width:420px){#result .inventoryavailability>span{grid-template-rows:minmax(3.6em,auto) auto}}
 @media(max-width:360px){#result .inventoryavailability b,#result .inventoryrowbalance b{font-size:12px}}
 #result .inventoryavailabilitynote{margin:3px 0 6px;font-size:10px;line-height:1.4;color:#456357}
