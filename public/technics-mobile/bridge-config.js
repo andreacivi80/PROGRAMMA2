@@ -10,9 +10,9 @@ window.TECHNICS_BRIDGES=Object.freeze([
   "https://technics-mobile-gateway.andreacivi80.workers.dev"
 ]);
 window.__technicsBridgeUrl=window.TECHNICS_BRIDGES[0];
-// Dedicated GET-only packing list reader; all other requests use TECHNICS_BRIDGES.
+// Dedicated reader disabled after intermittent route rejection; Packing list uses the verified main gateway.
 window.TECHNICS_PACKING_READER=Object.freeze({
-  "enabled": true,
+  "enabled": false,
   "origin": "https://technics-packing-list-reader-candidate.andreacivi80.workers.dev",
   "authorizedOrigin": "https://technics-packing-list-reader-candidate.andreacivi80.workers.dev",
   "expectedIdentity": {
