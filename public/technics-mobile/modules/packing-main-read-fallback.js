@@ -37,11 +37,7 @@
     if(correlated&&(!validRequestId(expectedRequestId)||meta.requestId!==expectedRequestId||requestFreshnessBounded!==true))throw fail('PACKING_MAIN_IDENTITY_INVALID','Risposta non corrispondente alla richiesta elenco corrente.');
     if(!/^\d{4}-\d{2}-\d{2}T.*Z$/.test(meta.serverTime)||!Number.isFinite(serverAt)||(!correlated&&(!Number.isFinite(now)||serverAt>now+30000||now-serverAt>30000))||payload.stale===true||payload.offline===true||/stale|offline/i.test(headers.get('X-Technics-Cache')||''))throw fail('PACKING_MAIN_FRESHNESS_UNVERIFIED','Risposta precedente o data del ponte non verificabile; elenco non dichiarato aggiornato.');
     if(!/application\/json/i.test(headers.get('Content-Type')||''))throw fail('PACKING_MAIN_SCHEMA_INVALID','Formato elenco non verificabile.');
-    const authoritative=payload.store?.available===true&&payload.store.authoritative===true&&payload.store.source==='server';
-    const degradedReadOnly=payload.store?.available===true&&payload.store.authoritative===false&&payload.store.source==='mirror';
-    const lastSyncAt=degradedReadOnly?payload.store?.lastSyncAt:null;
-    if(!authoritative&&!degradedReadOnly)throw fail('PACKING_MAIN_STORE_UNAVAILABLE','Archivio comune non confermato dal ponte.');
-    if(degradedReadOnly&&(!globalThis.TechnicsPackingMirrorReadonly?.validTimestamp?.(lastSyncAt)||Date.parse(lastSyncAt)>serverAt+30000))throw fail('PACKING_MAIN_MIRROR_METADATA_INVALID','Timestamp della copia mirror non verificabile.');
+    if(payload.store?.available!==true||payload.store.authoritative!==true||payload.store.source!=='server')throw fail('PACKING_MAIN_STORE_UNAVAILABLE','Archivio comune non confermato dal ponte.');
     const rows=[...payload.sessions,...payload.closedSessions],seen=new Map();
     for(const row of rows){
       if(!row||typeof row!=='object'||!validKey(row.opBarcode)||!validRevision(row.revision)||seen.has(row.opBarcode))throw fail('PACKING_MAIN_SCHEMA_INVALID','OP o revisione non valide nell’elenco.');
@@ -50,8 +46,8 @@
     }
     // Both open and closed rows provide explicit revision evidence. Missing rows
     // cannot be inferred deleted/closed, even if the response claims other proofs.
-    if(!degradedReadOnly)for(const [op,revision] of Object.entries(required))if(!seen.has(op)||seen.get(op)<revision)throw fail('PACKING_MAIN_REVISION_NOT_VISIBLE','Elenco principale non ancora allineato al salvataggio confermato.');
-    return {payload,via:degradedReadOnly?'main-mirror-readonly':'main-bridge',minimumRevisions:required,degradedReadOnly,lastSyncAt,identity:{...expectedIdentity,requestId:meta.requestId,serverTime:meta.serverTime,leaseEpoch:meta.leaseEpoch}};
+    for(const [op,revision] of Object.entries(required))if(!seen.has(op)||seen.get(op)<revision)throw fail('PACKING_MAIN_REVISION_NOT_VISIBLE','Elenco principale non ancora allineato al salvataggio confermato.');
+    return {payload,via:'main-bridge',minimumRevisions:required,identity:{...expectedIdentity,requestId:meta.requestId,serverTime:meta.serverTime,leaseEpoch:meta.leaseEpoch}};
   }
   function origin(value){try{const u=new URL(value);return typeof value==='string'&&u.protocol==='https:'&&!u.username&&!u.password&&!u.search&&!u.hash&&u.pathname==='/'&&u.origin===value?u.origin:null}catch{return null}}
   function create({getBridges,bridgeUrl,expectedIdentity=EXPECTED,fetch:transportFetch,now=Date.now,clock=()=>performance.now(),timeoutMs=8000}={}){

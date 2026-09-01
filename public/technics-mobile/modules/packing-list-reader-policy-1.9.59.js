@@ -139,8 +139,8 @@
       const result=await fallback.fetchOnce({readerFailure,minimumRevisions:checkedMinimums(),getMinimumRevisions:checkedMinimums,signal});
       if(signal?.aborted)throw Object.assign(problem("PACKING_MAIN_CANCELLED","Lettura annullata."),{cancelled:true});
       const current=checkedMinimums();
-      if(!result.degradedReadOnly&&!covers(current,[...result.payload.sessions,...result.payload.closedSessions],null))throw stale();
-      return {response:result.response,payload:result.payload,readerUsed:false,via:result.via,minimumRevisions:{...current},metadataIncomplete:false,freshnessUnverified:true,degradedReadOnly:result.degradedReadOnly===true,lastSyncAt:result.lastSyncAt||null,notice:result.degradedReadOnly?"COPIA NON AGGIORNATA · SOLA CONSULTAZIONE":"Elenco ricevuto tramite PC38 · aggiornamento dei file non attestato"};
+      if(!covers(current,[...result.payload.sessions,...result.payload.closedSessions],null))throw stale();
+      return {response:result.response,payload:result.payload,readerUsed:false,via:"main-bridge",minimumRevisions:{...current},metadataIncomplete:false,freshnessUnverified:true,notice:"Elenco ricevuto tramite PC38 · aggiornamento dei file non attestato"};
     }
     readRegistry();
     try{subscribeStorage(event=>{if(event.key!==registryKey&&event.key!==null)return;try{mergeRegistry(event.newValue??null);persistRegistry()}catch{readError="registry-event";warn()}})}catch{readError="registry-subscription";warn()}

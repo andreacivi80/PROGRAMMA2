@@ -20,10 +20,9 @@
     const nodesFresh=Boolean(state?.nodesCheckOk&&Number.isFinite(Number(state?.nodesCheckedAt))&&now-Number(state.nodesCheckedAt)>=0&&now-Number(state.nodesCheckedAt)<NODE_OBSERVATION_TTL_MS);
     const explicitOnline=Boolean(nodesFresh&&entry?.online===true);
     const explicitOffline=Boolean(nodesFresh&&(!entry||entry.online===false));
-    const dataUnavailable=pc==='PC38'&&(active||explicitOnline)&&(state?.ok!==true||state?.database!==true);
-    const level=dataUnavailable?'warn':active||explicitOnline?'ok':explicitOffline?'bad':'warn';
-    const text=dataUnavailable?`${pc} ponte online, dati non disponibili`:active?`${pc} attivo`:explicitOnline?`${pc} online`:explicitOffline?`${pc} non collegato al gateway`:`${pc} in verifica`;
-    const evidence=dataUnavailable?'ponte online, dati non disponibili':active?'risposta pubblica diretta recente':explicitOnline?'elenco nodi recente':explicitOffline?'non collegato al gateway nell’ultimo elenco; stato fisico del PC non verificato':observedHere&&direct.at!==null?'ultima osservazione diretta non recente o orologio non coerente · nuova verifica necessaria':'nessuna verifica recente conclusiva';
+    const level=active||explicitOnline?'ok':explicitOffline?'bad':'warn';
+    const text=active?`${pc} attivo`:explicitOnline?`${pc} online`:explicitOffline?`${pc} non collegato al gateway`:`${pc} in verifica`;
+    const evidence=active?'risposta pubblica diretta recente':explicitOnline?'elenco nodi recente':explicitOffline?'non collegato al gateway nell’ultimo elenco; stato fisico del PC non verificato':observedHere&&direct.at!==null?'ultima osservazione diretta non recente o orologio non coerente · nuova verifica necessaria':'nessuna verifica recente conclusiva';
     return Object.freeze({pc,role:roleOf(pc),level,text,active,explicitOnline,explicitOffline,evidence,entry:entry||null,title:`${pc}: ${roleOf(pc)} · ${evidence}`});
   }
   function functionTransition(previous={},result={},now=Date.now()) {
