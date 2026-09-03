@@ -1,10 +1,8 @@
 (()=>{
   'use strict';
   const EXPECTED=Object.freeze([
-    Object.freeze({nodeId:'technics-utente73-primary',nodeRole:'primary',version:'1.9.104'}),
-    Object.freeze({nodeId:'technics-utente73-primary',nodeRole:'primary',version:'1.9.31'}),
-    Object.freeze({nodeId:'technics-utente38-secondary',nodeRole:'secondary',version:'1.9.104'}),
-    Object.freeze({nodeId:'technics-utente38-secondary',nodeRole:'secondary',version:'1.9.31'})
+    Object.freeze({nodeId:'technics-utente73-primary',nodeRole:'primary'}),
+    Object.freeze({nodeId:'technics-utente38-secondary',nodeRole:'secondary'})
   ]);
   const forbidden=/IDENTITY|SCHEMA|PARSE|JSON|REVISION|MINIMUM|PERSISTENCE|AUTH|FORBIDDEN|CONFIG|SOURCE_INVALID|CANCEL/i;
   const transientCodes=new Set(['','PACKING_READER_UNAVAILABLE','PACKING_READER_BUSY','READER_BUSY','READER_UNAVAILABLE','READER_TIMEOUT','READER_NETWORK_FAILURE','GATEWAY_TIMEOUT','TECHNICS_TRANSPORT_CIRCUIT_OPEN']);
@@ -12,6 +10,16 @@
   const fail=(code,message)=>Object.assign(new Error(message),{code});
   const validKey=k=>typeof k==='string'&&k.trim().length>0&&k.length<=128&&!/[\u0000-\u001f\u007f]/.test(k)&&!['__proto__','prototype','constructor'].includes(k.toLowerCase());
   const validRevision=n=>typeof n==='number'&&Number.isInteger(n)&&n>=0&&n<=2147483647;
+  // The bridge release changes independently from the public frontend. Keep
+  // identity pinned to the two authorised nodes and accept the maintained
+  // 1.9 contract family (plus the legacy 1.9.31 recovery baseline). Contract,
+  // request correlation and response headers are still verified below.
+  const supportedVersion=value=>{
+    const match=/^1\.9\.(\d+)$/.exec(String(value||''));
+    if(!match)return false;
+    const patch=Number(match[1]);
+    return patch===31||patch>=104;
+  };
   const validRequestId=id=>typeof id==='string'&&/^(?:[0-9a-f]{32}|[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/i.test(id);
   function secureRequestId(){
     if(typeof globalThis.crypto?.randomUUID==='function')return globalThis.crypto.randomUUID();
@@ -34,8 +42,8 @@
   function validate(payload,responseHeaders,{minimumRevisions={},expectedIdentity=EXPECTED,now=Date.now(),expectedRequestId,requestFreshnessBounded=false}={}){
     const required=minima(minimumRevisions),meta=payload?.meta,headers=new Headers(responseHeaders);
     if(payload?.ok!==true||!meta||!Array.isArray(payload.sessions)||!Array.isArray(payload.closedSessions))throw fail('PACKING_MAIN_SCHEMA_INVALID','Elenco del ponte principale incompleto.');
-    const identities=Array.isArray(expectedIdentity)?expectedIdentity:[expectedIdentity],matchedIdentity=identities.find(identity=>identity&&['nodeId','nodeRole','version'].every(k=>typeof identity[k]==='string'&&identity[k].length>0&&meta[k]===identity[k]));
-    if(!matchedIdentity||meta.source!=='TechnicsBridge'||meta.dataAuthority!=='Technics'||meta.readOnly!==true)throw fail('PACKING_MAIN_IDENTITY_INVALID','Identità del ponte principale non verificata.');
+    const identities=Array.isArray(expectedIdentity)?expectedIdentity:[expectedIdentity],matchedIdentity=identities.find(identity=>identity&&['nodeId','nodeRole'].every(k=>typeof identity[k]==='string'&&identity[k].length>0&&meta[k]===identity[k]));
+    if(!matchedIdentity||!supportedVersion(meta.version)||meta.source!=='TechnicsBridge'||meta.dataAuthority!=='Technics'||meta.readOnly!==true)throw fail('PACKING_MAIN_IDENTITY_INVALID','Identità del ponte principale non verificata.');
     const fields=[['X-Technics-Request-Id','requestId'],['X-Technics-Version','version'],['X-Technics-Node','nodeId'],['X-Technics-Node-Role','nodeRole'],['X-Technics-Lease-Epoch','leaseEpoch'],['X-Technics-Server-Time','serverTime']];
     if(fields.some(([h,k])=>typeof meta[k]!=='string'||!meta[k]||headers.get(h)!==meta[k])||!/^[A-Za-z0-9-]{1,128}$/.test(meta.requestId)||!/^\d{1,20}$/.test(meta.leaseEpoch))throw fail('PACKING_MAIN_IDENTITY_INVALID','Metadati e intestazioni del ponte non corrispondono.');
     const serverAt=Date.parse(meta.serverTime),cacheHeader=headers.get('X-Technics-Cache')||'',degradedHeader=headers.get('X-Technics-Degraded-Read-Only')||'',lastSyncHeader=headers.get('X-Technics-Last-Sync-At')||'',gatewayHeader=headers.get('X-Technics-Gateway')||'',emergencyMarked=Boolean((cacheHeader&&cacheHeader!=='NONE')||degradedHeader||lastSyncHeader||/emergency/i.test(gatewayHeader)),emergency=cacheHeader==='emergency-stale-readonly'&&degradedHeader==='true'&&gatewayHeader==='stable-worker-emergency-cache'&&payload.degradedReadOnly===true&&payload.stale===true&&payload.offline===true&&payload.cacheSource==='gateway-last-known-good'&&payload.lastSyncAt===lastSyncHeader;
@@ -59,7 +67,7 @@
     // Both open and closed rows provide explicit revision evidence. Missing rows
     // cannot be inferred deleted/closed, even if the response claims other proofs.
     for(const [op,revision] of Object.entries(required))if(!seen.has(op)||seen.get(op)<revision)throw fail('PACKING_MAIN_REVISION_NOT_VISIBLE','Elenco principale non ancora allineato al salvataggio confermato.');
-    return {payload,via:emergency?'gateway-emergency-cache':primaryMirror?'main-primary-mirror':'main-bridge',degradedReadOnly:emergency,freshnessUnverified:primaryMirror,lastSyncAt,minimumRevisions:required,identity:{...matchedIdentity,requestId:meta.requestId,serverTime:meta.serverTime,leaseEpoch:meta.leaseEpoch}};
+    return {payload,via:emergency?'gateway-emergency-cache':primaryMirror?'main-primary-mirror':'main-bridge',degradedReadOnly:emergency,freshnessUnverified:primaryMirror,lastSyncAt,minimumRevisions:required,identity:{...matchedIdentity,version:meta.version,requestId:meta.requestId,serverTime:meta.serverTime,leaseEpoch:meta.leaseEpoch}};
   }
   function origin(value){try{const u=new URL(value);return typeof value==='string'&&u.protocol==='https:'&&!u.username&&!u.password&&!u.search&&!u.hash&&u.pathname==='/'&&u.origin===value?u.origin:null}catch{return null}}
   function create({getBridges,bridgeUrl,expectedIdentity=EXPECTED,fetch:transportFetch,now=Date.now,clock=()=>performance.now(),timeoutMs=8000}={}){
