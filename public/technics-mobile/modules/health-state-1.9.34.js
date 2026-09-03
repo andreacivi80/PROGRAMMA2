@@ -44,5 +44,5 @@
     if(evidence?.scope!=='packing-open-list'||evidence.validated!==true||evidence.cached!==false||evidence.minimumSatisfied!==true||minimumSatisfied!==true||!Number.isSafeInteger(evidence.receivedAt)||evidence.receivedAt<=0||!['reader','main'].includes(evidence.via)||!Number.isFinite(age)||age<0||age>=75000)return null;
     return Object.freeze({level:'warn',source:'Elenco disponibile · salvataggi non verificati'+(evidence.freshnessUnverified===true?' · aggiornamento file non attestato':''),checkedAt:Number(evidence.receivedAt)});
   }
-  globalThis.TechnicsHealthState=Object.freeze({version:'1.9.105',nodeStatus,functionTransition,systemSummary,packingListStatus,directObservation,DIRECT_OBSERVATION_TTL_MS,NODE_OBSERVATION_TTL_MS});
+  globalThis.TechnicsHealthState=Object.freeze({version:'1.9.106',nodeStatus,functionTransition,systemSummary,packingListStatus,directObservation,DIRECT_OBSERVATION_TTL_MS,NODE_OBSERVATION_TTL_MS});
 })();
