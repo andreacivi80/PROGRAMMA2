@@ -1,6 +1,9 @@
 (()=>{
   'use strict';
-  const EXPECTED=Object.freeze({nodeId:'technics-utente38-secondary',nodeRole:'secondary',version:'1.9.31'});
+  const EXPECTED=Object.freeze([
+    Object.freeze({nodeId:'technics-utente73-primary',nodeRole:'primary',version:'1.9.31'}),
+    Object.freeze({nodeId:'technics-utente38-secondary',nodeRole:'secondary',version:'1.9.31'})
+  ]);
   const forbidden=/IDENTITY|SCHEMA|PARSE|JSON|REVISION|MINIMUM|PERSISTENCE|AUTH|FORBIDDEN|CONFIG|SOURCE_INVALID|CANCEL/i;
   const transientCodes=new Set(['','PACKING_READER_UNAVAILABLE','PACKING_READER_BUSY','READER_BUSY','READER_UNAVAILABLE','READER_TIMEOUT','READER_NETWORK_FAILURE','GATEWAY_TIMEOUT','TECHNICS_TRANSPORT_CIRCUIT_OPEN']);
   const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
@@ -29,16 +32,23 @@
   function validate(payload,responseHeaders,{minimumRevisions={},expectedIdentity=EXPECTED,now=Date.now(),expectedRequestId,requestFreshnessBounded=false}={}){
     const required=minima(minimumRevisions),meta=payload?.meta,headers=new Headers(responseHeaders);
     if(payload?.ok!==true||!meta||!Array.isArray(payload.sessions)||!Array.isArray(payload.closedSessions))throw fail('PACKING_MAIN_SCHEMA_INVALID','Elenco del ponte principale incompleto.');
-    if(!expectedIdentity||!['nodeId','nodeRole','version'].every(k=>typeof expectedIdentity[k]==='string'&&expectedIdentity[k].length>0&&meta[k]===expectedIdentity[k])||meta.source!=='TechnicsBridge'||meta.dataAuthority!=='Technics'||meta.readOnly!==true)throw fail('PACKING_MAIN_IDENTITY_INVALID','Identità del ponte principale non verificata.');
+    const identities=Array.isArray(expectedIdentity)?expectedIdentity:[expectedIdentity],matchedIdentity=identities.find(identity=>identity&&['nodeId','nodeRole','version'].every(k=>typeof identity[k]==='string'&&identity[k].length>0&&meta[k]===identity[k]));
+    if(!matchedIdentity||meta.source!=='TechnicsBridge'||meta.dataAuthority!=='Technics'||meta.readOnly!==true)throw fail('PACKING_MAIN_IDENTITY_INVALID','Identità del ponte principale non verificata.');
     const fields=[['X-Technics-Request-Id','requestId'],['X-Technics-Version','version'],['X-Technics-Node','nodeId'],['X-Technics-Node-Role','nodeRole'],['X-Technics-Lease-Epoch','leaseEpoch'],['X-Technics-Server-Time','serverTime']];
     if(fields.some(([h,k])=>typeof meta[k]!=='string'||!meta[k]||headers.get(h)!==meta[k])||!/^[A-Za-z0-9-]{1,128}$/.test(meta.requestId)||!/^\d{1,20}$/.test(meta.leaseEpoch))throw fail('PACKING_MAIN_IDENTITY_INVALID','Metadati e intestazioni del ponte non corrispondono.');
-    const serverAt=Date.parse(meta.serverTime);
-    const correlated=expectedRequestId!==undefined;
+    const serverAt=Date.parse(meta.serverTime),cacheHeader=headers.get('X-Technics-Cache')||'',degradedHeader=headers.get('X-Technics-Degraded-Read-Only')||'',lastSyncHeader=headers.get('X-Technics-Last-Sync-At')||'',gatewayHeader=headers.get('X-Technics-Gateway')||'',emergencyMarked=Boolean((cacheHeader&&cacheHeader!=='NONE')||degradedHeader||lastSyncHeader||/emergency/i.test(gatewayHeader)),emergency=cacheHeader==='emergency-stale-readonly'&&degradedHeader==='true'&&gatewayHeader==='stable-worker-emergency-cache'&&payload.degradedReadOnly===true&&payload.stale===true&&payload.offline===true&&payload.cacheSource==='gateway-last-known-good'&&payload.lastSyncAt===lastSyncHeader;
+    const correlated=expectedRequestId!==undefined&&!emergency;
     if(correlated&&(!validRequestId(expectedRequestId)||meta.requestId!==expectedRequestId||requestFreshnessBounded!==true))throw fail('PACKING_MAIN_IDENTITY_INVALID','Risposta non corrispondente alla richiesta elenco corrente.');
-    if(!/^\d{4}-\d{2}-\d{2}T.*Z$/.test(meta.serverTime)||!Number.isFinite(serverAt)||(!correlated&&(!Number.isFinite(now)||serverAt>now+30000||now-serverAt>30000))||payload.stale===true||payload.offline===true||/stale|offline/i.test(headers.get('X-Technics-Cache')||''))throw fail('PACKING_MAIN_FRESHNESS_UNVERIFIED','Risposta precedente o data del ponte non verificabile; elenco non dichiarato aggiornato.');
+    if(!/^\d{4}-\d{2}-\d{2}T.*Z$/.test(meta.serverTime)||!Number.isFinite(serverAt))throw fail('PACKING_MAIN_FRESHNESS_UNVERIFIED','Data del ponte non verificabile.');
+    if(emergencyMarked&&!emergency)throw fail('PACKING_MAIN_FRESHNESS_UNVERIFIED','Contratto della copia di emergenza incompleto.');
+    let lastSyncAt=null;
+    if(emergency){const syncAt=Date.parse(lastSyncHeader),age=now-syncAt;if(!Number.isFinite(now)||!Number.isFinite(syncAt)||age<0||age>5*60*1000||serverAt>syncAt+30000)throw fail('PACKING_MAIN_FRESHNESS_UNVERIFIED','Copia di emergenza scaduta o non verificabile.');lastSyncAt=new Date(syncAt).toISOString()}
+    else if(payload.stale===true||payload.offline===true||payload.degradedReadOnly===true||(!correlated&&(!Number.isFinite(now)||serverAt>now+30000||now-serverAt>30000)))throw fail('PACKING_MAIN_FRESHNESS_UNVERIFIED','Risposta precedente o data del ponte non verificabile; elenco non dichiarato aggiornato.');
     if(!/application\/json/i.test(headers.get('Content-Type')||''))throw fail('PACKING_MAIN_SCHEMA_INVALID','Formato elenco non verificabile.');
-    if(payload.store?.available!==true||payload.store.authoritative!==true||payload.store.source!=='server')throw fail('PACKING_MAIN_STORE_UNAVAILABLE','Archivio comune non confermato dal ponte.');
     const rows=[...payload.sessions,...payload.closedSessions],seen=new Map();
+    const authoritativeStore=payload.store?.available===true&&payload.store.authoritative===true&&payload.store.source==='server';
+    const primaryMirror=payload.store?.available===true&&payload.store.authoritative===false&&payload.store.source==='mirror'&&!emergency&&correlated&&(!gatewayHeader||gatewayHeader==='stable-worker')&&matchedIdentity.nodeId==='technics-utente73-primary'&&matchedIdentity.nodeRole==='primary'&&Number.isSafeInteger(payload.store.fileCount)&&payload.store.fileCount>=rows.length&&payload.store.lastSyncAt==null;
+    if(!authoritativeStore&&!primaryMirror)throw fail('PACKING_MAIN_STORE_UNAVAILABLE','Archivio comune non confermato dal ponte.');
     for(const row of rows){
       if(!row||typeof row!=='object'||!validKey(row.opBarcode)||!validRevision(row.revision)||seen.has(row.opBarcode))throw fail('PACKING_MAIN_SCHEMA_INVALID','OP o revisione non valide nell’elenco.');
       for(const key of ['number','ovNumber','articleCode','articleName','customer','lot'])if(own(row,key)&&typeof row[key]!=='string')throw fail('PACKING_MAIN_SCHEMA_INVALID','Campi elenco non validi.');
@@ -47,7 +57,7 @@
     // Both open and closed rows provide explicit revision evidence. Missing rows
     // cannot be inferred deleted/closed, even if the response claims other proofs.
     for(const [op,revision] of Object.entries(required))if(!seen.has(op)||seen.get(op)<revision)throw fail('PACKING_MAIN_REVISION_NOT_VISIBLE','Elenco principale non ancora allineato al salvataggio confermato.');
-    return {payload,via:'main-bridge',minimumRevisions:required,identity:{...expectedIdentity,requestId:meta.requestId,serverTime:meta.serverTime,leaseEpoch:meta.leaseEpoch}};
+    return {payload,via:emergency?'gateway-emergency-cache':primaryMirror?'main-primary-mirror':'main-bridge',degradedReadOnly:emergency,freshnessUnverified:primaryMirror,lastSyncAt,minimumRevisions:required,identity:{...matchedIdentity,requestId:meta.requestId,serverTime:meta.serverTime,leaseEpoch:meta.leaseEpoch}};
   }
   function origin(value){try{const u=new URL(value);return typeof value==='string'&&u.protocol==='https:'&&!u.username&&!u.password&&!u.search&&!u.hash&&u.pathname==='/'&&u.origin===value?u.origin:null}catch{return null}}
   function create({getBridges,bridgeUrl,expectedIdentity=EXPECTED,fetch:transportFetch,now=Date.now,clock=()=>performance.now(),timeoutMs=8000}={}){

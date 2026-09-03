@@ -80,13 +80,15 @@
     async function request(sourceUrl,options={}){
       const method=String(options.method||"GET").toUpperCase(),source=new URL(sourceUrl,bridgeUrl);
       const listRequest=method==="GET"&&source.pathname==="/api/packing/open",readerUsed=isEnabled()&&listRequest;
-      let target=sourceUrl,requestOptions=options,config=null,sent=Object.create(null);
+      let target=sourceUrl,requestOptions=options,config=null,sent=Object.create(null),mainRequestId=null;
       if(readerUsed){
         if(source.origin!==bridgeOrigin||source.username||source.password||source.hash)throw problem("PACKING_READER_SOURCE_INVALID","Origine della richiesta elenco non autorizzata.");
         config=readerConfig();sent=minimumRevisions();if(readError||writeError){persistRegistry();if(readError||writeError)throw problem("PACKING_READER_ACK_PERSISTENCE_UNAVAILABLE",persistenceNotice())}const serialized=JSON.stringify(sent);
         if(new TextEncoder().encode(serialized).length>MAX_BYTES)throw problem("PACKING_READER_MINIMUM_TOO_LARGE","Troppe revisioni da verificare in un solo elenco. Nessun elenco precedente è stato presentato come aggiornato.");
         const headers=new Headers(options.headers||{});headers.set("X-Technics-Minimum-Revisions",serialized);
         target=config.origin+source.pathname+source.search;requestOptions={...options,method:"GET",headers,redirect:"error",credentials:"omit"};
+      }else if(listRequest){
+        mainRequestId=globalThis.crypto?.randomUUID?.();if(!mainRequestId)throw problem("PACKING_MAIN_CONFIGURATION_INVALID","Identificativo sicuro della richiesta elenco non disponibile.");const headers=new Headers(options.headers||{});headers.set("X-Technics-Request-Id",mainRequestId);requestOptions={...options,headers};
       }
       let response,payload,readerDeadlineError=null;
       try{
@@ -116,6 +118,8 @@
         throw Object.assign(problem(error?.code||(response?"PACKING_READER_INVALID_RESPONSE":"PACKING_READER_UNAVAILABLE"),response?"Risposta elenco non leggibile. Nessun elenco sostitutivo è stato caricato.":"Lettore elenco non raggiungibile. Premi Ripristina elenco per riprovare; nessun ripiego automatico sul ponte principale."),{status,httpStatus:status,networkFailure});
       }
       if(!response.ok||payload?.ok!==true){if(readerUsed)throw failure(response,payload);throw new Error(payload?.error||"Elenco non disponibile.")}
+      const mainVerified=!readerUsed&&listRequest&&globalThis.location?.hostname!=="127.0.0.1"?globalThis.TechnicsPackingMainReadFallback?.validate(payload,response.headers,{minimumRevisions:minimumRevisions(),now:now(),expectedRequestId:mainRequestId,requestFreshnessBounded:true}):null;
+      if(!readerUsed&&listRequest&&globalThis.location?.hostname!=="127.0.0.1"&&!mainVerified)throw problem("PACKING_MAIN_CONFIGURATION_INVALID","Validatore del ponte principale non disponibile.");
       if(!listRequest)return {response,payload,readerUsed:false};
       if(readerUsed){
         const meta=payload.meta,reader=payload.reader;
@@ -127,7 +131,10 @@
       const current=minimumRevisions(),rows=[...payload.sessions,...payload.closedSessions];
       if(!covers(current,rows,readerUsed?sent:null))throw stale();
       const proven=Object.create(null);for(const [key,revision] of Object.entries(current))proven[key]=revision;
-      return {response,payload,readerUsed,minimumRevisions:proven,metadataIncomplete:readerUsed&&payload.reader.metadataComplete===false,notice:readerUsed&&payload.reader.metadataComplete===false?"Elenco letto dagli archivi: alcuni metadati OP/OV, articolo o cliente non sono disponibili. Non è una verifica del gestionale.":""};
+      const degradedReadOnly=mainVerified?.degradedReadOnly===true||(!mainVerified&&!readerUsed&&payload.degradedReadOnly===true&&payload.stale===true&&payload.offline===true&&payload.cacheSource==="gateway-last-known-good"&&response.headers?.get?.("X-Technics-Cache")==="emergency-stale-readonly"&&response.headers?.get?.("X-Technics-Degraded-Read-Only")==="true"&&response.headers?.get?.("X-Technics-Last-Sync-At")===payload.lastSyncAt),lastSyncAt=degradedReadOnly?(mainVerified?.lastSyncAt||payload.lastSyncAt):null;
+      if(!readerUsed&&(payload.degradedReadOnly===true||payload.stale===true||payload.offline===true)&&!degradedReadOnly)throw problem("PACKING_MAIN_FRESHNESS_UNVERIFIED","Copia elenco non verificabile.");
+      const freshnessUnverified=mainVerified?.freshnessUnverified===true;
+      return {response,payload,readerUsed,minimumRevisions:proven,metadataIncomplete:readerUsed&&payload.reader.metadataComplete===false,degradedReadOnly,lastSyncAt,freshnessUnverified,via:degradedReadOnly?"gateway-emergency-cache":readerUsed?"reader":mainVerified?.via||"main-bridge",notice:degradedReadOnly?`Copia verificata delle ${new Date(lastSyncAt).toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit",second:"2-digit"})} · sola consultazione; salvataggi e scansioni disabilitati.`:freshnessUnverified?"Elenco live dal PC73 su archivio locale verificato; archivio comune non attestato.":readerUsed&&payload.reader.metadataComplete===false?"Elenco letto dagli archivi: alcuni metadati OP/OV, articolo o cliente non sono disponibili. Non è una verifica del gestionale.":""};
     }
     async function requestMainFallback(readerFailure,{signal}={}){
       if(!isEnabled())throw problem("PACKING_MAIN_CONFIGURATION_INVALID","Lettore dedicato non abilitato.");
@@ -140,7 +147,7 @@
       if(signal?.aborted)throw Object.assign(problem("PACKING_MAIN_CANCELLED","Lettura annullata."),{cancelled:true});
       const current=checkedMinimums();
       if(!covers(current,[...result.payload.sessions,...result.payload.closedSessions],null))throw stale();
-      return {response:result.response,payload:result.payload,readerUsed:false,via:"main-bridge",minimumRevisions:{...current},metadataIncomplete:false,freshnessUnverified:true,notice:"Elenco ricevuto tramite PC38 · aggiornamento dei file non attestato"};
+      return {response:result.response,payload:result.payload,readerUsed:false,via:result.via,minimumRevisions:{...current},metadataIncomplete:false,degradedReadOnly:result.degradedReadOnly===true,lastSyncAt:result.lastSyncAt,freshnessUnverified:result.degradedReadOnly===true||result.freshnessUnverified===true,notice:result.degradedReadOnly?`Copia verificata delle ${new Date(result.lastSyncAt).toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit",second:"2-digit"})} · sola consultazione; salvataggi e scansioni disabilitati.`:result.freshnessUnverified?"Elenco live dal PC73 su archivio locale verificato; archivio comune non attestato.":"Elenco aggiornato dal ponte principale"};
     }
     readRegistry();
     try{subscribeStorage(event=>{if(event.key!==registryKey&&event.key!==null)return;try{mergeRegistry(event.newValue??null);persistRegistry()}catch{readError="registry-event";warn()}})}catch{readError="registry-subscription";warn()}
