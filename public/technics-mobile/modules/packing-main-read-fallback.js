@@ -1,7 +1,9 @@
 (()=>{
   'use strict';
   const EXPECTED=Object.freeze([
+    Object.freeze({nodeId:'technics-utente73-primary',nodeRole:'primary',version:'1.9.104'}),
     Object.freeze({nodeId:'technics-utente73-primary',nodeRole:'primary',version:'1.9.31'}),
+    Object.freeze({nodeId:'technics-utente38-secondary',nodeRole:'secondary',version:'1.9.104'}),
     Object.freeze({nodeId:'technics-utente38-secondary',nodeRole:'secondary',version:'1.9.31'})
   ]);
   const forbidden=/IDENTITY|SCHEMA|PARSE|JSON|REVISION|MINIMUM|PERSISTENCE|AUTH|FORBIDDEN|CONFIG|SOURCE_INVALID|CANCEL/i;
