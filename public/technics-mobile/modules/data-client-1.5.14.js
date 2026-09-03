@@ -117,13 +117,18 @@
     if(!safe&&emergencyReadOnly.active)throw emergencyBlocked();
     if(options.signal?.aborted)throw cancelledRequest(options.signal.reason);
     const origin=transportOrigin(url),transportCircuit=circuitFor(origin);lastTransportOrigin=origin;
-    if(transportCircuit.openedAt&&Date.now()-transportCircuit.openedAt<10000)throw Object.assign(new Error("Collegamento temporaneamente sospeso dopo errori consecutivi."),{code:"TECHNICS_TRANSPORT_CIRCUIT_OPEN",networkFailure:true});
-    if(transportCircuit.openedAt)Object.assign(transportCircuit,{failures:0,openedAt:0});
+    // A circuit opened by failed background reads must not reject an operator
+    // mutation before it has even been sent. Mutations still get one attempt
+    // only and retain their operationId; they are never replayed here.
+    if(safe&&transportCircuit.openedAt&&Date.now()-transportCircuit.openedAt<10000)throw Object.assign(new Error("Collegamento temporaneamente sospeso dopo errori consecutivi."),{code:"TECHNICS_TRANSPORT_CIRCUIT_OPEN",networkFailure:true});
+    if(safe&&transportCircuit.openedAt)Object.assign(transportCircuit,{failures:0,openedAt:0});
     let lastError;
     for(let attempt=0;attempt<attempts;attempt++){
       if(options.signal?.aborted)throw cancelledRequest(options.signal.reason);
       let callerListening=false,responseOwnsCaller=false;
-      const controller=new AbortController(),nativeComposite=options.signal&&typeof AbortSignal!=="undefined"&&typeof AbortSignal.any==="function",detachCaller=()=>{if(callerListening){options.signal.removeEventListener("abort",callerAbort);callerListening=false}},callerAbort=()=>{controller.abort(options.signal.reason);detachCaller()},signal=nativeComposite?AbortSignal.any([controller.signal,options.signal]):controller.signal,timeout=/\/health(?:[/?]|$)/.test(String(url))?4500:8000,timer=setTimeout(()=>controller.abort("timeout"),timeout);
+      const requestPath=(()=>{try{return new URL(String(url),globalThis.location?.href||window.__technicsBridgeUrl).pathname}catch{return String(url)}})();
+      const timeout=/\/health(?:[/?]|$)/.test(String(url))?4500:safe?8000:requestPath==="/api/packing/photo"?90000:30000;
+      const controller=new AbortController(),nativeComposite=options.signal&&typeof AbortSignal!=="undefined"&&typeof AbortSignal.any==="function",detachCaller=()=>{if(callerListening){options.signal.removeEventListener("abort",callerAbort);callerListening=false}},callerAbort=()=>{controller.abort(options.signal.reason);detachCaller()},signal=nativeComposite?AbortSignal.any([controller.signal,options.signal]):controller.signal,timer=setTimeout(()=>controller.abort("timeout"),timeout);
       if(options.signal&&!nativeComposite){callerListening=true;options.signal.addEventListener("abort",callerAbort,{once:true})}
       try{
         const headers=new Headers(options.headers||{});if(!headers.has("X-Technics-Request-Id"))headers.set("X-Technics-Request-Id",requestId());
@@ -141,7 +146,8 @@
         return response;
       }catch(error){if(options.signal?.aborted)throw cancelledRequest(options.signal.reason);lastError=error;if(attempt>=attempts-1)break;await pause(180+Math.random()*120)}finally{clearTimeout(timer);if(!responseOwnsCaller)detachCaller()}
     }
-    transportCircuit.failures++;if(transportCircuit.failures>=5)transportCircuit.openedAt=Date.now();throw lastError||new Error("Collegamento dati non disponibile.");
+    if(safe){transportCircuit.failures++;if(transportCircuit.failures>=5)transportCircuit.openedAt=Date.now()}
+    throw lastError||new Error("Collegamento dati non disponibile.");
   };
   const cancelObsolete=workspace=>{for(const [controller,scope] of activeControllers)if(scope!=="global"&&scope!==workspace)controller.abort("workspace-change")};
   window.addEventListener("technics-workspace-change",event=>cancelObsolete(String(event.detail?.workspace||"")));
