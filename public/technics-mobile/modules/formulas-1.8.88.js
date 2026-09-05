@@ -576,7 +576,7 @@
       )
         schedule();
       else load(currentCode, true);
-    }, 15000);
+    }, 60000);
   };
   form.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -651,7 +651,7 @@
     alternativeLogTimer = setTimeout(() => {
       if (alternativeLog.open && !document.hidden && shell.dataset.workspace === "formulas") loadAlternativeLog(true);
       else scheduleAlternativeLog();
-    }, 15000);
+    }, 60000);
   };
   const groupAlternativeRows = (rows) => {
     const byDate = new Map();
@@ -755,7 +755,7 @@
     rawMaterialTimer = setTimeout(() => {
       if (shell.dataset.workspace === "rawmaterials" && !document.hidden) loadRawMaterials(true);
       else scheduleRawMaterials();
-    }, 15000);
+    }, 60000);
   };
   const renderRawMaterials = (data) => {
     const select = rawMaterialForm.elements.lineId,
@@ -893,7 +893,7 @@
     materialAuditTimer = setTimeout(() => {
       if (materialAuditPanel.open && !document.hidden && shell.dataset.workspace === "formulas") loadMaterialAudit(true);
       else scheduleMaterialAudit();
-    }, 15000);
+    }, 60000);
   };
   const loadMaterialAudit = async (quiet = false) => {
     const token = ++materialAuditToken,

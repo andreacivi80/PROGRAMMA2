@@ -101,11 +101,11 @@
   };
   const start=()=>{
     loadIssues();ensurePanel();ensureFunctionLights();const statusStyle=document.createElement("style");statusStyle.id="technics-connection-levels-v1744";statusStyle.textContent=".top .status.warn{color:#735817;background:#fff4cf;border-color:#e4ca77}.top .status.warn i{background:#d4a849;box-shadow:0 0 0 3px #f7e8b8}.top .status[data-level=wait] i{background:#9eaaa5}";document.head.appendChild(statusStyle);paint();const node=document.getElementById("net");node?.addEventListener("click",()=>{state.selectedNode="";document.getElementById("systemDiagnostics")?.classList.remove("hidden");paintPanel();loadNodes()});node?.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();node.click()}});
-    if(window.TechnicsLiveSync)TechnicsLiveSync.create({interval:45000,maxDelay:180000,immediate:true,active:()=>navigator.onLine&&!document.hidden,task:check}).start();
-    else{check();setInterval(()=>{if(!document.hidden)check()},45000)}
+    if(window.TechnicsLiveSync)TechnicsLiveSync.create({interval:120000,maxDelay:300000,immediate:true,active:()=>navigator.onLine&&!document.hidden,task:check}).start();
+    else{check();setInterval(()=>{if(!document.hidden)check()},120000)}
     document.addEventListener("technics:data-success",onDataSuccess);
     document.addEventListener("technics:packing-list-read",onPackingListRead);
-    setTimeout(initialReadiness,250);setInterval(()=>{if(!document.hidden)loadNodes()},60000);setInterval(()=>{updateDatabaseLight();paintFunctionLights();paint()},5000);
+    setTimeout(initialReadiness,250);setInterval(()=>{if(!document.hidden)loadNodes()},180000);setInterval(()=>{updateDatabaseLight();paintFunctionLights();paint()},5000);
   };
   window.TechnicsSystemHealth=Object.freeze({check:refreshDiagnostics,diagnostics:()=>Object.freeze({...state,clientRoutes:clientRoutes()}),version:"1.9.110"});
   document.documentElement.dataset.systemHealth="1.9.110";
