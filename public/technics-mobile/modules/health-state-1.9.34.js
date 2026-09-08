@@ -22,9 +22,9 @@
     const explicitReady=Boolean(explicitOnline&&entry?.ok===true);
     const explicitDegraded=Boolean(explicitOnline&&entry?.ok!==true);
     const explicitOffline=Boolean(nodesFresh&&(!entry||entry.online===false));
-    const level=active||explicitReady?'ok':explicitDegraded||explicitOffline?'bad':'warn';
-    const text=active?`${pc} attivo · dati Technics disponibili`:explicitReady?`${pc} pronto · dati Technics disponibili`:explicitDegraded?`${pc} collegato · dati Technics non disponibili`:explicitOffline?`${pc} non collegato al gateway`:`${pc} in verifica`;
-    const evidence=active?'risposta pubblica diretta recente':explicitReady?'elenco nodi recente · readiness verificata':explicitDegraded?'elenco nodi recente · readiness non superata':explicitOffline?'non collegato al gateway nell’ultimo elenco; stato fisico del PC non verificato':observedHere&&direct.at!==null?'ultima osservazione diretta non recente o orologio non coerente · nuova verifica necessaria':'nessuna verifica recente conclusiva';
+    const level=active||explicitReady?'ok':explicitDegraded?'warn':explicitOffline?'bad':'warn';
+    const text=active?`${pc} attivo · dati Technics disponibili`:explicitReady?`${pc} pronto · dati Technics disponibili`:explicitDegraded?`${pc} collegato · preallarme: dati in recupero`:explicitOffline?`${pc} non collegato al gateway`:`${pc} in verifica`;
+    const evidence=active?'risposta pubblica diretta recente':explicitReady?'elenco nodi recente · readiness verificata':explicitDegraded?'preallarme gateway · nodo collegato, readiness in recupero':explicitOffline?'non collegato al gateway nell’ultimo elenco; stato fisico del PC non verificato':observedHere&&direct.at!==null?'ultima osservazione diretta non recente o orologio non coerente · nuova verifica necessaria':'nessuna verifica recente conclusiva';
     return Object.freeze({pc,role:roleOf(pc),level,text,active,explicitOnline,explicitReady,explicitDegraded,explicitOffline,evidence,entry:entry||null,title:`${pc}: ${roleOf(pc)} · ${evidence}`});
   }
   function functionTransition(previous={},result={},now=Date.now()) {
