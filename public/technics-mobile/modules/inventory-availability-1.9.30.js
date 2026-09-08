@@ -54,9 +54,25 @@
     const units=new Set(rows.map(row=>row.unit||unit));
     return units.size>1||rows.some(row=>!finite(row.quantity))?null:rows.reduce((sum,row)=>sum+row.quantity,0);
   }
-  function markup(value, summary = false) {
-    return [['total','Totale',value.total],['free','Libero',value.free],['committed','Impegnato',value.committed]].map(([key,label,quantity]) =>
-      `<span class="inventorybalance-${key}"><small${summary && key === 'total' ? ' id="totallabel"' : ''}>${label}</small><b${summary && key === 'total' ? ' id="total"' : ''}>${esc(format(quantity,value.unit))}</b></span>`).join('');
+  function markup(value, summary = false, committedInteractive = false) {
+    return [['total','Totale',value.total],['free','Libero',value.free],['committed','Impegnato',value.committed]].map(([key,label,quantity]) => {
+      const interactive=summary&&key==='committed'&&committedInteractive,tag=interactive?'button':'span';
+      return `<${tag}${interactive?' type="button" aria-label="Apri dettaglio quantità impegnata" data-inventory-commitments="open"':''} class="inventorybalance-${key}${interactive?' inventorycommitmenttrigger':''}"><small${summary && key === 'total' ? ' id="totallabel"' : ''}>${label}</small><b${summary && key === 'total' ? ' id="total"' : ''}>${esc(format(quantity,value.unit))}</b></${tag}>`;
+    }).join('');
+  }
+  const date=value=>{if(!value)return '—';const parsed=new Date(value);return Number.isNaN(parsed.getTime())?'—':parsed.toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric'})};
+  function commitmentDialog(){
+    let overlay=document.getElementById('inventoryCommitmentOverlay');if(overlay)return overlay;
+    overlay=document.createElement('div');overlay.id='inventoryCommitmentOverlay';overlay.className='inventorycommitmentoverlay hidden';overlay.innerHTML='<section class="inventorycommitmentdialog" role="dialog" aria-modal="true" aria-labelledby="inventoryCommitmentTitle"><header><div><small>DETTAGLIO IMPEGNATO</small><h3 id="inventoryCommitmentTitle"></h3></div><button type="button" data-inventory-commitments-close aria-label="Chiudi">×</button></header><div class="inventorycommitmentscroll"><table><thead><tr><th>OP</th><th>OV</th><th>Data di consegna</th><th>Impegnato</th></tr></thead><tbody></tbody><tfoot><tr><th colspan="3">Totale</th><th data-inventory-commitments-total></th></tr></tfoot></table></div><p data-inventory-commitments-check></p></section>';
+    const close=()=>overlay.classList.add('hidden');overlay.addEventListener('click',event=>{if(event.target===overlay||event.target.closest('[data-inventory-commitments-close]'))close()});document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!overlay.classList.contains('hidden'))close()});document.body.append(overlay);return overlay;
+  }
+  function openCommitments(item,summary){
+    const detail=item.commitmentDetail||{},rows=Array.isArray(detail.rows)?detail.rows:[],overlay=commitmentDialog();
+    overlay.querySelector('h3').textContent=`${item.code||''} · ${item.name||item.description||''}`;
+    overlay.querySelector('tbody').innerHTML=rows.map(row=>`<tr><td>${esc(row.op||'—')}</td><td>${esc(row.ov||'—')}</td><td>${esc(date(row.deliveryDate))}</td><td>${esc(format(Number(row.quantity),row.unit||summary.unit))}</td></tr>`).join('');
+    overlay.querySelector('[data-inventory-commitments-total]').textContent=format(Number(detail.totalQuantity),detail.unit||summary.unit);
+    const check=overlay.querySelector('[data-inventory-commitments-check]');check.className=detail.matchesInventory?'inventorycommitmentok':'inventorycommitmenterror';check.textContent=detail.matchesInventory?`Somma verificata: coincide con Impegnato (${format(summary.committed,summary.unit)}).`:'Attenzione: il dettaglio OP/OV non coincide con il totale Impegnato. Dati da verificare.';
+    overlay.classList.remove('hidden');overlay.querySelector('[data-inventory-commitments-close]').focus({preventScroll:true});
   }
   function installStyles() {
     if(document.getElementById('inventory-availability-style'))return;
@@ -66,6 +82,13 @@
 #result .inventoryavailability>span{display:grid;grid-template-rows:minmax(2.4em,auto) auto;align-content:center;align-items:center;gap:3px;min-width:0;padding:7px 5px;border-radius:8px;text-align:center;color:#fff;background:#164f42;font-size:10px}
 #result .inventoryavailability>.inventorybalance-free{background:#287257}
 #result .inventoryavailability>.inventorybalance-committed{background:#416b40}
+#result .inventorycommitmenttrigger{border:0;font:inherit;cursor:pointer;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
+#result .inventorycommitmenttrigger:active{transform:scale(.98)}
+.inventorycommitmentoverlay{position:fixed;inset:0;z-index:2147483000;background:rgba(4,25,20,.62);display:grid;place-items:center;padding:14px}
+.inventorycommitmentoverlay.hidden{display:none!important}.inventorycommitmentdialog{width:min(720px,100%);max-height:min(82vh,760px);display:flex;flex-direction:column;background:#fff;border-radius:14px;box-shadow:0 18px 54px rgba(0,0,0,.3);overflow:hidden;color:#173c32}
+.inventorycommitmentdialog header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;background:#164f42;color:#fff}.inventorycommitmentdialog header small{font-size:10px;font-weight:800}.inventorycommitmentdialog h3{margin:2px 0 0;font-size:15px;line-height:1.25}.inventorycommitmentdialog header button{width:36px;height:36px;border:0;border-radius:50%;background:#fff;color:#164f42;font-size:25px;line-height:1;flex:0 0 auto}
+.inventorycommitmentscroll{overflow:auto;overscroll-behavior:contain}.inventorycommitmentdialog table{width:100%;border-collapse:collapse;font-size:12px}.inventorycommitmentdialog th,.inventorycommitmentdialog td{padding:9px 7px;border-bottom:1px solid #d9e5df;text-align:left;white-space:nowrap}.inventorycommitmentdialog th:last-child,.inventorycommitmentdialog td:last-child{text-align:right;font-variant-numeric:tabular-nums}.inventorycommitmentdialog thead{position:sticky;top:0;background:#eaf3ef}.inventorycommitmentdialog tfoot{position:sticky;bottom:0;background:#dcece5}.inventorycommitmentdialog>p{margin:0;padding:10px 14px;font-size:11px;font-weight:750}.inventorycommitmentok{background:#e2f3e9;color:#17613f}.inventorycommitmenterror{background:#fee9e7;color:#9c2019}
+@media(max-width:420px){.inventorycommitmentoverlay{padding:7px}.inventorycommitmentdialog{max-height:88vh}.inventorycommitmentdialog th,.inventorycommitmentdialog td{padding:8px 5px;font-size:11px}}
 #result .inventoryavailability small{font-size:10px;font-weight:750;line-height:1.2;color:inherit;text-align:center;overflow-wrap:anywhere}
 #result .inventoryavailability b{font-size:14px;line-height:1.25;overflow-wrap:anywhere;color:inherit;text-align:center;font-variant-numeric:tabular-nums}
 #result .stockhead{display:grid;grid-template-columns:minmax(84px,.85fr) minmax(0,2fr);gap:6px;align-items:start}
@@ -88,7 +111,7 @@
     const host=document.querySelector('#result .total');if(!host||!item)return;
     const all=item.stocks||[],fallback=fallbackTotal(all,item.unit||'');
     const summary=model(item.availability,fallback,item.unit||'');
-    host.classList.add('inventoryavailability');host.classList.remove('zerototal');host.innerHTML=markup(summary,true);host.title=summary.reason;
+    host.classList.add('inventoryavailability');host.classList.remove('zerototal');const commitmentReady=Array.isArray(item.commitmentDetail?.rows)&&item.commitmentDetail.rows.length>0&&finite(summary.committed)&&summary.committed>0;host.innerHTML=markup(summary,true,commitmentReady);host.title=summary.reason;const commitmentButton=host.querySelector('[data-inventory-commitments="open"]');if(commitmentButton)commitmentButton.addEventListener('click',()=>openCommitments(item,summary));
     let note=document.getElementById('inventoryAvailabilityNote');
     if(!note){note=document.createElement('p');note.id='inventoryAvailabilityNote';note.className='inventoryavailabilitynote';host.insertAdjacentElement('afterend',note)}
     note.textContent=summary.reason;
