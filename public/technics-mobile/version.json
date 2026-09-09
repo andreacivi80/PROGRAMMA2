@@ -1,3 +1,6 @@
 {
-  "version": "1.9.197"
+  "version": "1.9.198",
+  "build": "colli-pezzi-compatible",
+  "publishedAt": null,
+  "backendRequired": "1.9.192"
 }
