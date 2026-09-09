@@ -42,5 +42,5 @@
   });
   document.getElementById('showZero').addEventListener('change',()=>globalThis.TechnicsPackingInventoryRenderer?.refresh());
   document.getElementById('sortStocks').addEventListener('change',()=>globalThis.TechnicsPackingInventoryRenderer?.refresh());
-  void(async()=>{try{if(guard.target.kind==='inventory'){await script('modules/inventory-availability-1.9.30.js');await script('modules/packing-inventory-renderer-1.9.32.js')}else{document.querySelector('#detailControls label').hidden=true;await script('modules/packing-planning-renderer-1.9.32.js')}await render()}catch(error){fail(error)}})();
+  void(async()=>{try{if(guard.target.kind==='inventory'){await script('modules/inventory-availability-1.9.31.js');await script('modules/packing-inventory-renderer-1.9.32.js')}else{document.querySelector('#detailControls label').hidden=true;await script('modules/packing-planning-renderer-1.9.32.js')}await render()}catch(error){fail(error)}})();
 })();
