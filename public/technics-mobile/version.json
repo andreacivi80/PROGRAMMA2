@@ -1,6 +1,6 @@
 {
-  "version": "1.9.212",
-  "build": "op-magazzino-non-prelevare",
+  "version": "1.9.213",
+  "build": "op-magazzino-ui-unblock",
   "publishedAt": null,
   "backendRequired": "1.9.192"
 }
