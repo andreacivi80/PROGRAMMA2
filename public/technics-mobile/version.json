@@ -1,6 +1,6 @@
 {
-  "version": "1.9.231",
-  "build": "planning-error-trace-public-baseline",
+  "version": "1.9.247",
+  "build": "op-session-resilience-candidate",
   "publishedAt": null,
   "backendRequired": "1.9.192"
 }
