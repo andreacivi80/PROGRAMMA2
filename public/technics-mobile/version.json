@@ -1,6 +1,6 @@
 {
-  "version": "1.9.213",
-  "build": "op-magazzino-ui-unblock",
+  "version": "1.9.214",
+  "build": "op-magazzino-exclude-canonical",
   "publishedAt": null,
   "backendRequired": "1.9.192"
 }
