@@ -1,6 +1,6 @@
 {
-  "version": "1.9.201",
-  "build": "packing-picking-button-fit",
+  "version": "1.9.211",
+  "build": "op-magazzino-colli-pezzi-atomici",
   "publishedAt": null,
   "backendRequired": "1.9.192"
 }
