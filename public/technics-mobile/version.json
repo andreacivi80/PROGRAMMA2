@@ -1,6 +1,6 @@
 {
-  "version": "1.9.211",
-  "build": "op-magazzino-colli-pezzi-atomici",
+  "version": "1.9.212",
+  "build": "op-magazzino-non-prelevare",
   "publishedAt": null,
   "backendRequired": "1.9.192"
 }
