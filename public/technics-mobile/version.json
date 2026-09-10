@@ -1,6 +1,6 @@
 {
-  "version": "1.9.214",
-  "build": "op-magazzino-exclude-canonical",
+  "version": "1.9.215",
+  "build": "picking-mail-overlay-confirmation",
   "publishedAt": null,
   "backendRequired": "1.9.192"
 }
