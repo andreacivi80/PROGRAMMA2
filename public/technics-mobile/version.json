@@ -1,6 +1,6 @@
 {
-  "version": "1.9.253",
-  "build": "packing-photo-operation-id",
+  "version": "1.9.261",
+  "build": "op-warehouse-colli-visible",
   "publishedAt": null,
   "backendRequired": "1.9.192"
 }
