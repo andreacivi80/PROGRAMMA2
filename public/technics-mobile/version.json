@@ -1,6 +1,6 @@
 {
-  "version": "1.9.247",
-  "build": "op-session-resilience-candidate",
+  "version": "1.9.253",
+  "build": "packing-photo-operation-id",
   "publishedAt": null,
   "backendRequired": "1.9.192"
 }

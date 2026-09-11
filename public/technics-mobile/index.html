@@ -11,7 +11,7 @@
 <meta property="og:description" content="Magazzino Technics in tempo reale, in sola lettura.">
 <meta property="og:url" content="https://andreacivi80.github.io/PROGRAMMA2/technics-mobile/">
 <title>Technics Mobile</title>
-<meta name="technics-build-version" content="1.9.247">
+<meta name="technics-build-version" content="1.9.253">
 <style id="version-gate-v1865">
 html.version-gate-pending body{visibility:visible!important}
 html.version-gate-pending:before{content:"Verifica aggiornamento…";position:fixed;z-index:2147483647;right:8px;bottom:8px;padding:5px 8px;border:1px solid #c7d8d1;border-radius:99px;background:#ffffffee;color:#536b63;font:850 8px/1.2 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;box-shadow:0 3px 12px #173e3520}
@@ -21,7 +21,7 @@ html.version-gate-pending:before{content:"Verifica aggiornamento…";position:fi
 </style>
 <script id="version-gate-script-v1865">
 document.documentElement.classList.add("version-gate-pending");
-(()=>{const build="1.9.247",root=document.documentElement,reveal=()=>root.classList.remove("version-gate-pending"),parts=v=>String(v||"").split(".").map(n=>Number(n)||0),compare=(a,b)=>{const x=parts(a),y=parts(b);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d}return 0},check=async()=>{try{const response=await fetch(`version.json?boot=${Date.now()}`,{cache:"no-store",headers:{"Cache-Control":"no-cache"}});if(!response.ok)throw new Error("version");const remote=String((await response.json()).version||"").trim();if(!remote||compare(remote,build)<=0){reveal();return}root.dataset.waitingVersion=remote;const target=new URL(location.href);target.searchParams.set("v",remote);target.searchParams.set("boot",Date.now());location.replace(target.href)}catch{setTimeout(reveal,2500)}};check()})();
+(()=>{const build="1.9.253",root=document.documentElement,reveal=()=>root.classList.remove("version-gate-pending"),parts=v=>String(v||"").split(".").map(n=>Number(n)||0),compare=(a,b)=>{const x=parts(a),y=parts(b);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d}return 0},check=async()=>{try{const response=await fetch(`version.json?boot=${Date.now()}`,{cache:"no-store",headers:{"Cache-Control":"no-cache"}});if(!response.ok)throw new Error("version");const remote=String((await response.json()).version||"").trim();if(!remote||compare(remote,build)<=0){reveal();return}root.dataset.waitingVersion=remote;const target=new URL(location.href);target.searchParams.set("v",remote);target.searchParams.set("boot",Date.now());location.replace(target.href)}catch{setTimeout(reveal,2500)}};check()})();
 </script>
 <link rel="stylesheet" href="modules/mobile-label-fix-1.8.35.css">
 <style>
@@ -269,8 +269,8 @@ document.head.insertAdjacentHTML("beforeend",`<style id="packing-quantities-v193
 #packageChoice .matchactions button:disabled{background:#dbe4e0;color:#65796f;border-color:#c4d1ca;cursor:not-allowed}
 #packageChoice .matchconfirm>button{width:100%;min-height:38px;margin-top:8px;border:1px solid #779d8d;border-radius:8px;background:#fff;color:#17483e;font-weight:800}
 </style>`);
-const CURRENT_VERSION_LABEL="Versione 1.9.247";
-const APP_VERSION="1.9.247";
+const CURRENT_VERSION_LABEL="Versione 1.9.253";
+const APP_VERSION="1.9.253";
 function packingDetailLink(target,label){return window.TechnicsPackingLinks?window.TechnicsPackingLinks.renderLink(target,label):esc(label??target.value)}
 function parsePackingQuantity(value){const normalized=String(value??"").trim().replace(/\s/g,"").replace(",",".");const number=Number(normalized);return Number.isFinite(number)?Math.max(0,number):0}
 const localBridgeTest=new URLSearchParams(location.search).get("testBridge"),BRIDGE_URL=location.hostname==="127.0.0.1"&&/^dev\d+$/.test(localBridgeTest||"")?`http://127.0.0.1:${localBridgeTest.slice(3)}`:window.__technicsBridgeUrl;async function readJsonResponse(response){return TechnicsDataClient.read(response,"Collegamento dati in ripristino automatico. Riprova tra pochi secondi.")}
@@ -2480,7 +2480,7 @@ html[data-device-class="desktop"] #scanPickingGroup{
   const explainPhotoError=error=>{const code=String(error?.code||"SCAN_BACKEND_UNAVAILABLE"),reference=String(error?.correlationId||"").slice(0,12),message=String(error?.message||"Operazione foto non riuscita.");return `${message} · ${code}${reference?` · Rif. ${reference}`:""}`};
   const photoOperationIds=new Map();
   async function photoOperationId(payload){
-    const identity=JSON.stringify({action:payload.action,photoId:payload.photoId||"",chunkIndex:payload.chunkIndex??null,chunkSha256:payload.chunkSha256||"",sha256:payload.sha256||"",field:payload.field||"",code:payload.code||"",lot:payload.lot||"",location:payload.location||"",value:payload.value??null});
+    const identity=JSON.stringify({action:payload.action,photoId:payload.photoId||"",chunkIndex:payload.chunkIndex??null,chunkSha256:payload.chunkSha256||"",sha256:payload.sha256||"",draftId:payload.draftId||"",draftVersion:payload.draftVersion??null,rows:Array.isArray(payload.rows)?payload.rows:null,field:payload.field||"",code:payload.code||"",lot:payload.lot||"",location:payload.location||"",value:payload.value??null});
     if(photoOperationIds.has(identity))return photoOperationIds.get(identity);
     const digest=hex(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(identity))).slice(0,32).split("");digest[12]="5";digest[16]="8";const id=`${digest.slice(0,8).join("")}-${digest.slice(8,12).join("")}-${digest.slice(12,16).join("")}-${digest.slice(16,20).join("")}-${digest.slice(20,32).join("")}`;photoOperationIds.set(identity,id);return id;
   }
