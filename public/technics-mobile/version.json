@@ -1,6 +1,6 @@
 {
-  "version": "1.9.288",
-  "build": "committed-preview-browser-vector-hotfix",
-  "publishedAt": null,
+  "version": "1.9.289",
+  "build": "item-optimization-native-routing-active",
+  "publishedAt": "2026-09-11T22:19:15.913Z",
   "backendRequired": "1.9.192"
 }
