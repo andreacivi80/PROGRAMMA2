@@ -1,6 +1,6 @@
 {
-  "version": "1.9.265",
-  "build": "item-optimization-grouped-by-code",
+  "version": "1.9.287",
+  "build": "picking-live-available-quantity-hotfix",
   "publishedAt": null,
   "backendRequired": "1.9.192"
 }
