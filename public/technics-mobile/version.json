@@ -1,6 +1,6 @@
 {
-  "version": "1.9.287",
-  "build": "picking-live-available-quantity-hotfix",
+  "version": "1.9.288",
+  "build": "committed-preview-browser-vector-hotfix",
   "publishedAt": null,
   "backendRequired": "1.9.192"
 }
