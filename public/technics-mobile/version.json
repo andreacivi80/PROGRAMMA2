@@ -1,6 +1,6 @@
 {
-  "version": "1.9.262",
-  "build": "inventory-item-optimization-readonly",
+  "version": "1.9.263",
+  "build": "item-optimization-print-controls-restored",
   "publishedAt": null,
   "backendRequired": "1.9.192"
 }
