@@ -1,7 +1,7 @@
 {
-  "version": "1.9.298",
-  "build": "inventory-commitment-without-layout",
-  "publishedAt": "2026-09-16T08:02:18.558Z",
+  "version": "1.9.301",
+  "build": "packing-warehouse-boxes-runtime",
+  "publishedAt": "2026-09-16T09:40:37.067Z",
   "backendRequired": "1.9.192",
   "gatewayRequired": "1.9.164"
 }
