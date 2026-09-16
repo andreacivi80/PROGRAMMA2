@@ -1,7 +1,7 @@
 {
-  "version": "1.9.296",
-  "build": "packing-warehouse-boxes",
-  "publishedAt": "2026-09-16T07:05:31.107Z",
+  "version": "1.9.297",
+  "build": "inventory-commitment-lot-layout",
+  "publishedAt": "2026-09-16T07:34:56.374Z",
   "backendRequired": "1.9.192",
-  "gatewayRequired": "1.9.163"
+  "gatewayRequired": "1.9.164"
 }
