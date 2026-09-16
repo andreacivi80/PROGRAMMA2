@@ -1,7 +1,7 @@
 {
-  "version": "1.9.292",
-  "build": "item-optimization-trace-recovery",
-  "publishedAt": "2026-09-16T04:40:27.331Z",
+  "version": "1.9.293",
+  "build": "item-optimization-local-vector-preview",
+  "publishedAt": "2026-09-16T05:04:50.867Z",
   "backendRequired": "1.9.192",
   "gatewayRequired": "1.9.163"
 }
