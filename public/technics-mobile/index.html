@@ -11,7 +11,7 @@
 <meta property="og:description" content="Magazzino Technics in tempo reale, in sola lettura.">
 <meta property="og:url" content="https://andreacivi80.github.io/PROGRAMMA2/technics-mobile/">
 <title>Technics Mobile</title>
-<meta name="technics-build-version" content="1.9.305">
+<meta name="technics-build-version" content="1.9.306">
 <style id="version-gate-v1865">
 html.version-gate-pending body{visibility:visible!important}
 html.version-gate-pending:before{content:"Verifica aggiornamento…";position:fixed;z-index:2147483647;right:8px;bottom:8px;padding:5px 8px;border:1px solid #c7d8d1;border-radius:99px;background:#ffffffee;color:#536b63;font:850 8px/1.2 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;box-shadow:0 3px 12px #173e3520}
@@ -21,7 +21,7 @@ html.version-gate-pending:before{content:"Verifica aggiornamento…";position:fi
 </style>
 <script id="version-gate-script-v1865">
 document.documentElement.classList.add("version-gate-pending");
-(()=>{const build="1.9.305",root=document.documentElement,reveal=()=>root.classList.remove("version-gate-pending"),parts=v=>String(v||"").split(".").map(n=>Number(n)||0),compare=(a,b)=>{const x=parts(a),y=parts(b);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d}return 0},check=async()=>{try{const response=await fetch(`version.json?boot=${Date.now()}`,{cache:"no-store",headers:{"Cache-Control":"no-cache"}});if(!response.ok)throw new Error("version");const remote=String((await response.json()).version||"").trim();if(!remote||compare(remote,build)<=0){reveal();return}root.dataset.waitingVersion=remote;const target=new URL(location.href);target.searchParams.set("v",remote);target.searchParams.set("boot",Date.now());location.replace(target.href)}catch{setTimeout(reveal,2500)}};check()})();
+(()=>{const build="1.9.306",root=document.documentElement,reveal=()=>root.classList.remove("version-gate-pending"),parts=v=>String(v||"").split(".").map(n=>Number(n)||0),compare=(a,b)=>{const x=parts(a),y=parts(b);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d}return 0},check=async()=>{try{const response=await fetch(`version.json?boot=${Date.now()}`,{cache:"no-store",headers:{"Cache-Control":"no-cache"}});if(!response.ok)throw new Error("version");const remote=String((await response.json()).version||"").trim();if(!remote||compare(remote,build)<=0){reveal();return}root.dataset.waitingVersion=remote;const target=new URL(location.href);target.searchParams.set("v",remote);target.searchParams.set("boot",Date.now());location.replace(target.href)}catch{setTimeout(reveal,2500)}};check()})();
 </script>
 <link rel="stylesheet" href="modules/mobile-label-fix-1.8.35.css">
 <style>
@@ -269,8 +269,8 @@ document.head.insertAdjacentHTML("beforeend",`<style id="packing-quantities-v193
 #packageChoice .matchactions button:disabled{background:#dbe4e0;color:#65796f;border-color:#c4d1ca;cursor:not-allowed}
 #packageChoice .matchconfirm>button{width:100%;min-height:38px;margin-top:8px;border:1px solid #779d8d;border-radius:8px;background:#fff;color:#17483e;font-weight:800}
 </style>`);
-const CURRENT_VERSION_LABEL="Versione 1.9.305";
-const APP_VERSION="1.9.305";
+const CURRENT_VERSION_LABEL="Versione 1.9.306";
+const APP_VERSION="1.9.306";
 function packingDetailLink(target,label){return window.TechnicsPackingLinks?window.TechnicsPackingLinks.renderLink(target,label):esc(label??target.value)}
 function parsePackingQuantity(value){const normalized=String(value??"").trim().replace(/\s/g,"").replace(",",".");const number=Number(normalized);return Number.isFinite(number)?Math.max(0,number):0}
 const localBridgeTest=new URLSearchParams(location.search).get("testBridge"),BRIDGE_URL=location.hostname==="127.0.0.1"&&/^dev\d+$/.test(localBridgeTest||"")?`http://127.0.0.1:${localBridgeTest.slice(3)}`:window.__technicsBridgeUrl;async function readJsonResponse(response){return TechnicsDataClient.read(response,"Collegamento dati in ripristino automatico. Riprova tra pochi secondi.")}
@@ -2678,4 +2678,10 @@ const confirmation=document.createElement('div');confirmation.className='closedi
   let installed=false,attempts=0;
   const api={evaluate,render,read:()=>({expectedState,lastSession}),runtimeHooks:false};window.__technicsPackingWarehouseBoxes=api;
   const install=()=>{const hooks=window.__technicsPackingHooks;if(typeof hooks?.wrapShowProduction==="function"&&typeof hooks?.wrapApplySharedSession==="function"){if(installed)return;installed=true;hooks.wrapShowProduction((previous,order)=>{const value=previous(order);render();return value});hooks.wrapApplySharedSession((previous,session,quiet=false)=>{lastSession=session||null;expectedState=session?.pickingExpected||null;const value=previous(session,quiet);render();return value});api.runtimeHooks=true;render();return}if(attempts++<200)setTimeout(install,25)};install();
+})();</script><script id="packing-warehouse-boxes-guard-v19306">(()=>{
+  let scheduled=false;
+  const ensure=()=>{scheduled=false;const api=window.__technicsPackingWarehouseBoxes,rows=[...document.querySelectorAll('#packingRows [data-pack-row]')];if(typeof api?.render!=='function'||!rows.length)return;if(rows.some(row=>row.querySelector('.packcontrols')&&!row.querySelector('.packwarehouse')))api.render()};
+  const schedule=()=>{if(scheduled)return;scheduled=true;requestAnimationFrame(ensure)};
+  const start=()=>{const host=document.getElementById('packingRows');if(!host)return setTimeout(start,50);new MutationObserver(schedule).observe(host,{childList:true,subtree:true});schedule()};
+  start();
 })();</script></body></html>
