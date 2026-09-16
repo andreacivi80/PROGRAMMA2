@@ -1,7 +1,7 @@
 {
-  "version": "1.9.306",
-  "build": "packing-warehouse-boxes-guard",
-  "publishedAt": "2026-09-16T12:31:37.472Z",
+  "version": "1.9.307",
+  "build": "inventory-commitment-simple-no-layout",
+  "publishedAt": "2026-09-16T22:15:38.991Z",
   "backendRequired": "1.9.192",
   "gatewayRequired": "1.9.164"
 }
