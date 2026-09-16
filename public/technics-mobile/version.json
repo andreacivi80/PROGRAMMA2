@@ -1,6 +1,7 @@
 {
-  "version": "1.9.289",
-  "build": "item-optimization-native-routing-active",
-  "publishedAt": "2026-09-11T22:19:15.913Z",
-  "backendRequired": "1.9.192"
+  "version": "1.9.290",
+  "build": "gateway-error-transparency-and-picking-capability-guard",
+  "publishedAt": "2026-09-16T03:19:17.741Z",
+  "backendRequired": "1.9.192",
+  "gatewayRequired": "1.9.163"
 }
