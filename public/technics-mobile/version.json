@@ -1,7 +1,7 @@
 {
-  "version": "1.9.290",
-  "build": "gateway-error-transparency-and-picking-capability-guard",
-  "publishedAt": "2026-09-16T03:19:17.741Z",
+  "version": "1.9.291",
+  "build": "packing-photo-manual-precedence",
+  "publishedAt": "2026-09-16T04:13:55.321Z",
   "backendRequired": "1.9.192",
   "gatewayRequired": "1.9.163"
 }
