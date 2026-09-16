@@ -1,7 +1,7 @@
 {
-  "version": "1.9.301",
-  "build": "packing-warehouse-boxes-runtime",
-  "publishedAt": "2026-09-16T09:40:37.067Z",
+  "version": "1.9.302",
+  "build": "packing-warehouse-boxes-deferred",
+  "publishedAt": "2026-09-16T09:47:12.599Z",
   "backendRequired": "1.9.192",
   "gatewayRequired": "1.9.164"
 }
