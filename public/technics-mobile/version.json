@@ -1,7 +1,7 @@
 {
-  "version": "1.9.345",
-  "build": "raw-materials-immediate-public-hotfix",
-  "publishedAt": "2026-09-19T21:57:11.344Z",
+  "version": "1.9.346",
+  "build": "frontend-update-contract-public-hotfix",
+  "publishedAt": "2026-09-19T22:23:27.998Z",
   "backendRequired": "1.9.192",
   "gatewayRequired": "1.9.167"
 }
