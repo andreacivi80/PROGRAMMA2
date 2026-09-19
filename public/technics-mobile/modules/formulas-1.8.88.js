@@ -1263,7 +1263,8 @@
   window.addEventListener("technics-workspace-change", (event) => {
     if (event.detail.workspace === "rawmaterials") {
       clearTimeout(refreshTimer);
-      scheduleRawMaterials();
+      if (!rawMaterialLoaded || rawMaterialForm.elements.lineId.options.length <= 1) loadRawMaterials();
+      else scheduleRawMaterials();
       updateBackButton();
       return;
     }

@@ -1,7 +1,7 @@
 {
-  "version": "1.9.307",
-  "build": "inventory-commitment-simple-no-layout",
-  "publishedAt": "2026-09-16T22:15:38.991Z",
+  "version": "1.9.345",
+  "build": "raw-materials-immediate-public-hotfix",
+  "publishedAt": "2026-09-19T21:57:11.344Z",
   "backendRequired": "1.9.192",
-  "gatewayRequired": "1.9.164"
+  "gatewayRequired": "1.9.167"
 }
