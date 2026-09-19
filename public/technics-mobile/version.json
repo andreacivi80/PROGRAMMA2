@@ -1,7 +1,7 @@
 {
-  "version": "1.9.346",
-  "build": "frontend-update-contract-public-hotfix",
-  "publishedAt": "2026-09-19T22:23:27.998Z",
+  "version": "1.9.348",
+  "build": "inventory-commitment-fresh-only",
+  "publishedAt": "2026-09-19T22:41:57.070Z",
   "backendRequired": "1.9.192",
   "gatewayRequired": "1.9.167"
 }
