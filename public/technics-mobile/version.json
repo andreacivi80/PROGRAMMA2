@@ -1,7 +1,7 @@
 {
-  "version": "1.9.349",
-  "build": "inventory-commitment-summary-fresh",
-  "publishedAt": "2026-09-19T22:47:52.202Z",
+  "version": "1.9.350",
+  "build": "inventory-commitment-no-legacy-firstpaint",
+  "publishedAt": "2026-09-23T00:00:00.000Z",
   "backendRequired": "1.9.192",
   "gatewayRequired": "1.9.167"
 }
