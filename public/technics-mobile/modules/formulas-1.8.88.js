@@ -314,7 +314,7 @@
             },
           },
           {
-            cacheMs: /\/api\/formulas\/(material-audit|raw-materials|search)/.test(path) ? 15000 : /\/api\/formulas\/item/.test(path) ? 30000 : quiet || /\/api\/formulas\/suggest/.test(path) ? 0 : 12000,
+            cacheMs: /\/api\/formulas\/raw-materials/.test(path) ? 0 : /\/api\/formulas\/(material-audit|search)/.test(path) ? 15000 : /\/api\/formulas\/item/.test(path) ? 30000 : quiet || /\/api\/formulas\/suggest/.test(path) ? 0 : 12000,
             attempts: /\/api\/formulas\/(material-audit|raw-materials)/.test(path) ? (quiet ? 2 : 3) : quiet ? 1 : 2,
             timeoutMs: /\/api\/formulas\/document-checklist/.test(path) ? 210000 : /\/api\/formulas\/(material-audit|raw-materials)/.test(path) ? 25000 : 15000,
             message: "Dati formula temporaneamente non disponibili.",
@@ -755,7 +755,7 @@
     rawMaterialTimer = setTimeout(() => {
       if (shell.dataset.workspace === "rawmaterials" && !document.hidden) loadRawMaterials(true);
       else scheduleRawMaterials();
-    }, 60000);
+    }, rawMaterialLoaded ? 60000 : 30000);
   };
   const renderRawMaterials = (data) => {
     const select = rawMaterialForm.elements.lineId,
@@ -764,11 +764,11 @@
       select.innerHTML = `<option value="">Seleziona una linea prodotto</option>${(data.lines || []).map((line) => `<option value="${line.id}">${esc(line.name)} · ${line.articleCount}</option>`).join("")}`;
       if ([...select.options].some((option) => option.value === selected)) select.value = selected;
     }
-    rawMaterialLoaded = true;
+    rawMaterialLoaded = Array.isArray(data.lines) && data.lines.length > 0;
     const rows = data.rows || [];
     rawMaterialStatus.textContent = rows.length
       ? `${rows.length} materie prime · Technics verificato ${new Date(data.readAt).toLocaleTimeString("it-IT")} · sola lettura`
-      : "Seleziona una linea prodotto oppure cerca un codice o una descrizione.";
+      : rawMaterialLoaded ? "Seleziona una linea prodotto oppure cerca un codice o una descrizione." : "Linee prodotto non disponibili. Premi Cerca per riprovare.";
     rawMaterialRows.innerHTML = rows.length ? rows.map((row) => {
       const uses = Array.isArray(row.formulas) ? row.formulas : row.formulas ? [row.formulas] : [],
         alternatives = Array.isArray(row.alternatives) ? row.alternatives : row.alternatives ? [row.alternatives] : [];
@@ -1281,6 +1281,7 @@
     if (currentCode && currentData) schedule();
     updateBackButton();
   });
+  if (shell.dataset.workspace === "rawmaterials") loadRawMaterials();
   try {
     const saved = sessionStorage.getItem("technics-formula-code-v1875");
     if (saved) {
