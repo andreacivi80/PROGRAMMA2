@@ -1,6 +1,6 @@
 {
-  "version": "1.9.376",
-  "build": "packing-native-contract-forward-updates",
+  "version": "1.9.377",
+  "build": "movement-fit-explicit-operators-native354",
   "publishedAt": null,
   "backendRequired": "1.9.353",
   "gatewayRequired": "1.9.173"
