@@ -29,7 +29,7 @@
   }
   function functionTransition(previous={},result={},now=Date.now()) {
     if(result.ok)return Object.freeze({value:true,level:result.level==='warn'?'warn':'ok',failures:0,checkedAt:now,source:result.source||'lettura verificata',confirmedFailure:false});
-    if(result.transient){const value=previous.value??null,failures=Number(previous.failures||0)+1,stable=value===true&&previous.level==='ok'&&failures<2;return Object.freeze({value,level:stable?'ok':'warn',failures,checkedAt:now,source:stable?`${result.source||'verifica incompleta'} · ultimo esito verificato mantenuto`:`${result.source||'verifica incompleta'} · nuova verifica necessaria`,confirmedFailure:false})}
+    if(result.transient)return Object.freeze({value:previous.value??null,level:'warn',failures:Number(previous.failures||0),checkedAt:now,source:`${result.source||'verifica incompleta'} · stato non cambiato`,confirmedFailure:false});
     const failures=Number(previous.failures||0)+1,confirmed=failures>=2;
     return Object.freeze({value:confirmed?false:(previous.value??null),level:confirmed?'bad':'warn',failures,checkedAt:now,source:confirmed?`${result.source||'errore'} confermato`:`${result.source||'errore'} · nuova verifica`,confirmedFailure:confirmed});
   }

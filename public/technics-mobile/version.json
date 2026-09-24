@@ -1,7 +1,7 @@
 {
-  "version": "1.9.374",
-  "build": "integrated-mail-raw-materials-bir0118",
+  "version": "1.9.369",
+  "build": "raw-material-lines-reload-and-empty-retry",
   "publishedAt": null,
-  "backendRequired": "1.9.353",
-  "gatewayRequired": "1.9.173"
+  "backendRequired": "1.9.192",
+  "gatewayRequired": "1.9.167"
 }
