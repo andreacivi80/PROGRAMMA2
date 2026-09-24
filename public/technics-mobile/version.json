@@ -1,9 +1,9 @@
 {
-  "version": "1.9.384",
-  "build": "packing-native-360-identity-hotfix",
+  "version": "1.9.385",
+  "build": "picking-mail-compact-changed-lots",
   "publishedAt": null,
-  "backendRequired": "1.9.360",
-  "gatewayRequired": "1.9.178",
+  "backendRequired": "1.9.361",
+  "gatewayRequired": "1.9.179",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
@@ -17,9 +17,10 @@
       "availability": "validated-response-only"
     },
     "pickingMailTrace": {
-      "backendRequired": "1.9.360",
-      "gatewayRequired": "1.9.178",
-      "previewRevisionRequired": true
+      "backendRequired": "1.9.361",
+      "gatewayRequired": "1.9.179",
+      "previewDigestRequired": true,
+      "compactChangedLotsOnly": true
     }
   }
 }
