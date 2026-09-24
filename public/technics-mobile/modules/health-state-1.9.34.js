@@ -6,9 +6,22 @@
   const NODE_OBSERVATION_TTL_MS=75000;
   // Direct health: 45s polling + 12s abort + 18s scheduling margin. No freshness across clock rollback.
   const DIRECT_OBSERVATION_TTL_MS=75000;
-  function directObservation(state,now=Date.now()) {
+  function databaseObservation(payload,headerNode,now=Date.now(),request=null) {
+ const meta=payload?.meta||{},id=String(meta.nodeId||payload?.node?.nodeId||''),known=['technics-utente73-primary','technics-utente38-secondary'];
+ if(!known.includes(id)||(headerNode&&headerNode!==id))return null;
+ const db=payload?.database;if(!db||typeof db!=='object')return null;
+ const hasOk=typeof db.ok==='boolean',hasReady=typeof db.ready==='boolean';
+ if(hasOk&&hasReady&&db.ok!==db.ready)return null;
+ if(hasReady){
+  const stamp=Date.parse(meta.serverTime),start=request?.startedAt,received=request?.receivedAt,duration=received-start,age=now-received;
+  if(meta.source!=='TechnicsNativeBridge'||meta.version!==payload.version||meta.nodeRole!==(id.endsWith('-primary')?'primary':'secondary')||headerNode!==id||!Number.isFinite(stamp)||!Number.isSafeInteger(start)||!Number.isSafeInteger(received)||start<=0||duration<0||duration>12000||age<0||age>=60000||request?.cacheMode!=='no-store'||request?.nonce!==String(start)||request?.cached!==false||payload.cached===true||payload.stale===true||meta.cached===true||meta.stale===true)return null;
+  return db.ready;
+ }
+ return hasOk?db.ok:null;
+}
+function directObservation(state,now=Date.now()) {
     const value=state?.lastSuccessAt,at=typeof value==='string'&&/^\d{4}-\d{2}-\d{2}T/.test(value)?Date.parse(value):NaN,age=now-at;
-    const coherent=Boolean(state?.ok===true&&state?.failures===0&&Object.values(tokens).filter(token=>String(state?.nodeId||'').toLowerCase().includes(token)).length===1);
+    const coherent=Boolean(state?.database!==false&&state?.database!==null&&state?.ok===true&&state?.failures===0&&Object.values(tokens).filter(token=>String(state?.nodeId||'').toLowerCase().includes(token)).length===1);
     return Object.freeze({fresh:Boolean(coherent&&Number.isFinite(at)&&at>0&&Number.isFinite(age)&&age>=0&&age<DIRECT_OBSERVATION_TTL_MS),at:Number.isFinite(at)?at:null,age:Number.isFinite(age)?age:null});
   }
   function nodeStatus(state,pc,now=Date.now()) {
@@ -16,13 +29,15 @@
     if(!token)throw new Error(`Nodo non supportato: ${pc}`);
     const nodes=Array.isArray(state?.nodes)?state.nodes:[];
     const entry=nodes.find(node=>String(node?.nodeId||'').toLowerCase().includes(token));
-    const direct=directObservation(state,now),observedHere=String(state?.nodeId||'').toLowerCase().includes(token),active=Boolean(direct.fresh&&observedHere);
+    const direct=directObservation(state,now),observedHere=String(state?.nodeId||'').toLowerCase().includes(token),directActive=Boolean(direct.fresh&&observedHere);
     const nodesFresh=Boolean(state?.nodesCheckOk&&Number.isFinite(Number(state?.nodesCheckedAt))&&now-Number(state.nodesCheckedAt)>=0&&now-Number(state.nodesCheckedAt)<NODE_OBSERVATION_TTL_MS);
     const explicitOnline=Boolean(nodesFresh&&entry?.online===true);
     const explicitReady=Boolean(explicitOnline&&entry?.ok===true);
     const explicitDegraded=Boolean(explicitOnline&&entry?.ok!==true);
     const explicitOffline=Boolean(nodesFresh&&(!entry||entry.online===false));
-    const level=active||explicitReady?'ok':explicitDegraded?'warn':explicitOffline?'bad':'warn';
+    const newerNegative=nodesFresh&&Number(state.nodesCheckedAt)>=Number(direct.at)&&(!entry||entry.online!==true||entry.ok!==true);
+  const active=directActive&&!newerNegative;
+  const level=active||explicitReady?'ok':explicitDegraded?'warn':explicitOffline?'bad':'warn';
     const text=active?`${pc} attivo · dati Technics disponibili`:explicitReady?`${pc} pronto · dati Technics disponibili`:explicitDegraded?`${pc} collegato · preallarme: dati in recupero`:explicitOffline?`${pc} non collegato al gateway`:`${pc} in verifica`;
     const evidence=active?'risposta pubblica diretta recente':explicitReady?'elenco nodi recente · readiness verificata':explicitDegraded?'preallarme gateway · nodo collegato, readiness in recupero':explicitOffline?'non collegato al gateway nell’ultimo elenco; stato fisico del PC non verificato':observedHere&&direct.at!==null?'ultima osservazione diretta non recente o orologio non coerente · nuova verifica necessaria':'nessuna verifica recente conclusiva';
     return Object.freeze({pc,role:roleOf(pc),level,text,active,explicitOnline,explicitReady,explicitDegraded,explicitOffline,evidence,entry:entry||null,title:`${pc}: ${roleOf(pc)} · ${evidence}`});
@@ -44,5 +59,5 @@
     if(evidence?.scope!=='packing-open-list'||evidence.validated!==true||evidence.cached!==false||evidence.minimumSatisfied!==true||minimumSatisfied!==true||!Number.isSafeInteger(evidence.receivedAt)||evidence.receivedAt<=0||!['reader','main'].includes(evidence.via)||!Number.isFinite(age)||age<0||age>=75000)return null;
     return Object.freeze({level:'warn',source:'Elenco disponibile · salvataggi non verificati'+(evidence.freshnessUnverified===true?' · aggiornamento file non attestato':''),checkedAt:Number(evidence.receivedAt)});
   }
-  globalThis.TechnicsHealthState=Object.freeze({version:'1.9.107',nodeStatus,functionTransition,systemSummary,packingListStatus,directObservation,DIRECT_OBSERVATION_TTL_MS,NODE_OBSERVATION_TTL_MS});
+  globalThis.TechnicsHealthState=Object.freeze({version:'1.9.107',nodeStatus,functionTransition,systemSummary,packingListStatus,directObservation,databaseObservation,DIRECT_OBSERVATION_TTL_MS,NODE_OBSERVATION_TTL_MS});
 })();

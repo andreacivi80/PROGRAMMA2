@@ -1,7 +1,7 @@
 {
-  "version": "1.9.378",
-  "build": "op-header-metadata-centered-movements",
+  "version": "1.9.380",
+  "build": "health-independent-native354",
   "publishedAt": null,
-  "backendRequired": "1.9.353",
-  "gatewayRequired": "1.9.173"
+  "backendRequired": "1.9.354",
+  "gatewayRequired": "1.9.174"
 }
