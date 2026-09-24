@@ -121,7 +121,8 @@
     // A circuit opened by failed background reads must not reject an operator
     // mutation before it has even been sent. Mutations still get one attempt
     // only and retain their operationId; they are never replayed here.
-    if(safe&&transportCircuit.openedAt&&Date.now()-transportCircuit.openedAt<10000)throw Object.assign(new Error("Collegamento temporaneamente sospeso dopo errori consecutivi."),{code:"TECHNICS_TRANSPORT_CIRCUIT_OPEN",networkFailure:true});
+    const healthRecoveryProbe=safe&&(/\/health(?:[/?]|$)/.test(String(url))||/[?&]healthProbe=/.test(String(url)));
+    if(safe&&!healthRecoveryProbe&&transportCircuit.openedAt&&Date.now()-transportCircuit.openedAt<10000)throw Object.assign(new Error("Collegamento temporaneamente sospeso dopo errori consecutivi."),{code:"TECHNICS_TRANSPORT_CIRCUIT_OPEN",networkFailure:true});
     if(safe&&transportCircuit.openedAt)Object.assign(transportCircuit,{failures:0,openedAt:0});
     let lastError;
     for(let attempt=0;attempt<attempts;attempt++){
