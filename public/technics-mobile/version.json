@@ -1,6 +1,6 @@
 {
-  "version": "1.9.377",
-  "build": "movement-fit-explicit-operators-native354",
+  "version": "1.9.378",
+  "build": "op-header-metadata-centered-movements",
   "publishedAt": null,
   "backendRequired": "1.9.353",
   "gatewayRequired": "1.9.173"
