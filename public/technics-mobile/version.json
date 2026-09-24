@@ -1,6 +1,6 @@
 {
-  "version": "1.9.375",
-  "build": "movement-compact-real-lot-stock",
+  "version": "1.9.376",
+  "build": "packing-native-contract-forward-updates",
   "publishedAt": null,
   "backendRequired": "1.9.353",
   "gatewayRequired": "1.9.173"
