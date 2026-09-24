@@ -1,7 +1,15 @@
 {
-  "version": "1.9.380",
-  "build": "health-independent-native354",
+  "version": "1.9.381",
+  "build": "movement-pages-capability-gated",
   "publishedAt": null,
   "backendRequired": "1.9.354",
-  "gatewayRequired": "1.9.174"
+  "gatewayRequired": "1.9.174",
+  "capabilities": {
+    "movementHistoryAll": {
+      "backendRequired": "1.9.357",
+      "gatewayRequired": "1.9.176",
+      "contract": "movementHistoryPage/snapshot-sha256",
+      "availability": "validated-response-only"
+    }
+  }
 }
