@@ -1,9 +1,9 @@
 {
-  "version": "1.9.382",
-  "build": "impegnato-sticky-movement-identity",
+  "version": "1.9.383",
+  "build": "picking-mail-canonical-preview-history",
   "publishedAt": null,
-  "backendRequired": "1.9.357",
-  "gatewayRequired": "1.9.176",
+  "backendRequired": "1.9.360",
+  "gatewayRequired": "1.9.178",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
@@ -15,6 +15,11 @@
       "backendRequired": "1.9.359",
       "gatewayRequired": "1.9.177",
       "availability": "validated-response-only"
+    },
+    "pickingMailTrace": {
+      "backendRequired": "1.9.360",
+      "gatewayRequired": "1.9.178",
+      "previewRevisionRequired": true
     }
   }
 }
