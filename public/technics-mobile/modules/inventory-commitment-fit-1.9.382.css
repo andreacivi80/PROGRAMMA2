@@ -1,0 +1,13 @@
+/* Keep all six needle commitment columns visible, including expiry. */
+.inventorycommitmentdialog th,.inventorycommitmentdialog td{text-align:center!important;vertical-align:middle}
+@media(max-width:600px){
+ .inventorycommitmentdialog table{table-layout:fixed;width:100%;max-width:100%}
+ .inventorycommitmentdialog th,.inventorycommitmentdialog td{padding:8px 2px;font-size:10px;line-height:1.3;white-space:normal;overflow-wrap:anywhere}
+ .inventorycommitmentdialog th:last-child,.inventorycommitmentdialog td:last-child{padding-right:3px}
+ .inventorycommitmentdialog thead th:nth-child(1),.inventorycommitmentdialog thead th:nth-child(2){width:12%}
+ .inventorycommitmentdialog thead th:nth-child(3){width:16%}
+ .inventorycommitmentdialog thead th:nth-child(n+4){width:20%}
+ .inventorycommitmentdialog td[data-inventory-lot-expiry],.inventorycommitmentdialog tbody td:nth-last-child(2){white-space:nowrap;overflow-wrap:normal;font-variant-numeric:tabular-nums}
+ .inventorycommitmentdialog tfoot th{white-space:normal;overflow-wrap:anywhere}
+ .inventorycommitmentdialog h3{overflow-wrap:anywhere}
+}

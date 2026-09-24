@@ -1,14 +1,19 @@
 {
-  "version": "1.9.381",
-  "build": "movement-pages-capability-gated",
+  "version": "1.9.382",
+  "build": "impegnato-sticky-movement-identity",
   "publishedAt": null,
-  "backendRequired": "1.9.354",
-  "gatewayRequired": "1.9.174",
+  "backendRequired": "1.9.357",
+  "gatewayRequired": "1.9.176",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
       "gatewayRequired": "1.9.176",
       "contract": "movementHistoryPage/snapshot-sha256",
+      "availability": "validated-response-only"
+    },
+    "inventoryCommitmentUnassigned": {
+      "backendRequired": "1.9.359",
+      "gatewayRequired": "1.9.177",
       "availability": "validated-response-only"
     }
   }
