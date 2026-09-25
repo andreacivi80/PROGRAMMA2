@@ -1,6 +1,6 @@
 {
-  "version": "1.9.397",
-  "build": "movement-overlay-scroll-containment",
+  "version": "1.9.398",
+  "build": "picking-mail-mobile-html-preview",
   "publishedAt": null,
   "backendRequired": "1.9.363",
   "gatewayRequired": "1.9.185",
@@ -21,7 +21,8 @@
       "gatewayRequired": "1.9.180",
       "previewDigestRequired": true,
       "compactChangedLotsOnly": true,
-      "duplicateTargetLotSuppressed": true
+      "duplicateTargetLotSuppressed": true,
+      "mobileHtmlPreview": true
     },
     "packingPhotoScope": {
       "moduleItemsAccess": "read-only-target",
