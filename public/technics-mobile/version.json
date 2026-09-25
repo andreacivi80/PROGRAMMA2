@@ -1,6 +1,6 @@
 {
-  "version": "1.9.388",
-  "build": "formulas-qualified-readonly",
+  "version": "1.9.389",
+  "build": "packing-native363-identity-hotfix",
   "publishedAt": null,
   "backendRequired": "1.9.363",
   "gatewayRequired": "1.9.181",
