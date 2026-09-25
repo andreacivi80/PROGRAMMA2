@@ -1,6 +1,6 @@
 {
-  "version": "1.9.396",
-  "build": "commitment-detail-secondary-panel-removed",
+  "version": "1.9.397",
+  "build": "movement-overlay-scroll-containment",
   "publishedAt": null,
   "backendRequired": "1.9.363",
   "gatewayRequired": "1.9.185",
