@@ -1,6 +1,6 @@
 {
-  "version": "1.9.393",
-  "build": "operator-titlecase-correction",
+  "version": "1.9.394",
+  "build": "needle-commitment-mobile-layout",
   "publishedAt": null,
   "backendRequired": "1.9.363",
   "gatewayRequired": "1.9.185",

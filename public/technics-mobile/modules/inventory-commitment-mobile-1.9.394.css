@@ -1,0 +1,22 @@
+
+@media(max-width:600px){
+  .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog{width:100%;max-height:90vh}
+  .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog .inventorycommitmentscroll{overflow-y:auto;overflow-x:hidden}
+  .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog table{display:block;width:100%;table-layout:auto}
+  .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog thead{display:none}
+  .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog tbody,
+  .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog tfoot{display:block;width:100%}
+  .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog tbody tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 8px;margin:8px;border:1px solid #c7d7cf;border-radius:9px;overflow:hidden}
+  .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog tbody td{display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:0;padding:7px 5px!important;font-size:12px!important;line-height:1.25;overflow-wrap:normal!important;word-break:normal!important;white-space:nowrap!important;text-align:center!important}
+  .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog tbody td::before{content:attr(data-label);display:block;margin-bottom:3px;color:#496b5f;font-size:10px;font-weight:800;white-space:nowrap}
+  .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog tbody td:nth-child(3),
+  .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog tbody td:last-child{grid-column:1/-1}
+  .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog tbody td:nth-child(3){background:#f2f8f5}
+  .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog tbody td:last-child{font-weight:800;font-variant-numeric:tabular-nums;background:#e8f3ec}
+  .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentlotlayout>span,
+  .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentlotlayout>small{white-space:nowrap!important;overflow-wrap:normal!important}
+  .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog tfoot tr{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;padding:5px 8px}
+  .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog tfoot th{display:block;border:0;padding:5px 2px!important;text-align:center!important;font-size:10px!important;line-height:1.2;white-space:nowrap!important;overflow-wrap:normal!important}
+  .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog tfoot tr:last-child th:first-child{font-size:10px!important}
+  .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog tfoot tr:last-child th:last-child{font-size:11px!important}
+}
