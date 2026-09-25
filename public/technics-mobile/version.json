@@ -1,6 +1,6 @@
 {
-  "version": "1.9.386",
-  "build": "picking-mail-compact-deduplicated",
+  "version": "1.9.387",
+  "build": "packing-photo-module-scope-fix",
   "publishedAt": null,
   "backendRequired": "1.9.362",
   "gatewayRequired": "1.9.180",
@@ -22,6 +22,10 @@
       "previewDigestRequired": true,
       "compactChangedLotsOnly": true,
       "duplicateTargetLotSuppressed": true
+    },
+    "packingPhotoScope": {
+      "moduleItemsAccess": "read-only-target",
+      "photoDraftRender": true
     }
   }
 }
