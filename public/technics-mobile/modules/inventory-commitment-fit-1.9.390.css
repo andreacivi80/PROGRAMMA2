@@ -1,0 +1,30 @@
+/* Keep all six needle commitment columns visible, including expiry. */
+.inventorycommitmentdialog th,.inventorycommitmentdialog td{text-align:center!important;vertical-align:middle}
+@media(max-width:600px){
+ .inventorycommitmentdialog table{table-layout:fixed;width:100%;max-width:100%}
+ .inventorycommitmentdialog th,.inventorycommitmentdialog td{padding:8px 2px;font-size:10px;line-height:1.3;white-space:normal;overflow-wrap:anywhere}
+ .inventorycommitmentdialog th:last-child,.inventorycommitmentdialog td:last-child{padding-right:3px}
+ .inventorycommitmentdialog table:not(.unassignedtable) thead th:nth-child(1),.inventorycommitmentdialog table:not(.unassignedtable) thead th:nth-child(2){width:12%}
+ .inventorycommitmentdialog table:not(.unassignedtable) thead th:nth-child(3){width:25%;padding-right:6px;border-right:1px solid #d7e6df}
+ .inventorycommitmentdialog table:not(.unassignedtable) thead th:nth-child(4){width:28%;padding-left:6px}
+ .inventorycommitmentdialog table:not(.unassignedtable) thead th:nth-child(5){width:23%}
+ .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog table:not(.unassignedtable) thead th:nth-child(1),.inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog table:not(.unassignedtable) thead th:nth-child(2){width:10%}
+ .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog table:not(.unassignedtable) thead th:nth-child(3){width:20%}
+ .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog table:not(.unassignedtable) thead th:nth-child(4){width:20%;padding-left:5px;padding-right:5px;border-right:1px solid #d7e6df}
+ .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog table:not(.unassignedtable) thead th:nth-child(5){width:22%;padding-left:5px}
+ .inventorycommitmentoverlay[data-inventory-lot-expiry="true"] .inventorycommitmentdialog table:not(.unassignedtable) thead th:nth-child(6){width:18%}
+ .inventorycommitmentdialog td[data-inventory-lot-expiry],.inventorycommitmentdialog tbody td:nth-last-child(2){white-space:nowrap;overflow-wrap:normal;font-variant-numeric:tabular-nums}
+ .inventorycommitmentdialog tfoot th{white-space:normal;overflow-wrap:anywhere}
+ .inventorycommitmentdialog h3{overflow-wrap:anywhere}
+}
+
+@media (max-width:600px){
+  .inventorycommitmentoverlay .inventorycommitmentdialog .inventorycommitmentscroll > table > thead > tr > th{
+    white-space:normal!important;
+    overflow-wrap:anywhere!important;
+    word-break:normal!important;
+    padding-left:2px!important;
+    padding-right:2px!important;
+    line-height:1.25!important;
+  }
+}

@@ -1,6 +1,6 @@
 {
-  "version": "1.9.389",
-  "build": "packing-native363-identity-hotfix",
+  "version": "1.9.390",
+  "build": "needle-commitment-header-fit",
   "publishedAt": null,
   "backendRequired": "1.9.363",
   "gatewayRequired": "1.9.181",
