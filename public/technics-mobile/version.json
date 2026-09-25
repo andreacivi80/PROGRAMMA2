@@ -1,6 +1,6 @@
 {
-  "version": "1.9.391",
-  "build": "movement-history-restored",
+  "version": "1.9.392",
+  "build": "operator-lowercase-correction",
   "publishedAt": null,
   "backendRequired": "1.9.363",
   "gatewayRequired": "1.9.185",
