@@ -1,9 +1,9 @@
 {
-  "version": "1.9.390",
-  "build": "needle-commitment-header-fit",
+  "version": "1.9.391",
+  "build": "movement-history-restored",
   "publishedAt": null,
   "backendRequired": "1.9.363",
-  "gatewayRequired": "1.9.181",
+  "gatewayRequired": "1.9.185",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
