@@ -1,6 +1,6 @@
 {
-  "version": "1.9.395",
-  "build": "needle-commitment-compact-row",
+  "version": "1.9.396",
+  "build": "commitment-detail-secondary-panel-removed",
   "publishedAt": null,
   "backendRequired": "1.9.363",
   "gatewayRequired": "1.9.185",
