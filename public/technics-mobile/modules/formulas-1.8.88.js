@@ -414,14 +414,18 @@
         const payload = await api(`/api/formulas/document-checklist?articleId=${articleId}&limit=2&fresh=${Date.now()}`, true);
         if (documentChecklistTokens.get(detail) !== token) return;
         renderDocumentChecklist(detail.querySelector('[data-formula-part="docs"]'), payload.result, articleId);
+        if (payload.result?.analysisStatus === 'cached-only-analysis-unavailable') {
+          const progress = detail.querySelector('.formuladocprogress b');
+          if (progress) progress.textContent = 'ANALISI NON DISPONIBILE · archivio non qualificato';
+          return;
+        }
         remaining = Number(payload.result?.remaining || 0);
         retryCount = 0;
         if (remaining > 0) await new Promise((resolve) => setTimeout(resolve, 250));
       } catch (error) {
         const target = detail.querySelector(".formuladocprogress b");
-        retryCount += 1;
-        if (target) target.textContent = `RIPRESA AUTOMATICA · ${retryCount}`;
-        await new Promise((resolve) => setTimeout(resolve, Math.min(8000, 1000 * 2 ** Math.min(retryCount, 3))));
+        if (target) target.textContent = 'ANALISI NON DISPONIBILE · archivio non qualificato';
+        return;
       }
     }
   };

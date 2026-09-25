@@ -1,9 +1,9 @@
 {
-  "version": "1.9.387",
-  "build": "packing-photo-module-scope-fix",
+  "version": "1.9.388",
+  "build": "formulas-qualified-readonly",
   "publishedAt": null,
-  "backendRequired": "1.9.362",
-  "gatewayRequired": "1.9.180",
+  "backendRequired": "1.9.363",
+  "gatewayRequired": "1.9.181",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
@@ -26,6 +26,19 @@
     "packingPhotoScope": {
       "moduleItemsAccess": "read-only-target",
       "photoDraftRender": true
+    },
+    "formulasReadOnly": {
+      "backendRequired": "1.9.363",
+      "gatewayRequired": "1.9.181",
+      "routes": [
+        "search",
+        "suggest",
+        "item",
+        "alternatives-log",
+        "material-audit"
+      ],
+      "rawMaterialsPreserved": true,
+      "documents": "unavailable-unqualified"
     }
   }
 }
