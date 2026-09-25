@@ -1,9 +1,9 @@
 {
-  "version": "1.9.398",
-  "build": "picking-mail-mobile-html-preview",
+  "version": "1.9.399",
+  "build": "picking-mail-editable-reviewed-preview",
   "publishedAt": null,
-  "backendRequired": "1.9.363",
-  "gatewayRequired": "1.9.185",
+  "backendRequired": "1.9.366",
+  "gatewayRequired": "1.9.188",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
@@ -17,12 +17,13 @@
       "availability": "validated-response-only"
     },
     "pickingMailTrace": {
-      "backendRequired": "1.9.362",
-      "gatewayRequired": "1.9.180",
+      "backendRequired": "1.9.366",
+      "gatewayRequired": "1.9.188",
       "previewDigestRequired": true,
       "compactChangedLotsOnly": true,
       "duplicateTargetLotSuppressed": true,
-      "mobileHtmlPreview": true
+      "mobileHtmlPreview": true,
+      "subjectAndNoteEdits": true
     },
     "packingPhotoScope": {
       "moduleItemsAccess": "read-only-target",

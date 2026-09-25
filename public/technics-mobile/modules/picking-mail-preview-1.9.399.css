@@ -1,0 +1,30 @@
+.pickingmailpreview{min-width:0}
+.pickingmailedit{display:grid;gap:6px;min-width:0;margin:10px 0;padding:10px;border:1px solid #bed8cb;border-radius:10px;background:#f8faf9}
+.pickingmailedit label{color:#174d40;font-size:11px;font-weight:800}
+.pickingmailedit input,.pickingmailedit textarea{box-sizing:border-box;width:100%;min-width:0;padding:8px;border:1px solid #a9c9ba;border-radius:6px;background:#fff;color:#173c32;font:13px/1.4 Arial,sans-serif}
+.pickingmailedit textarea{resize:vertical}
+.pickingmailedit button{justify-self:start;margin-top:4px}
+.pickingmailcontrol,.pickingmailactual{min-width:0;padding:10px;border:1px solid #bed8cb;border-radius:10px;background:#fff}
+.pickingmailcontrol h3,.pickingmailactual h3{margin:0 0 8px;color:#174d40;font-size:12px;line-height:1.3}
+.pickingmailcontrol table{width:100%;table-layout:fixed;border-collapse:collapse;font:11px/1.4 Arial,sans-serif}
+.pickingmailcontrol th,.pickingmailcontrol td{border:1px solid #cadbd0;padding:8px 6px;text-align:left;vertical-align:top;overflow-wrap:anywhere}
+.pickingmailcontrol th{background:#174d40;color:#fff;font-weight:800}
+.pickingmailcontrol td:nth-child(2){word-break:normal}
+.pickingmailcontrol tbody tr:nth-child(even){background:#f5faf7}
+.pickingmailcontrol .pickingmailnone{text-align:center;font-weight:750;color:#546d62}
+.pickingmailactual p{margin:0 0 7px;color:#52665e;font-size:9px;line-height:1.35}
+.pickingmailactual iframe{display:block;box-sizing:border-box;width:100%;height:390px;border:1px solid #cadbd0;border-radius:7px;background:#fff}
+.pickingmailpreview .pickingmailcontrol,.pickingmailpreview .pickingmailactual{padding:10px}
+@media(max-width:600px){
+  .pickingmailcontrol{padding:8px!important}
+  .pickingmailcontrol thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  .pickingmailcontrol table,.pickingmailcontrol tbody,.pickingmailcontrol tr,.pickingmailcontrol td{display:block;width:100%}
+  .pickingmailcontrol tr{margin:0 0 8px;border:1px solid #bed8cb;border-radius:8px;overflow:hidden;background:#fff}
+  .pickingmailcontrol td{display:grid;grid-template-columns:minmax(95px,38%) minmax(0,1fr);gap:7px;align-items:start;box-sizing:border-box;min-height:31px;padding:6px 7px;border:0;border-bottom:1px solid #e2ece6;font-size:11px}
+  .pickingmailcontrol td:last-child{border-bottom:0}
+  .pickingmailcontrol td:not(.pickingmailnone)::before{content:attr(data-label);color:#315d50;font-size:9px;font-weight:850;line-height:1.35}
+  .pickingmailcontrol .pickingmailnone{display:block;text-align:center}
+  .pickingmailactual iframe{height:390px}
+}
+
+.pickingmailactual{margin-top:10px}.pickingmailactual iframe{height:min(70vh,600px)}
