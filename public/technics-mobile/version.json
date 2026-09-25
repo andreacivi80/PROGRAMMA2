@@ -1,9 +1,9 @@
 {
-  "version": "1.9.385",
-  "build": "picking-mail-compact-changed-lots",
+  "version": "1.9.386",
+  "build": "picking-mail-compact-deduplicated",
   "publishedAt": null,
-  "backendRequired": "1.9.361",
-  "gatewayRequired": "1.9.179",
+  "backendRequired": "1.9.362",
+  "gatewayRequired": "1.9.180",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
@@ -17,10 +17,11 @@
       "availability": "validated-response-only"
     },
     "pickingMailTrace": {
-      "backendRequired": "1.9.361",
-      "gatewayRequired": "1.9.179",
+      "backendRequired": "1.9.362",
+      "gatewayRequired": "1.9.180",
       "previewDigestRequired": true,
-      "compactChangedLotsOnly": true
+      "compactChangedLotsOnly": true,
+      "duplicateTargetLotSuppressed": true
     }
   }
 }
