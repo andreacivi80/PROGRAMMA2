@@ -1,9 +1,9 @@
 {
-  "version": "1.9.403",
-  "build": "deferred-picking-boxes-on-packing-op",
+  "version": "1.9.404",
+  "build": "op-supplier-lot-alternatives-a-z",
   "publishedAt": null,
-  "backendRequired": "1.9.403",
-  "gatewayRequired": "1.9.195",
+  "backendRequired": "1.9.404",
+  "gatewayRequired": "1.9.196",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
