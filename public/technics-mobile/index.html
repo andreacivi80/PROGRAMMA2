@@ -11,7 +11,7 @@
 <meta property="og:description" content="Magazzino Technics in tempo reale, in sola lettura.">
 <meta property="og:url" content="https://andreacivi80.github.io/PROGRAMMA2/technics-mobile/">
 <title>Technics Mobile</title>
-<meta name="technics-build-version" content="1.9.407">
+<meta name="technics-build-version" content="1.9.408">
 <style id="version-gate-v1865">
 html.version-gate-pending body{visibility:visible!important}
 html.version-gate-pending:before{content:"Verifica aggiornamento…";position:fixed;z-index:2147483647;right:8px;bottom:8px;padding:5px 8px;border:1px solid #c7d8d1;border-radius:99px;background:#ffffffee;color:#536b63;font:850 8px/1.2 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;box-shadow:0 3px 12px #173e3520}
@@ -21,7 +21,7 @@ html.version-gate-pending:before{content:"Verifica aggiornamento…";position:fi
 </style>
 <script id="version-gate-script-v1865">
 document.documentElement.classList.add("version-gate-pending");
-(()=>{const build="1.9.407",root=document.documentElement,reveal=()=>root.classList.remove("version-gate-pending"),parts=v=>String(v||"").split(".").map(n=>Number(n)||0),compare=(a,b)=>{const x=parts(a),y=parts(b);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d}return 0},check=async()=>{try{const response=await fetch(`version.json?boot=${Date.now()}`,{cache:"no-store",headers:{"Cache-Control":"no-cache"}});if(!response.ok)throw new Error("version");const remote=String((await response.json()).version||"").trim();if(!remote||compare(remote,build)<=0){reveal();return}root.dataset.waitingVersion=remote;const target=new URL(location.href);target.searchParams.set("v",remote);target.searchParams.set("boot",Date.now());location.replace(target.href)}catch{setTimeout(reveal,2500)}};check()})();
+(()=>{const build="1.9.408",root=document.documentElement,reveal=()=>root.classList.remove("version-gate-pending"),parts=v=>String(v||"").split(".").map(n=>Number(n)||0),compare=(a,b)=>{const x=parts(a),y=parts(b);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d}return 0},check=async()=>{try{const response=await fetch(`version.json?boot=${Date.now()}`,{cache:"no-store",headers:{"Cache-Control":"no-cache"}});if(!response.ok)throw new Error("version");const remote=String((await response.json()).version||"").trim();if(!remote||compare(remote,build)<=0){reveal();return}root.dataset.waitingVersion=remote;const target=new URL(location.href);target.searchParams.set("v",remote);target.searchParams.set("boot",Date.now());location.replace(target.href)}catch{setTimeout(reveal,2500)}};check()})();
 </script>
 <link rel="stylesheet" href="modules/mobile-label-fix-1.8.35.css?v=1.9.363">
 <style>
@@ -86,7 +86,7 @@ document.documentElement.classList.add("version-gate-pending");
 @media(max-width:350px){#production .ophead>div{max-width:calc(100% - 44px)!important}#production #opnumber{grid-template-columns:minmax(0,.9fr) minmax(0,.9fr) minmax(0,1fr) 70px!important;gap:2px!important}#production #opnumber>.packingpickingbutton{width:70px!important;min-width:70px!important;max-width:70px!important;padding:0 2px!important;font-size:6.7px!important}}
 </style><style id="picking-mail-confirm-v19214">.pickingmailconfirm{margin:0 0 8px;padding:9px 11px;border-radius:9px;background:#fff4d9;color:#6f571b;font-size:11px;font-weight:950;text-align:center}</style><style id="op-session-resilience-v19247">.pickingsessionnotice{display:grid;gap:3px;margin:0;padding:9px 11px;border:1px solid #d2a74f;border-radius:9px;background:#fff8df;color:#735d25}.pickingsessionnotice strong{font-size:9px}.pickingsessionnotice span{font-size:8px;line-height:1.35}.pickingsessionnotice.loading{border-color:#c9b87e;background:#fffbee}</style><style id="picking-multiple-lots-parity-20260923">.pickingadditions{grid-column:1/-1;display:grid;gap:6px;margin-top:5px}.pickingaddition{display:grid;grid-template-columns:minmax(95px,.7fr) minmax(0,1.5fr) auto;gap:7px;align-items:center;padding:7px;border:1px solid #9bcbbb;border-radius:9px;background:#f2fbf7}.pickingaddition>div:first-child{display:grid;gap:1px}.pickingaddition small{font-size:7px;font-weight:950;color:#28745e}.pickingaddition strong{font-size:13px}.pickingaddition em{font-size:9px;font-style:normal;color:#496b61}.pickingaddition .pickingused{grid-column:1/-1}.pickingaddition>button{min-height:32px;border:1px solid #bf7777;border-radius:7px;background:#fff;color:#8d3030;font-weight:900}.pickingaddition>button:disabled{opacity:.45}.pickingaddlot{min-height:34px;border:1px dashed #4a8974;border-radius:8px;background:#fff;color:#17654f;font-size:10px;font-weight:950}@media(max-width:520px){.pickingaddition{grid-template-columns:1fr auto}.pickingaddition .picklayoutlines{grid-column:1/-1}}</style><link rel="stylesheet" href="modules/inventory-commitment-fit-1.9.390.css">
 <link rel="stylesheet" href="modules/inventory-commitment-mobile-1.9.396.css?v=1.9.396"><link rel="stylesheet" href="modules/picking-mail-preview-1.9.399.css?v=1.9.399">
-</head>
+<style id="diagnostics-scroll-v19408">@media(max-width:360px){.systemdiagnostics{display:block;overflow-y:auto}.systemdiagnosticscard{box-sizing:border-box;max-height:calc(100dvh - 20px);overflow-y:auto;margin:10px auto}}</style></head>
 <style id="ov-ambiguity-v1316">
 .ovambiguity{overflow:hidden;margin:8px 0;border:2px solid #a74343;border-radius:12px;background:#fff8f7}.ovambiguity>header{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;background:#a74343;color:#fff}.ovambiguity>header b,.ovambiguity>header strong{font-size:10px}.ovambiguity>p{margin:0;padding:10px 11px;color:#6f3c38;font-size:9px;font-weight:850;line-height:1.35}.ovambiguity>div{display:grid;gap:7px;padding:0 9px 10px}.ovambiguity button{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 8px;align-items:center;width:100%;padding:10px;border:1px solid #d9c6c2;border-radius:9px;background:#fff;color:#173e35;text-align:left}.ovambiguity button span{display:flex;align-items:center;gap:7px;min-width:0}.ovambiguity button span b{flex:0 0 auto;padding:4px 6px;border-radius:5px;background:#315d78;color:#fff;font-size:8px}.ovambiguity button span strong{min-width:0;font-size:10px;overflow-wrap:anywhere}.ovambiguity button small{grid-column:1;color:#667a73;font-size:8px}.ovambiguity button em{grid-column:2;grid-row:1/3;white-space:nowrap;color:#a74343;font-size:10px;font-style:normal;font-weight:950}.ovambiguity button:disabled{opacity:.65}
 </style>
@@ -254,7 +254,7 @@ try{
 <script id="technics-print-core-v143" src="modules/print-core-1.4.3.js?v=1.9.363"></script>
 <script id="technics-live-sync-v144" src="modules/live-sync-1.4.4.js?v=1.9.363"></script>
 <script id="technics-health-state-v1934" src="modules/health-state-1.9.34.js?v=1.9.363"></script>
-<script id="technics-system-health-v19110" src="modules/system-health-1.9.110.js?v=1.9.363"></script>
+<script id="technics-system-health-v19408" src="modules/system-health-1.9.408.js?v=1.9.408"></script>
 <script id="technics-mobile-compat-v1741" src="modules/mobile-compat-1.7.41.js?v=1.9.363"></script>
 <script id="technics-progressive-feedback-v1839" src="modules/progressive-feedback-1.8.39.js?v=1.9.363"></script>
 <style id="brand-readable-v1864">header.top>.brand{overflow:visible!important}header.top>.brand strong{overflow:visible!important;text-overflow:clip!important;white-space:nowrap!important;font-size:11px!important;letter-spacing:-.02em!important}@media(max-width:350px){header.top>.brand strong{font-size:9.5px!important;letter-spacing:-.035em!important}}</style><meta name="technics-version-label" content="Versione 1.8.64">
@@ -276,7 +276,7 @@ document.head.insertAdjacentHTML("beforeend",`<style id="packing-quantities-v193
 #packageChoice .matchconfirm>button{width:100%;min-height:38px;margin-top:8px;border:1px solid #779d8d;border-radius:8px;background:#fff;color:#17483e;font-weight:800}
 </style>`);
 const CURRENT_VERSION_LABEL="Versione 1.9.363";
-const APP_VERSION="1.9.407";
+const APP_VERSION="1.9.408";
 function packingDetailLink(target,label){return window.TechnicsPackingLinks?window.TechnicsPackingLinks.renderLink(target,label):esc(label??target.value)}
 function parsePackingQuantity(value){const normalized=String(value??"").trim().replace(/\s/g,"").replace(",",".");const number=Number(normalized);return Number.isFinite(number)?Math.max(0,number):0}
 const localBridgeTest=new URLSearchParams(location.search).get("testBridge"),BRIDGE_URL=location.hostname==="127.0.0.1"&&/^dev\d+$/.test(localBridgeTest||"")?`http://127.0.0.1:${localBridgeTest.slice(3)}`:window.__technicsBridgeUrl;async function readJsonResponse(response){return TechnicsDataClient.read(response,"Collegamento dati in ripristino automatico. Riprova tra pochi secondi.")}

@@ -1,6 +1,6 @@
 {
-  "version": "1.9.407",
-  "build": "mail-send-explicit-confirmation",
+  "version": "1.9.408",
+  "build": "packing-health-native-archive-ready-on-mail407",
   "publishedAt": null,
   "backendRequired": "1.9.406",
   "gatewayRequired": "1.9.197",
