@@ -1,9 +1,9 @@
 {
-  "version": "1.9.402",
-  "build": "manual-picking-boxes-without-scan",
+  "version": "1.9.403",
+  "build": "deferred-picking-boxes-on-packing-op",
   "publishedAt": null,
-  "backendRequired": "1.9.374",
-  "gatewayRequired": "1.9.194",
+  "backendRequired": "1.9.403",
+  "gatewayRequired": "1.9.195",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
