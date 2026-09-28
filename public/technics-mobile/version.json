@@ -1,9 +1,9 @@
 {
-  "version": "1.9.408",
-  "build": "packing-health-native-archive-ready-on-mail407",
+  "version": "1.9.409",
+  "build": "customer-inventory-preview-on-semaforo408",
   "publishedAt": null,
-  "backendRequired": "1.9.406",
-  "gatewayRequired": "1.9.197",
+  "backendRequired": "1.9.407",
+  "gatewayRequired": "1.9.198",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
@@ -41,6 +41,13 @@
       ],
       "rawMaterialsPreserved": true,
       "documents": "unavailable-unqualified"
+    },
+    "customerInventory": {
+      "backendRequired": "1.9.407",
+      "gatewayRequired": "1.9.198",
+      "positiveStockDefault": true,
+      "zeroStockToggle": "Mostra anche giacenza zero",
+      "physicalPrint": "deferred-unqualified"
     }
   }
 }
