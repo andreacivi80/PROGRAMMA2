@@ -1,9 +1,9 @@
 {
-  "version": "1.9.405",
+  "version": "1.9.406",
   "build": "exclude-rejected-source-lot-on-add",
   "publishedAt": null,
-  "backendRequired": "1.9.404",
-  "gatewayRequired": "1.9.196",
+  "backendRequired": "1.9.406",
+  "gatewayRequired": "1.9.197",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
