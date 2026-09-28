@@ -1,6 +1,6 @@
 {
-  "version": "1.9.406",
-  "build": "exclude-rejected-source-lot-on-add",
+  "version": "1.9.407",
+  "build": "mail-send-explicit-confirmation",
   "publishedAt": null,
   "backendRequired": "1.9.406",
   "gatewayRequired": "1.9.197",
