@@ -1,9 +1,9 @@
 {
-  "version": "1.9.399",
-  "build": "picking-mail-editable-reviewed-preview",
+  "version": "1.9.400",
+  "build": "packing-main-native-contract-validation",
   "publishedAt": null,
   "backendRequired": "1.9.366",
-  "gatewayRequired": "1.9.188",
+  "gatewayRequired": "1.9.190",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
