@@ -1,9 +1,9 @@
 {
-  "version": "1.9.401",
-  "build": "commitment-qualified-total-label",
+  "version": "1.9.402",
+  "build": "manual-picking-boxes-without-scan",
   "publishedAt": null,
-  "backendRequired": "1.9.366",
-  "gatewayRequired": "1.9.190",
+  "backendRequired": "1.9.374",
+  "gatewayRequired": "1.9.194",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
