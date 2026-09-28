@@ -1,6 +1,6 @@
 {
-  "version": "1.9.400",
-  "build": "packing-main-native-contract-validation",
+  "version": "1.9.401",
+  "build": "commitment-qualified-total-label",
   "publishedAt": null,
   "backendRequired": "1.9.366",
   "gatewayRequired": "1.9.190",
