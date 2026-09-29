@@ -1,6 +1,6 @@
 {
-  "version": "1.9.413",
-  "build": "promoitalia-compact-preview-on-public412",
+  "version": "1.9.414",
+  "build": "promoitalia-print-preview-on-public413",
   "publishedAt": null,
   "backendRequired": "1.9.408",
   "gatewayRequired": "1.9.200",
@@ -56,8 +56,8 @@
       "mode": "read-only",
       "editableDraft": "not-qualified",
       "mail": false,
-      "previewOnly": true,
-      "print": false
+      "previewOnly": false,
+      "print": "user-initiated-browser-dialog-only"
     },
     "opPickingParity": {
       "backendRequired": "1.9.408",
