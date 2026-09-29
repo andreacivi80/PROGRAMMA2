@@ -1,6 +1,6 @@
 {
-  "version": "1.9.416",
-  "build": "customer-inventory-and-lot-movements-on-public415",
+  "version": "1.9.417",
+  "build": "customer-inventory-immediate-readability-on-public416",
   "publishedAt": null,
   "backendRequired": "1.9.408",
   "gatewayRequired": "1.9.200",
