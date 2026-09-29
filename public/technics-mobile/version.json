@@ -1,6 +1,6 @@
 {
-  "version": "1.9.415",
-  "build": "op-warehouse-exclusion-source-lot-on-public414",
+  "version": "1.9.416",
+  "build": "customer-inventory-and-lot-movements-on-public415",
   "publishedAt": null,
   "backendRequired": "1.9.408",
   "gatewayRequired": "1.9.200",

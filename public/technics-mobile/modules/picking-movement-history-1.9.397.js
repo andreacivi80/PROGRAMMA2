@@ -151,6 +151,7 @@
       if (currentRequest === requestSequence && !overlay.hidden) area.textContent = error?.message || 'Impossibile leggere i movimenti.';
     }
   };
+  window.__technicsMovementHistory=Object.freeze({open:show});
   const enhance = () => {
     const picking = document.querySelector('#planningLookup .picklist');
     if (!picking) return;
