@@ -1,6 +1,6 @@
 {
-  "version": "1.9.414",
-  "build": "promoitalia-print-preview-on-public413",
+  "version": "1.9.415",
+  "build": "op-warehouse-exclusion-source-lot-on-public414",
   "publishedAt": null,
   "backendRequired": "1.9.408",
   "gatewayRequired": "1.9.200",
