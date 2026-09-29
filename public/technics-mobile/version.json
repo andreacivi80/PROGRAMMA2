@@ -1,9 +1,9 @@
 {
-  "version": "1.9.411",
-  "build": "packaging-promoitalia-readonly-on-public410",
+  "version": "1.9.412",
+  "build": "op-picking-parity-on-public411",
   "publishedAt": null,
   "backendRequired": "1.9.408",
-  "gatewayRequired": "1.9.199",
+  "gatewayRequired": "1.9.200",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
@@ -57,6 +57,15 @@
       "editableDraft": "not-qualified",
       "mail": false,
       "print": false
+    },
+    "opPickingParity": {
+      "backendRequired": "1.9.408",
+      "gatewayRequired": "1.9.200",
+      "singleAndGroup": true,
+      "perOpLots": true,
+      "perOpBoxes": true,
+      "groupScanBoxCount": true,
+      "movementInfoOpenAndClosed": true
     }
   }
 }

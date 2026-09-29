@@ -153,7 +153,7 @@
   };
   const enhance = () => {
     const picking = document.querySelector('#planningLookup .picklist');
-    if (!picking || !picking.querySelector('.picklisttitle')?.textContent?.includes('APERTA')) return;
+    if (!picking) return;
     for (const row of picking.querySelectorAll('.pickrow[data-picking-row-code]')) {
       const heading = row.querySelector(':scope > small > span');
       const code = row.dataset.pickingRowCode;
