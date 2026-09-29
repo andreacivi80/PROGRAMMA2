@@ -1,6 +1,6 @@
 {
-  "version": "1.9.409",
-  "build": "customer-inventory-preview-on-semaforo408",
+  "version": "1.9.410",
+  "build": "movement-lot-label-fix-on-customer-inventory409",
   "publishedAt": null,
   "backendRequired": "1.9.407",
   "gatewayRequired": "1.9.198",

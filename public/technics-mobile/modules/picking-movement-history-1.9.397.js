@@ -156,8 +156,10 @@
     if (!picking || !picking.querySelector('.picklisttitle')?.textContent?.includes('APERTA')) return;
     for (const row of picking.querySelectorAll('.pickrow[data-picking-row-code]')) {
       const heading = row.querySelector(':scope > small > span');
-      const lot = heading?.querySelector(':scope > strong')?.textContent?.trim();
       const code = row.dataset.pickingRowCode;
+      const displayedLot = heading?.querySelector(':scope > strong')?.textContent?.trim();
+      const codePrefix = `${code} · `;
+      const lot = displayedLot?.startsWith(codePrefix) ? displayedLot.slice(codePrefix.length).trim() : displayedLot;
       if (!heading || !code || !lot || heading.querySelector('.pickmovementinfo')) continue;
       const button = document.createElement('button');
       button.type = 'button'; button.className = 'pickmovementinfo'; button.textContent = 'i';
