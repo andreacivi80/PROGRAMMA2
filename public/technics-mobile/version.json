@@ -1,6 +1,6 @@
 {
-  "version": "1.9.418",
-  "build": "customer-inventory-lot-row-round-close-on-public417",
+  "version": "1.9.419",
+  "build": "customer-inventory-launcher-square-on-public418",
   "publishedAt": null,
   "backendRequired": "1.9.408",
   "gatewayRequired": "1.9.200",
