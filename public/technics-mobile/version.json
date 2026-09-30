@@ -1,6 +1,6 @@
 {
-  "version": "1.9.424",
-  "build": "promoitalia-simulation-on-needle423-candidate",
+  "version": "1.9.425",
+  "build": "needle-fixed-table-and-packing-lot-layout-status",
   "publishedAt": null,
   "backendRequired": "1.9.411",
   "gatewayRequired": "1.9.204",
