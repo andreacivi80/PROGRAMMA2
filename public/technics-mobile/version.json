@@ -1,6 +1,6 @@
 {
-  "version": "1.9.423",
-  "build": "needle-inline-on-public422-fallback-candidate",
+  "version": "1.9.424",
+  "build": "promoitalia-simulation-on-needle423-candidate",
   "publishedAt": null,
   "backendRequired": "1.9.411",
   "gatewayRequired": "1.9.204",
@@ -56,8 +56,10 @@
       "mode": "read-only",
       "editableDraft": "not-qualified",
       "mail": false,
-      "previewOnly": false,
-      "print": "user-initiated-browser-dialog-only"
+      "previewOnly": true,
+      "print": "disabled-for-promoitalia",
+      "previewSource": "existing-read-only-Technics-plan",
+      "previewFormat": "paginated-in-app-svg"
     },
     "opPickingParity": {
       "backendRequired": "1.9.408",
