@@ -80,19 +80,20 @@
     style.textContent += '.customerinventorypreviewcard{height:auto;max-height:94svh;display:flex;flex-direction:column}.customerinventorypreviewcard iframe{flex:0 1 auto;height:120px;min-height:120px;max-height:72svh}@media(max-width:390px){.customerinventorypreviewcard{height:auto;max-height:100svh;border-radius:0}}.customerinventoryresult{min-height:160px;flex:1 1 auto;overflow:hidden;margin:0 10px 8px;border:1px solid #c4d8cf;border-radius:9px}.customerinventoryresult[hidden]{display:none}.customerinventoryresult iframe{width:100%;min-height:160px;height:42svh;display:block}';
     style.textContent += '.customerinventorycard header [data-close],.customerinventorypreviewcard [data-preview-close]{min-width:32px;max-width:32px;min-height:32px;max-height:32px;flex:0 0 32px;aspect-ratio:1}.customerinventoryserverpages{overflow:auto;min-height:160px;max-height:70svh;padding:10px;background:#e9efec}.customerinventoryserverpages img{display:block;width:min(794px,100%);height:auto;margin:0 auto 12px;background:#fff;box-shadow:0 2px 10px #0002}.customerinventorypreviewcard footer{display:flex;gap:8px;flex-wrap:wrap;padding:10px}.customerinventorypreviewcard footer button{min-height:38px;border:1px solid #17624d;border-radius:8px;background:#17624d;color:#fff;font-weight:800}@media(max-width:390px){.customerinventorypreviewcard footer button{flex:1 1 100%}}';
     style.textContent += '.customerinventorylauncher span{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:#dceee6;font-size:15px}';
+    style.textContent += '.customerprintertargets{display:flex;gap:5px;flex-wrap:wrap}.customerinventorycard footer .customerprintertargets button{min-height:40px;padding:5px 9px;border:1px solid #9abaaa;border-radius:7px;background:#f5faf7;color:#174d40;font-size:14px;line-height:18px;font-weight:700;white-space:nowrap}.customerinventorycard footer .customerprintertargets button[aria-pressed="true"]{background:#17624d;color:#fff}.customerinventorypreviewcard footer [data-fixed-target]{flex:1;align-self:center;font-size:12px;font-weight:800}@media(max-width:390px){.customerprintertargets{width:100%}.customerinventorycard footer .customerprintertargets button{flex:1 1 auto}}';
     document.head.appendChild(style);
     const overlay = document.createElement('div');
     overlay.className = 'customerinventoryoverlay';
     overlay.hidden = true;
-    overlay.innerHTML = '<section class="customerinventorycard" role="dialog" aria-modal="true" aria-label="Inventario clienti"><header><strong>Inventario clienti</strong><small class="customerinventoryreadonly">Sola lettura</small><button type="button" data-close aria-label="Chiudi">×</button></header><input type="search" aria-label="Cerca ragione sociale" placeholder="Cerca ragione sociale (almeno 3 lettere)"><div class="customerinventorychoices"></div><footer><span>Seleziona una ragione sociale Technics.</span><button type="button" data-preview disabled>Anteprima</button></footer></section>';
+    overlay.innerHTML = '<section class="customerinventorycard" role="dialog" aria-modal="true" aria-label="Inventario clienti"><header><strong>Inventario clienti</strong><small class="customerinventoryreadonly">Sola lettura</small><button type="button" data-close aria-label="Chiudi">×</button></header><input type="search" aria-label="Cerca ragione sociale" placeholder="Cerca ragione sociale (almeno 3 lettere)"><div class="customerinventorychoices"></div><footer><span>Seleziona una ragione sociale Technics.</span><div class="customerprintertargets" role="group" aria-label="Destinazione stampante"><button type="button" data-standard-printer-target="corridor" aria-pressed="false">🖨 Corridoio</button><button type="button" data-standard-printer-target="warehouse" aria-pressed="false">🖨 Magazzino</button></div><button type="button" data-preview disabled>Anteprima</button></footer></section>';
     overlay.querySelector('.customerinventorychoices').insertAdjacentHTML('beforebegin', '<div class="customerinventoryfavorites" aria-label="Clienti preferiti"></div>');
     overlay.querySelector('.customerinventorychoices').insertAdjacentHTML('beforebegin', '<div class="customerinventoryselected" aria-label="Altri clienti selezionati"></div>');
     overlay.querySelector('.customerinventorychoices').insertAdjacentHTML('afterend', '<label class="customerinventorytoggle"><input type="checkbox">Mostra anche giacenza zero</label><div class="customerinventoryresult" hidden><iframe title="Risultato Inventario clienti"></iframe></div>');
     document.body.appendChild(overlay);
-    const preview=document.createElement('div');preview.className='customerinventorypreview';preview.hidden=true;preview.innerHTML='<section class="customerinventorypreviewcard" role="dialog" aria-modal="true" aria-label="Anteprima Inventario clienti"><header><strong>Anteprima · Inventario clienti</strong><span data-print-status role="status"></span><button type="button" data-preview-close aria-label="Chiudi">×</button></header><div class="customerinventoryserverpages"></div><footer><button type="button" data-print-target="corridor">Stampa su Corridoio</button><button type="button" data-print-target="warehouse">Stampa in Magazzino</button></footer></section>';document.body.appendChild(preview);
+    const preview=document.createElement('div');preview.className='customerinventorypreview';preview.hidden=true;preview.innerHTML='<section class="customerinventorypreviewcard" role="dialog" aria-modal="true" aria-label="Anteprima Inventario clienti"><header><strong>Anteprima · Inventario clienti</strong><span data-print-status role="status"></span><button type="button" data-preview-close aria-label="Chiudi">×</button></header><div class="customerinventoryserverpages"></div><footer><span data-fixed-target></span><button type="button" data-print-confirm>Conferma e invia stampa</button></footer></section>';document.body.appendChild(preview);
     const input = overlay.querySelector('input'), choices = overlay.querySelector('.customerinventorychoices'), dataFrame=overlay.querySelector('.customerinventoryresult iframe'), resultBox=overlay.querySelector('.customerinventoryresult'), status = overlay.querySelector('footer span'), previewButton = overlay.querySelector('[data-preview]');
-    const printerChoice=document.createElement('select');printerChoice.dataset.standardPrinterTarget='';printerChoice.setAttribute('aria-label','Stampante Inventario clienti');printerChoice.innerHTML='<option value="">Scegli stampante</option><option value="corridor">Corridoio</option><option value="warehouse">Magazzino</option>';previewButton.before(printerChoice);
-    printerChoice.onchange=()=>{directPrint?.invalidate();clearPages();preview.hidden=true;render();status.textContent='Destinazione cambiata: generare una nuova anteprima.'};
+    let printerTarget='';const printerButtons=overlay.querySelectorAll('[data-standard-printer-target]');
+    printerButtons.forEach(button=>button.onclick=()=>{printerTarget=button.dataset.standardPrinterTarget;printerButtons.forEach(choice=>choice.setAttribute('aria-pressed',String(choice===button)));directPrint?.invalidate();clearPages();preview.hidden=true;render();status.textContent='Destinazione scelta: generare una nuova anteprima.'});
     let directPrint=null;try{directPrint=globalThis.TechnicsCustomerStandardPrint?.createSession('customer')||null}catch{}
     const pageUrls=[];
     const clearPages=()=>{while(pageUrls.length)URL.revokeObjectURL(pageUrls.pop());preview.querySelector('.customerinventoryserverpages').replaceChildren()};
@@ -118,7 +119,7 @@
       if (!selected) return;
       const html=previewHtml(selected, showZero.checked);
       dataFrame.srcdoc=html;resultBox.hidden=false;
-      previewButton.disabled = !printerChoice.value || (showZero.checked ? selected.catalog.articleCount : selected.articleCount) === 0;
+      previewButton.disabled = !printerTarget || (showZero.checked ? selected.catalog.articleCount : selected.articleCount) === 0;
     };
     showZero.onchange = () => {directPrint?.invalidate();clearPages();preview.hidden=true;render()};
     const close = () => {preview.hidden=true;overlay.hidden = true; sequence++;searchSequence++;directPrint?.invalidate();clearPages()};
@@ -180,27 +181,25 @@
       previewButton.disabled=true;clearPages();preview.querySelector('[data-print-status]').textContent='Preparazione anteprima server…';
       try{
         if(!directPrint)throw Error('Stampa diretta non configurata.');
-        const result=await directPrint.preview({clientIds:activeClients().map(client=>client.id),includeZeroStock:showZero.checked,printerTarget:printerChoice.value});
+        const result=await directPrint.preview({clientIds:activeClients().map(client=>client.id),includeZeroStock:showZero.checked,printerTarget});
         const pages=preview.querySelector('.customerinventoryserverpages');
         for(const [index,blob] of result.pages.entries()){
           const url=URL.createObjectURL(blob);pageUrls.push(url);const img=document.createElement('img');img.src=url;img.alt=`Pagina ${index+1} di ${result.pageCount} Inventario clienti`;pages.appendChild(img);
         }
         preview.querySelector('[data-print-status]').textContent=`${result.pageCount} pagine server`;
-        for(const button of preview.querySelectorAll('[data-print-target]')){button.hidden=button.dataset.printTarget!==printerChoice.value;button.dataset.confirm='';button.textContent=button.dataset.printTarget==='warehouse'?'Stampa in Magazzino':'Stampa su Corridoio'}
+        preview.querySelector('[data-fixed-target]').textContent=printerTarget==='warehouse'?'Destinazione: Magazzino':'Destinazione: Corridoio';preview.querySelector('[data-print-confirm]').disabled=false;
         preview.hidden=false;
       }catch(error){directPrint?.invalidate();clearPages();status.textContent=error.message||'Anteprima server non disponibile.'}
-      finally{previewButton.disabled=!selected||!printerChoice.value||(!showZero.checked&&selected.articleCount===0)}
+      finally{previewButton.disabled=!selected||!printerTarget||(!showZero.checked&&selected.articleCount===0)}
     };
     preview.addEventListener('click',async event=>{
       if(event.target===preview||event.target.closest('[data-preview-close]')){preview.hidden=true;directPrint?.invalidate();clearPages();return}
-      const button=event.target.closest('[data-print-target]');if(!button)return;
-      const target=button.dataset.printTarget;
+      const button=event.target.closest('[data-print-confirm]');if(!button||button.disabled)return;
+      const target=printerTarget;button.disabled=true;
       try{
-        if(!directPrint?.ready())throw Error('Anteprima scaduta: aggiornarla.');
-        if(button.dataset.confirm!==target){for(const other of preview.querySelectorAll('[data-print-target]')){other.dataset.confirm='';other.textContent=other.dataset.printTarget==='warehouse'?'Stampa in Magazzino':'Stampa su Corridoio'}button.dataset.confirm=target;button.textContent=directPrint.confirm(target);return}
-        button.dataset.confirm='';button.disabled=true;button.textContent='Invio in corso…';await directPrint.print(target);button.textContent='Documento accettato dalla stampante';preview.querySelector('[data-print-status]').textContent='Invio accettato; uscita del foglio non verificata.';
-      }catch(error){button.dataset.confirm='';button.textContent=target==='warehouse'?'Stampa in Magazzino':'Stampa su Corridoio';preview.querySelector('[data-print-status]').textContent=error.message||'Stampa non disponibile.'}
-      finally{button.disabled=!directPrint?.ready()}
+        if(!directPrint?.ready()||directPrint.snapshot?.printerTarget!==target)throw Error('Anteprima scaduta o destinazione cambiata: aggiornarla.');
+        directPrint.confirm(target);button.textContent='Invio in corso…';await directPrint.print(target);button.textContent='Documento accettato dalla stampante';preview.querySelector('[data-print-status]').textContent='Invio accettato; uscita del foglio non verificata.';
+      }catch(error){preview.querySelector('[data-print-status]').textContent=error.message||'Stampa non disponibile.'}
     });
     return true;
   }

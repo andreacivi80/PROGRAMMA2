@@ -1,6 +1,6 @@
 {
-  "version": "1.9.426",
-  "build": "promoitalia-direct-server-svg-two-fixed-printers",
+  "version": "1.9.427",
+  "build": "promo-customer-printer-buttons-and-promo-zero-filter",
   "publishedAt": null,
   "backendRequired": "1.9.412",
   "gatewayRequired": "1.9.205",
