@@ -1,6 +1,6 @@
 {
-  "version": "1.9.431",
-  "build": "formulas-documents-pdf-restoration",
+  "version": "1.9.432",
+  "build": "formula-documents-standby416-alignment",
   "publishedAt": null,
   "backendRequired": "1.9.416",
   "gatewayRequired": "1.9.209",
@@ -101,5 +101,6 @@
       "globalSearch": true,
       "readOnly": true
     }
-  }
+  },
+  "standbyRequired": "1.9.416"
 }
