@@ -1,6 +1,6 @@
 {
-  "version": "1.9.422",
-  "build": "pc38-customer-get-qualified-pc73-fallback",
+  "version": "1.9.423",
+  "build": "needle-inline-on-public422-fallback-candidate",
   "publishedAt": null,
   "backendRequired": "1.9.411",
   "gatewayRequired": "1.9.204",
@@ -74,7 +74,8 @@
       "readOnly": true,
       "unknownWhenUnverified": true,
       "expiryStrictlyLater": true,
-      "physicalPrint": false
+      "physicalPrint": false,
+      "layout": "compact-row-inline-status"
     },
     "rawMaterialsPagination": {
       "backendRequired": "1.9.411",
