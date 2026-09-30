@@ -1,9 +1,9 @@
 {
-  "version": "1.9.427",
-  "build": "promo-customer-printer-buttons-and-promo-zero-filter",
+  "version": "1.9.428",
+  "build": "promo-future-shortage-and-verified-destination",
   "publishedAt": null,
-  "backendRequired": "1.9.412",
-  "gatewayRequired": "1.9.205",
+  "backendRequired": "1.9.413",
+  "gatewayRequired": "1.9.206",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
@@ -56,8 +56,8 @@
       "physicalOutputConfirmed": false
     },
     "packagingPromoitalia": {
-      "backendRequired": "1.9.412",
-      "gatewayRequired": "1.9.205",
+      "backendRequired": "1.9.413",
+      "gatewayRequired": "1.9.206",
       "supplierId": 8785,
       "mode": "read-only",
       "editableDraft": "not-qualified",
