@@ -1,9 +1,9 @@
 {
-  "version": "1.9.421",
-  "build": "raw-materials-paged-on-public420",
+  "version": "1.9.422",
+  "build": "pc38-customer-get-qualified-pc73-fallback",
   "publishedAt": null,
   "backendRequired": "1.9.411",
-  "gatewayRequired": "1.9.203",
+  "gatewayRequired": "1.9.204",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
