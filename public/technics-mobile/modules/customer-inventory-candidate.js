@@ -78,7 +78,7 @@
     style.textContent += '.customerinventorycard{grid-template-rows:auto auto auto auto auto auto 1fr auto}.customerinventoryfavorites,.customerinventoryselected{display:flex;gap:6px;flex-wrap:wrap;padding:0 10px 8px}.customerinventoryselected:empty{display:none}.customerinventoryfavorites button,.customerinventoryselected button{border:1px solid #b3cdbf;border-radius:8px;background:#eaf5ee;color:#174d40;padding:4px 9px;font-size:11px;font-weight:700}.customerinventoryfavorites button[aria-pressed="true"],.customerinventorychoices button[aria-pressed="true"],.customerinventoryselected button{background:#17624d;color:#fff;border-color:#17624d}.customerinventoryfavorites button[aria-pressed="true"]:before,.customerinventorychoices button[aria-pressed="true"]:before{content:"✓ ";font-weight:900}.customerinventorycard .customerinventorytoggle{display:flex;align-items:center;gap:7px;padding:0 10px 8px;font-size:12px;font-weight:700}.customerinventorycard .customerinventorytoggle input{width:18px;height:18px;min-height:18px;margin:0;padding:0;accent-color:#17624d}';
     style.textContent += '.customerinventoryreadonly{color:#17624d;font-size:9px;font-weight:900;white-space:nowrap}.customerinventorycard{height:auto;max-height:94svh;display:flex;flex-direction:column;overflow:auto}.customerinventorycard header,.customerinventorycard footer{flex:0 0 auto}.customerinventorycard header [data-close],.customerinventorypreviewcard [data-preview-close]{box-sizing:border-box;flex:0 0 32px;width:32px;height:32px;margin-left:auto;padding:0;border:0;border-radius:50%;background:#dce8e2;color:#174d40;font:700 20px/1 Arial,sans-serif;display:grid;place-items:center}.customerinventorychoices{flex:0 1 auto;max-height:25svh}.customerinventorycard footer{min-height:52px}.customerinventorypreview{position:fixed;z-index:2147482560;inset:0;display:grid;place-items:center;padding:9px;background:#10251fe8}.customerinventorypreview[hidden]{display:none}.customerinventorypreviewcard{box-sizing:border-box;width:min(920px,100%);height:min(94svh,1000px);display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden;border-radius:14px;background:#fff;color:#173e35;box-shadow:0 18px 70px #0007}.customerinventorypreviewcard>header{display:flex;align-items:center;gap:8px;padding:9px 10px;background:#edf5f1}.customerinventorypreviewcard>header strong{flex:1;font-size:14px}.customerinventorypreviewcard iframe{width:100%;height:100%;border:0;background:#fff}@media(max-width:390px){.customerinventorypreview{padding:0}.customerinventorypreviewcard{height:100svh;border-radius:0}}';
     style.textContent += '.customerinventorypreviewcard{height:auto;max-height:94svh;display:flex;flex-direction:column}.customerinventorypreviewcard iframe{flex:0 1 auto;height:120px;min-height:120px;max-height:72svh}@media(max-width:390px){.customerinventorypreviewcard{height:auto;max-height:100svh;border-radius:0}}.customerinventoryresult{min-height:160px;flex:1 1 auto;overflow:hidden;margin:0 10px 8px;border:1px solid #c4d8cf;border-radius:9px}.customerinventoryresult[hidden]{display:none}.customerinventoryresult iframe{width:100%;min-height:160px;height:42svh;display:block}';
-    style.textContent += '.customerinventorycard header [data-close],.customerinventorypreviewcard [data-preview-close]{min-width:32px;max-width:32px;min-height:32px;max-height:32px;flex:0 0 32px;aspect-ratio:1}';
+    style.textContent += '.customerinventorycard header [data-close],.customerinventorypreviewcard [data-preview-close]{min-width:32px;max-width:32px;min-height:32px;max-height:32px;flex:0 0 32px;aspect-ratio:1}.customerinventoryserverpages{overflow:auto;min-height:160px;max-height:70svh;padding:10px;background:#e9efec}.customerinventoryserverpages img{display:block;width:min(794px,100%);height:auto;margin:0 auto 12px;background:#fff;box-shadow:0 2px 10px #0002}.customerinventorypreviewcard footer{display:flex;gap:8px;flex-wrap:wrap;padding:10px}.customerinventorypreviewcard footer button{min-height:38px;border:1px solid #17624d;border-radius:8px;background:#17624d;color:#fff;font-weight:800}@media(max-width:390px){.customerinventorypreviewcard footer button{flex:1 1 100%}}';
     style.textContent += '.customerinventorylauncher span{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:#dceee6;font-size:15px}';
     document.head.appendChild(style);
     const overlay = document.createElement('div');
@@ -89,8 +89,13 @@
     overlay.querySelector('.customerinventorychoices').insertAdjacentHTML('beforebegin', '<div class="customerinventoryselected" aria-label="Altri clienti selezionati"></div>');
     overlay.querySelector('.customerinventorychoices').insertAdjacentHTML('afterend', '<label class="customerinventorytoggle"><input type="checkbox">Mostra anche giacenza zero</label><div class="customerinventoryresult" hidden><iframe title="Risultato Inventario clienti"></iframe></div>');
     document.body.appendChild(overlay);
-    const preview=document.createElement('div');preview.className='customerinventorypreview';preview.hidden=true;preview.innerHTML='<section class="customerinventorypreviewcard" role="dialog" aria-modal="true" aria-label="Anteprima Inventario clienti"><header><strong>Anteprima · Inventario clienti</strong><button type="button" data-preview-close aria-label="Chiudi">×</button></header><iframe title="Anteprima inventario clienti"></iframe></section>';document.body.appendChild(preview);
-    const input = overlay.querySelector('input'), choices = overlay.querySelector('.customerinventorychoices'), frame = preview.querySelector('iframe'), dataFrame=overlay.querySelector('.customerinventoryresult iframe'), resultBox=overlay.querySelector('.customerinventoryresult'), status = overlay.querySelector('footer span'), previewButton = overlay.querySelector('[data-preview]');
+    const preview=document.createElement('div');preview.className='customerinventorypreview';preview.hidden=true;preview.innerHTML='<section class="customerinventorypreviewcard" role="dialog" aria-modal="true" aria-label="Anteprima Inventario clienti"><header><strong>Anteprima · Inventario clienti</strong><span data-print-status role="status"></span><button type="button" data-preview-close aria-label="Chiudi">×</button></header><div class="customerinventoryserverpages"></div><footer><button type="button" data-print-target="corridor">Stampa su Corridoio</button><button type="button" data-print-target="warehouse">Stampa in Magazzino</button></footer></section>';document.body.appendChild(preview);
+    const input = overlay.querySelector('input'), choices = overlay.querySelector('.customerinventorychoices'), dataFrame=overlay.querySelector('.customerinventoryresult iframe'), resultBox=overlay.querySelector('.customerinventoryresult'), status = overlay.querySelector('footer span'), previewButton = overlay.querySelector('[data-preview]');
+    const printerChoice=document.createElement('select');printerChoice.dataset.standardPrinterTarget='';printerChoice.setAttribute('aria-label','Stampante Inventario clienti');printerChoice.innerHTML='<option value="">Scegli stampante</option><option value="corridor">Corridoio</option><option value="warehouse">Magazzino</option>';previewButton.before(printerChoice);
+    printerChoice.onchange=()=>{directPrint?.invalidate();clearPages();preview.hidden=true;render();status.textContent='Destinazione cambiata: generare una nuova anteprima.'};
+    let directPrint=null;try{directPrint=globalThis.TechnicsCustomerStandardPrint?.createSession('customer')||null}catch{}
+    const pageUrls=[];
+    const clearPages=()=>{while(pageUrls.length)URL.revokeObjectURL(pageUrls.pop());preview.querySelector('.customerinventoryserverpages').replaceChildren()};
     const showZero = overlay.querySelector('.customerinventorytoggle input');
     const favorites = overlay.querySelector('.customerinventoryfavorites');
     const selectedChips = overlay.querySelector('.customerinventoryselected');
@@ -112,17 +117,17 @@
     const render = () => {
       if (!selected) return;
       const html=previewHtml(selected, showZero.checked);
-      frame.srcdoc = html;dataFrame.srcdoc=html;resultBox.hidden=false;
-      previewButton.disabled = (showZero.checked ? selected.catalog.articleCount : selected.articleCount) === 0;
+      dataFrame.srcdoc=html;resultBox.hidden=false;
+      previewButton.disabled = !printerChoice.value || (showZero.checked ? selected.catalog.articleCount : selected.articleCount) === 0;
     };
-    showZero.onchange = render;
-    const close = () => {preview.hidden=true;overlay.hidden = true; sequence++;searchSequence++};
+    showZero.onchange = () => {directPrint?.invalidate();clearPages();preview.hidden=true;render()};
+    const close = () => {preview.hidden=true;overlay.hidden = true; sequence++;searchSequence++;directPrint?.invalidate();clearPages()};
     overlay.querySelector('[data-close]').onclick = close;
     overlay.addEventListener('click', event => {if (event.target === overlay) close()});
     launcher.querySelector('button').onclick = () => {overlay.hidden = false; input.focus()};
     const loadClients = async clients => {
       const selection = ++sequence, searchAtLoad = searchSequence;
-      selected = null; preview.hidden=true;previewButton.disabled = true; frame.removeAttribute('srcdoc');dataFrame.removeAttribute('srcdoc');resultBox.hidden=true;
+      selected = null; preview.hidden=true;previewButton.disabled = true; directPrint?.invalidate();clearPages();dataFrame.removeAttribute('srcdoc');resultBox.hidden=true;
       if (!clients.length) {status.textContent = 'Seleziona uno o più clienti.';return}
       status.textContent = 'Lettura giacenze…';
       try {
@@ -170,11 +175,33 @@
         } catch (error) {if (token === searchSequence && !overlay.hidden) status.textContent = error.message}
       }, 250);
     });
-    const sizePreview=()=>{const contentHeight=frame.contentDocument?.documentElement?.scrollHeight||120;frame.style.height=`${Math.min(Math.max(contentHeight+4,120),Math.round(window.innerHeight*.72))}px`};
-    frame.addEventListener('load',sizePreview);
-    previewButton.onclick = () => {if (selected && !previewButton.disabled){preview.hidden=false;sizePreview()}};
-    preview.querySelector('[data-preview-close]').onclick=()=>{preview.hidden=true};
-    preview.addEventListener('click',event=>{if(event.target===preview)preview.hidden=true});
+    previewButton.onclick = async () => {
+      if(!selected||previewButton.disabled)return;
+      previewButton.disabled=true;clearPages();preview.querySelector('[data-print-status]').textContent='Preparazione anteprima server…';
+      try{
+        if(!directPrint)throw Error('Stampa diretta non configurata.');
+        const result=await directPrint.preview({clientIds:activeClients().map(client=>client.id),includeZeroStock:showZero.checked,printerTarget:printerChoice.value});
+        const pages=preview.querySelector('.customerinventoryserverpages');
+        for(const [index,blob] of result.pages.entries()){
+          const url=URL.createObjectURL(blob);pageUrls.push(url);const img=document.createElement('img');img.src=url;img.alt=`Pagina ${index+1} di ${result.pageCount} Inventario clienti`;pages.appendChild(img);
+        }
+        preview.querySelector('[data-print-status]').textContent=`${result.pageCount} pagine server`;
+        for(const button of preview.querySelectorAll('[data-print-target]')){button.hidden=button.dataset.printTarget!==printerChoice.value;button.dataset.confirm='';button.textContent=button.dataset.printTarget==='warehouse'?'Stampa in Magazzino':'Stampa su Corridoio'}
+        preview.hidden=false;
+      }catch(error){directPrint?.invalidate();clearPages();status.textContent=error.message||'Anteprima server non disponibile.'}
+      finally{previewButton.disabled=!selected||!printerChoice.value||(!showZero.checked&&selected.articleCount===0)}
+    };
+    preview.addEventListener('click',async event=>{
+      if(event.target===preview||event.target.closest('[data-preview-close]')){preview.hidden=true;directPrint?.invalidate();clearPages();return}
+      const button=event.target.closest('[data-print-target]');if(!button)return;
+      const target=button.dataset.printTarget;
+      try{
+        if(!directPrint?.ready())throw Error('Anteprima scaduta: aggiornarla.');
+        if(button.dataset.confirm!==target){for(const other of preview.querySelectorAll('[data-print-target]')){other.dataset.confirm='';other.textContent=other.dataset.printTarget==='warehouse'?'Stampa in Magazzino':'Stampa su Corridoio'}button.dataset.confirm=target;button.textContent=directPrint.confirm(target);return}
+        button.dataset.confirm='';button.disabled=true;button.textContent='Invio in corso…';await directPrint.print(target);button.textContent='Documento accettato dalla stampante';preview.querySelector('[data-print-status]').textContent='Invio accettato; uscita del foglio non verificata.';
+      }catch(error){button.dataset.confirm='';button.textContent=target==='warehouse'?'Stampa in Magazzino':'Stampa su Corridoio';preview.querySelector('[data-print-status]').textContent=error.message||'Stampa non disponibile.'}
+      finally{button.disabled=!directPrint?.ready()}
+    });
     return true;
   }
   if (!install()) {

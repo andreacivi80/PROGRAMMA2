@@ -45,11 +45,11 @@
       const lot=group.supplierLot||group.internalLots?.join(', ');
       const sub=[group.supplierLot?group.internalLots?.join(', '):null,locations.join(', ')].filter(Boolean).join(' · ');
       const details=group.rows.map(row=>`<li>${show(row.internalLot)} · ${show(row.location)} · scad. aghi ${date(row.needleExpiry)} · ${show(row.quantity)} ${show(row.unit)} · ${esc(row.reason||labels[qualifiedRow(row)||'unknown'])}</li>`).join('');
-      return `<tr data-needle-status="${status}"><td data-label="OP">${show(first.op)} ${flag(status,id)}</td>`+
+      return `<tr data-needle-status="${status}"><td data-label="OP">${show(first.op)}</td>`+
         `<td data-label="OV">${show(first.ov)}</td>`+
         `<td data-label="Lotto / Ub." class="inventorycommitmentlotlayout"><span>${lot?show(lot):'Lotto non <br>assegnato'}</span>${sub?`<small>${show(sub)}</small>`:''}</td>`+
         `<td data-label="Scad. OP">${product.length===1?tableDate(product[0]):'—'}</td>`+
-        `<td data-label="Scad. aghi">${needle.length===1?tableDate(needle[0]):'?'}</td>`+
+        `<td data-label="Scad. aghi"><span class="needle-expiry-inline"><span class="needle-expiry-value">${needle.length===1?tableDate(needle[0]):'—'}</span>${flag(status,id)}</span></td>`+
         `<td data-label="Impegnato">${Number.isFinite(group.quantity)?esc(group.quantity.toLocaleString('it-IT')):'—'} ${show(group.unit)}</td></tr>`+
         `<tr id="${id}" class="needle-inline-detail" hidden><td colspan="6"><strong>${esc(labels[status])}</strong>${reason?`<p>${esc(reason)}</p>`:''}<ul>${details}</ul></td></tr>`;
     }).join(''):`<tr data-needle-status="unknown"><td colspan="6">${verified?'Nessun impegno aghi collegato.':'Dati per OP e lotto aghi non disponibili o non aggiornati.'}</td></tr>`;
@@ -68,9 +68,12 @@
     #inventoryCommitmentOverlay[data-needle412=true] .inventorycommitmentscroll{overflow-x:hidden!important}
     #inventoryCommitmentOverlay .inventorycommitmentdialog [data-needle-table]{table-layout:fixed;width:100%;min-width:0}
     #inventoryCommitmentOverlay .inventorycommitmentdialog [data-needle-table] th,#inventoryCommitmentOverlay .inventorycommitmentdialog [data-needle-table] td{white-space:normal;overflow-wrap:anywhere;text-align:center;vertical-align:middle}
-    [data-needle-table] th:nth-child(1){width:18%}[data-needle-table] th:nth-child(2){width:11%}[data-needle-table] th:nth-child(3){width:20%}[data-needle-table] th:nth-child(4),[data-needle-table] th:nth-child(5){width:17%}[data-needle-table] th:nth-child(6){width:17%}
+    [data-needle-table] th:nth-child(1){width:15%}[data-needle-table] th:nth-child(2){width:10%}[data-needle-table] th:nth-child(3){width:18%}[data-needle-table] th:nth-child(4){width:16%}[data-needle-table] th:nth-child(5){width:24%}[data-needle-table] th:nth-child(6){width:17%}
     [data-needle-table] .inventorycommitmentlotlayout>small{display:block;font-size:9px;line-height:1.2;margin-top:2px}
-    #inventoryCommitmentOverlay [data-needle-table] .needle-inline-flag{display:inline-flex!important;align-items:center;justify-content:center;margin:0!important;padding:0!important;min-width:36px!important;min-height:36px!important;width:36px!important;height:36px!important;border:0!important;background:transparent!important;color:inherit!important;font-size:11px!important;font-weight:800;line-height:1!important;vertical-align:middle;cursor:pointer}
+    [data-needle-table] .needle-expiry-inline{display:flex;align-items:center;justify-content:center;flex-wrap:nowrap;gap:0;min-width:0;white-space:nowrap}
+    [data-needle-table] .needle-expiry-value{display:inline-block;min-width:0;white-space:nowrap;font-variant-numeric:tabular-nums;line-height:1.1}
+    [data-needle-table] .needle-expiry-value>span{display:block}
+    #inventoryCommitmentOverlay [data-needle-table] .needle-inline-flag{display:inline-flex!important;align-items:center;justify-content:center;margin:0!important;padding:0!important;flex:0 0 36px!important;min-width:36px!important;min-height:36px!important;width:36px!important;height:36px!important;border:0!important;background:transparent!important;color:inherit!important;font-size:11px!important;font-weight:800;line-height:1!important;vertical-align:middle;cursor:pointer}
     #inventoryCommitmentOverlay [data-needle-table] .needle-inline-flag>span{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%}
     [data-needle-table] .needle-inline-flag:focus-visible{outline:2px solid #123f87;outline-offset:2px}
     [data-needle-table] .needle-inline-detail td{text-align:left!important;padding:9px 14px!important;background:#f7faf8;font-size:11px;line-height:1.4;white-space:normal!important}
