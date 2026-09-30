@@ -1,9 +1,9 @@
 {
-  "version": "1.9.420",
-  "build": "needle-commitment-on-public419",
+  "version": "1.9.421",
+  "build": "raw-materials-paged-on-public420",
   "publishedAt": null,
-  "backendRequired": "1.9.408",
-  "gatewayRequired": "1.9.200",
+  "backendRequired": "1.9.411",
+  "gatewayRequired": "1.9.203",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
@@ -75,6 +75,14 @@
       "unknownWhenUnverified": true,
       "expiryStrictlyLater": true,
       "physicalPrint": false
+    },
+    "rawMaterialsPagination": {
+      "backendRequired": "1.9.411",
+      "gatewayRequired": "1.9.203",
+      "pageSize": 50,
+      "completeCount": true,
+      "globalSearch": true,
+      "readOnly": true
     }
   }
 }

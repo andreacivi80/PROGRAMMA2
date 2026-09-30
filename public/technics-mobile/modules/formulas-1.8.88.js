@@ -81,6 +81,7 @@
   @media(max-width:430px){.rawmaterialworkspace{box-sizing:border-box!important;width:calc(100vw - 32px)!important;max-width:calc(100vw - 32px)!important;min-width:0!important}.rawmaterialrow{grid-template-columns:58px minmax(0,1fr) 58px}.departmentnav{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
   `;
   document.head.append(rawMaterialStyle);
+  rawMaterialStyle.textContent += '.rawmaterialmore{width:100%;min-height:44px;margin:10px 0;padding:8px 12px;border:1px solid #94b99d;border-radius:9px;background:#eaf4ec;color:#245b32;font-size:12px;font-weight:900;cursor:pointer}.rawmaterialmore:disabled{opacity:.6;cursor:wait}';
   const integrityStyle = document.createElement("style");
   integrityStyle.id = "formulas-integrity-v1915";
   integrityStyle.textContent = `
@@ -167,7 +168,7 @@
   const rawMaterialSection = document.createElement("section");
   rawMaterialSection.id = "rawMaterialWorkspace";
   rawMaterialSection.className = "rawmaterialworkspace";
-  rawMaterialSection.innerHTML = `<div class="rawmaterialhead"><header><h2>Materie prime</h2><small>LINEE PRODOTTO · GIACENZE · COSTI · FORMULE</small></header><form id="rawMaterialSearch" class="rawmaterialfilters"><select name="lineId" aria-label="Linea prodotto"><option value="">Seleziona una linea prodotto</option></select><input name="query" type="search" autocomplete="off" placeholder="Codice o descrizione"><button>Cerca</button></form><div class="rawmaterialstatus" data-raw-status>Seleziona una linea prodotto oppure cerca un codice o una descrizione.</div></div><div class="rawmaterialrows" data-raw-rows></div>`;
+  rawMaterialSection.innerHTML = `<div class="rawmaterialhead"><header><h2>Materie prime</h2><small>LINEE PRODOTTO · GIACENZE · COSTI · FORMULE</small></header><form id="rawMaterialSearch" class="rawmaterialfilters"><select name="lineId" aria-label="Linea prodotto"><option value="">Seleziona una linea prodotto</option></select><input name="query" type="search" autocomplete="off" placeholder="Codice o descrizione"><button>Cerca</button></form><div class="rawmaterialstatus" data-raw-status role="status" aria-live="polite">Seleziona una linea prodotto oppure cerca un codice o una descrizione.</div></div><div class="rawmaterialrows" data-raw-rows></div><button type="button" class="rawmaterialmore hidden" data-raw-more>Carica altre materie prime</button>`;
   section.insertAdjacentElement("afterend", rawMaterialSection);
   section.querySelector("#formulaSearch input").placeholder = "Codice o descrizione";
   const alternativePanel = section.querySelector(".formulaalternativelog");
@@ -740,10 +741,15 @@
   };
   const rawMaterialForm = rawMaterialSection.querySelector("#rawMaterialSearch"),
     rawMaterialStatus = rawMaterialSection.querySelector("[data-raw-status]"),
-    rawMaterialRows = rawMaterialSection.querySelector("[data-raw-rows]");
+    rawMaterialRows = rawMaterialSection.querySelector("[data-raw-rows]"),
+    rawMaterialMore = rawMaterialSection.querySelector("[data-raw-more]");
   let rawMaterialLoaded = false,
     rawMaterialTimer = 0,
-    rawMaterialToken = 0;
+    rawMaterialToken = 0,
+    rawMaterialPage = 0,
+    rawMaterialTotal = null,
+    rawMaterialActiveQuery = null,
+    rawMaterialLoadingMore = false;
   const openFormulaByCode = (code) => {
     if (!code) return;
     document.querySelector('.departmentnav [data-workspace="formulas"]')?.click();
@@ -757,11 +763,16 @@
   const scheduleRawMaterials = () => {
     clearTimeout(rawMaterialTimer);
     rawMaterialTimer = setTimeout(() => {
-      if (shell.dataset.workspace === "rawmaterials" && !document.hidden) loadRawMaterials(true);
+      if (shell.dataset.workspace === "rawmaterials" && !document.hidden && rawMaterialPage === 0) loadRawMaterials(true);
       else scheduleRawMaterials();
     }, rawMaterialLoaded ? 60000 : 30000);
   };
-  const renderRawMaterials = (data) => {
+  const renderRawMaterials = (data, append = false) => {
+    if (append && rawMaterialTotal !== null && Number(data.totalCount) !== rawMaterialTotal) {
+      rawMaterialStatus.textContent = "L'archivio è cambiato. Premi Cerca per aggiornare i risultati.";
+      rawMaterialMore.classList.add("hidden");
+      return false;
+    }
     const select = rawMaterialForm.elements.lineId,
       selected = select.value;
     if (!rawMaterialLoaded || select.options.length <= 1) {
@@ -770,33 +781,65 @@
     }
     rawMaterialLoaded = Array.isArray(data.lines) && data.lines.length > 0;
     const rows = data.rows || [];
-    rawMaterialStatus.textContent = rows.length
-      ? `${rows.length} materie prime · Technics verificato ${new Date(data.readAt).toLocaleTimeString("it-IT")} · sola lettura`
-      : rawMaterialLoaded ? "Seleziona una linea prodotto oppure cerca un codice o una descrizione." : "Linee prodotto non disponibili. Premi Cerca per riprovare.";
-    rawMaterialRows.innerHTML = rows.length ? rows.map((row) => {
+    const html = rows.length ? rows.map((row) => {
       const uses = Array.isArray(row.formulas) ? row.formulas : row.formulas ? [row.formulas] : [],
         alternatives = Array.isArray(row.alternatives) ? row.alternatives : row.alternatives ? [row.alternatives] : [];
       return `<article class="rawmaterialrow"><button type="button" class="rawmaterialmain" data-raw-formula="${esc(row.code)}"><b>${esc(row.code)}</b><strong>${esc(row.description)}</strong><em>${euro(row.unitCost)}/${esc(row.unit || "UM")}</em><span class="rawmaterialline">${esc(row.lineProduct || "Linea prodotto non indicata")}</span></button><div class="rawmaterialmetrics"><button type="button" data-raw-stock="${esc(row.code)}">Giacenza<br>${num2(row.totalStock)} ${esc(row.unit || "UM")}</button><span>Formule<br>${uses.length}</span><button type="button" data-raw-alt-toggle="${esc(row.code)}">Alternativi<br>${alternatives.length}</button></div>${uses.length ? `<details class="rawmaterialuses"><summary>${uses.length} formul${uses.length === 1 ? "a" : "e"} di utilizzo · apri</summary>${uses.map((use) => `<button type="button" class="rawmaterialuse" data-raw-formula="${esc(use.code)}"><b>${esc(use.code)}</b><span>${esc(use.description)}</span></button>`).join("")}</details>` : ""}${alternatives.length ? `<section class="rawmaterialalternatives hidden" data-raw-alt-list="${esc(row.code)}"><div class="rawmaterialaltheading"><b>${alternatives.length} ALTERNATIV${alternatives.length === 1 ? "O" : "I"}</b><span></span><span>PREZZO/${esc(row.unit || "UM")}</span><span>GIACENZA</span></div>${alternatives.map((alternative) => `<button type="button" class="rawmaterialalternative" data-raw-formula="${esc(alternative.code)}"><b>${esc(alternative.code)}</b><strong title="${esc(alternative.description)}">${esc(alternative.description)}</strong><span>${euro(alternative.unitCost)}</span><span class="rawmaterialaltstock">${num2(alternative.totalStock)} ${esc(alternative.unit || "UM")}</span></button>`).join("")}</section>` : ""}</article>`;
     }).join("") : '<div class="formulaempty">Nessuna materia prima per i filtri selezionati.</div>';
+    if (append) {
+      if (rows.length) rawMaterialRows.insertAdjacentHTML("beforeend", html);
+    } else rawMaterialRows.innerHTML = html;
+    const shown = rawMaterialRows.querySelectorAll(".rawmaterialrow").length;
+    const total = Number.isFinite(Number(data.totalCount)) ? Number(data.totalCount) : shown;
+    rawMaterialTotal = total;
+    rawMaterialStatus.textContent = shown
+      ? `${shown} di ${total} materie prime · Technics verificato ${new Date(data.readAt).toLocaleTimeString("it-IT")} · sola lettura`
+      : rawMaterialLoaded ? "Seleziona una linea prodotto oppure cerca un codice o una descrizione." : "Linee prodotto non disponibili. Premi Cerca per riprovare.";
+    rawMaterialMore.classList.toggle("hidden", !data.hasMore);
+    rawMaterialMore.setAttribute("aria-label", `Carica altre 50 materie prime. Visualizzate ${shown} di ${total}.`);
     updateBackButton();
+    return true;
   };
-  const loadRawMaterials = async (quiet = false) => {
+  const loadRawMaterials = async (quiet = false, append = false) => {
+    const lineId = rawMaterialForm.elements.lineId.value,
+      query = rawMaterialForm.elements.query.value.trim(),
+      queryKey = JSON.stringify([lineId, query]);
+    if (append && queryKey !== rawMaterialActiveQuery) return loadRawMaterials(false, false);
+    if (append && rawMaterialLoadingMore) return;
     const token = ++rawMaterialToken,
-      lineId = rawMaterialForm.elements.lineId.value,
-      query = rawMaterialForm.elements.query.value.trim();
-    if (!quiet) rawMaterialStatus.textContent = "Lettura linee prodotto e materie prime in Technics…";
+      page = append ? rawMaterialPage + 1 : 0,
+      paged = Boolean(lineId || query);
+    if (!append) {
+      rawMaterialMore.classList.add("hidden");
+      rawMaterialMore.disabled = false;
+      rawMaterialLoadingMore = false;
+      rawMaterialActiveQuery = null;
+    }
+    if (append) { rawMaterialLoadingMore = true; rawMaterialMore.disabled = true; }
+    if (!quiet && !append) {
+      rawMaterialRows.innerHTML = "";
+      rawMaterialStatus.textContent = "Lettura linee prodotto e materie prime in Technics…";
+    }
     try {
-      const payload = await api(`/api/formulas/raw-materials?lineId=${encodeURIComponent(lineId)}&q=${encodeURIComponent(query)}`, quiet);
+      const payload = await api(`/api/formulas/raw-materials?lineId=${encodeURIComponent(lineId)}&q=${encodeURIComponent(query)}${paged ? `&page=${page}&pageSize=50` : ""}`, quiet);
       if (token !== rawMaterialToken) return;
-      renderRawMaterials(payload.result);
+      if (paged && (!Number.isSafeInteger(payload.result?.totalCount) || payload.result.totalCount < 0 || payload.result.page !== page || payload.result.pageSize !== 50 || typeof payload.result.hasMore !== "boolean" || !Array.isArray(payload.result.rows) || payload.result.rows.length > 50 || payload.result.count !== payload.result.rows.length))
+        throw new Error("Ricerca completa non verificabile: backend da aggiornare.");
+      if (renderRawMaterials(payload.result, append)) {
+        rawMaterialPage = page;
+        rawMaterialActiveQuery = queryKey;
+      }
     } catch (error) {
       if (token !== rawMaterialToken) return;
       rawMaterialStatus.textContent = error.message || "Materie prime non disponibili.";
+    } finally {
+      if (append && token === rawMaterialToken) { rawMaterialLoadingMore = false; rawMaterialMore.disabled = false; }
     }
     scheduleRawMaterials();
   };
   rawMaterialForm.addEventListener("submit", (event) => { event.preventDefault(); clearTimeout(rawMaterialTimer); loadRawMaterials(); });
   rawMaterialForm.elements.lineId.addEventListener("change", () => { clearTimeout(rawMaterialTimer); loadRawMaterials(); });
+  rawMaterialMore.addEventListener("click", () => { clearTimeout(rawMaterialTimer); loadRawMaterials(false, true); });
   rawMaterialRows.addEventListener("click", (event) => {
     const stock = event.target.closest("[data-raw-stock]");
     if (stock) { openInventoryByCode(stock.dataset.rawStock); return; }
@@ -1250,6 +1293,12 @@
       rawMaterialForm.elements.lineId.value = "";
       rawMaterialForm.elements.query.value = "";
       rawMaterialRows.innerHTML = "";
+      rawMaterialPage = 0;
+      rawMaterialTotal = null;
+      rawMaterialActiveQuery = null;
+      rawMaterialLoadingMore = false;
+      rawMaterialMore.classList.add("hidden");
+      rawMaterialMore.disabled = false;
       rawMaterialStatus.textContent = "Seleziona una linea prodotto oppure cerca un codice o una descrizione.";
       backButton.classList.add("hidden");
       window.scrollTo({ top: 0, behavior: "smooth" });
