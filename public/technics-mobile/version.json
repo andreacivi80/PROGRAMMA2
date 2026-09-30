@@ -1,6 +1,6 @@
 {
-  "version": "1.9.419",
-  "build": "customer-inventory-launcher-square-on-public418",
+  "version": "1.9.420",
+  "build": "needle-commitment-on-public419",
   "publishedAt": null,
   "backendRequired": "1.9.408",
   "gatewayRequired": "1.9.200",
@@ -67,6 +67,14 @@
       "perOpBoxes": true,
       "groupScanBoxCount": true,
       "movementInfoOpenAndClosed": true
+    },
+    "needleCommitment": {
+      "backendRequired": "1.9.410",
+      "gatewayRequired": "1.9.202",
+      "readOnly": true,
+      "unknownWhenUnverified": true,
+      "expiryStrictlyLater": true,
+      "physicalPrint": false
     }
   }
 }
