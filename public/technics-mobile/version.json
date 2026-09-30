@@ -1,9 +1,9 @@
 {
-  "version": "1.9.429",
-  "build": "promo-stock-product-split-compact-lots",
+  "version": "1.9.430",
+  "build": "photo-guards-and-honest-print-acceptance",
   "publishedAt": null,
-  "backendRequired": "1.9.414",
-  "gatewayRequired": "1.9.206",
+  "backendRequired": "1.9.415",
+  "gatewayRequired": "1.9.208",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
@@ -27,7 +27,10 @@
     },
     "packingPhotoScope": {
       "moduleItemsAccess": "read-only-target",
-      "photoDraftRender": true
+      "photoDraftRender": true,
+      "gatewayRequired": "1.9.208",
+      "learningPendingDurable": false,
+      "realPhoneQualified": false
     },
     "formulasReadOnly": {
       "backendRequired": "1.9.363",
