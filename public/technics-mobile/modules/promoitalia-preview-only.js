@@ -21,46 +21,73 @@
     if(line||!lines.length)lines.push(line);return lines;
   }
   function rowLabel(value,x,top,w,height,size,bold=false,fill='#173e35'){const lines=wrap(value,w,size),step=size*1.16,start=top+height/2-(lines.length-1)*step/2+size*.34;return `<text x="${x+w/2}" y="${start}" text-anchor="middle" font-family="Arial,sans-serif" font-size="${size}" font-weight="${bold?700:400}" fill="${fill}">${lines.map((line,index)=>`<tspan x="${x+w/2}" dy="${index?step:0}">${xml(line)}</tspan>`).join('')}</text>`}
-  const heads = ['CODICE','ARTICOLO / OV','NECESSARI','GIACENZA','MANCANTI','PEZZI MANCANTI GIÀ PER LA CONSEGNA DEL','PZ MINIMI DA INVIARE AD IRA'];
-  const widths = [270,840,330,420,330,570,388], left=80, tableWidth=3148, rowHeight=110;
-  function stockDetail(stock,item){
-    const uses=new Map();for(const entry of stock.Uses||[]){const id=`${entry.ProductCode}\0${entry.MaterialLot}`,group=uses.get(id)||{code:entry.ProductCode,lot:entry.MaterialLot,pieces:0};group.pieces+=entry.Pieces;uses.set(id,group)}
-    if(!uses.size)return `Lotto confezione ${stock.Lot||'—'} · giacenza ${qty(stock.Quantity)} ${item.Unit}; destinazione non assegnata`;
-    if(uses.size===1){const entry=[...uses.values()][0];return `Prodotto ${entry.code||'non verificato'} · lotto confezione ${entry.lot} · giacenza ${qty(stock.Quantity)} ${item.Unit} (${qty(entry.pieces)} previsti)`}
-    return [`Lotto confezione ${stock.Lot||'—'} · giacenza ${qty(stock.Quantity)} ${item.Unit}`,...[...uses.values()].map(entry=>`Prodotto ${entry.code||'non verificato'} · lotto confezione ${entry.lot} · ${qty(entry.pieces)} ${item.Unit} previsti`)].join(' · ');
+  const svgPages=(()=>{
+const formatStockRows429=(()=>{
+const qty=value=>Number(value).toLocaleString('it-IT',{maximumFractionDigits:3});
+// One detail line per physical material lot, not one per warehouse position.
+// 'prev.' is a document projection, never a write or an ERP assignment.
+function formatStockRows429(item){
+ const lines=(item.StockRows||[]).map(stock=>{
+  const uses=stock.ProductUses||[];
+  if(uses.length===1){
+   const use=uses[0];
+   return `${use.ProductCode} · lotto ${stock.Lot||'—'} · ${qty(use.Pieces)} ${item.Unit}${use.ProjectedPieces>0?' (prev.)':''}${stock.FreePieces>0?` · ${qty(stock.FreePieces)} ${item.Unit} liberi`:''}`;
   }
-  function svgPages(payload) {
-    if (payload?.documentType !== 'PACKAGING_PROMOITALIA' || !Array.isArray(payload.rows) || !payload.rows.length) throw Error('Documento non valido.');
-    const lines = payload.rows.flatMap((item,itemIndex) => {
-      const n=Math.max(1,item.Deliveries.length,item.StockRows.length);
-      return Array.from({length:n},(_,lineIndex)=>({item,itemIndex,lineIndex,delivery:item.Deliveries[lineIndex],stock:item.StockRows[lineIndex]}));
-    });
-    const valuesFor=(line,first)=>{const {item,delivery,stock}=line;return [first?item.Code:'',[
-      first?item.Description:'',delivery?`${date(delivery.Date)} · OV ${delivery.OV.join(', ')}`:'',
-      ].filter(Boolean).join(' · '),first?`${qty(item.Required)} ${item.Unit}`:'',stock?stockDetail(stock,item):(first?`${qty(item.Stock)} ${item.Unit}`:''),first?`${qty(item.Missing)} ${item.Unit}`:'',first?(item.FirstShortageDate?date(item.FirstShortageDate):'—'):'',first?`${qty(item.FinalQuantity)} ${item.Unit}`:'']};
-    const prepared=lines.map(line=>{const values=valuesFor(line,true);const maxLines=Math.max(...values.map((value,i)=>wrap(value,widths[i]-6,i===1||i===4?20:24).length));return {...line,height:Math.max(rowHeight,Math.ceil(maxLines*30+26))}});
-    const pageLines=[];let group=[],used=0;
-    for(const line of prepared){if(group.length&&used+line.height>1980){pageLines.push(group);group=[];used=0}group.push(line);used+=line.height}
-    if(group.length)pageLines.push(group);
-    const count=pageLines.length;
-    if (count>64) throw Error('Documento troppo lungo per l’anteprima.');
-    return Array.from({length:count},(_,pageIndex) => {
-      const out=['<svg xmlns="http://www.w3.org/2000/svg" width="297mm" height="210mm" viewBox="0 0 3508 2480">','<rect width="3508" height="2480" fill="white"/>',label('Pack list Promoitalia',left,126,tableWidth,61,true),label(fullDay(payload.documentDate),left,189,tableWidth,33,true)];
-      let y=250,x=left;
-      heads.forEach((name,i)=>{out.push(`<rect x="${x}" y="${y}" width="${widths[i]}" height="72" fill="#174f45"/>`,rowLabel(name,x,y,widths[i],72,18,true,'#fff'));x+=widths[i]});
-      y+=72;
-      for (const [index,line] of pageLines[pageIndex].entries()) {
-        const first=line.lineIndex===0 || index===0;
-        out.push(`<rect x="${left}" y="${y}" width="${tableWidth}" height="${line.height}" fill="${line.itemIndex%2?'#f6faf8':'#fff'}" stroke="#c7d7cf" stroke-width="2"/>`);
-        const values=valuesFor(line,first);
-        x=left;
-        values.forEach((value,i)=>{out.push(rowLabel(value,x+3,y,widths[i]-6,line.height,i===1||i===4?20:24,(i===0||i===6)&&first));x+=widths[i];if(i<6)out.push(`<line x1="${x}" y1="${y}" x2="${x}" y2="${y+line.height}" stroke="#c7d7cf" stroke-width="2"/>`)});
-        y+=line.height;
-      }
-      out.push(label(`Pagina ${pageIndex+1} di ${count}`,left,2390,tableWidth,23),'</svg>');
-      return out.join('');
-    });
+  if(uses.length>1){
+   const products=uses.map(use=>`${use.ProductCode} ${qty(use.Pieces)}`).join(' / ');
+   return `${products} · lotto ${stock.Lot||'—'}${uses.some(use=>use.ProjectedPieces>0)?' (prev.)':''}${stock.FreePieces>0?` · ${qty(stock.FreePieces)} liberi`:''}`;
   }
+  return `Lotto ${stock.Lot||'—'} · ${qty(stock.Quantity)} ${item.Unit} liberi`;
+ });
+ if(item.UnidentifiedDemandPieces>0)lines.push(`Prodotto da verificare: ${qty(item.UnidentifiedDemandPieces)} ${item.Unit} richiesti`);
+ return lines;
+}
+
+return formatStockRows429;
+})();
+
+// Seven-column compact sheet; destination evidence never invents a stock-lot link.
+const xml=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
+const qty=v=>Number(v).toLocaleString('it-IT',{maximumFractionDigits:3});
+const date=v=>/^\d{4}-\d{2}-\d{2}$/.test(v)?`${v.slice(8)}/${v.slice(5,7)}/${v.slice(0,4)}`:'—';
+const widths=[230,720,240,1040,240,430,388],left=110,width=3288;
+const titles=['Codice','Articolo / OV','Necessari','Giacenza','Mancanti','Pezzi mancanti già per la consegna del','Pz minimi da inviare ad IRA'];
+function wrap(value,available,size=25){
+ const limit=Math.max(8,Math.floor(available/(size*.57))),words=String(value).split(/\s+/),lines=[];let line='';
+ for(const word of words){if(word.length>limit){if(line){lines.push(line);line=''}for(let i=0;i<word.length;i+=limit)lines.push(word.slice(i,i+limit));continue}if((line+' '+word).trim().length>limit){lines.push(line);line=word}else line=(line+' '+word).trim()}
+ if(line)lines.push(line);return lines.length?lines:[''];
+}
+function cells(item){
+ const deliveries=item.Deliveries.map(d=>`${date(d.Date)} · ${qty(d.Required)} ${item.Unit} · OV ${d.OV.join(', ')}`);
+ const stocks=formatStockRows429(item);
+ return [
+ [{value:item.Code,bold:true,noWrap:true}],
+ [{value:item.Description},...deliveries.map(value=>({value,size:23,fill:'#315d78'}))],
+ [{value:`${qty(item.Required)} ${item.Unit}`,noWrap:true}],
+ [{value:`${qty(item.Stock)} ${item.Unit}`,noWrap:true},...stocks.map(value=>({value,size:23,fill:'#315d78'}))],
+ [{value:`${qty(item.Missing)} ${item.Unit}`,noWrap:true,bold:true,fill:item.Missing>0?'#a82426':'#173e35'}],
+ [{value:date(item.FirstShortageDate),noWrap:true,bold:item.Missing>0}],
+ [{value:`${qty(item.FinalQuantity)} ${item.Unit}`,noWrap:true,bold:true}]
+ ].map((entries,col)=>entries.flatMap(entry=>{const size=entry.size||25;return entry.noWrap?[{...entry,size:Math.min(size,(widths[col]-30)/Math.max(1,String(entry.value).length)/.6)}]:wrap(entry.value,widths[col]-30,size).map(value=>({...entry,value,size}))}));
+}
+function svgPages(payload){
+ if(payload?.documentType!=='PACKAGING_PROMOITALIA'||!Array.isArray(payload.rows)||!payload.rows.length)throw Error('INVALID_DOCUMENT');
+ const rows=payload.rows.map(item=>{const content=cells(item),height=Math.max(90,24+Math.max(...content.map(c=>c.reduce((n,e)=>n+e.size*1.35+7,0))));if(height>1950)throw Error('ARTICLE_PAGE_OVERFLOW');return{item,content,height}});
+ const pages=[];let page=[],used=0;for(const row of rows){if(used+row.height>1980){pages.push(page);page=[];used=0}page.push(row);used+=row.height}if(page.length)pages.push(page);if(pages.length>64)throw Error('PAGE_LIMIT');
+ const text=(value,x,y,size=25,bold=false,fill='#173e35',anchor='start')=>`<text x="${x}" y="${y}" font-family="Arial,sans-serif" font-size="${size}" font-weight="${bold?700:400}" fill="${fill}" text-anchor="${anchor}">${xml(value)}</text>`;
+ const fullDay=new Intl.DateTimeFormat('it-IT',{timeZone:'Europe/Rome',weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date(payload.documentDate+'T12:00:00Z'));
+ return pages.map((rows,index)=>{
+  const out=['<svg xmlns="http://www.w3.org/2000/svg" width="297mm" height="210mm" viewBox="0 0 3508 2480">','<rect width="3508" height="2480" fill="white"/>',text('Pack list Promoitalia',left,140,50,true),text(fullDay,left+width,140,30,true,'#173e35','end'),`<line x1="${left}" y1="185" x2="${left+width}" y2="185" stroke="#173e35" stroke-width="6"/>`];
+  let x=left,y=240;titles.forEach((title,i)=>{out.push(`<rect x="${x}" y="${y}" width="${widths[i]}" height="72" fill="#e8f0eb" stroke="#dde5df" stroke-width="3"/>`);const lines=wrap(title,widths[i]-18,21);lines.forEach((line,j)=>out.push(text(line,i<2?x+12:x+widths[i]/2,y+30+j*24,21,true,'#173e35',i<2?'start':'middle')));x+=widths[i]});y+=72;
+  for(const row of rows){x=left;for(let col=0;col<7;col++){out.push(`<rect data-code="${xml(row.item.Code)}" data-column="${col}" x="${x}" y="${y}" width="${widths[col]}" height="${row.height}" fill="white" stroke="#dde5df" stroke-width="3"/>`);let baseline=y+36;for(const entry of row.content[col]){out.push(text(entry.value,col<2?x+12:x+widths[col]/2,baseline,entry.size,entry.bold,entry.fill||'#173e35',col<2?'start':'middle'));baseline+=entry.size*1.35+7}x+=widths[col]}y+=row.height}
+  out.push(text('Pezzi per prodotto: utilizzo previsto. prev. = lotto materiale da confermare.',left,2355,23,false,'#315d78'),text(`Pagina ${index+1} di ${pages.length}`,left+width,2390,23,false,'#173e35','end'),'</svg>');return out.join('');
+ });
+}
+
+function renderPromoitaliaPreviewSvgPages({payload}={},{maxPages=64}={}){const svg=svgPages(payload);if(svg.length>maxPages)throw new Error("PAGE_LIMIT");return{pages:svg.map(body=>({body:Buffer.from(body),contentType:"image/svg+xml; charset=utf-8",width:3508,height:2480,vector:true}))}}
+
+return svgPages;
+})();
   const style=document.createElement('style');style.textContent=`
     .promo-preview-nav{background:#fff8eb!important;color:#533821!important;border-color:#dbc8a7!important}
     .promo-sim-shade{position:fixed;z-index:2147482480;inset:0;display:none;background:#0d211ddd;padding:8px}.promo-sim-shade.open{display:flex}

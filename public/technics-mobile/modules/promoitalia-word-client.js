@@ -20,35 +20,113 @@
     return `${values.year}-${values.month}-${values.day}`;
   };
 
-  function buildSnapshot(items, selected, documentDate = romeDay()) {
-    if (!DATE.test(documentDate) || !Array.isArray(items) || !(selected instanceof Set) || selected.size < 1 || selected.size > 250) throw Error('Selezione Word non valida.');
-    const available = new Map(items.map(item => [key(item), item]));
-    const rows = [...selected].map(itemKey => {
-      const item = available.get(itemKey);
-      if (!item || !clean(item.baseCode) || !clean(item.unit)) throw Error('Selezione non presente nel piano Technics.');
-      const due = (item.schedule || []).filter(entry => DATE.test(clean(entry.requestedDate)) && entry.requestedDate >= documentDate);
-      if (!due.length) throw Error(`Nessuna consegna futura per ${item.baseCode}.`);
-      if (!due.every(entry => validNumber(entry.requiredQuantity) && entry.requiredQuantity > 0 && Array.isArray(entry.ovNumbers) && entry.ovNumbers.length)) throw Error('Consegna OV non valida.');
-      const required = due.reduce((sum, entry) => sum + entry.requiredQuantity, 0);
-      const stock = item.onHandQuantity;
-      if (!validNumber(required) || !validNumber(stock)) throw Error('Quantità Technics non valida.');
-      const missing = Math.max(0, required - stock), margin = stock - required;
-      const proposal = clean(item.unit).toUpperCase() === 'PZ' ? (margin > 1000 ? 0 : margin >= 0 ? 1000 : roundUpTwoSignificantPieces(missing) + 1000) : missing;
-      let remaining=stock,firstShortageDate='';for(const entry of due){const consumed=Math.min(remaining,entry.requiredQuantity);remaining-=consumed;if(!firstShortageDate&&entry.requiredQuantity>consumed)firstShortageDate=entry.requestedDate}
-      const deliveries = due.map(entry => ({ Date: entry.requestedDate, OV: [...new Set(entry.ovNumbers.map(clean).filter(Boolean))], Required: entry.requiredQuantity }));
-      if (deliveries.some(entry => !entry.OV.length || entry.OV.some(ov => /^OP/i.test(ov)))) throw Error('Riferimento OV non valido.');
-      const destinations=(item.destinations||[]).filter(entry=>DATE.test(clean(entry.requestedDate))&&entry.requestedDate>=documentDate&&validNumber(entry.requiredPieces)&&entry.requiredPieces>0).map(entry=>({
-        ProductCode:clean(entry.productCode),ProductLot:clean(entry.productLot),MaterialLot:clean(entry.materialLot),Pieces:entry.requiredPieces,
-        AllocationVerified:entry.allocationVerified===true,StockRowId:entry.stockRowId==null?null:Number(entry.stockRowId),Date:entry.requestedDate,
-      }));
-      const stockRows=(item.stockRows||[]).filter(entry=>validNumber(entry.quantity)&&entry.quantity>0).map(entry=>({
-        Lot:clean(entry.lot),Quantity:entry.quantity,
-        Uses:destinations.filter(d=>d.AllocationVerified&&d.StockRowId===Number(entry.stockRowId)&&d.MaterialLot===clean(entry.lot)).map(d=>({ProductCode:d.ProductCode,ProductLot:d.ProductLot,MaterialLot:d.MaterialLot,Pieces:d.Pieces})),
-      }));
-      return { Code:clean(item.baseCode), Description:clean(item.descriptions?.[0]), Unit:clean(item.unit), Required:required, Stock:stock, Missing:missing,
-        FirstShortageDate:firstShortageDate,FinalQuantity:proposal,StockRows:stockRows,Destinations:destinations,Deliveries:deliveries };
-    });
-    return { documentType: 'PACKAGING_PROMOITALIA', documentDate, client: 'PROMOITALIA GROUP SPA', rows };
+  const splitStockByKnownProduct=(()=>{
+// Stock breakdown for a document preview. Linked rows prove an ERP lot reference,
+// but r.QtaReale is demand, not a physical reservation. All numbers here are
+// explicitly projected pieces, capped by actual positive stock per row/lot.
+const clean=value=>String(value??'').trim();
+const valid=value=>typeof value==='number'&&Number.isFinite(value)&&value>=0;
+const bad=code=>Object.assign(new Error(code),{code,status:503});
+const almost=(a,b)=>Math.abs(a-b)<1e-6;
+
+function splitStockByKnownProduct(stockRows,destinations,stockTotal){
+ if(!Array.isArray(stockRows)||!Array.isArray(destinations)||!valid(stockTotal))throw bad('INVALID_STOCK_SPLIT_INPUT');
+ const rows=[],byId=new Map();let sum=0;
+ for(const source of stockRows){
+  if(!valid(source.Quantity)||source.Quantity<=0)continue;
+  const id=Number(source.StockRowId),lot=clean(source.Lot);
+  if(!Number.isSafeInteger(id)||id<=0||byId.has(id))throw bad('DUPLICATE_OR_INVALID_STOCK_ROW');
+  const row={id,lot,code:clean(source.Code),quantity:source.Quantity,remaining:source.Quantity,uses:new Map()};
+  rows.push(row);byId.set(id,row);sum+=row.quantity;
+ }
+ if(!almost(sum,stockTotal))throw bad('STOCK_DETAIL_TOTAL_MISMATCH');
+ const unique=[],seenMaterial=new Map();
+ for(const d of destinations){
+  if(!valid(d.Pieces)||d.Pieces<=0)continue;
+  const id=Number(d.MaterialRowId),code=clean(d.ProductCode);
+  if(Number.isSafeInteger(id)&&id>0){
+   const fingerprint=JSON.stringify([code,clean(d.MaterialLot),d.Pieces,Boolean(d.AllocationVerified),d.StockRowId]);
+   if(seenMaterial.has(id)){if(seenMaterial.get(id)!==fingerprint)throw bad('CONFLICTING_MATERIAL_ROW');continue}
+   seenMaterial.set(id,fingerprint);
+  }
+  unique.push({...d,ProductCode:code,MaterialLot:clean(d.MaterialLot)});
+ }
+ unique.sort((a,b)=>clean(a.Date).localeCompare(clean(b.Date))||Number(a.MaterialRowId||0)-Number(b.MaterialRowId||0)||a.ProductCode.localeCompare(b.ProductCode));
+ const demand=new Map(),totalDemand=new Map(),order=[];let unidentifiedDemandPieces=0;
+ for(const d of unique){if(!d.ProductCode){unidentifiedDemandPieces+=d.Pieces;continue}if(!demand.has(d.ProductCode)){demand.set(d.ProductCode,0);totalDemand.set(d.ProductCode,0);order.push(d.ProductCode)}demand.set(d.ProductCode,demand.get(d.ProductCode)+d.Pieces);totalDemand.set(d.ProductCode,totalDemand.get(d.ProductCode)+d.Pieces)}
+ const add=(row,code,pieces,kind)=>{
+  if(pieces<=0)return;
+  const use=row.uses.get(code)||{ProductCode:code,Pieces:0,LinkedPieces:0,ProjectedPieces:0};
+  use.Pieces+=pieces;use[kind]+=pieces;row.uses.set(code,use);row.remaining-=pieces;demand.set(code,demand.get(code)-pieces);
+ };
+ // First honor exact ERP material-row → stock-row + lot evidence.
+ for(const d of unique){
+  if(!d.ProductCode||d.AllocationVerified!==true||!d.MaterialLot)continue;
+  const row=byId.get(Number(d.StockRowId));
+  if(!row||row.lot!==d.MaterialLot)continue;
+  add(row,d.ProductCode,Math.min(d.Pieces,row.remaining,demand.get(d.ProductCode)), 'LinkedPieces');
+ }
+ // Remaining product demand is known through OV→OP, but its material lot is not.
+ // Offer a deterministic, explicitly unverified split; never assert it is booked.
+ for(const row of rows)for(const code of order){
+  const pieces=Math.min(row.remaining,demand.get(code));
+  add(row,code,pieces,'ProjectedPieces');
+ }
+ const lots=new Map();
+ for(const row of rows){
+  const key=row.code+'\0'+row.lot;
+  if(!lots.has(key))lots.set(key,{Code:row.code,Lot:row.lot,Quantity:0,ProductUses:[],FreePieces:0,SourceStockRowIds:[]});
+  const group=lots.get(key);group.Quantity+=row.quantity;group.FreePieces+=row.remaining;group.SourceStockRowIds.push(row.id);
+  for(const use of row.uses.values()){
+   let combined=group.ProductUses.find(x=>x.ProductCode===use.ProductCode);
+   if(!combined){combined={ProductCode:use.ProductCode,Pieces:0,LinkedPieces:0,ProjectedPieces:0};group.ProductUses.push(combined)}
+   combined.Pieces+=use.Pieces;combined.LinkedPieces+=use.LinkedPieces;combined.ProjectedPieces+=use.ProjectedPieces;
+  }
+ }
+ const result=[...lots.values()];
+ for(const lot of result){
+  if(!almost(lot.ProductUses.reduce((n,x)=>n+x.Pieces,0)+lot.FreePieces,lot.Quantity))throw bad('STOCK_SPLIT_OVERALLOCATION');
+ }
+ const products=order.map(code=>{const pieces=result.flatMap(lot=>lot.ProductUses).filter(use=>use.ProductCode===code).reduce((n,use)=>n+use.Pieces,0),uncovered=demand.get(code);if(!almost(pieces+uncovered,totalDemand.get(code)))throw bad('PRODUCT_DEMAND_NOT_CONSERVED');return{ProductCode:code,DemandPieces:totalDemand.get(code),ProjectedStockPieces:pieces,UncoveredPieces:uncovered}});
+ return{lots:result,products,unidentifiedDemandPieces};
+}
+
+return splitStockByKnownProduct;})();
+  const buildPromoitaliaSnapshot=(()=>{
+// Server counterpart of the approved424 quantity rule; compare with browser oracle in tests.
+const clean=v=>String(v??'').trim(),valid=v=>typeof v==='number'&&Number.isFinite(v)&&v>=0;
+const bad=(code,status=400)=>Object.assign(new Error(code),{code,status});
+function roundUpTwoSignificantPieces(value){const pieces=Math.ceil(value);if(pieces<=0)return 0;const step=10**Math.max(0,Math.floor(Math.log10(pieces))-1);return Math.ceil(pieces/step)*step}
+function buildPromoitaliaSnapshot(plan,selection,documentDate){
+ if(plan?.client?.id!==8785||plan.dataAuthority!=='Technics'||plan.readOnly!==true||!Array.isArray(plan.items))throw bad('UNVERIFIED_SOURCE',503);
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(documentDate)||!Array.isArray(selection)||!selection.length||selection.length>250)throw bad('INVALID_SELECTION');
+ const available=new Map(plan.items.map(item=>[clean(item.baseCode)+'\0'+clean(item.unit).toUpperCase(),item])),seen=new Set();
+ const rows=selection.map(chosen=>{const key=clean(chosen?.baseCode)+'\0'+clean(chosen?.unit).toUpperCase();if(seen.has(key))throw bad('DUPLICATE_SELECTION');seen.add(key);if(chosen?.finalQuantity!==undefined)throw bad('UNSUPPORTED_OVERRIDE');const item=available.get(key);if(!item)throw bad('STALE_SELECTION',409);
+  const due=(item.schedule||[]).filter(e=>/^\d{4}-\d{2}-\d{2}$/.test(clean(e.requestedDate))&&e.requestedDate>=documentDate);
+  if(!due.length)throw bad('NO_FUTURE_DELIVERY');if(!due.every(e=>valid(e.requiredQuantity)&&e.requiredQuantity>0&&Array.isArray(e.ovNumbers)&&e.ovNumbers.length))throw bad('INVALID_DELIVERY');
+  const required=due.reduce((n,e)=>n+e.requiredQuantity,0),stock=item.onHandQuantity;if(!valid(required)||!valid(stock))throw bad('INVALID_QUANTITY',503);
+  const missing=Math.max(0,required-stock),margin=stock-required,proposal=clean(item.unit).toUpperCase()==='PZ'?(margin>1000?0:margin>=0?1000:roundUpTwoSignificantPieces(missing)+1000):missing;
+  let remaining=stock,firstShortageDate='';for(const entry of due){const consumed=Math.min(remaining,entry.requiredQuantity);remaining-=consumed;if(!firstShortageDate&&entry.requiredQuantity>consumed)firstShortageDate=entry.requestedDate}
+  const deliveries=due.map(e=>({Date:e.requestedDate,OV:[...new Set(e.ovNumbers.map(clean).filter(Boolean))],Required:e.requiredQuantity}));if(deliveries.some(e=>!e.OV.length||e.OV.some(ov=>/^OP/i.test(ov))))throw bad('INVALID_OV');
+  const destinations=(item.destinations||[]).filter(e=>/^\d{4}-\d{2}-\d{2}$/.test(clean(e.requestedDate))&&e.requestedDate>=documentDate&&valid(e.requiredPieces)&&e.requiredPieces>0).map(e=>({
+    MaterialRowId:e.materialRowId==null?null:Number(e.materialRowId),ProductCode:clean(e.productCode),ProductLot:clean(e.productLot),MaterialLot:clean(e.materialLot),Pieces:e.requiredPieces,
+    AllocationVerified:e.allocationVerified===true,StockRowId:e.stockRowId==null?null:Number(e.stockRowId),Date:e.requestedDate,
+  }));
+  const stockRows=(item.stockRows||[]).filter(e=>valid(e.quantity)&&e.quantity>0).map(e=>({
+    Code:clean(e.code),Lot:clean(e.lot),Quantity:e.quantity,StockRowId:Number(e.stockRowId),
+  }));
+  const split=splitStockByKnownProduct(stockRows,destinations,stock);
+  return{Code:clean(item.baseCode),Description:clean(item.descriptions?.[0]),Unit:clean(item.unit),Required:required,Stock:stock,Missing:missing,
+    FirstShortageDate:firstShortageDate,FinalQuantity:proposal,StockRows:split.lots,ProductDemand:split.products,
+    UnidentifiedDemandPieces:split.unidentifiedDemandPieces,Destinations:destinations,Deliveries:deliveries};
+ });return{documentType:'PACKAGING_PROMOITALIA',documentDate,client:'PROMOITALIA GROUP SPA',rows};
+}
+
+return buildPromoitaliaSnapshot;})();
+  function buildSnapshot(items,selected,documentDate=romeDay()) {
+    if(!Array.isArray(items)||!(selected instanceof Set)||!selected.size)throw Error('Selezione non valida.');
+    const selection=[...selected].map(key=>{const [baseCode,unit]=key.split('\u0000');return{baseCode,unit}});
+    return buildPromoitaliaSnapshot({client:{id:8785},dataAuthority:'Technics',readOnly:true,items},selection,documentDate);
   }
 
   const field = (value, bold = false, size = 19) => `<w:r><w:rPr><w:rFonts w:ascii="Aptos" w:hAnsi="Aptos"/><w:sz w:val="${size}"/>${bold ? '<w:b/>' : ''}</w:rPr><w:t xml:space="preserve">${xml(value)}</w:t></w:r>`;
@@ -66,16 +144,18 @@
       const values = [item.Code, item.Description, `${qty(item.Required)} ${item.Unit}`, `${qty(item.Stock)} ${item.Unit}`, `${qty(item.Missing)} ${item.Unit}`, item.FirstShortageDate?date(item.FirstShortageDate):'—', `${qty(item.FinalQuantity)} ${item.Unit}`];
       const main = row(values.map((value, column) => cell(value, widths[column], { fill, bold: column === 0 || column === 6, align: 'center' })));
       const stock = (item.StockRows || []).flatMap(entry => {
-        const uses=new Map();for(const use of entry.Uses||[]){const id=`${use.ProductCode}\0${use.MaterialLot}`,group=uses.get(id)||{code:use.ProductCode,lot:use.MaterialLot,pieces:0};group.pieces+=use.Pieces;uses.set(id,group)}
-        const lines=!uses.size?[`Lotto confezione ${entry.Lot||'—'} · giacenza ${qty(entry.Quantity)} ${item.Unit}; destinazione non assegnata`]:uses.size===1?(()=>{const use=[...uses.values()][0];return [`Prodotto ${use.code||'non verificato'} · lotto confezione ${use.lot} · giacenza ${qty(entry.Quantity)} ${item.Unit} (${qty(use.pieces)} previsti)`]})():[`Lotto confezione ${entry.Lot||'—'} · giacenza ${qty(entry.Quantity)} ${item.Unit}`,...[...uses.values()].map(use=>`Prodotto ${use.code||'non verificato'} · lotto confezione ${use.lot} · ${qty(use.pieces)} ${item.Unit} previsti`)];
-        return lines.map(line=>row([cell(line,total,{span:7,fill,size:17})]));
+        const parts=(entry.ProductUses||[]).map(use=>{const evidence=use.LinkedPieces&&use.ProjectedPieces?` (${qty(use.LinkedPieces)} collegati + ${qty(use.ProjectedPieces)} previsti)`:use.LinkedPieces?' (collegati)':' (previsti)';return `${use.ProductCode||'Prodotto da verificare'} · lotto ${entry.Lot||'—'} · ${qty(use.Pieces)} ${item.Unit}${evidence}`});
+        if(entry.FreePieces>0)parts.push(`${qty(entry.FreePieces)} ${item.Unit} liberi`);
+        return [row([cell(parts.join('; ')||`Lotto ${entry.Lot||'—'} · ${qty(entry.Quantity)} ${item.Unit} liberi`,total,{span:7,fill,size:17})])];
       }).join('');
+      const productDemand=(item.ProductDemand||[]).filter(entry=>entry.UncoveredPieces>0).map(entry=>row([cell(`${entry.ProductCode} · domanda ${qty(entry.DemandPieces)} ${item.Unit} · da ricevere ${qty(entry.UncoveredPieces)} ${item.Unit}`,total,{span:7,fill,size:17})])).join('');
+      const stockNote=row([cell('Previsti = ripartizione prevista; lotto materiale da confermare.',total,{span:7,fill,size:16})]);
       const deliveries = item.Deliveries.map(entry => {
         if (!DATE.test(entry.Date) || entry.Date < payload.documentDate || !validNumber(entry.Required) || !entry.Required || !Array.isArray(entry.OV) || !entry.OV.length) throw Error('Consegna non valida.');
         return row([cell(`${date(entry.Date)}  ·  OV ${entry.OV.join(', ')}  ·  ${qty(entry.Required)} ${item.Unit}`, total, { span: 7, fill, size: 17 })]);
       }).join('');
       if (Math.abs(item.Deliveries.reduce((sum, entry) => sum + entry.Required, 0) - item.Required) > 0.001) throw Error('Totale consegne non coerente.');
-      return main + stock + deliveries;
+      return main + stock + productDemand + stockNote + deliveries;
     }).join('');
     const table = `<w:tbl><w:tblPr><w:tblW w:w="${total}" w:type="dxa"/><w:jc w:val="center"/><w:tblLayout w:type="fixed"/><w:tblBorders><w:top w:val="single" w:sz="4" w:color="D9D9D9"/><w:bottom w:val="single" w:sz="4" w:color="D9D9D9"/><w:insideH w:val="single" w:sz="4" w:color="D9D9D9"/><w:insideV w:val="single" w:sz="4" w:color="D9D9D9"/></w:tblBorders></w:tblPr><w:tblGrid>${widths.map(width => `<w:gridCol w:w="${width}"/>`).join('')}</w:tblGrid>${header}${entries}</w:tbl>`;
     return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${paragraph(label, { bold: true, size: 30, after: 100 })}${paragraph(payload.client, { bold: true, size: 20, after: 180 })}${table}<w:sectPr><w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/><w:pgMar w:top="800" w:right="840" w:bottom="800" w:left="840" w:header="0" w:footer="0"/></w:sectPr></w:body></w:document>`;

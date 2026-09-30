@@ -1,8 +1,8 @@
 {
-  "version": "1.9.428",
-  "build": "promo-future-shortage-and-verified-destination",
+  "version": "1.9.429",
+  "build": "promo-stock-product-split-compact-lots",
   "publishedAt": null,
-  "backendRequired": "1.9.413",
+  "backendRequired": "1.9.414",
   "gatewayRequired": "1.9.206",
   "capabilities": {
     "movementHistoryAll": {
@@ -56,7 +56,7 @@
       "physicalOutputConfirmed": false
     },
     "packagingPromoitalia": {
-      "backendRequired": "1.9.413",
+      "backendRequired": "1.9.414",
       "gatewayRequired": "1.9.206",
       "supplierId": 8785,
       "mode": "read-only",
