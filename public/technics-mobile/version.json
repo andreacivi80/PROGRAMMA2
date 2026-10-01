@@ -1,8 +1,8 @@
 {
-  "version": "1.9.432",
-  "build": "formula-documents-standby416-alignment",
+  "version": "1.9.433",
+  "build": "packing-picked-quantity-handoff",
   "publishedAt": null,
-  "backendRequired": "1.9.416",
+  "backendRequired": "1.9.417",
   "gatewayRequired": "1.9.209",
   "capabilities": {
     "movementHistoryAll": {
@@ -100,7 +100,13 @@
       "completeCount": true,
       "globalSearch": true,
       "readOnly": true
+    },
+    "packingPickingQuantities": {
+      "backendRequired": "1.9.417",
+      "quantitySource": "server-confirmed-picking-handoff",
+      "unknownPreserved": true,
+      "lotLayoutBindingPreserved": true
     }
   },
-  "standbyRequired": "1.9.416"
+  "standbyRequired": "1.9.417"
 }
