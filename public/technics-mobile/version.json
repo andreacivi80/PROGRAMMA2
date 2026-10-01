@@ -1,9 +1,9 @@
 {
-  "version": "1.9.433",
-  "build": "packing-picked-quantity-handoff",
+  "version": "1.9.434",
+  "build": "formula-documents-pdf-byte-restoration",
   "publishedAt": null,
-  "backendRequired": "1.9.417",
-  "gatewayRequired": "1.9.209",
+  "backendRequired": "1.9.418",
+  "gatewayRequired": "1.9.212",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
@@ -108,5 +108,5 @@
       "lotLayoutBindingPreserved": true
     }
   },
-  "standbyRequired": "1.9.417"
+  "standbyRequired": "1.9.418"
 }
