@@ -1,9 +1,9 @@
 {
-  "version": "1.9.436",
-  "build": "needle-real-commitment-not-recipe",
+  "version": "1.9.437",
+  "build": "legacy-print-frozen-preview-persistent-receipt",
   "publishedAt": null,
-  "backendRequired": "1.9.419",
-  "gatewayRequired": "1.9.214",
+  "backendRequired": "1.9.420",
+  "gatewayRequired": "1.9.215",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
@@ -108,5 +108,5 @@
       "lotLayoutBindingPreserved": true
     }
   },
-  "standbyRequired": "1.9.418"
+  "standbyRequired": "1.9.420"
 }
