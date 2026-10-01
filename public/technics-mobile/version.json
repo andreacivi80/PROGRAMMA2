@@ -1,9 +1,9 @@
 {
-  "version": "1.9.434",
-  "build": "formula-documents-pdf-byte-restoration",
+  "version": "1.9.435",
+  "build": "customer-read-fallback-trusted-node-clock",
   "publishedAt": null,
   "backendRequired": "1.9.418",
-  "gatewayRequired": "1.9.212",
+  "gatewayRequired": "1.9.213",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
