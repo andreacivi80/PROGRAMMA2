@@ -1,9 +1,9 @@
 {
-  "version": "1.9.435",
-  "build": "customer-read-fallback-trusted-node-clock",
+  "version": "1.9.436",
+  "build": "needle-real-commitment-not-recipe",
   "publishedAt": null,
-  "backendRequired": "1.9.418",
-  "gatewayRequired": "1.9.213",
+  "backendRequired": "1.9.419",
+  "gatewayRequired": "1.9.214",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
