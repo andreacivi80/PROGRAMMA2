@@ -1,9 +1,9 @@
 {
-  "version": "1.9.437",
-  "build": "legacy-print-frozen-preview-persistent-receipt",
+  "version": "1.9.438",
+  "build": "sales-expiry-frozen-print-persistent-receipt",
   "publishedAt": null,
-  "backendRequired": "1.9.420",
-  "gatewayRequired": "1.9.215",
+  "backendRequired": "1.9.421",
+  "gatewayRequired": "1.9.216",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
@@ -108,5 +108,5 @@
       "lotLayoutBindingPreserved": true
     }
   },
-  "standbyRequired": "1.9.420"
+  "standbyRequired": "1.9.421"
 }

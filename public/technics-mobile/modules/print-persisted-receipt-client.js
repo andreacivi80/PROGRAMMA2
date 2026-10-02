@@ -5,7 +5,7 @@ const GUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]
 const PRINT_ID=/^[a-f0-9]{32}$/;
 const HASH=/^[a-f0-9]{64}$/;
 const NODE='technics-utente38-secondary';
-const PRINT_ROUTES=new Set(['/api/inventory/committed/print','/api/inventory/item-optimization/print']);
+const PRINT_ROUTES=new Set(['/api/inventory/committed/print','/api/inventory/item-optimization/print','/api/sales/schedule/print','/api/inventory/expiry/print']);
 const TRACE=[['X-Technics-Request-Id','requestId'],['X-Technics-Node','nodeId'],['X-Technics-Node-Role','nodeRole'],['X-Technics-Version','version'],['X-Technics-Lease-Epoch','leaseEpoch'],['X-Technics-Server-Time','serverTime']];
 const fail=()=>{throw Object.assign(new Error('Ricevuta stampa non verificabile; nessun nuovo invio automatico.'),{code:'PRINT_RECEIPT_CONTRACT_INVALID'});};
 const parse=value=>{try{const p=JSON.parse(value);if(!p||typeof p!=='object'||Array.isArray(p))fail();return p;}catch{fail();}};
@@ -16,16 +16,19 @@ function trace(payload,headers,versions,expectedId=null){
 function contextFor(url,options,approved){
  const method=String(options.method||'GET').toUpperCase(),terminal=method==='GET'&&url.pathname==='/api/packing/print-status';
  if(!approved||!PRINT_ROUTES.has(approved.printRoute)||!GUID.test(approved.operationId||'')||!['corridor','warehouse'].includes(approved.printerTarget)||!HASH.test(approved.snapshotHash||'')||!/^[A-Za-z0-9_-]{8,160}$/.test(approved.previewId||''))fail();
- const expected=Object.freeze({...approved});
+ const family={'/api/sales/schedule/print':'SALES_SCHEDULE','/api/inventory/expiry/print':'EXPIRY'}[approved.printRoute];
+  if(family && (approved.documentType!==family || !/^[A-Za-z0-9_-]{24}$/.test(approved.previewId)))fail();
+  const expected=Object.freeze({...approved});
  if(terminal){if(!PRINT_ID.test(expected.printId||'')||url.searchParams.get('id')!==expected.printId)fail();}
  else{
   if(method!=='POST'||url.pathname!==expected.printRoute)fail();
   const body=parse(options.body||'');
   for(const key of ['operationId','printerTarget','previewId','snapshotHash'])if(body[key]!==expected[key])fail();
+  if(family&&body.documentType!==family)fail();
  }
  return {expected,method,terminal};
 }
-function createPrintReceiptClient({transport,origin,backendVersions=['1.9.419','1.9.420'],newRequestId=()=>crypto.randomUUID()}){
+function createPrintReceiptClient({transport,origin,backendVersions=['1.9.419','1.9.420','1.9.421'],newRequestId=()=>crypto.randomUUID()}){
  const endpoint=new URL(origin),endpointOrigin=endpoint.origin;
  if(endpoint.protocol!=='https:')fail();
  if(typeof transport?.fetch!=='function')throw Error('Trasporto stampa assente.');
@@ -47,7 +50,7 @@ function createPrintReceiptClient({transport,origin,backendVersions=['1.9.419','
    return {response,payload:wire,historical:false};
   }
   const r=wire.gatewayPrintReceipt,c=r?.current,i=r?.intent,o=r?.original;
-  if(response.headers.get('X-Technics-Gateway')!=='stable-worker-print-receipt'||response.headers.get('X-Technics-Gateway-Version')!=='1.9.215'||response.headers.get('X-Technics-Gateway-Request-Id')!==requestId||response.headers.get('X-Technics-Node')!==NODE||wire.gateway!==true||r?.schema!==1||r.gatewayVersion!=='1.9.215'||r.kind!==(terminal?'terminal':'accepted')||c?.requestId!==requestId||c.origin!==endpointOrigin||c.path!==url.pathname||c.method!==method||i?.nodeId!==NODE||i.printRoute!==expected.printRoute||!PRINT_ID.test(i.printId||'')||(terminal&&i.printId!==expected.printId))fail();
+  if(response.headers.get('X-Technics-Gateway')!=='stable-worker-print-receipt'||response.headers.get('X-Technics-Gateway-Version')!=='1.9.216'||response.headers.get('X-Technics-Gateway-Request-Id')!==requestId||response.headers.get('X-Technics-Node')!==NODE||wire.gateway!==true||r?.schema!==1||r.gatewayVersion!=='1.9.216'||r.kind!==(terminal?'terminal':'accepted')||c?.requestId!==requestId||c.origin!==endpointOrigin||c.path!==url.pathname||c.method!==method||i?.nodeId!==NODE||i.printRoute!==expected.printRoute||(expected.documentType&&i.documentType!==expected.documentType)||!PRINT_ID.test(i.printId||'')||(terminal&&i.printId!==expected.printId))fail();
   for(const key of ['operationId','printerTarget','previewId','snapshotHash'])if(i[key]!==expected[key])fail();
   if(!o||o.status!==(terminal?200:202)||response.status!==o.status||typeof o.bodyBase64!=='string'||!o.bodyBase64.length||o.bodyBase64.length>8192||!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(o.bodyBase64)||!o.headers||Array.isArray(o.headers))fail();
   const originalHeaders=new Headers(o.headers);
