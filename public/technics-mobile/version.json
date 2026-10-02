@@ -1,6 +1,6 @@
 {
-  "version": "1.9.438",
-  "build": "sales-expiry-frozen-print-persistent-receipt",
+  "version": "1.9.443",
+  "build": "dual-legacy421-current-and-frozen425-future",
   "publishedAt": null,
   "backendRequired": "1.9.421",
   "gatewayRequired": "1.9.216",
@@ -106,6 +106,33 @@
       "quantitySource": "server-confirmed-picking-handoff",
       "unknownPreserved": true,
       "lotLayoutBindingPreserved": true
+    },
+    "primaryFirstFrozenPrint": {
+      "backendRequired": "1.9.425",
+      "gatewayRequired": "1.9.222",
+      "owner": "actual-node-backend-instance",
+      "queueAcceptanceIsNotPhysicalOutput": true,
+      "realRuntimeQualified": false,
+      "availability": "future-explicit425-generation-only",
+      "active": false
+    },
+    "dualPrintContracts": {
+      "legacy": {
+        "backendVersion": "1.9.421",
+        "gatewayVersion": "1.9.216",
+        "requestContracts": "frontend438-preserved",
+        "realRuntimeQualified": false
+      },
+      "modern": {
+        "backendVersion": "1.9.425",
+        "gatewayVersion": "1.9.222",
+        "availability": "not-active-not-release-qualified",
+        "realRuntimeQualified": false
+      },
+      "selectionFrom": "authentic-preview-meta",
+      "unknownIdentity": "refuse",
+      "automaticResend": false,
+      "physicalOutputConfirmed": false
     }
   },
   "standbyRequired": "1.9.421"
