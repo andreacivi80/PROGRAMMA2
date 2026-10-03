@@ -1,0 +1,67 @@
+(()=>{
+'use strict';
+const familyRoots=Object.freeze({
+ '/api/picking/print':'PICKING','/api/packing/print':'PACKING','/api/packing/picking-print':'PACKING_PICKING',
+ '/api/inventory/committed/print':'INVENTORY_COMMITTED','/api/inventory/item-optimization/print':'INVENTORY_ITEM_OPTIMIZATION',
+ '/api/sales/schedule/print':'SALES_SCHEDULE','/api/inventory/expiry/print':'EXPIRY',
+ '/api/packaging/promoitalia/print':'PACKAGING_PROMOITALIA','/api/inventory/clients/print':'CUSTOMER_INVENTORY'});
+const families=new Set(Object.values(familyRoots)),roots=Object.keys(familyRoots),roles={'technics-utente73-primary':'primary','technics-utente38-secondary':'secondary'};
+const hash=/^[a-f0-9]{64}$/,uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
+const key='technics-frozen-print446:';
+const fail=code=>{throw Object.assign(Error('Esito o proprietario stampa da verificare; nessun nuovo invio automatico.'),{code})};
+function binding(){const b=globalThis.TechnicsPrintBinding446;return b?.state==='SOURCE_IDENTITY_BOUND_NOT_RUNTIME_GO'&&uuid.test(b.bindingId||'')&&hash.test(b.buildHash||'')&&b.releaseId&&b.contractVersion&&b.backendVersion&&b.gatewayVersion&&b.callerContract?b:null}
+function modernVersion(v){const b=binding();return ['1.9.427','1.9.428','1.9.429'].includes(v)||Boolean(b&&typeof v==='string'&&v===b.backendVersion)}
+function supportedVersion(v){return ['1.9.421','1.9.425'].includes(v)||modernVersion(v)}
+function createTransport(original,{baseUrl=()=>globalThis.__technicsBridgeUrl,storage=globalThis.localStorage,newRequestId=()=>crypto.randomUUID()}={}){
+ if(typeof original!=='function')fail('PRINT_TRANSPORT_ABSENT');
+ const owners=new Map(),approvedOperations=new Map();let gateway=null;
+ const pending=()=>{try{for(let i=0;i<storage.length;i++)if(storage.key(i)?.startsWith(key))return true;return false}catch{fail('PRINT_STORAGE_UNAVAILABLE')}};
+ const intentKey=op=>key+op;
+ async function gatewayState(base,force=false){if(gateway&&!force)return gateway;const r=await original(new URL('/__gateway/status?caller446=1',base).href,{cache:'no-store'});if(!r.ok||r.redirected||r.url&&new URL(r.url).origin!==base.origin)fail('PRINT_GATEWAY_UNQUALIFIED');const p=await r.json();if(p?.ok!==true||p.gateway!=='technics-mobile-gateway')fail('PRINT_GATEWAY_UNQUALIFIED');gateway=p;return p}
+ function validateMeta(p,r,expected,requestId){const m=p?.meta;if(!m||m.dataAuthority!=='Technics'||m.readOnly!==true||!roles[m.nodeId]||roles[m.nodeId]!==m.nodeRole||!supportedVersion(m.version)||m.requestId!==requestId)fail('PRINT_OWNER_INVALID');for(const [h,k]of [['X-Technics-Node','nodeId'],['X-Technics-Node-Role','nodeRole'],['X-Technics-Version','version'],['X-Technics-Request-Id','requestId'],['X-Technics-Lease-Epoch','leaseEpoch'],['X-Technics-Server-Time','serverTime']])if(!m[k]||r.headers.get(h)!==String(m[k]))fail('PRINT_TRACE_INVALID');if(m.version==='1.9.421'){if(m.backendInstanceId!==undefined||r.headers.get('X-Technics-Backend-Instance-Id'))fail('PRINT_LEGACY_GENERATION_ALIAS')}else if(!uuid.test(m.backendInstanceId||'')||r.headers.get('X-Technics-Backend-Instance-Id')!==m.backendInstanceId)fail('PRINT_GENERATION_INVALID');if(expected&&(m.nodeId!==expected.nodeId||m.nodeRole!==expected.nodeRole||m.version!==expected.backendVersion||m.backendInstanceId!==expected.backendInstanceId))fail('PRINT_OWNER_CHANGED');return {nodeId:m.nodeId,nodeRole:m.nodeRole,backendVersion:m.version,...(m.backendInstanceId?{backendInstanceId:m.backendInstanceId}:{})}}
+ function settleReceipt(approved,payload){if(!approved?.operationId)return;let stored;try{stored=JSON.parse(storage.getItem(intentKey(approved.operationId))||'null')}catch{fail('PRINT_STORAGE_INVALID')}if(!stored)return;for(const k of ['operationId','printerTarget','previewId','snapshotHash','snapshotId'])if(stored[k]!==approved[k])fail('PRINT_INTENT_CHANGED');if(payload?.ready===true&&payload.printed===true||payload?.accepted===true&&payload.state==='accepted'&&payload.printed===false&&payload.physicalOutputConfirmed===false){storage.removeItem(intentKey(approved.operationId));}}
+ function settleLegacyStandard(approved,payload,response){if(approved?.protocol!=='legacyStandard'||approved.backendVersion!=='1.9.421'||!['PACKAGING_PROMOITALIA','CUSTOMER_INVENTORY'].includes(approved.documentType)||payload?.state!=='accepted'||payload.physicalOutputConfirmed!==false||payload.printerTarget!==approved.printerTarget)fail('PRINT_LEGACY_STANDARD_INVALID');validateMeta(payload,response,approved,response.headers.get('X-Technics-Request-Id'));const raw=storage.getItem(intentKey(approved.operationId));if(!raw)return;const stored=JSON.parse(raw);for(const k of ['operationId','printerTarget','previewId','snapshotHash','snapshotId','nodeId','backendVersion'])if(stored[k]!==approved[k])fail('PRINT_INTENT_CHANGED');storage.removeItem(intentKey(approved.operationId));}
+ async function fetch(value,options={}){
+  let base;try{base=new URL(baseUrl())}catch{return original(value,options)}
+  if(value instanceof Request)options={method:value.method,headers:value.headers,signal:value.signal,credentials:value.credentials,...(value.method==='GET'||value.method==='HEAD'?{}:{body:await value.clone().text()}),...options};
+  const u=new URL(value instanceof Request?value.url:value,base),method=String(options.method||'GET').toUpperCase();
+  if(u.origin!==base.origin)return original(value,options);
+  const root=roots.find(r=>u.pathname===r||u.pathname===r+'-preview'||u.pathname===r+'-preview-status'||u.pathname===r+'-preview-image'||u.pathname===r+'-status');
+  const generic=/^\/api\/packing\/print-(?:preview-status|preview-image|status)$/.test(u.pathname);
+  if(!root&&!generic)return original(value,options);
+  const creation=method==='POST'&&u.pathname===root+'-preview',sending=method==='POST'&&u.pathname===root;
+  if(!['GET','HEAD','POST'].includes(method))fail('PRINT_METHOD_INVALID');
+  if((creation||sending)&&pending())fail('PRINT_OUTCOME_UNRESOLVED');
+  const previewRead=method==='GET'&&/print-preview-(status|image)$/.test(u.pathname);
+  let owner=previewRead?owners.get(u.searchParams.get('id')):null;
+  if(owner){if(u.searchParams.has('documentType')&&u.searchParams.get('documentType')!==owner.documentType)fail('PRINT_FAMILY_CHANGED');u.searchParams.set('documentType',owner.documentType);}
+  const headers=new Headers(options.headers||(value instanceof Request?value.headers:undefined));headers.set('X-Technics-Request-Id',headers.get('X-Technics-Request-Id')||newRequestId());
+  const g=await gatewayState(base,creation||sending),b=binding();
+  if(g.version==='1.9.216'){/* unchanged legacy deployment; no new declaration */}
+  else if(b&&g.version===b.gatewayVersion){headers.set('X-Technics-Print-Contract',b.callerContract)}
+  else fail('PRINT_CALLER_BINDING_PENDING');
+  let body;if(sending){try{body=JSON.parse(options.body)}catch{fail('PRINT_BODY_INVALID')}const approved=approvedOperations.get(body.operationId),known=owners.get(body.previewId||approved?.previewId);if(known){for(const k of ['printerTarget','snapshotHash'])if(known[k]!==undefined&&body[k]!==undefined&&known[k]!==body[k])fail('PRINT_SNAPSHOT_CHANGED');if(approved&&(approved.nodeId!==known.nodeId||approved.backendInstanceId!==known.backendInstanceId))fail('PRINT_OWNER_CHANGED');owner=known;}else if(g.version!=='1.9.216')fail('PRINT_OWNER_UNKNOWN');if(!uuid.test(body.operationId||''))fail('PRINT_OPERATION_INVALID');try{storage.setItem(intentKey(body.operationId),JSON.stringify({...approved,...body,...owner,operationId:body.operationId,printRoute:root}))}catch{fail('PRINT_STORAGE_UNAVAILABLE')}}
+  // Exactly one transport call: exceptions never select another host or repeat POST.
+  const response=await original(u.href,{...options,headers});
+  if(response.redirected||response.url&&new URL(response.url).origin!==base.origin)fail('PRINT_REDIRECT_INVALID');
+  if(!response.ok)return response;
+  if(creation){const p=await response.clone().json(),trace=validateMeta(p,response,null,headers.get('X-Technics-Request-Id'));if(!p.previewId||!familyRoots[root]||p.documentType!==undefined&&p.documentType!==familyRoots[root])fail('PRINT_PREVIEW_INVALID');if(trace.backendVersion!=='1.9.421'&&(!hash.test(p.snapshotHash||'')||p.documentType!==familyRoots[root]||!['corridor','warehouse'].includes(p.printerTarget)))fail('PRINT_FROZEN_PREVIEW_INVALID');if(trace.backendVersion==='1.9.429'&&['INVENTORY_COMMITTED','INVENTORY_ITEM_OPTIMIZATION','EXPIRY'].includes(p.documentType)&&p.renderedDocumentType!==undefined&&p.renderedDocumentType!==p.documentType)fail('PRINT_RENDERED_FAMILY_CHANGED');owners.set(p.previewId,Object.freeze({...trace,documentType:familyRoots[root],renderedDocumentType:trace.backendVersion==='1.9.429'&&['INVENTORY_COMMITTED','INVENTORY_ITEM_OPTIMIZATION','EXPIRY'].includes(p.documentType)?p.documentType:p.renderedDocumentType,previewId:p.previewId,snapshotId:p.snapshotId,snapshotHash:p.snapshotHash,printerTarget:p.printerTarget}));}
+  else if(previewRead){if(!owner){if(g.version!=='1.9.216')fail('PRINT_OWNER_UNKNOWN');}else if(/image$/.test(u.pathname)){if(response.headers.get('X-Technics-Request-Id')!==headers.get('X-Technics-Request-Id'))fail('PRINT_TRACE_INVALID');for(const[h,k]of [['X-Technics-Node','nodeId'],['X-Technics-Node-Role','nodeRole'],['X-Technics-Version','backendVersion'],['X-Technics-Backend-Instance-Id','backendInstanceId']])if((response.headers.get(h)||undefined)!==owner[k])fail('PRINT_OWNER_CHANGED');}else{const p=await response.clone().json();validateMeta(p,response,owner,headers.get('X-Technics-Request-Id'));if(p.documentType!==undefined&&p.documentType!==owner.documentType)fail('PRINT_FAMILY_CHANGED');}}
+  return response;
+ }
+ return Object.freeze({fetch,pending,settleReceipt,settleLegacyStandard,binding,modernVersion,supportedVersion,approve:intent=>{if(!intent?.operationId)fail('PRINT_OPERATION_INVALID');approvedOperations.set(intent.operationId,Object.freeze({...intent}));}});
+}
+const original=globalThis.TechnicsTransport;
+if(!original?.fetch)throw Error('Trasporto Technics non caricato.');
+const client=createTransport(original.fetch.bind(original));
+globalThis.TechnicsPrintCaller446=Object.freeze({...client,createTransport});
+globalThis.TechnicsTransport=Object.freeze({...original,fetch:client.fetch});
+// Existing DataClient closes over rawFetch; route only its print calls through
+// this transport so preview creation cannot silently omit the declaration.
+const data=globalThis.TechnicsDataClient;
+if(data?.fetchJson)globalThis.TechnicsDataClient=Object.freeze({...data,fetchJson:async(value,options={},settings={})=>{
+ let u;try{u=new URL(value,globalThis.__technicsBridgeUrl)}catch{return data.fetchJson(value,options,settings)}
+ if(!roots.some(r=>u.pathname===r||u.pathname.startsWith(r+'-'))&&!/^\/api\/packing\/print-/.test(u.pathname))return data.fetchJson(value,options,settings);
+ const response=await client.fetch(value,options),payload=await data.read(response,settings.message);return {response,payload,attempt:1};
+}});
+})();

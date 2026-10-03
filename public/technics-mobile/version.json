@@ -1,9 +1,9 @@
 {
-  "version": "1.9.443",
-  "build": "dual-legacy421-current-and-frozen425-future",
-  "publishedAt": null,
-  "backendRequired": "1.9.421",
-  "gatewayRequired": "1.9.216",
+  "version": "1.9.447",
+  "build": "exact429-inventory-queue-gateway226-source",
+  "publishedAt": "2026-10-03T20:59:42.217Z",
+  "backendRequired": "1.9.429",
+  "gatewayRequired": "1.9.226",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
@@ -108,26 +108,28 @@
       "lotLayoutBindingPreserved": true
     },
     "primaryFirstFrozenPrint": {
-      "backendRequired": "1.9.425",
-      "gatewayRequired": "1.9.222",
+      "backendRequired": "1.9.429",
+      "gatewayRequired": "1.9.226",
       "owner": "actual-node-backend-instance",
       "queueAcceptanceIsNotPhysicalOutput": true,
-      "realRuntimeQualified": false,
-      "availability": "future-explicit425-generation-only",
-      "active": false
+      "realRuntimeQualified": true,
+      "availability": "authenticated-primary429-generation-only",
+      "active": true
     },
     "dualPrintContracts": {
       "legacy": {
         "backendVersion": "1.9.421",
-        "gatewayVersion": "1.9.216",
+        "gatewayVersion": "1.9.226",
         "requestContracts": "frontend438-preserved",
-        "realRuntimeQualified": false
+        "realRuntimeQualified": false,
+        "migrationParityPositiveCases": 18,
+        "knownPreexistingGroupFailures": 2
       },
       "modern": {
-        "backendVersion": "1.9.425",
-        "gatewayVersion": "1.9.222",
-        "availability": "not-active-not-release-qualified",
-        "realRuntimeQualified": false
+        "backendVersion": "1.9.429",
+        "gatewayVersion": "1.9.226",
+        "availability": "actual-main429-frozen-preview-qualified",
+        "realRuntimeQualified": true
       },
       "selectionFrom": "authentic-preview-meta",
       "unknownIdentity": "refuse",
@@ -135,5 +137,20 @@
       "physicalOutputConfirmed": false
     }
   },
-  "standbyRequired": "1.9.421"
+  "standbyRequired": "1.9.421",
+  "futurePrintBinding": "ACTUAL_MAIN429_STANDBY421_QUALIFIED",
+  "sourceOnly": false,
+  "runtimeQualified": true,
+  "backendSourceRequired": "1.9.429",
+  "backendSourceBuildHash": "69ffb7e0a5c91e6ad5fb8a5f7584bb9ba63af1f13fadca954a36172e787dd3f8",
+  "gatewaySourceRequired": "1.9.226",
+  "gatewaySourceSealSha256": "41b3a685fe80fb158a7941be7ac7d91ba1d902b04aac36c97d665eb223c1e1df",
+  "callerContract": "mixed-421-425-427-428-429-all-v1",
+  "deploymentProvenance": {
+    "phase": "MAIN429_STANDBY421_FRONTEND447",
+    "both429RolloutComplete": false,
+    "physicalOutputConfirmed": false,
+    "topologyGateSha256": "a8be3c2489e736e5c782c4efd858bb78b3acac214d4e3660cbf971beb7b03434",
+    "gatewayReadinessPatchSha256": "ce6d8a0670b92a9eeb4849138b001df37c58809671e800fce59fcdfab846f327"
+  }
 }

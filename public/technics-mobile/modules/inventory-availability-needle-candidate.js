@@ -112,7 +112,7 @@
     for(const sibling of overlay.querySelectorAll('[data-committed-print-target]'))sibling.disabled=true;
     try{
      approved.operationId||=crypto.randomUUID?.()||String(Date.now());
-     const printContext=Object.freeze({protocol:approved.protocol,backendVersion:approved.backendVersion,nodeId:approved.nodeId,backendInstanceId:approved.backendInstanceId,printRoute:'/api/inventory/committed/print',operationId:approved.operationId,printerTarget:target,previewId:approved.previewId,snapshotHash:approved.snapshotHash});
+     const printContext=Object.freeze({documentType:'INVENTORY_COMMITTED',protocol:approved.protocol,backendVersion:approved.backendVersion,nodeId:approved.nodeId,backendInstanceId:approved.backendInstanceId,printRoute:'/api/inventory/committed/print',operationId:approved.operationId,printerTarget:target,previewId:approved.previewId,snapshotHash:approved.snapshotHash});
      const started=await committedPrintJson(globalThis.__technicsBridgeUrl+'/api/inventory/committed/print',{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json','Cache-Control':'no-store'},body:JSON.stringify({code,printerTarget:target,operationId:approved.operationId,previewId:approved.previewId,snapshotHash:approved.snapshotHash})},printContext);
      if(started.printerTarget!==target||!/^[A-Za-z0-9_-]{8,160}$/.test(started.printId||''))throw Error('Conferma stampante non valida.');
      const statusContext=Object.freeze({...printContext,printId:started.printId});
