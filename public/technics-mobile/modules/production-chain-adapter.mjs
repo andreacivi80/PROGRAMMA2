@@ -6,8 +6,9 @@ const number=v=>{if(v===null||v===undefined||v==='')throw Error('MISSING_QUANTIT
 const validDate=v=>{if(!/^\d{4}-\d{2}-\d{2}(?:T.*)?$/.test(v||''))return false;const day=v.slice(0,10),d=new Date(day+'T00:00:00Z');return Number.isFinite(d.valueOf())&&d.toISOString().slice(0,10)===day;};
 const index=(rows,name)=>{const map=new Map();for(const row of rows||[]){const key=id(row.id);if(!key||map.has(key))throw Error('INVALID_OR_DUPLICATE_'+name+'_ID');map.set(key,row);}return map;};
 const same=(a,b)=>id(a)===id(b),qtyEqual=(a,b)=>Math.abs(a-b)<1e-6;
+import {planningSnapshotSelectionLimit} from './PlanningPeriod433.browser.mjs';
 export function buildProductionChain(snapshot){
- const selections=snapshot?.selections||[snapshot?.selection];if(snapshot?.schema!==1||snapshot.dataAuthority!=='Technics'||!selections.length||selections.length>12||selections.some(s=>s?.verified!==true||!s.headerId||!s.year))throw Error('UNVERIFIED_OV_SELECTION');if(new Set(selections.map(s=>id(s.headerId))).size!==selections.length)throw Error('DUPLICATE_OV_SELECTION');
+ const selections=snapshot?.selections||[snapshot?.selection];if(snapshot?.schema!==1||snapshot.dataAuthority!=='Technics'||!selections.length||selections.length>planningSnapshotSelectionLimit(snapshot)||selections.some(s=>s?.verified!==true||!s.headerId||!s.year))throw Error('UNVERIFIED_OV_SELECTION');if(new Set(selections.map(s=>id(s.headerId))).size!==selections.length)throw Error('DUPLICATE_OV_SELECTION');
  for(const name of['salesRows','orders','materials','stocks','productionMovements'])if(!Array.isArray(snapshot[name])||snapshot[name].length>5000)throw Error('MISSING_OR_OVERSIZE_'+name);
  const sales=index(snapshot.salesRows,'SALES_ROW'),orders=index(snapshot.orders,'OP'),materials=index(snapshot.materials,'MATERIAL'),stocks=index(snapshot.stocks,'STOCK'),nodes=new Map(),edges=[],missing=[],expanded=new Set();if(snapshot.truncated===true)missing.push({kind:'SOURCE_TRUNCATED'});
  const selection=selections[0],ovKeys=selections.map(s=>'OV:'+id(s.headerId)),roots=[];for(const s of selections)nodes.set('OV:'+id(s.headerId),{key:'OV:'+id(s.headerId),kind:'OV',...s});

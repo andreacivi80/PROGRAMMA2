@@ -1,9 +1,9 @@
 {
-  "version": "1.9.448",
-  "build": "planning432-source-only-pending-qualification",
-  "publishedAt": "2026-10-04T03:07:32.228Z",
-  "backendRequired": "1.9.429",
-  "gatewayRequired": "1.9.226",
+  "version": "1.9.449",
+  "build": "frontend449-current432-gateway228-planning433-private-qualified",
+  "publishedAt": "2026-10-04T11:22:05.788Z",
+  "backendRequired": "1.9.433",
+  "gatewayRequired": "1.9.228",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
@@ -108,13 +108,14 @@
       "lotLayoutBindingPreserved": true
     },
     "primaryFirstFrozenPrint": {
-      "backendRequired": "1.9.429",
-      "gatewayRequired": "1.9.226",
+      "backendRequired": "1.9.433",
+      "gatewayRequired": "1.9.228",
       "owner": "actual-node-backend-instance",
       "queueAcceptanceIsNotPhysicalOutput": true,
-      "realRuntimeQualified": true,
-      "availability": "authenticated-primary429-generation-only",
-      "active": true
+      "realRuntimeQualified": false,
+      "availability": "pending-actual433-generation-qualification",
+      "active": false,
+      "dispatchEnabled": false
     },
     "dualPrintContracts": {
       "legacy": {
@@ -126,10 +127,10 @@
         "knownPreexistingGroupFailures": 2
       },
       "modern": {
-        "backendVersion": "1.9.429",
-        "gatewayVersion": "1.9.226",
-        "availability": "pending-actual432-generation-qualification",
-        "realRuntimeQualified": true
+        "backendVersion": "1.9.433",
+        "gatewayVersion": "1.9.228",
+        "availability": "pending-actual433-generation-qualification",
+        "realRuntimeQualified": false
       },
       "selectionFrom": "authentic-preview-meta",
       "unknownIdentity": "refuse",
@@ -137,30 +138,35 @@
       "physicalOutputConfirmed": false
     },
     "planningFrozenContracts": {
-      "backendRequired": "1.9.432",
-      "gatewayRequired": "1.9.227",
+      "backendRequired": "1.9.433",
+      "gatewayRequired": "1.9.228",
       "families": [
         "PRODUCTION_CHAIN",
         "FIFO_SIMULATION"
       ],
       "dispatchEnabled": false,
-      "realRuntimeQualified": false
+      "realRuntimeQualified": false,
+      "availability": "pending-actual433-generation-qualification",
+      "periodDefault": "schedule-current",
+      "manualAlternative": true,
+      "periodAndManualExclusive": true,
+      "shipmentDateAuthority": "UNKNOWN"
     }
   },
   "standbyRequired": "1.9.421",
-  "futurePrintBinding": "SOURCE432_PENDING_RUNTIME_QUALIFICATION",
+  "futurePrintBinding": "SOURCE433_PENDING_RUNTIME_QUALIFICATION",
   "sourceOnly": false,
   "runtimeQualified": true,
-  "backendSourceRequired": "1.9.432",
-  "backendSourceBuildHash": "88139eea1825d24a6052c5909509eb4df6defe6c6cc3f9fe713f3a212e74fee9",
-  "gatewaySourceRequired": "1.9.227",
+  "backendSourceRequired": "1.9.433",
+  "backendSourceBuildHash": "29bb9fc4c9d9d3a6ac92ce6d73c0cc7367a8b7a345c6d05b5f65fa38c2aa389a",
+  "gatewaySourceRequired": "1.9.228",
   "gatewaySourceSealSha256": null,
-  "callerContract": "mixed-421-425-427-428-429-432-all-v1",
+  "callerContract": "mixed-421-425-427-428-429-432-433-all-v1",
   "deploymentProvenance": {
-    "phase": "MAIN429_STANDBY421_FRONTEND448",
-    "both432RolloutComplete": false,
-    "physicalOutputConfirmed": false,
-    "topologyGateSha256": "978d9eaeb11725e17b26b7277f3144219a4c965df0013327042d49c4d03e5d7f"
+    "phase": "MAIN432_STANDBY421_FRONTEND449",
+    "topologyGateSha256": "400331cc2f4b3583819537d923623d81be39bc21b58a15d966d0b26cdf89d666",
+    "both433RolloutComplete": false,
+    "physicalOutputConfirmed": false
   },
   "parentDeploymentProvenance": {
     "phase": "MAIN429_STANDBY421_FRONTEND447",
@@ -170,7 +176,7 @@
     "gatewayReadinessPatchSha256": "ce6d8a0670b92a9eeb4849138b001df37c58809671e800fce59fcdfab846f327"
   },
   "backendVersion": "1.9.432",
-  "gatewayVersion": "1.9.227",
+  "gatewayVersion": "1.9.228",
   "published": false,
   "publishable": false,
   "releaseGo": false,
@@ -178,7 +184,20 @@
   "parentFrontendVersion": "1.9.447",
   "parentFrontendCommit": "ffa56191b1e805d8c48889a04cf4e37857f16421",
   "qualification": {
-    "state": "SOURCE_ONLY_PENDING_PRIVATE_AND_PUBLIC_QUALIFICATION",
-    "prior447": "NOT_448_QUALIFICATION"
+    "state": "ACTUAL_CANDIDATE_NINE_AVAILABLE_UI_PASS_PLANNING_PUBLIC_PENDING",
+    "candidate": {
+      "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-candidate449-real-1791111429594-result.json",
+      "sha256": "7d1db6f4b982a2e93463782fa3b0ba58af0241f1358e8a8022f0730911259d94"
+    },
+    "private433": [
+      {
+        "path": "//srvfs/Dati/Produzione/programma prod/Programma/Technics-Artifact-Recovery/ROOT-nine20-433-primary-reconciled-1791108375784/ROOT-primary-nine20-reconciled.json",
+        "sha256": "fbee3b0d06ecf70e100c9243d4e3f5ddf83df96d50ff96472aafd050cd6c492a"
+      },
+      {
+        "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT433-actual-preservation-1791111589790-reserve-nine-node.json",
+        "sha256": "b4b56c6ef148f5c40e1f0fd8a28ac37a824a01dad82c8ab4b771bd65d781baf3"
+      }
+    ]
   }
 }
