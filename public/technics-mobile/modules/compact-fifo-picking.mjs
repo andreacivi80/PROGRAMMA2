@@ -1,15 +1,7 @@
-// Shared pure UI/document projection. ERP and SIM quantities never merge.
-export function compactFifoPickingRows(simulation){
- if(simulation?.kind!=='SIMULATION_NOT_ERP_ALLOCATION'||!Array.isArray(simulation.allocations))throw Error('INVALID_FIFO_SIMULATION');
- const rows=new Map();let erpAllocations=0,simulationAllocations=0;
- for(const a of simulation.allocations){
-  if(!a.code||!a.lot||!a.unit||!Number.isFinite(a.quantity)||a.quantity<=0||!['EXISTING_REAL_ALLOCATION_PRESERVED','FIFO_SIMULATION'].includes(a.kind))throw Error('INVALID_PICK_PROPOSAL');
-  const key=JSON.stringify([a.articleId,a.code,a.lot,a.unit]);let r=rows.get(key);
-  if(!r){r={articleId:a.articleId,code:a.code,lot:a.lot,unit:a.unit,erpQuantity:0,simulationQuantity:0,sourceAllocations:[]};rows.set(key,r);}
-  const field=a.kind==='EXISTING_REAL_ALLOCATION_PRESERVED'?'erpQuantity':'simulationQuantity';
-  r[field]=Math.round((r[field]+a.quantity)*1e9)/1e9;
-  if(field==='erpQuantity')erpAllocations++;else simulationAllocations++;
-  r.sourceAllocations.push({...a});
- }
- return {label:'Simulazione: non impegna nuovi lotti',status:simulation.status,rows:[...rows.values()],partial:simulation.complete!==true,shortageCount:simulation.shortages?.length||0,issueGroupCount:simulation.issueGroups?.length||0,ownerGapCount:simulation.qualificationGaps?.length||0,erpAllocations,simulationAllocations,ownerQualified:simulation.ownerQualified===true,createsCommitments:false,erpWrites:0};
+// Pure per-allocation proposal; no cross-OP/OV aggregation, no source or state on customer rows.
+export function compactFifoPickingRows(simulation,snapshot){
+ if(simulation?.kind!=='SIMULATION_NOT_ERP_ALLOCATION'||!Array.isArray(simulation.allocations)||!Array.isArray(snapshot?.orders)||!Array.isArray(snapshot?.salesRows))throw Error('INVALID_FIFO_SIMULATION');
+ const selections=snapshot.selections||[snapshot.selection],rows=[];let erpAllocations=0,simulationAllocations=0;
+ for(const a of simulation.allocations){if(!a.code||!a.lot||!a.unit||!Number.isFinite(a.quantity)||a.quantity<=0||!['EXISTING_REAL_ALLOCATION_PRESERVED','FIFO_SIMULATION'].includes(a.kind))throw Error('INVALID_PICK_PROPOSAL');const matches=snapshot.orders.filter(o=>String(o.id)===String(a.opId));if(matches.length!==1)throw Error('UNBOUND_PICK_OP');const op=matches[0],sales=snapshot.salesRows.filter(r=>String(r.id)===String(op.linkedOvRowId)),ov=sales.length===1?selections.filter(s=>String(s.headerId)===String(sales[0].headerId)):[];const symbol=a.kind==='FIFO_SIMULATION'?'S':'E';if(symbol==='E')erpAllocations++;else simulationAllocations++;rows.push({ov:ov.length===1?'OV '+ov[0].number+'/'+ov[0].year:'OV ?',op:'OP '+(op.number||op.id)+'/'+(op.year||'?'),code:a.code,lot:a.lot,quantity:a.quantity,unit:a.unit,symbol,articleId:a.articleId,sourceAllocations:[{...a}],ownerIdentification:'ERP_FK_ONLY_NOT_SECOND_SOURCE_QUALIFICATION'});}
+ return {label:'Simulazione: non impegna nuovi lotti',status:simulation.status,rows,partial:simulation.complete!==true,shortageCount:simulation.shortages?.length||0,issueGroupCount:simulation.issueGroups?.length||0,ownerGapCount:simulation.qualificationGaps?.length||0,erpAllocations,simulationAllocations,ownerQualified:simulation.ownerQualified===true,createsCommitments:false,erpWrites:0};
 }

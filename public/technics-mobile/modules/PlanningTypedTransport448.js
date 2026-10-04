@@ -1,6 +1,6 @@
 import {normalizePlanningPeriod449,qualifyPlanningPeriodResult449} from './PlanningPeriodSelection449.js';
 import {createPlanningIntentRegistry449} from './PlanningDispatchIntent449.js';
-import {planningDispatchBinding449,planningHistorical433Binding449,planningFuture434Binding449} from './PlanningDispatchBinding449.js';
+import {planningDispatchBinding449,planningHistorical433Binding449,planningFuture434Binding449,planningFuture435Binding453} from './PlanningDispatchBinding449.js';
 const periodFingerprint=(payload,period)=>{const selectors=qualifyPlanningPeriodResult449(payload,period),p=payload.periodSelection,a=p.dateAuthority;return JSON.stringify([p.from,p.to,p.dateBasis,p.complete,p.count,p.order,a.verified,a.field,a.meaning,a.rootProofSha256,selectors.map(x=>[x.number,x.year,x.headerId])]);};
 const roots=Object.freeze({PRODUCTION_CHAIN:'/api/planning/production-chain/',FIFO_SIMULATION:'/api/planning/fifo-simulation/'});
 const roles=Object.freeze({'technics-utente73-primary':'primary','technics-utente38-secondary':'secondary'});
@@ -10,8 +10,8 @@ const fail=()=>{throw Error('PLANNING_FROZEN_IDENTITY_NOT_QUALIFIED_NO_FALLBACK'
 export function createPlanningTypedTransport(approvedTransport,{baseHref=globalThis.location?.href,expectedVersion='1.9.432',dispatchBinding=planningDispatchBinding449,storage=globalThis.localStorage,now=Date.now,baseUrl=globalThis.__technicsBridgeUrl||baseHref}={}){
  if(typeof approvedTransport?.fetch!=='function'||expectedVersion!=='1.9.432')throw Error('PLANNING_CONFIG_NOT_BOUND');
  const binding=dispatchBinding===null?null:structuredClone(dispatchBinding);
- const caller=binding?.backendVersion==='1.9.434'?'planning-434-owner-v1':'planning-433-owner-v1';
- if(binding&&(!binding||binding.schema!==1||!((binding.backendVersion==='1.9.433'&&['1.9.228','1.9.229'].includes(binding.gatewayVersion)&&binding.buildHash==='29bb9fc4c9d9d3a6ac92ce6d73c0cc7367a8b7a345c6d05b5f65fa38c2aa389a'&&binding.releaseId==='technics-backend-1.9.433-planning-frozen-standard-lpd')||(binding.backendVersion==='1.9.434'&&binding.gatewayVersion==='1.9.229'&&binding.buildHash==='706d138c8472350873cebb05fedfb6c471b2a69c01edcbf5ee48f536e763351c'&&binding.releaseId==='technics-backend-1.9.434-fifo-partial-compact-planning'))||!hex.test(binding.buildHash||'')||!hex.test(binding.runtimeQualificationSha256||'')||!hex.test(binding.sourceQualificationSha256||'')||typeof binding.releaseId!=='string'||!binding.releaseId.startsWith('technics-backend-'+binding.backendVersion+'-')||binding.endpointQualified!==true))throw Error('PLANNING_DISPATCH_BINDING_NOT_QUALIFIED');
+ const caller=binding?.backendVersion==='1.9.435'?'planning-435-owner-v1':binding?.backendVersion==='1.9.434'?'planning-434-owner-v1':'planning-433-owner-v1';
+ if(binding&&(!binding||binding.schema!==1||!((binding.backendVersion==='1.9.433'&&['1.9.228','1.9.229'].includes(binding.gatewayVersion)&&binding.buildHash==='29bb9fc4c9d9d3a6ac92ce6d73c0cc7367a8b7a345c6d05b5f65fa38c2aa389a'&&binding.releaseId==='technics-backend-1.9.433-planning-frozen-standard-lpd')||(binding.backendVersion==='1.9.434'&&['1.9.229','1.9.230'].includes(binding.gatewayVersion)&&binding.buildHash==='706d138c8472350873cebb05fedfb6c471b2a69c01edcbf5ee48f536e763351c'&&binding.releaseId==='technics-backend-1.9.434-fifo-partial-compact-planning')||(binding.backendVersion==='1.9.435'&&binding.gatewayVersion==='1.9.230'&&binding.buildHash==='642380ab498410a310b6d1829c7d06c4c046f586e4f39e72b170e87fc323d876'&&binding.releaseId==='technics-backend-1.9.435-all-lots-compact-planning'))||!hex.test(binding.buildHash||'')||!hex.test(binding.runtimeQualificationSha256||'')||!hex.test(binding.sourceQualificationSha256||'')||typeof binding.releaseId!=='string'||!binding.releaseId.startsWith('technics-backend-'+binding.backendVersion+'-')||binding.endpointQualified!==true))throw Error('PLANNING_DISPATCH_BINDING_NOT_QUALIFIED');
  const owners=new Map();let registry=null;
  const intents=()=>registry??=createPlanningIntentRegistry449(storage,{now});
  const check=(response,payload,requestId,owner)=>{const m=payload?.meta;if(!m||!(m.version===expectedVersion||binding&&m.version===binding.backendVersion)||roles[m.nodeId]!==m.nodeRole||!roles[m.nodeId]||m.source!=='TechnicsNativeBridge'||m.dataAuthority!=='Technics'||m.readOnly!==true||!uuid.test(m.backendInstanceId||'')||m.requestId!==requestId||!Number.isFinite(Date.parse(m.serverTime||''))||!m.leaseEpoch)fail();for(const [h,v]of [['X-Technics-Version',m.version],['X-Technics-Node',m.nodeId],['X-Technics-Node-Role',m.nodeRole],['X-Technics-Backend-Instance-Id',m.backendInstanceId],['X-Technics-Request-Id',requestId],['X-Technics-Server-Time',m.serverTime],['X-Technics-Lease-Epoch',String(m.leaseEpoch)]])if(response.headers.get(h)!==v)fail();if(owner&&['nodeId','nodeRole','backendInstanceId','backendVersion'].some(k=>(k==='backendVersion'?m.version:m[k])!==owner[k]))fail();return m;};
@@ -22,7 +22,7 @@ export function createPlanningTypedTransport(approvedTransport,{baseHref=globalT
  const readyFor=async o=>{
   if(!binding||o.backendVersion!==binding.backendVersion||o.dispatchEnabled!==true||!o.statusVerified||o.verifiedPages.size!==o.pageSha256.length)fail();
   const rootUrl=new URL(o.baseUrl,baseHref),requestId=globalThis.crypto.randomUUID(),headers=new Headers({'X-Technics-Request-Id':requestId});
-  rootUrl.pathname='/health/nodes';rootUrl.search='';const response=await approvedTransport.fetch(rootUrl.href,{method:'GET',headers,cache:'no-store'}),g=await response.json();if(!response.ok||g.ok!==true||(g.gatewayVersion!==binding.gatewayVersion&&!(binding.backendVersion==='1.9.433'&&binding.gatewayVersion==='1.9.228'&&g.gatewayVersion==='1.9.229'))||!Array.isArray(g.nodes))fail();
+  rootUrl.pathname='/health/nodes';rootUrl.search='';const response=await approvedTransport.fetch(rootUrl.href,{method:'GET',headers,cache:'no-store'}),g=await response.json();if(!response.ok||g.ok!==true||(g.gatewayVersion!==binding.gatewayVersion&&!(binding.backendVersion==='1.9.433'&&binding.gatewayVersion==='1.9.228'&&g.gatewayVersion==='1.9.229')&&!(binding.backendVersion==='1.9.434'&&binding.gatewayVersion==='1.9.229'&&g.gatewayVersion==='1.9.230'))||!Array.isArray(g.nodes))fail();
   const node=g.nodes.find(n=>n.nodeId===o.nodeId);if(!node||node.backendVersion!==binding.backendVersion||node.buildHash!==binding.buildHash||node.releaseId!==binding.releaseId||node.role!==o.nodeRole||node.compatible!==true||node.online!==true)fail();
   rootUrl.pathname='/health/ready';const r=await raw(rootUrl.href,{method:'GET'},o),c=r.planningFrozenContracts,p=r.operational;
   if(r.ok!==true||r.ready!==true||r.recovering!==false||r.version!==o.backendVersion||r.backendInstanceId!==o.backendInstanceId||r.database?.ready!==true||p?.ready!==true||p.stale!==false||p.storageAttested!==true||p.archives?.packing?.ok!==true||p.archives?.picking?.ok!==true||c?.version!==contract||c.productionChain!==true||c.fifoSimulation!==true||c.dispatchEnabled!==true||c.transport!=='STANDARD_LPD'||typeof p.freshUntil!=='string'||!Number.isFinite(Date.parse(p.freshUntil))||Date.parse(p.freshUntil)<=now())fail();
@@ -57,7 +57,7 @@ export function createPlanningTypedTransport(approvedTransport,{baseHref=globalT
  });
 }
 
-export function selectCurrentPlanningBinding452(health,historicalBinding,futureBinding){
+export function selectCurrentPlanningBinding452(health,historicalBinding,futureBinding,latestBinding=null){
  const bad=()=>{throw Error('PLANNING_ACTIVE_BACKEND_TUPLE_NOT_QUALIFIED_RELOAD_REQUIRED');};
  if(health?.ok!==true||health.activeNode!=='technics-utente73-primary'||!Array.isArray(health.nodes))bad();
  const primaries=health.nodes.filter(n=>n.nodeId===health.activeNode);
@@ -65,9 +65,10 @@ export function selectCurrentPlanningBinding452(health,historicalBinding,futureB
  const n=primaries[0];
  if(n.role!=='primary'||n.online!==true||n.compatible!==true||n.leader!==true||health.nodes.filter(x=>x.leader===true).length!==1)bad();
  const historical=n.backendVersion==='1.9.433'&&['1.9.228','1.9.229'].includes(health.gatewayVersion)&&n.buildHash==='29bb9fc4c9d9d3a6ac92ce6d73c0cc7367a8b7a345c6d05b5f65fa38c2aa389a'&&n.releaseId==='technics-backend-1.9.433-planning-frozen-standard-lpd';
- const future=n.backendVersion==='1.9.434'&&health.gatewayVersion==='1.9.229'&&n.buildHash==='706d138c8472350873cebb05fedfb6c471b2a69c01edcbf5ee48f536e763351c'&&n.releaseId==='technics-backend-1.9.434-fifo-partial-compact-planning';
- const selected=historical?historicalBinding:future?futureBinding:null;
- if(!selected||selected.endpointQualified!==true||selected.backendVersion!==n.backendVersion||selected.buildHash!==n.buildHash||selected.releaseId!==n.releaseId||!(selected.gatewayVersion===health.gatewayVersion||historical&&selected.gatewayVersion==='1.9.228'&&health.gatewayVersion==='1.9.229'))bad();
+ const future=n.backendVersion==='1.9.434'&&['1.9.229','1.9.230'].includes(health.gatewayVersion)&&n.buildHash==='706d138c8472350873cebb05fedfb6c471b2a69c01edcbf5ee48f536e763351c'&&n.releaseId==='technics-backend-1.9.434-fifo-partial-compact-planning';
+ const latest=n.backendVersion==='1.9.435'&&health.gatewayVersion==='1.9.230'&&n.buildHash==='642380ab498410a310b6d1829c7d06c4c046f586e4f39e72b170e87fc323d876'&&n.releaseId==='technics-backend-1.9.435-all-lots-compact-planning';
+ const selected=historical?historicalBinding:future?futureBinding:latest?latestBinding:null;
+ if(!selected||selected.endpointQualified!==true||selected.backendVersion!==n.backendVersion||selected.buildHash!==n.buildHash||selected.releaseId!==n.releaseId||!(selected.gatewayVersion===health.gatewayVersion||historical&&selected.gatewayVersion==='1.9.228'&&health.gatewayVersion==='1.9.229'||future&&selected.gatewayVersion==='1.9.229'&&health.gatewayVersion==='1.9.230'))bad();
  return selected;
 }
 export async function createCurrentPlanningTypedTransport(approvedTransport,options={}){
@@ -81,6 +82,6 @@ export async function createCurrentPlanningTypedTransport(approvedTransport,opti
  let health;
  try{health=await response.json();}catch{throw Error('PLANNING_HEALTH_BOOTSTRAP_RESPONSE_INVALID');}
  if(!response.ok)throw Error('PLANNING_HEALTH_BOOTSTRAP_HTTP_'+response.status+': '+String(health?.code||health?.error||'UNAVAILABLE'));
- const dispatchBinding=selectCurrentPlanningBinding452(health,planningHistorical433Binding449,planningFuture434Binding449);
+ const dispatchBinding=selectCurrentPlanningBinding452(health,planningHistorical433Binding449,planningFuture434Binding449,planningFuture435Binding453);
  return createPlanningTypedTransport(approvedTransport,{...options,dispatchBinding});
 }

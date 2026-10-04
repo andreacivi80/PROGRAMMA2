@@ -1,8 +1,8 @@
 {
-  "version": "1.9.452",
-  "build": "frontend452-current433-gateway228-customer-preview-source-qualified",
-  "backendRequired": "1.9.434",
-  "gatewayRequired": "1.9.229",
+  "version": "1.9.453",
+  "build": "frontend453-current434-gateway229-customer-preview-source-qualified",
+  "backendRequired": "1.9.435",
+  "gatewayRequired": "1.9.230",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
@@ -107,12 +107,12 @@
       "lotLayoutBindingPreserved": true
     },
     "primaryFirstFrozenPrint": {
-      "backendRequired": "1.9.434",
-      "gatewayRequired": "1.9.229",
+      "backendRequired": "1.9.435",
+      "gatewayRequired": "1.9.230",
       "owner": "actual-node-backend-instance",
       "queueAcceptanceIsNotPhysicalOutput": true,
       "realRuntimeQualified": false,
-      "availability": "pending-actual434-generation-qualification",
+      "availability": "pending-actual435-generation-qualification",
       "active": false,
       "dispatchEnabled": false
     },
@@ -126,9 +126,9 @@
         "knownPreexistingGroupFailures": 2
       },
       "modern": {
-        "backendVersion": "1.9.434",
-        "gatewayVersion": "1.9.229",
-        "availability": "pending-actual434-generation-qualification",
+        "backendVersion": "1.9.435",
+        "gatewayVersion": "1.9.230",
+        "availability": "pending-actual435-generation-qualification",
         "realRuntimeQualified": false
       },
       "selectionFrom": "authentic-preview-meta",
@@ -137,15 +137,15 @@
       "physicalOutputConfirmed": false
     },
     "planningFrozenContracts": {
-      "backendRequired": "1.9.434",
-      "gatewayRequired": "1.9.229",
+      "backendRequired": "1.9.435",
+      "gatewayRequired": "1.9.230",
       "families": [
         "PRODUCTION_CHAIN",
         "FIFO_SIMULATION"
       ],
       "dispatchEnabled": false,
       "realRuntimeQualified": false,
-      "availability": "pending-actual434-generation-qualification",
+      "availability": "pending-actual435-generation-qualification",
       "periodDefault": "schedule-current",
       "manualAlternative": true,
       "periodAndManualExclusive": true,
@@ -156,15 +156,15 @@
   "futurePrintBinding": "AUTHENTIC434_PRIVATE_ENDPOINT_QUALIFIED_PUBLIC_AND_DISPATCH_PENDING",
   "sourceOnly": false,
   "runtimeQualified": true,
-  "backendSourceRequired": "1.9.434",
-  "backendSourceBuildHash": "706d138c8472350873cebb05fedfb6c471b2a69c01edcbf5ee48f536e763351c",
-  "gatewaySourceRequired": "1.9.229",
+  "backendSourceRequired": "1.9.435",
+  "backendSourceBuildHash": "642380ab498410a310b6d1829c7d06c4c046f586e4f39e72b170e87fc323d876",
+  "gatewaySourceRequired": "1.9.230",
   "gatewaySourceSealSha256": "b270afcf2245638164de88794a8592d3e884287b401f6eb8e0ca6e2e4de634c9",
-  "callerContract": "mixed-421-425-427-428-429-432-433-434-all-v1",
+  "callerContract": "mixed-421-425-427-428-429-432-433-434-435-all-v1",
   "deploymentProvenance": {
-    "phase": "MAIN433_STANDBY421_FRONTEND452",
-    "topologyGateSha256": "2fc21fb4462269afe51023df7c49cf5b3d13ae32a81ecde29477805237e58e66",
-    "both433RolloutComplete": false,
+    "phase": "MAIN434_STANDBY421_FRONTEND453",
+    "topologyGateSha256": "fe262453094154b921b0678937ceeeb14d7847035b490a229db7cf3217c16fc9",
+    "both434RolloutComplete": false,
     "physicalOutputConfirmed": false
   },
   "parentDeploymentProvenance": {
@@ -174,28 +174,28 @@
     "topologyGateSha256": "a8be3c2489e736e5c782c4efd858bb78b3acac214d4e3660cbf971beb7b03434",
     "gatewayReadinessPatchSha256": "ce6d8a0670b92a9eeb4849138b001df37c58809671e800fce59fcdfab846f327"
   },
-  "backendVersion": "1.9.433",
-  "gatewayVersion": "1.9.228",
+  "backendVersion": "1.9.434",
+  "gatewayVersion": "1.9.229",
   "published": false,
   "publishable": false,
   "releaseGo": false,
   "sourceCreatedAt": "2026-10-04T00:33:03.731Z",
-  "parentFrontendVersion": "1.9.451",
+  "parentFrontendVersion": "1.9.452",
   "parentFrontendCommit": "c41c0f10ab72df13736a8a0dab0dc9778c87b96f",
   "qualification": {
-    "state": "ACTUAL452_CURRENT433_CUSTOMER_MANUAL_OP_PLANNING_GUI_BOUND_PRIVATE434_NINE_ANCESTRY_NOT_ACTIVE434",
+    "state": "ACTUAL453_CURRENT434_CUSTOMER_MANUAL_OP_PLANNING_GUI_BOUND_PRIVATE435_NINE_ANCESTRY_NOT_ACTIVE435",
     "candidate": {
-      "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-candidate452-operator-1791141298963/REPORT.json",
-      "sha256": "503ac4c6522be37cd45eca6d5f7fee83646f7e9cb7e412d8bef8a44c6aa75b8e"
+      "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-candidate453-operator-1791149969616/REPORT.json",
+      "sha256": "e1cb2a582297ca03e32b428838c68f9a9cd0679b22076c92477264a3de6df004"
     },
-    "private434": [
+    "private435": [
       {
-        "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-nine434-1791138690273-pc73-actual.json",
-        "sha256": "b7109113ca474caff07d263c3460cbefd34c649b36a67b5ebc8fc57999bf75a0"
+        "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-nine435-1791149799773-pc73-actual.json",
+        "sha256": "56310e376a870ef94124c93b04b6c4dcf5d3d6b79b7030ec149f0d58a64e26de"
       },
       {
-        "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-nine434-1791138690273-pc38-actual.json",
-        "sha256": "6e19138810fa014dd887acb65e3185adceb566aa714e5db5b8516910a4897081"
+        "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-nine435-1791149799773-pc38-actual.json",
+        "sha256": "3fd09b007df2326f1d158a2095794aab10a8fbfbbb7df1467a10788e0caf4377"
       }
     ]
   },
@@ -286,5 +286,17 @@
     "reloadAfterCutoverRequired": true,
     "automaticResend": false
   },
-  "publishedAt": "2026-10-04T20:00:38.712Z"
+  "futureBackend435": {
+    "buildHash": "642380ab498410a310b6d1829c7d06c4c046f586e4f39e72b170e87fc323d876",
+    "manifestSha256": "d74c8418f6840237667a1a341669c8d043424f997ed96ab4e9957d253261cde8",
+    "assemblySha256": "91e15bdbc659344654d2bb0451365128368b8017fe68f8349deeca0f5afb90b2",
+    "runtimeBinding": null,
+    "backendInstanceId": null,
+    "dispatchEnabled": false,
+    "endpointQualified": true
+  },
+  "current434BindingsScope": "PRESERVED_CURRENT434_ANCESTRY_NOT435_ADMISSION",
+  "current434BindingsAreAncestryNot435Admission": true,
+  "publicRuntimeQualified": false,
+  "publishedAt": "2026-10-04T22:51:00.806Z"
 }
