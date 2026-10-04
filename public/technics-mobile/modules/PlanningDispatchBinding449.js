@@ -1,28 +1,5 @@
-// ROOT genuine target SOURCE only; endpoint/runtime binding remains NULL.
-export const planningSourceBinding449=Object.freeze({
-  "state": "AUTHENTIC433_SOURCE_TUPLE_NOT_RUNTIME_OR_DISPATCH_QUALIFIED",
-  "backendVersion": "1.9.433",
-  "buildHash": "29bb9fc4c9d9d3a6ac92ce6d73c0cc7367a8b7a345c6d05b5f65fa38c2aa389a",
-  "releaseId": "technics-backend-1.9.433-planning-frozen-standard-lpd",
-  "contractVersion": "1.9.30",
-  "componentCount": 759,
-  "refs": {
-    "assembly": {
-      "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT433-local-source-attempt-1791105559962-assembly-source.json",
-      "sha256": "535ec49262470b2f4b0f9cbb441b257d39b446533848da1216133a098c54f180"
-    },
-    "manifest": {
-      "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT433-local-source-attempt-1791105559962-native-backend-candidate.json",
-      "sha256": "bc80e90f76435b6ae5b09abdbb3f4a8ed43e8ad3eefb53cabb36f3e43592f66c"
-    },
-    "release": {
-      "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT433-compact-document-generation-1791105292915-release-manifest.json",
-      "sha256": "011acd8b0d2d9e648bc1ccdd2676d3fe8b04221a91be231a854dffdd10698050"
-    }
-  },
-  "backendInstanceId": null,
-  "sourceOnly": true,
-  "runtimeQualified": false,
-  "dispatchQualified": false
-});
-export const planningDispatchBinding449=Object.freeze({"schema":1,"backendVersion":"1.9.433","gatewayVersion":"1.9.228","buildHash":"29bb9fc4c9d9d3a6ac92ce6d73c0cc7367a8b7a345c6d05b5f65fa38c2aa389a","releaseId":"technics-backend-1.9.433-planning-frozen-standard-lpd","runtimeQualificationSha256":"ee70248d36b4cc39b5e6282f02cf90b438e515afa42834f7e84b8b388dcb5529","sourceQualificationSha256":"8c3b2593ea50e7004da8873eb76330c693b72e408ec20ae26b78c2b67dd89b1a","endpointQualified":true,"dispatchEnabled":false,"qualificationScope":"REAL_INACTIVE433_PERIOD_ENDPOINT_PROOF_PENDING_ACTIVE_RESPONSE_CHECK","publicRuntimeQualified":false,"backendInstanceId":null});
+// Authentic ROOT434 SOURCE tuple; no433 runtime receipt aliases.
+export const planningSourceBinding449=Object.freeze({"state":"AUTHENTIC434_SOURCE_TUPLE_NOT_RUNTIME_OR_DISPATCH_QUALIFIED","backendVersion":"1.9.434","buildHash":"706d138c8472350873cebb05fedfb6c471b2a69c01edcbf5ee48f536e763351c","releaseId":"technics-backend-1.9.434-fifo-partial-compact-planning","contractVersion":"1.9.30","componentCount":760,"refs":{"assembly":{"path":"C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT434-local-source-attempt-1791133853515-assembly-source.json","sha256":"c960b573116aed4ff2f4394ad9ace6b85867d11e3146e154b16c85fa8bee9c7a"},"manifest":{"path":"C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT434-local-source-attempt-1791133853515-native-backend-candidate.json","sha256":"f6041eabe8eceaec8c3b4c329d45c93ddf3c60ee6658b91caa24a02737f021dc"},"release":{"path":"C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT434-452-source-1791133850648/backend434-release-manifest.json","sha256":"36fce5e535a83bdb49b2db75a8ea615c6b67b3fc501c7959b84242873e393bc7"}},"backendInstanceId":null,"sourceOnly":true,"runtimeQualified":false,"dispatchQualified":false});
+export const planningHistorical433Binding449=Object.freeze({"schema":1,"backendVersion":"1.9.433","gatewayVersion":"1.9.228","buildHash":"29bb9fc4c9d9d3a6ac92ce6d73c0cc7367a8b7a345c6d05b5f65fa38c2aa389a","releaseId":"technics-backend-1.9.433-planning-frozen-standard-lpd","runtimeQualificationSha256":"ee70248d36b4cc39b5e6282f02cf90b438e515afa42834f7e84b8b388dcb5529","sourceQualificationSha256":"8c3b2593ea50e7004da8873eb76330c693b72e408ec20ae26b78c2b67dd89b1a","endpointQualified":true,"dispatchEnabled":false,"qualificationScope":"REAL_INACTIVE433_PERIOD_ENDPOINT_PROOF_PENDING_ACTIVE_RESPONSE_CHECK","publicRuntimeQualified":false,"backendInstanceId":null});
+export const planningFuture434Binding449=Object.freeze({"schema":1,"backendVersion":"1.9.434","gatewayVersion":"1.9.229","buildHash":"706d138c8472350873cebb05fedfb6c471b2a69c01edcbf5ee48f536e763351c","releaseId":"technics-backend-1.9.434-fifo-partial-compact-planning","runtimeQualificationSha256":"b89a588a118aedde3d5ca4717a33573a01168da054a2a820d6d081013acc8907","sourceQualificationSha256":"b94dde9a592692b978aaabef721f733ea2b0e7670001556b5e98ad6439485c35","endpointQualified":true,"dispatchEnabled":false,"qualificationScope":"REAL_INACTIVE434_BOTH_NODES_PERIOD_ENDPOINT_PROOF_NOT_PUBLIC_OR_DISPATCH_GO","publicRuntimeQualified":false,"backendInstanceId":null,"refs":{"period":{"path":"C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-finite434-period-1791138182181-execution.json","sha256":"b89a588a118aedde3d5ca4717a33573a01168da054a2a820d6d081013acc8907"},"nine":{"path":"C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-nine434-1791138690273-execution.json","sha256":"4333f748fb78520b1e0395ad0fd84586e81ecc113dc1de4738f51b9a7eeb84b6"},"sourcePeer":{"path":"//srvfs/Dati/Produzione/programma prod/Programma/Technics-Artifact-Recovery/planning434-frontend452-composition-independent-b3-20261004/INDEPENDENT-SOURCE-REPORT.json","sha256":"b94dde9a592692b978aaabef721f733ea2b0e7670001556b5e98ad6439485c35"}}});
+export const planningDispatchBinding449=planningHistorical433Binding449;

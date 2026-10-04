@@ -1,27 +1,28 @@
 import {normalizePlanningPeriod449,qualifyPlanningPeriodResult449} from './PlanningPeriodSelection449.js';
 import {createPlanningIntentRegistry449} from './PlanningDispatchIntent449.js';
-import {planningDispatchBinding449} from './PlanningDispatchBinding449.js';
+import {planningDispatchBinding449,planningHistorical433Binding449,planningFuture434Binding449} from './PlanningDispatchBinding449.js';
 const periodFingerprint=(payload,period)=>{const selectors=qualifyPlanningPeriodResult449(payload,period),p=payload.periodSelection,a=p.dateAuthority;return JSON.stringify([p.from,p.to,p.dateBasis,p.complete,p.count,p.order,a.verified,a.field,a.meaning,a.rootProofSha256,selectors.map(x=>[x.number,x.year,x.headerId])]);};
 const roots=Object.freeze({PRODUCTION_CHAIN:'/api/planning/production-chain/',FIFO_SIMULATION:'/api/planning/fifo-simulation/'});
 const roles=Object.freeze({'technics-utente73-primary':'primary','technics-utente38-secondary':'secondary'});
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i,id=/^[a-f0-9]{32}$/,hex=/^[a-f0-9]{64}$/;
-const contract='planning-frozen-standard-lpd-v2',caller='planning-433-owner-v1';
+const contract='planning-frozen-standard-lpd-v2';
 const fail=()=>{throw Error('PLANNING_FROZEN_IDENTITY_NOT_QUALIFIED_NO_FALLBACK');};
 export function createPlanningTypedTransport(approvedTransport,{baseHref=globalThis.location?.href,expectedVersion='1.9.432',dispatchBinding=planningDispatchBinding449,storage=globalThis.localStorage,now=Date.now,baseUrl=globalThis.__technicsBridgeUrl||baseHref}={}){
  if(typeof approvedTransport?.fetch!=='function'||expectedVersion!=='1.9.432')throw Error('PLANNING_CONFIG_NOT_BOUND');
  const binding=dispatchBinding===null?null:structuredClone(dispatchBinding);
- if(binding&&(!binding||binding.schema!==1||binding.backendVersion!=='1.9.433'||binding.gatewayVersion!=='1.9.228'||!hex.test(binding.buildHash||'')||!hex.test(binding.runtimeQualificationSha256||'')||!hex.test(binding.sourceQualificationSha256||'')||typeof binding.releaseId!=='string'||!binding.releaseId.startsWith('technics-backend-1.9.433-')||binding.endpointQualified!==true))throw Error('PLANNING_DISPATCH_BINDING_NOT_QUALIFIED');
+ const caller=binding?.backendVersion==='1.9.434'?'planning-434-owner-v1':'planning-433-owner-v1';
+ if(binding&&(!binding||binding.schema!==1||!((binding.backendVersion==='1.9.433'&&['1.9.228','1.9.229'].includes(binding.gatewayVersion)&&binding.buildHash==='29bb9fc4c9d9d3a6ac92ce6d73c0cc7367a8b7a345c6d05b5f65fa38c2aa389a'&&binding.releaseId==='technics-backend-1.9.433-planning-frozen-standard-lpd')||(binding.backendVersion==='1.9.434'&&binding.gatewayVersion==='1.9.229'&&binding.buildHash==='706d138c8472350873cebb05fedfb6c471b2a69c01edcbf5ee48f536e763351c'&&binding.releaseId==='technics-backend-1.9.434-fifo-partial-compact-planning'))||!hex.test(binding.buildHash||'')||!hex.test(binding.runtimeQualificationSha256||'')||!hex.test(binding.sourceQualificationSha256||'')||typeof binding.releaseId!=='string'||!binding.releaseId.startsWith('technics-backend-'+binding.backendVersion+'-')||binding.endpointQualified!==true))throw Error('PLANNING_DISPATCH_BINDING_NOT_QUALIFIED');
  const owners=new Map();let registry=null;
  const intents=()=>registry??=createPlanningIntentRegistry449(storage,{now});
  const check=(response,payload,requestId,owner)=>{const m=payload?.meta;if(!m||!(m.version===expectedVersion||binding&&m.version===binding.backendVersion)||roles[m.nodeId]!==m.nodeRole||!roles[m.nodeId]||m.source!=='TechnicsNativeBridge'||m.dataAuthority!=='Technics'||m.readOnly!==true||!uuid.test(m.backendInstanceId||'')||m.requestId!==requestId||!Number.isFinite(Date.parse(m.serverTime||''))||!m.leaseEpoch)fail();for(const [h,v]of [['X-Technics-Version',m.version],['X-Technics-Node',m.nodeId],['X-Technics-Node-Role',m.nodeRole],['X-Technics-Backend-Instance-Id',m.backendInstanceId],['X-Technics-Request-Id',requestId],['X-Technics-Server-Time',m.serverTime],['X-Technics-Lease-Epoch',String(m.leaseEpoch)]])if(response.headers.get(h)!==v)fail();if(owner&&['nodeId','nodeRole','backendInstanceId','backendVersion'].some(k=>(k==='backendVersion'?m.version:m[k])!==owner[k]))fail();return m;};
  const raw=async(url,options={},owner=null)=>{const requestId=globalThis.crypto.randomUUID(),headers=new Headers(options.headers);headers.set('X-Technics-Request-Id',requestId);if(binding&&new URL(url,baseHref).pathname.startsWith('/api/planning/'))headers.set('X-Technics-Print-Contract',caller);const response=await approvedTransport.fetch(url,{...options,headers,cache:'no-store'}),body=await response.clone().json();if(!response.ok)throw Error(body.code||'PLANNING_RESPONSE_UNKNOWN_NO_RESEND');check(response,body,requestId,owner);return body;};
  const bodyOwner=o=>({documentType:o.documentType,previewId:o.previewId,snapshotHash:o.snapshotHash,printerTarget:o.target,backendVersion:o.backendVersion,nodeId:o.nodeId,nodeRole:o.nodeRole,backendInstanceId:o.backendInstanceId});
  const pending=()=>intents().pending();
- const canDispatch=previewId=>{const o=owners.get(previewId);return Boolean(binding&&o&&o.backendVersion==='1.9.433'&&o.dispatchEnabled===true&&o.statusVerified===true&&o.verifiedPages.size===o.pageSha256.length&&o.readyUntil>now()&&o.previewFreshUntil>now()&&!intents().hasSnapshot(bodyOwner(o))&&!pending().length);};
+ const canDispatch=previewId=>{const o=owners.get(previewId);return Boolean(binding&&o&&o.backendVersion===binding.backendVersion&&o.dispatchEnabled===true&&o.statusVerified===true&&o.verifiedPages.size===o.pageSha256.length&&o.readyUntil>now()&&o.previewFreshUntil>now()&&!intents().hasSnapshot(bodyOwner(o))&&!pending().length);};
  const readyFor=async o=>{
-  if(!binding||o.backendVersion!=='1.9.433'||o.dispatchEnabled!==true||!o.statusVerified||o.verifiedPages.size!==o.pageSha256.length)fail();
+  if(!binding||o.backendVersion!==binding.backendVersion||o.dispatchEnabled!==true||!o.statusVerified||o.verifiedPages.size!==o.pageSha256.length)fail();
   const rootUrl=new URL(o.baseUrl,baseHref),requestId=globalThis.crypto.randomUUID(),headers=new Headers({'X-Technics-Request-Id':requestId});
-  rootUrl.pathname='/health/nodes';rootUrl.search='';const response=await approvedTransport.fetch(rootUrl.href,{method:'GET',headers,cache:'no-store'}),g=await response.json();if(!response.ok||g.ok!==true||g.gatewayVersion!==binding.gatewayVersion||!Array.isArray(g.nodes))fail();
+  rootUrl.pathname='/health/nodes';rootUrl.search='';const response=await approvedTransport.fetch(rootUrl.href,{method:'GET',headers,cache:'no-store'}),g=await response.json();if(!response.ok||g.ok!==true||(g.gatewayVersion!==binding.gatewayVersion&&!(binding.backendVersion==='1.9.433'&&binding.gatewayVersion==='1.9.228'&&g.gatewayVersion==='1.9.229'))||!Array.isArray(g.nodes))fail();
   const node=g.nodes.find(n=>n.nodeId===o.nodeId);if(!node||node.backendVersion!==binding.backendVersion||node.buildHash!==binding.buildHash||node.releaseId!==binding.releaseId||node.role!==o.nodeRole||node.compatible!==true||node.online!==true)fail();
   rootUrl.pathname='/health/ready';const r=await raw(rootUrl.href,{method:'GET'},o),c=r.planningFrozenContracts,p=r.operational;
   if(r.ok!==true||r.ready!==true||r.recovering!==false||r.version!==o.backendVersion||r.backendInstanceId!==o.backendInstanceId||r.database?.ready!==true||p?.ready!==true||p.stale!==false||p.storageAttested!==true||p.archives?.packing?.ok!==true||p.archives?.picking?.ok!==true||c?.version!==contract||c.productionChain!==true||c.fifoSimulation!==true||c.dispatchEnabled!==true||c.transport!=='STANDARD_LPD'||typeof p.freshUntil!=='string'||!Number.isFinite(Date.parse(p.freshUntil))||Date.parse(p.freshUntil)<=now())fail();
@@ -31,7 +32,7 @@ export function createPlanningTypedTransport(approvedTransport,{baseHref=globalT
  return Object.freeze({
   pendingIntents:pending,
   canDispatch,
-  async qualifyDispatch(previewId){const o=owners.get(previewId);if(!o||!binding||o.backendVersion!=='1.9.433'||o.dispatchEnabled!==true)return false;await readyFor(o);return canDispatch(previewId);},
+  async qualifyDispatch(previewId){const o=owners.get(previewId);if(!o||!binding||o.backendVersion!==binding.backendVersion||o.dispatchEnabled!==true)return false;await readyFor(o);return canDispatch(previewId);},
   async submitPreview(previewId){const o=owners.get(previewId);if(!canDispatch(previewId))fail();await readyFor(o);if(!canDispatch(previewId))fail();const intent=intents().reserve(bodyOwner(o));try{const u=new URL(o.baseUrl,baseHref);u.pathname=o.root+'print';u.search='';const r=await raw(u.href,{method:'POST',headers:{'Content-Type':'application/json','X-Technics-Print-Contract':caller},body:JSON.stringify(Object.fromEntries(['documentType','previewId','snapshotHash','printerTarget','operationId','backendVersion','nodeId','nodeRole','backendInstanceId'].map(k=>[k,intent[k]])))},intent);if(!receipt(r,intent))fail();intents().settle(intent,'accepted');return r;}catch(e){intents().settle(intent,'uncertain');throw e;}},
   async recoverIntent(intent){if(!binding||intent.backendVersion!==binding.backendVersion||!pending().some(x=>x.operationId===intent.operationId))fail();const u=new URL(baseUrl,baseHref);u.pathname=roots[intent.documentType]+'print-status';u.search=new URLSearchParams({id:intent.previewId,operationId:intent.operationId}).toString();try{const r=await raw(u.href,{method:'GET',headers:{'X-Technics-Print-Contract':caller}},intent);if(receipt(r,intent))intents().settle(intent,'accepted');return r;}catch(e){throw e;}},
   async fetch(input,options={}){
@@ -49,9 +50,37 @@ export function createPlanningTypedTransport(approvedTransport,{baseHref=globalT
    if(image){if(!response.ok)return response;for(const[h,v]of[['X-Technics-Version',owner.backendVersion],['X-Technics-Node',owner.nodeId],['X-Technics-Node-Role',owner.nodeRole],['X-Technics-Backend-Instance-Id',owner.backendInstanceId],['X-Technics-Request-Id',requestId]])if(response.headers.get(h)!==v)fail();if(!response.headers.get('X-Technics-Lease-Epoch')||!Number.isFinite(Date.parse(response.headers.get('X-Technics-Server-Time')||''))||!response.headers.get('Content-Type')?.startsWith('image/svg+xml'))fail();const bytes=await response.clone().arrayBuffer(),actual=[...new Uint8Array(await globalThis.crypto.subtle.digest('SHA-256',bytes))].map(b=>b.toString(16).padStart(2,'0')).join('');if(actual!==owner.pageSha256[Number(image[2])-1])fail();owner.verifiedPages.add(Number(image[2]));return response;}
    const payload=await response.clone().json();if(!response.ok)return response;const meta=check(response,payload,requestId,owner);
    const dispatchShape=(version)=>version==='1.9.432'?payload.dispatchEnabled===false:typeof payload.dispatchEnabled==='boolean'&&payload.dispatchContract===contract&&payload.transport==='STANDARD_LPD'&&payload.backendInstanceId===meta.backendInstanceId;
-   if(status){if(response.status!==200||payload.ok!==true||payload.previewId!==status[1]||payload.documentType!==owner.documentType||payload.printerTarget!==owner.target||!dispatchShape(owner.backendVersion)||payload.printed!==false||payload.physicalOutputConfirmed!==false||!Number.isSafeInteger(payload.attempts)||payload.attempts<0||payload.attempts>1||typeof payload.state!=='string'||!payload.state.length||payload.state.length>80||(payload.documentSha256!=null&&!hex.test(payload.documentSha256))||owner.backendVersion==='1.9.433'&&payload.snapshotHash!==owner.snapshotHash)fail();if(owner.period&&periodFingerprint(payload,owner.period)!==owner.periodFingerprint)fail();owner.statusVerified=payload.state==='not-submitted'&&payload.attempts===0;owner.dispatchEnabled=payload.dispatchEnabled;}
+   if(status){if(response.status!==200||payload.ok!==true||payload.previewId!==status[1]||payload.documentType!==owner.documentType||payload.printerTarget!==owner.target||!dispatchShape(owner.backendVersion)||payload.printed!==false||payload.physicalOutputConfirmed!==false||!Number.isSafeInteger(payload.attempts)||payload.attempts<0||payload.attempts>1||typeof payload.state!=='string'||!payload.state.length||payload.state.length>80||(payload.documentSha256!=null&&!hex.test(payload.documentSha256))||binding&&owner.backendVersion===binding.backendVersion&&payload.snapshotHash!==owner.snapshotHash)fail();if(owner.period&&periodFingerprint(payload,owner.period)!==owner.periodFingerprint)fail();owner.statusVerified=payload.state==='not-submitted'&&payload.attempts===0;owner.dispatchEnabled=payload.dispatchEnabled;}
    if(creation){if(response.status!==202||payload.ok!==true||payload.documentType!==creation.documentType||payload.printerTarget!==creation.target||typeof payload.previewId!=='string'||!id.test(payload.previewId||'')||typeof payload.snapshotHash!=='string'||!hex.test(payload.snapshotHash||'')||payload.snapshotHash!==payload.payloadSha256||!dispatchShape(meta.version)||payload.physicalOutputConfirmed!==false||!Number.isInteger(payload.pageCount)||payload.pageCount<1||payload.pageCount>64||!Array.isArray(payload.pageSha256)||payload.pageSha256.length!==payload.pageCount||payload.pageSha256.some(h=>typeof h!=='string'||!hex.test(h)))fail();if(creation.period)creation.periodFingerprint=periodFingerprint(payload,creation.period);if(owners.has(payload.previewId))fail();owners.set(payload.previewId,{...creation,previewId:payload.previewId,backendVersion:meta.version,nodeId:meta.nodeId,nodeRole:meta.nodeRole,backendInstanceId:meta.backendInstanceId,snapshotHash:payload.snapshotHash,pageSha256:payload.pageSha256,dispatchEnabled:payload.dispatchEnabled,verifiedPages:new Set(),statusVerified:false,previewFreshUntil:Date.parse(meta.serverTime)+120000,readyUntil:0});}
    return response;
   }
  });
+}
+
+export function selectCurrentPlanningBinding452(health,historicalBinding,futureBinding){
+ const bad=()=>{throw Error('PLANNING_ACTIVE_BACKEND_TUPLE_NOT_QUALIFIED_RELOAD_REQUIRED');};
+ if(health?.ok!==true||health.activeNode!=='technics-utente73-primary'||!Array.isArray(health.nodes))bad();
+ const primaries=health.nodes.filter(n=>n.nodeId===health.activeNode);
+ if(primaries.length!==1)bad();
+ const n=primaries[0];
+ if(n.role!=='primary'||n.online!==true||n.compatible!==true||n.leader!==true||health.nodes.filter(x=>x.leader===true).length!==1)bad();
+ const historical=n.backendVersion==='1.9.433'&&['1.9.228','1.9.229'].includes(health.gatewayVersion)&&n.buildHash==='29bb9fc4c9d9d3a6ac92ce6d73c0cc7367a8b7a345c6d05b5f65fa38c2aa389a'&&n.releaseId==='technics-backend-1.9.433-planning-frozen-standard-lpd';
+ const future=n.backendVersion==='1.9.434'&&health.gatewayVersion==='1.9.229'&&n.buildHash==='706d138c8472350873cebb05fedfb6c471b2a69c01edcbf5ee48f536e763351c'&&n.releaseId==='technics-backend-1.9.434-fifo-partial-compact-planning';
+ const selected=historical?historicalBinding:future?futureBinding:null;
+ if(!selected||selected.endpointQualified!==true||selected.backendVersion!==n.backendVersion||selected.buildHash!==n.buildHash||selected.releaseId!==n.releaseId||!(selected.gatewayVersion===health.gatewayVersion||historical&&selected.gatewayVersion==='1.9.228'&&health.gatewayVersion==='1.9.229'))bad();
+ return selected;
+}
+export async function createCurrentPlanningTypedTransport(approvedTransport,options={}){
+ if(typeof approvedTransport?.fetch!=='function')throw Error('PLANNING_CONFIG_NOT_BOUND');
+ const baseHref=options.baseHref||globalThis.location?.href,baseUrl=options.baseUrl||globalThis.__technicsBridgeUrl||baseHref;
+ const url=new URL(baseUrl,baseHref);url.pathname='/health/nodes';url.search='';url.hash='';
+ const requestId=globalThis.crypto.randomUUID();
+ let response;
+ try{response=await approvedTransport.fetch(url.href,{method:'GET',headers:{'X-Technics-Request-Id':requestId},cache:'no-store'});}
+ catch(raw){throw Error('PLANNING_HEALTH_BOOTSTRAP_FAILED: '+String(raw?.message||raw));}
+ let health;
+ try{health=await response.json();}catch{throw Error('PLANNING_HEALTH_BOOTSTRAP_RESPONSE_INVALID');}
+ if(!response.ok)throw Error('PLANNING_HEALTH_BOOTSTRAP_HTTP_'+response.status+': '+String(health?.code||health?.error||'UNAVAILABLE'));
+ const dispatchBinding=selectCurrentPlanningBinding452(health,planningHistorical433Binding449,planningFuture434Binding449);
+ return createPlanningTypedTransport(approvedTransport,{...options,dispatchBinding});
 }
