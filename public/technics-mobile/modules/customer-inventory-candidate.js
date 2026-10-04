@@ -186,8 +186,8 @@
         for(const [index,blob] of result.pages.entries()){
           const url=URL.createObjectURL(blob);pageUrls.push(url);const img=document.createElement('img');img.src=url;img.alt=`Pagina ${index+1} di ${result.pageCount} Inventario clienti`;pages.appendChild(img);
         }
-        preview.querySelector('[data-print-status]').textContent=`${result.pageCount} pagine server`;
-        preview.querySelector('[data-fixed-target]').textContent=printerTarget==='warehouse'?'Destinazione: Magazzino':'Destinazione: Corridoio';preview.querySelector('[data-print-confirm]').disabled=false;
+        preview.querySelector('[data-print-status]').textContent=result.printLock?.locked?`${result.pageCount} pagine server. Esito precedente non verificato (${result.printLock.code}); invio bloccato, nessun reinvio automatico.`:`${result.pageCount} pagine server`;
+        preview.querySelector('[data-fixed-target]').textContent=printerTarget==='warehouse'?'Destinazione: Magazzino':'Destinazione: Corridoio';preview.querySelector('[data-print-confirm]').disabled=!directPrint.ready();
         preview.hidden=false;
       }catch(error){directPrint?.invalidate();clearPages();status.textContent=error.message||'Anteprima server non disponibile.'}
       finally{previewButton.disabled=!selected||!printerTarget||(!showZero.checked&&selected.articleCount===0)}

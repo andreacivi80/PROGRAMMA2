@@ -32,7 +32,9 @@ function createTransport(original,{baseUrl=()=>globalThis.__technicsBridgeUrl,st
   if(!root&&!generic)return original(value,options);
   const creation=method==='POST'&&u.pathname===root+'-preview',sending=method==='POST'&&u.pathname===root;
   if(!['GET','HEAD','POST'].includes(method))fail('PRINT_METHOD_INVALID');
-  if((creation||sending)&&pending())fail('PRINT_OUTCOME_UNRESOLVED');
+  // Only customer preview is software read-only; unresolved intents still block every physical send.
+  const customerReadOnlyCreation=creation&&root==='/api/inventory/clients/print'&&!u.search;
+  if((sending||creation&&!customerReadOnlyCreation)&&pending())fail('PRINT_OUTCOME_UNRESOLVED');
   const previewRead=method==='GET'&&/print-preview-(status|image)$/.test(u.pathname);
   let owner=previewRead?owners.get(u.searchParams.get('id')):null;
   if(owner){if(u.searchParams.has('documentType')&&u.searchParams.get('documentType')!==owner.documentType)fail('PRINT_FAMILY_CHANGED');u.searchParams.set('documentType',owner.documentType);}

@@ -1,7 +1,6 @@
 {
-  "version": "1.9.450",
-  "build": "frontend450-current433-gateway228-planning-read-deadline-source-qualified",
-  "publishedAt": "2026-10-04T14:56:24.461Z",
+  "version": "1.9.451",
+  "build": "frontend451-current433-gateway228-customer-preview-source-qualified",
   "backendRequired": "1.9.433",
   "gatewayRequired": "1.9.228",
   "capabilities": {
@@ -163,8 +162,8 @@
   "gatewaySourceSealSha256": null,
   "callerContract": "mixed-421-425-427-428-429-432-433-all-v1",
   "deploymentProvenance": {
-    "phase": "MAIN433_STANDBY421_FRONTEND450",
-    "topologyGateSha256": "6fe9bc7534cc925f33bc3966cda9b35512d8c8bd615635b48ee892c49f6d820c",
+    "phase": "MAIN433_STANDBY421_FRONTEND451",
+    "topologyGateSha256": "df49eadb6fc493b7823dfb0fc410f71f1b171c6817da282e2b5ab422a6f8a9d1",
     "both433RolloutComplete": false,
     "physicalOutputConfirmed": false
   },
@@ -181,9 +180,26 @@
   "publishable": false,
   "releaseGo": false,
   "sourceCreatedAt": "2026-10-04T00:33:03.731Z",
-  "parentFrontendVersion": "1.9.447",
-  "parentFrontendCommit": "ffa56191b1e805d8c48889a04cf4e37857f16421",
+  "parentFrontendVersion": "1.9.450",
+  "parentFrontendCommit": "fdf030aab92894d223f385f50d24d83af635723f",
   "qualification": {
+    "state": "ACTUAL451_FOCUSED_CUSTOMER_C_M_AND_FOUR_OP_SOURCE_BOUND_OTHER_EIGHT_UNCHANGED_ANCESTRY_NOT_NEWLY_QUALIFIED",
+    "candidate": {
+      "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-candidate451-customer-1791130461265/REPORT.json",
+      "sha256": "6bb4412657fadb4512941f8b3a8263305269554e0ba0d76e4bef337d2c545535"
+    },
+    "private433": [
+      {
+        "path": "//srvfs/Dati/Produzione/programma prod/Programma/Technics-Artifact-Recovery/ROOT-nine20-433-primary-reconciled-1791108375784/ROOT-primary-nine20-reconciled.json",
+        "sha256": "fbee3b0d06ecf70e100c9243d4e3f5ddf83df96d50ff96472aafd050cd6c492a"
+      },
+      {
+        "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT433-actual-preservation-1791111589790-reserve-nine-node.json",
+        "sha256": "b4b56c6ef148f5c40e1f0fd8a28ac37a824a01dad82c8ab4b771bd65d781baf3"
+      }
+    ]
+  },
+  "parentQualification450": {
     "state": "ANCESTOR449_NINE_AVAILABLE_UI_PRESERVED_SCOPED450_TIMEOUT_SOURCE_PASS_PLANNING_PUBLIC_PENDING",
     "candidate": {
       "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-candidate449-real-1791111429594-result.json",
@@ -199,5 +215,12 @@
         "sha256": "b4b56c6ef148f5c40e1f0fd8a28ac37a824a01dad82c8ab4b771bd65d781baf3"
       }
     ]
-  }
+  },
+  "parentDeploymentProvenance450": {
+    "phase": "MAIN433_STANDBY421_FRONTEND450",
+    "topologyGateSha256": "6fe9bc7534cc925f33bc3966cda9b35512d8c8bd615635b48ee892c49f6d820c",
+    "both433RolloutComplete": false,
+    "physicalOutputConfirmed": false
+  },
+  "publishedAt": "2026-10-04T16:40:20.708Z"
 }
