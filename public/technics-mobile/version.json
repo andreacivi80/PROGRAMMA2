@@ -1,7 +1,7 @@
 {
-  "version": "1.9.449",
-  "build": "frontend449-current432-gateway228-planning433-private-qualified",
-  "publishedAt": "2026-10-04T11:22:05.788Z",
+  "version": "1.9.450",
+  "build": "frontend450-current433-gateway228-planning-read-deadline-source-qualified",
+  "publishedAt": "2026-10-04T14:56:24.461Z",
   "backendRequired": "1.9.433",
   "gatewayRequired": "1.9.228",
   "capabilities": {
@@ -163,8 +163,8 @@
   "gatewaySourceSealSha256": null,
   "callerContract": "mixed-421-425-427-428-429-432-433-all-v1",
   "deploymentProvenance": {
-    "phase": "MAIN432_STANDBY421_FRONTEND449",
-    "topologyGateSha256": "400331cc2f4b3583819537d923623d81be39bc21b58a15d966d0b26cdf89d666",
+    "phase": "MAIN433_STANDBY421_FRONTEND450",
+    "topologyGateSha256": "6fe9bc7534cc925f33bc3966cda9b35512d8c8bd615635b48ee892c49f6d820c",
     "both433RolloutComplete": false,
     "physicalOutputConfirmed": false
   },
@@ -175,7 +175,7 @@
     "topologyGateSha256": "a8be3c2489e736e5c782c4efd858bb78b3acac214d4e3660cbf971beb7b03434",
     "gatewayReadinessPatchSha256": "ce6d8a0670b92a9eeb4849138b001df37c58809671e800fce59fcdfab846f327"
   },
-  "backendVersion": "1.9.432",
+  "backendVersion": "1.9.433",
   "gatewayVersion": "1.9.228",
   "published": false,
   "publishable": false,
@@ -184,7 +184,7 @@
   "parentFrontendVersion": "1.9.447",
   "parentFrontendCommit": "ffa56191b1e805d8c48889a04cf4e37857f16421",
   "qualification": {
-    "state": "ACTUAL_CANDIDATE_NINE_AVAILABLE_UI_PASS_PLANNING_PUBLIC_PENDING",
+    "state": "ANCESTOR449_NINE_AVAILABLE_UI_PRESERVED_SCOPED450_TIMEOUT_SOURCE_PASS_PLANNING_PUBLIC_PENDING",
     "candidate": {
       "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-candidate449-real-1791111429594-result.json",
       "sha256": "7d1db6f4b982a2e93463782fa3b0ba58af0241f1358e8a8022f0730911259d94"

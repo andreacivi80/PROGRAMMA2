@@ -129,7 +129,8 @@
       if(options.signal?.aborted)throw cancelledRequest(options.signal.reason);
       let callerListening=false,responseOwnsCaller=false;
       const requestPath=(()=>{try{return new URL(String(url),globalThis.location?.href||window.__technicsBridgeUrl).pathname}catch{return String(url)}})();
-      const timeout=/\/health(?:[/?]|$)/.test(String(url))?4500:safe?8000:requestPath==="/api/packing/photo"?90000:30000;
+      const planningRead=method==="GET"&&/^\/api\/planning\/(?:production-chain(?:$|\/(?:print-preview-status|print-preview-image|print-status)$)|fifo-simulation\/(?:print-preview-status|print-preview-image|print-status)$)/.test(requestPath)&&new Headers(options.headers||{}).get("X-Technics-Print-Contract")==="planning-433-owner-v1"&&Boolean(window.__technicsBridgeUrl)&&origin===transportOrigin(window.__technicsBridgeUrl);
+      const timeout=/\/health(?:[/?]|$)/.test(String(url))?4500:safe?(planningRead?30000:8000):requestPath==="/api/packing/photo"?90000:30000;
       const controller=new AbortController(),nativeComposite=options.signal&&typeof AbortSignal!=="undefined"&&typeof AbortSignal.any==="function",detachCaller=()=>{if(callerListening){options.signal.removeEventListener("abort",callerAbort);callerListening=false}},callerAbort=()=>{controller.abort(options.signal.reason);detachCaller()},signal=nativeComposite?AbortSignal.any([controller.signal,options.signal]):controller.signal,timer=setTimeout(()=>controller.abort("timeout"),timeout);
       if(options.signal&&!nativeComposite){callerListening=true;options.signal.addEventListener("abort",callerAbort,{once:true})}
       try{
