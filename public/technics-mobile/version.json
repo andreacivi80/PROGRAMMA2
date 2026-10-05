@@ -1,8 +1,8 @@
 {
-  "version": "1.9.453",
-  "build": "frontend453-current434-gateway229-customer-preview-source-qualified",
-  "backendRequired": "1.9.435",
-  "gatewayRequired": "1.9.230",
+  "version": "1.9.454",
+  "build": "frontend454-current435-gateway229-customer-preview-source-qualified",
+  "backendRequired": "1.9.436",
+  "gatewayRequired": "1.9.231",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
@@ -107,12 +107,12 @@
       "lotLayoutBindingPreserved": true
     },
     "primaryFirstFrozenPrint": {
-      "backendRequired": "1.9.435",
-      "gatewayRequired": "1.9.230",
+      "backendRequired": "1.9.436",
+      "gatewayRequired": "1.9.231",
       "owner": "actual-node-backend-instance",
       "queueAcceptanceIsNotPhysicalOutput": true,
       "realRuntimeQualified": false,
-      "availability": "pending-actual435-generation-qualification",
+      "availability": "pending-actual436-generation-qualification",
       "active": false,
       "dispatchEnabled": false
     },
@@ -126,9 +126,9 @@
         "knownPreexistingGroupFailures": 2
       },
       "modern": {
-        "backendVersion": "1.9.435",
-        "gatewayVersion": "1.9.230",
-        "availability": "pending-actual435-generation-qualification",
+        "backendVersion": "1.9.436",
+        "gatewayVersion": "1.9.231",
+        "availability": "pending-actual436-generation-qualification",
         "realRuntimeQualified": false
       },
       "selectionFrom": "authentic-preview-meta",
@@ -137,15 +137,15 @@
       "physicalOutputConfirmed": false
     },
     "planningFrozenContracts": {
-      "backendRequired": "1.9.435",
-      "gatewayRequired": "1.9.230",
+      "backendRequired": "1.9.436",
+      "gatewayRequired": "1.9.231",
       "families": [
         "PRODUCTION_CHAIN",
         "FIFO_SIMULATION"
       ],
       "dispatchEnabled": false,
       "realRuntimeQualified": false,
-      "availability": "pending-actual435-generation-qualification",
+      "availability": "pending-actual436-generation-qualification",
       "periodDefault": "schedule-current",
       "manualAlternative": true,
       "periodAndManualExclusive": true,
@@ -153,18 +153,18 @@
     }
   },
   "standbyRequired": "1.9.421",
-  "futurePrintBinding": "AUTHENTIC434_PRIVATE_ENDPOINT_QUALIFIED_PUBLIC_AND_DISPATCH_PENDING",
+  "futurePrintBinding": "AUTHENTIC436_PRIVATE_ENDPOINT_QUALIFIED_PUBLIC_AND_DISPATCH_PENDING",
   "sourceOnly": false,
   "runtimeQualified": true,
-  "backendSourceRequired": "1.9.435",
-  "backendSourceBuildHash": "642380ab498410a310b6d1829c7d06c4c046f586e4f39e72b170e87fc323d876",
-  "gatewaySourceRequired": "1.9.230",
-  "gatewaySourceSealSha256": "b270afcf2245638164de88794a8592d3e884287b401f6eb8e0ca6e2e4de634c9",
-  "callerContract": "mixed-421-425-427-428-429-432-433-434-435-all-v1",
+  "backendSourceRequired": "1.9.436",
+  "backendSourceBuildHash": "60300ab745a3027dd9e10cfb21b7ad5f81527ef9dac84c7a0e8b3f90f6a90c34",
+  "gatewaySourceRequired": "1.9.231",
+  "gatewaySourceSealSha256": "14c5b85c2ff02ff5232bb6eef7a3d3f12fa762be283a6936698547e60b87bfde",
+  "callerContract": "mixed-421-425-427-428-429-432-433-434-435-436-all-v1",
   "deploymentProvenance": {
-    "phase": "MAIN434_STANDBY421_FRONTEND453",
-    "topologyGateSha256": "fe262453094154b921b0678937ceeeb14d7847035b490a229db7cf3217c16fc9",
-    "both434RolloutComplete": false,
+    "phase": "MAIN435_STANDBY421_FRONTEND454",
+    "topologyGateSha256": "e9d44eefaf72a4c6aed578aff290e662054e355be6141209d83b7731ee812052",
+    "both435RolloutComplete": false,
     "physicalOutputConfirmed": false
   },
   "parentDeploymentProvenance": {
@@ -174,28 +174,28 @@
     "topologyGateSha256": "a8be3c2489e736e5c782c4efd858bb78b3acac214d4e3660cbf971beb7b03434",
     "gatewayReadinessPatchSha256": "ce6d8a0670b92a9eeb4849138b001df37c58809671e800fce59fcdfab846f327"
   },
-  "backendVersion": "1.9.434",
-  "gatewayVersion": "1.9.229",
+  "backendVersion": "1.9.435",
+  "gatewayVersion": "1.9.231",
   "published": false,
   "publishable": false,
   "releaseGo": false,
   "sourceCreatedAt": "2026-10-04T00:33:03.731Z",
-  "parentFrontendVersion": "1.9.452",
+  "parentFrontendVersion": "1.9.453",
   "parentFrontendCommit": "c41c0f10ab72df13736a8a0dab0dc9778c87b96f",
   "qualification": {
-    "state": "ACTUAL453_CURRENT434_CUSTOMER_MANUAL_OP_PLANNING_GUI_BOUND_PRIVATE435_NINE_ANCESTRY_NOT_ACTIVE435",
+    "state": "ACTUAL454_CURRENT435_CUSTOMER_MANUAL_OP_PLANNING_GUI_BOUND_PRIVATE436_NINE_ANCESTRY_NOT_ACTIVE436",
     "candidate": {
-      "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-candidate453-operator-1791149969616/REPORT.json",
-      "sha256": "e1cb2a582297ca03e32b428838c68f9a9cd0679b22076c92477264a3de6df004"
+      "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-candidate454-operator-1791171045620/REPORT.json",
+      "sha256": "8e9c3215fbf0369d8f62ae3206cd8c7843c9d4d0051f221356348d8733cdc3b8"
     },
-    "private435": [
+    "private436": [
       {
-        "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-nine435-1791149799773-pc73-actual.json",
-        "sha256": "56310e376a870ef94124c93b04b6c4dcf5d3d6b79b7030ec149f0d58a64e26de"
+        "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-nine436-1791166786131-pc73-actual.json",
+        "sha256": "ba42241bf7bd3f1b5eb8577b44bcfa029c874166c0bc4e1c33a78080bbb04b06"
       },
       {
-        "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-nine435-1791149799773-pc38-actual.json",
-        "sha256": "3fd09b007df2326f1d158a2095794aab10a8fbfbbb7df1467a10788e0caf4377"
+        "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-nine436-1791166786131-pc38-actual.json",
+        "sha256": "9273e6774c8ff077c467ec61fe586607dd16c2740bb62b077962e76455c2de05"
       }
     ]
   },
@@ -286,17 +286,38 @@
     "reloadAfterCutoverRequired": true,
     "automaticResend": false
   },
-  "futureBackend435": {
-    "buildHash": "642380ab498410a310b6d1829c7d06c4c046f586e4f39e72b170e87fc323d876",
-    "manifestSha256": "d74c8418f6840237667a1a341669c8d043424f997ed96ab4e9957d253261cde8",
-    "assemblySha256": "91e15bdbc659344654d2bb0451365128368b8017fe68f8349deeca0f5afb90b2",
-    "runtimeBinding": null,
-    "backendInstanceId": null,
-    "dispatchEnabled": false,
-    "endpointQualified": true
-  },
   "current434BindingsScope": "PRESERVED_CURRENT434_ANCESTRY_NOT435_ADMISSION",
   "current434BindingsAreAncestryNot435Admission": true,
   "publicRuntimeQualified": false,
-  "publishedAt": "2026-10-04T22:51:00.806Z"
+  "futureBackend436": {
+    "version": "1.9.436",
+    "buildHash": "60300ab745a3027dd9e10cfb21b7ad5f81527ef9dac84c7a0e8b3f90f6a90c34",
+    "manifestSha256": "7d00aeea6a1ffe79b8d59a735364362cd5c130faeb0f8ef2ae99f5e12abc638d",
+    "assemblySha256": "7aec7e83715bf20bcb05a37a8cc753f20492af761f68d6b3c1f712cda2ff83eb",
+    "state": "AUTHENTIC436_PRIVATE_ENDPOINT_SOURCE_NOT_ACTIVE_OR_PUBLIC",
+    "runtimeBinding": {
+      "schema": 1,
+      "backendVersion": "1.9.436",
+      "gatewayVersion": "1.9.231",
+      "buildHash": "60300ab745a3027dd9e10cfb21b7ad5f81527ef9dac84c7a0e8b3f90f6a90c34",
+      "releaseId": "technics-backend-1.9.436-simulato-op-month-bounded-planning",
+      "runtimeQualificationSha256": "6b4d134bd0ffeccaf075fbb14e9b18cb465e3d3962ea3207e812856072a6f2d9",
+      "sourceQualificationSha256": "dbe68fef756a6b16630e61af1eb66e2c4b6fdfca87d857964f3203afab3756fa",
+      "endpointQualified": true,
+      "dispatchEnabled": false,
+      "backendInstanceId": null,
+      "publicRuntimeQualified": false,
+      "qualificationScope": "REAL_INACTIVE436_BOTH_NODE_MONTH_ENDPOINT_ONLY_NOT_PUBLIC_OR_DISPATCH_GO",
+      "nineQualificationSha256": "5d0aed1dd7224a17f495773f217e54a9a896160283420638fb18fad874d4c114"
+    },
+    "gatewayBinding": null,
+    "dispatchEnabled": false
+  },
+  "current435BindingsScope": "PRESERVED_CURRENT435_ANCESTRY_NOT436_ADMISSION",
+  "parent435TargetMetadata": {
+    "backendRequired": "1.9.435",
+    "gatewayRequired": "1.9.230",
+    "backendSourceBuildHash": "642380ab498410a310b6d1829c7d06c4c046f586e4f39e72b170e87fc323d876"
+  },
+  "publishedAt": "2026-10-05T03:41:54.244Z"
 }

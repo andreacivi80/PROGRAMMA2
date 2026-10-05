@@ -1,6 +1,6 @@
 // SOURCE only. The caller cannot supply dateAuthority. The existing reader
 // supplies run() inside its one protected rollback-only transaction.
-export const PLANNING_PERIOD_LIMITS=Object.freeze({maxDays:62,maxOV:256,maxRows:5000,maxQueryIds:256,maxOP:256,readBudgetMs:15000,maxPages:64});
+export const PLANNING_PERIOD_LIMITS=Object.freeze({maxDays:62,maxOV:256,maxRows:5000,maxQueryIds:256,maxOP:1024,readBudgetMs:15000,maxPages:64});
 // Genuine ROOT current432 calendar GET pins DataConsegna/r.DataConferma.
 // This is NOT shipping semantics or new bulk-reader runtime qualification.
 export const CURRENT_SCHEDULE_DATE_AUTHORITY=Object.freeze({verified:true,field:'r.DataConferma',meaning:'current-schedule',rootProofSha256:'1a3780f16de45e27f10b48781ff9e7cddfa60afbee9522784bcda01694bc7d70'});
