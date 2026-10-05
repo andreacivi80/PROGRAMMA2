@@ -1,6 +1,6 @@
 {
-  "version": "1.9.456",
-  "build": "frontend456-current438-gateway229-customer-preview-source-qualified",
+  "version": "1.9.457",
+  "build": "frontend457-authentic439-binding-export-cumulative-layout-preserved",
   "backendRequired": "1.9.439",
   "gatewayRequired": "1.9.233",
   "capabilities": {
@@ -162,9 +162,9 @@
   "gatewaySourceSealSha256": "7cc30ba4b9e04295d4eeac2182e6aecd691bda01ccdb2dc6365bfa84d9e6aba4",
   "callerContract": "mixed-421-425-427-428-429-432-433-434-435-436-438-439-all-v1",
   "deploymentProvenance": {
-    "phase": "MAIN438_STANDBY421_FRONTEND456",
-    "topologyGateSha256": "6ee9d496d6fe608e5069c85e7402ad2f6ceed4f03105dfc2440831606f3add01",
-    "both438RolloutComplete": false,
+    "phase": "MAIN439_STANDBY421_FRONTEND457",
+    "topologyGateSha256": "e1687a1ee3cdb2b2ecce72e3e61ee749cf92515fb0b1b9f1a551978ba8384cb1",
+    "both439RolloutComplete": false,
     "physicalOutputConfirmed": false
   },
   "parentDeploymentProvenance": {
@@ -174,7 +174,7 @@
     "topologyGateSha256": "a8be3c2489e736e5c782c4efd858bb78b3acac214d4e3660cbf971beb7b03434",
     "gatewayReadinessPatchSha256": "ce6d8a0670b92a9eeb4849138b001df37c58809671e800fce59fcdfab846f327"
   },
-  "backendVersion": "1.9.438",
+  "backendVersion": "1.9.439",
   "gatewayVersion": "1.9.233",
   "published": false,
   "publishable": false,
@@ -347,7 +347,7 @@
     "gatewayBinding": null,
     "dispatchEnabled": false
   },
-  "publishedAt": "2026-10-05T11:21:03.228Z",
+  "publishedAt": "2026-10-05T12:09:17.467Z",
   "parent438TargetMetadata": {
     "backendRequired": "1.9.438",
     "gatewayRequired": "1.9.232",
@@ -358,8 +358,52 @@
     "buildHash": "d001b0ae9663344cdd4693d0581213a95ad619ec9fbadeb58914bcef67dd3f9f",
     "manifestSha256": "140b6825f3ecb50b2c342f9dcd88248e7dfe6165db250d9b9613faca4360a175",
     "assemblySha256": "91cf04a1da37a36f0bdc5ae5e469df5c138db64e9650bbe43737e2f30feb488c",
-    "state": "AUTHENTIC439_SOURCE_NOT_ACTIVE_OR_PUBLIC",
-    "runtimeBinding": null,
+    "state": "AUTHENTIC439_ENDPOINT_AND_ACTIVE_PRIMARY_QUALIFIED_PUBLIC457_PENDING",
+    "runtimeBinding": {
+      "schema": 1,
+      "backendVersion": "1.9.439",
+      "gatewayVersion": "1.9.233",
+      "buildHash": "d001b0ae9663344cdd4693d0581213a95ad619ec9fbadeb58914bcef67dd3f9f",
+      "releaseId": "technics-backend-1.9.439-simulato-op-number-label",
+      "runtimeQualificationSha256": "45e1c303e03ec862fd1d9b28b44f56c5bc7b78c229848c2c689e55d24b8cae1e",
+      "sourceQualificationSha256": "c46d40f170dd24af08285100e945ab3829e14dec0721895163b2c96fa8f664b5",
+      "endpointQualified": true,
+      "dispatchEnabled": false,
+      "backendInstanceId": null,
+      "publicRuntimeQualified": false,
+      "qualificationScope": "REAL_INACTIVE439_BOTH_NODE_23DAY_MONTH_ENDPOINT_ACTIVE439_NOT_PUBLIC457_OR_DISPATCH_GO",
+      "nineQualificationSha256": "dd876cb9d9aa19eed056bf9bc2974eb912b27bbd4cf26b2f023b6ca855bdc23f",
+      "refs": {
+        "month": {
+          "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-finite439-period-1791196457752-execution.json",
+          "sha256": "45e1c303e03ec862fd1d9b28b44f56c5bc7b78c229848c2c689e55d24b8cae1e"
+        },
+        "period23days": {
+          "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-finite439-period-1791196647330-execution.json",
+          "sha256": "06bd6c07ab9ffec46b885e22069fb389b2970db1e1631f9508af7a8fa798df92"
+        },
+        "nine": {
+          "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-nine439-1791196311008-execution.json",
+          "sha256": "dd876cb9d9aa19eed056bf9bc2974eb912b27bbd4cf26b2f023b6ca855bdc23f"
+        },
+        "sourcePeer": {
+          "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/rollout439-r2-historical-source-20261005/ROOT-INDEPENDENT-SOURCE-REVIEW.json",
+          "sha256": "c46d40f170dd24af08285100e945ab3829e14dec0721895163b2c96fa8f664b5"
+        },
+        "assembly": {
+          "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT439-r2-local-source-attempt-1791194039755-assembly-source.json",
+          "sha256": "91cf04a1da37a36f0bdc5ae5e469df5c138db64e9650bbe43737e2f30feb488c"
+        },
+        "manifest": {
+          "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT439-r2-local-source-attempt-1791194039755-native-backend-candidate.json",
+          "sha256": "140b6825f3ecb50b2c342f9dcd88248e7dfe6165db250d9b9613faca4360a175"
+        },
+        "primaryActivation": {
+          "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT439-primary456-fa93b3be5dbd475119e19e6e-actual.json",
+          "sha256": "b3423d0ef9897a68338155d492e4065e4ed0bf9b06ec0cdc2ea4354c06c1fc1c"
+        }
+      }
+    },
     "gatewayBinding": null,
     "dispatchEnabled": false
   }
