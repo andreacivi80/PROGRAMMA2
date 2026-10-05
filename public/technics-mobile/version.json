@@ -1,8 +1,8 @@
 {
-  "version": "1.9.454",
-  "build": "frontend454-current435-gateway229-customer-preview-source-qualified",
-  "backendRequired": "1.9.436",
-  "gatewayRequired": "1.9.231",
+  "version": "1.9.455",
+  "build": "frontend455-current436-gateway229-customer-preview-source-qualified",
+  "backendRequired": "1.9.438",
+  "gatewayRequired": "1.9.232",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
@@ -107,12 +107,12 @@
       "lotLayoutBindingPreserved": true
     },
     "primaryFirstFrozenPrint": {
-      "backendRequired": "1.9.436",
-      "gatewayRequired": "1.9.231",
+      "backendRequired": "1.9.438",
+      "gatewayRequired": "1.9.232",
       "owner": "actual-node-backend-instance",
       "queueAcceptanceIsNotPhysicalOutput": true,
       "realRuntimeQualified": false,
-      "availability": "pending-actual436-generation-qualification",
+      "availability": "pending-actual438-generation-qualification",
       "active": false,
       "dispatchEnabled": false
     },
@@ -126,9 +126,9 @@
         "knownPreexistingGroupFailures": 2
       },
       "modern": {
-        "backendVersion": "1.9.436",
-        "gatewayVersion": "1.9.231",
-        "availability": "pending-actual436-generation-qualification",
+        "backendVersion": "1.9.438",
+        "gatewayVersion": "1.9.232",
+        "availability": "pending-actual438-generation-qualification",
         "realRuntimeQualified": false
       },
       "selectionFrom": "authentic-preview-meta",
@@ -137,15 +137,15 @@
       "physicalOutputConfirmed": false
     },
     "planningFrozenContracts": {
-      "backendRequired": "1.9.436",
-      "gatewayRequired": "1.9.231",
+      "backendRequired": "1.9.438",
+      "gatewayRequired": "1.9.232",
       "families": [
         "PRODUCTION_CHAIN",
         "FIFO_SIMULATION"
       ],
       "dispatchEnabled": false,
       "realRuntimeQualified": false,
-      "availability": "pending-actual436-generation-qualification",
+      "availability": "pending-actual438-generation-qualification",
       "periodDefault": "schedule-current",
       "manualAlternative": true,
       "periodAndManualExclusive": true,
@@ -153,18 +153,18 @@
     }
   },
   "standbyRequired": "1.9.421",
-  "futurePrintBinding": "AUTHENTIC436_PRIVATE_ENDPOINT_QUALIFIED_PUBLIC_AND_DISPATCH_PENDING",
+  "futurePrintBinding": "AUTHENTIC438_PRIVATE_ENDPOINT_QUALIFIED_PUBLIC_AND_DISPATCH_PENDING",
   "sourceOnly": false,
   "runtimeQualified": true,
-  "backendSourceRequired": "1.9.436",
-  "backendSourceBuildHash": "60300ab745a3027dd9e10cfb21b7ad5f81527ef9dac84c7a0e8b3f90f6a90c34",
-  "gatewaySourceRequired": "1.9.231",
-  "gatewaySourceSealSha256": "14c5b85c2ff02ff5232bb6eef7a3d3f12fa762be283a6936698547e60b87bfde",
-  "callerContract": "mixed-421-425-427-428-429-432-433-434-435-436-all-v1",
+  "backendSourceRequired": "1.9.438",
+  "backendSourceBuildHash": "6834bcaa7c24f91a95554cf135d7b45edc8ac084e104ef1b47683d44010d812f",
+  "gatewaySourceRequired": "1.9.232",
+  "gatewaySourceSealSha256": "a92711e161ca68ea28c7851c18d6664d48036a627d8dc069428f5c662b91fb38",
+  "callerContract": "mixed-421-425-427-428-429-432-433-434-435-436-438-all-v1",
   "deploymentProvenance": {
-    "phase": "MAIN435_STANDBY421_FRONTEND454",
-    "topologyGateSha256": "e9d44eefaf72a4c6aed578aff290e662054e355be6141209d83b7731ee812052",
-    "both435RolloutComplete": false,
+    "phase": "MAIN436_STANDBY421_FRONTEND455",
+    "topologyGateSha256": "c05c62dd376b8c966500913f40f071f17fd7f972d2caf50e45025ed8e28a1e26",
+    "both436RolloutComplete": false,
     "physicalOutputConfirmed": false
   },
   "parentDeploymentProvenance": {
@@ -174,8 +174,8 @@
     "topologyGateSha256": "a8be3c2489e736e5c782c4efd858bb78b3acac214d4e3660cbf971beb7b03434",
     "gatewayReadinessPatchSha256": "ce6d8a0670b92a9eeb4849138b001df37c58809671e800fce59fcdfab846f327"
   },
-  "backendVersion": "1.9.435",
-  "gatewayVersion": "1.9.231",
+  "backendVersion": "1.9.436",
+  "gatewayVersion": "1.9.232",
   "published": false,
   "publishable": false,
   "releaseGo": false,
@@ -183,19 +183,19 @@
   "parentFrontendVersion": "1.9.453",
   "parentFrontendCommit": "c41c0f10ab72df13736a8a0dab0dc9778c87b96f",
   "qualification": {
-    "state": "ACTUAL454_CURRENT435_CUSTOMER_MANUAL_OP_PLANNING_GUI_BOUND_PRIVATE436_NINE_ANCESTRY_NOT_ACTIVE436",
+    "state": "ACTUAL455_CURRENT436_CUSTOMER_MANUAL_OP_PLANNING_GUI_BOUND_PRIVATE438_NINE_ANCESTRY_NOT_ACTIVE438",
     "candidate": {
-      "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-candidate454-operator-1791171045620/REPORT.json",
-      "sha256": "8e9c3215fbf0369d8f62ae3206cd8c7843c9d4d0051f221356348d8733cdc3b8"
+      "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-candidate455-operator-1791188257769/REPORT.json",
+      "sha256": "3beb9afdd4a16da40f88eec9346c47949347a89df24fa6fb49ca3367b92f1530"
     },
-    "private436": [
+    "private438": [
       {
-        "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-nine436-1791166786131-pc73-actual.json",
-        "sha256": "ba42241bf7bd3f1b5eb8577b44bcfa029c874166c0bc4e1c33a78080bbb04b06"
+        "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-nine438-1791184282673-pc73-actual.json",
+        "sha256": "9bfc4be02b20033ac5913c13769413b78e0ce3844180a4065c95bd261d479d30"
       },
       {
-        "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-nine436-1791166786131-pc38-actual.json",
-        "sha256": "9273e6774c8ff077c467ec61fe586607dd16c2740bb62b077962e76455c2de05"
+        "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-nine438-1791184282673-pc38-actual.json",
+        "sha256": "8fb161bb7974b45f1b856ca0bcdc3c32af0a7afe0b18e6fe2d4d9b8e240851c1"
       }
     ]
   },
@@ -319,5 +319,33 @@
     "gatewayRequired": "1.9.230",
     "backendSourceBuildHash": "642380ab498410a310b6d1829c7d06c4c046f586e4f39e72b170e87fc323d876"
   },
-  "publishedAt": "2026-10-05T03:41:54.244Z"
+  "parent436TargetMetadata": {
+    "backendRequired": "1.9.436",
+    "gatewayRequired": "1.9.231",
+    "backendSourceBuildHash": "60300ab745a3027dd9e10cfb21b7ad5f81527ef9dac84c7a0e8b3f90f6a90c34"
+  },
+  "futureBackend438": {
+    "version": "1.9.438",
+    "buildHash": "6834bcaa7c24f91a95554cf135d7b45edc8ac084e104ef1b47683d44010d812f",
+    "manifestSha256": "8bff381a6b24819dae44247be2a2dcaf85e273353cd471881f0db4fc14cead27",
+    "assemblySha256": "76638e0a327e73ea784dc393daa27798e003429eca26c0315215cdd33918047c",
+    "state": "AUTHENTIC438_SOURCE_NOT_ACTIVE_OR_PUBLIC",
+    "runtimeBinding": {
+      "schema": 1,
+      "backendVersion": "1.9.438",
+      "gatewayVersion": "1.9.232",
+      "buildHash": "6834bcaa7c24f91a95554cf135d7b45edc8ac084e104ef1b47683d44010d812f",
+      "releaseId": "technics-backend-1.9.438-cumulative-fifo-display",
+      "runtimeQualificationSha256": "b1b6df5608e12ef6ab154fa8d4965d9be16c7f706a6c482f6eb05bdfba7a3c78",
+      "sourceQualificationSha256": "20e3b55a635e64575193cb5ebdd8f2b2ab90bc59968a38d4f40e21caf1edf784",
+      "endpointQualified": true,
+      "dispatchEnabled": false,
+      "backendInstanceId": null,
+      "publicRuntimeQualified": false,
+      "qualificationScope": "REAL_INACTIVE438_BOTH_NODE_PERIOD_ENDPOINT_ONLY_NOT_PUBLIC_OR_DISPATCH_GO"
+    },
+    "gatewayBinding": null,
+    "dispatchEnabled": false
+  },
+  "publishedAt": "2026-10-05T08:47:12.733Z"
 }
