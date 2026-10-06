@@ -1,5 +1,5 @@
 {
-  "version": "1.9.460",
+  "version": "1.9.461",
   "build": "frontend458-authentic440-source-admission-current439-bridge",
   "backendRequired": "1.9.441",
   "gatewayRequired": "1.9.235",
@@ -488,5 +488,15 @@
     "layoutChanged": false,
     "nativeActivationPending": true,
     "physicalOutputConfirmed": false
+  },
+  "sourceCorrection": {
+    "scope": "Planning UI installs before qualification; each explicit read acquires current strict qualified transport",
+    "backendRequired": "1.9.441",
+    "gatewayRequired": "1.9.235",
+    "nativeChanged": false,
+    "layoutChanged": false,
+    "bootstrapHealthRetry": false,
+    "automaticDispatch": false,
+    "releaseGo": false
   }
 }
