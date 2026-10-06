@@ -1,6 +1,6 @@
 {
-  "version": "1.9.468",
-  "build": "frontend468-ERP-OP-native443-G237-SOURCE",
+  "version": "1.9.469",
+  "build": "frontend469-schedule-serialization-planning443-timer-SOURCE",
   "backendRequired": "1.9.443",
   "gatewayRequired": "1.9.237",
   "capabilities": {
@@ -327,8 +327,8 @@
   "publishable": false,
   "releaseGo": false,
   "sourceCreatedAt": "2026-10-04T00:33:03.731Z",
-  "parentFrontendVersion": "1.9.467",
-  "parentFrontendCommit": "c8759067cc0098533e57c87ccb71fb972c4acf9d",
+  "parentFrontendVersion": "1.9.468",
+  "parentFrontendCommit": "0165a68914f8e4da89a09c5c389046251e0deb48",
   "qualification": {
     "state": "443_SOURCE_ONLY_PENDING_REAL_HOST_AND_PUBLIC_PROOFS",
     "endpointQualified": false,
@@ -726,5 +726,17 @@
     "backendInstanceId": null,
     "gatewaySourceSealSha256": "118a4e84616833d479af2dedcb1f16fa8a5806edc3f5404c6505e3f190f2fe07",
     "qualificationScope": "AUTHENTIC443_SOURCE_ONLY_NEW_REAL_HOST_ENDPOINT_PROOF_REQUIRED"
+  },
+  "clientPlanningReadCorrection": {
+    "sourceOnly": true,
+    "baseRevision": "1.9.468",
+    "sourceSealSha256": "807c84654960d29732e5057de4d942391da520bd91c8767fa855aebd61373d54",
+    "scope": "Schedule client pending guard; authentic443 admitted to existing same-origin planning GET timer",
+    "automaticGraphStart": false,
+    "nativeDeadlineMsUnchanged": 15000,
+    "nativePoolUnchanged": true,
+    "cumulativeFourColumnsUnchanged": true,
+    "publicQualified": false,
+    "physicalOutputConfirmed": false
   }
 }
