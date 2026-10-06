@@ -1,5 +1,5 @@
 {
-  "version": "1.9.466",
+  "version": "1.9.467",
   "build": "frontend458-authentic440-source-admission-current439-bridge",
   "backendRequired": "1.9.441",
   "gatewayRequired": "1.9.235",
@@ -181,8 +181,8 @@
   "publishable": false,
   "releaseGo": false,
   "sourceCreatedAt": "2026-10-04T00:33:03.731Z",
-  "parentFrontendVersion": "1.9.465",
-  "parentFrontendCommit": "5b94aaee778b03901b88d3a2b0959287b1aaeb94",
+  "parentFrontendVersion": "1.9.466",
+  "parentFrontendCommit": "bd05abc07f4a3366edcdee810ec9ed0f9d0d3357",
   "qualification": {
     "state": "AUTHENTIC_PRIMARY441_INACTIVE_FOUR_SNAPSHOT_REFERENCE_ENDPOINTS; CURRENT440_LONG_PERIOD_PUBLIC_FAILURE_REMAINS",
     "primary441Endpoint": {
@@ -543,5 +543,13 @@
     "otherGetUnchanged": true,
     "postAndLegacyPrintBranchesUnchanged": true,
     "tablePopupTypedTransportNativeGatewayUnchanged": true
+  },
+  "emptyFifoDay": {
+    "explicitNoOV": true,
+    "verifiedHistoricalNoNewDemand": true,
+    "blockedEmptyDemandDistinct": true,
+    "diagnosticWarningsPreserved": true,
+    "emptyPrintNotAttached": true,
+    "cumulativePopupTargetsTransportUnchanged": true
   }
 }
