@@ -1,5 +1,5 @@
 {
-  "version": "1.9.459",
+  "version": "1.9.460",
   "build": "frontend458-authentic440-source-admission-current439-bridge",
   "backendRequired": "1.9.441",
   "gatewayRequired": "1.9.235",
@@ -474,5 +474,19 @@
       "qualificationScope": "AUTHENTIC440_SOURCE_ONLY_ENDPOINT_PROOF_REQUIRED"
     },
     "gatewayBinding": null
+  },
+  "correctivePublication": {
+    "scope": "ONE_CALLER_EXACT441_MANIFEST_GUARD_REPAIR_AND_VISIBLE_VERSION_ONLY",
+    "prior459Deployment": {
+      "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/frontend459-historical-publisher-R4-private-SOURCE-20261006/frontend459-deployment.json",
+      "sha256": "9e9d29a58fa56e3013aed7269c90f31220204be37113bf5d0ebb217fa7f7c5e5"
+    },
+    "priorFailedPublicParity": {
+      "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT459-before441-public-failure-20261006.json",
+      "sha256": "fb0470efedda6f4e83b74be3511ca37988c680520e2fb0c761e90d02c33f2a08"
+    },
+    "layoutChanged": false,
+    "nativeActivationPending": true,
+    "physicalOutputConfirmed": false
   }
 }
