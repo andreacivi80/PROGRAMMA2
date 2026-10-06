@@ -1,5 +1,5 @@
 {
-  "version": "1.9.465",
+  "version": "1.9.466",
   "build": "frontend458-authentic440-source-admission-current439-bridge",
   "backendRequired": "1.9.441",
   "gatewayRequired": "1.9.235",
@@ -181,8 +181,8 @@
   "publishable": false,
   "releaseGo": false,
   "sourceCreatedAt": "2026-10-04T00:33:03.731Z",
-  "parentFrontendVersion": "1.9.464",
-  "parentFrontendCommit": "03a3a1a190eeaa841d07cbee2bcd613ba5943b94",
+  "parentFrontendVersion": "1.9.465",
+  "parentFrontendCommit": "5b94aaee778b03901b88d3a2b0959287b1aaeb94",
   "qualification": {
     "state": "AUTHENTIC_PRIMARY441_INACTIVE_FOUR_SNAPSHOT_REFERENCE_ENDPOINTS; CURRENT440_LONG_PERIOD_PUBLIC_FAILURE_REMAINS",
     "primary441Endpoint": {
@@ -535,5 +535,13 @@
     "tableTransportDocumentUnchanged": true,
     "defaultAutomaticGuarded": true,
     "manualOverride": "explicit:true only from Verifica ora"
+  },
+  "planningReadControls": {
+    "scope": "Same-origin GET /api/planning/* pass-through only",
+    "preservesThirdTransportArgument": true,
+    "requestedAttemptsUnchanged": true,
+    "otherGetUnchanged": true,
+    "postAndLegacyPrintBranchesUnchanged": true,
+    "tablePopupTypedTransportNativeGatewayUnchanged": true
   }
 }
