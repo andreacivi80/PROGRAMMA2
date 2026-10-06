@@ -1,8 +1,8 @@
 {
-  "version": "1.9.458",
+  "version": "1.9.459",
   "build": "frontend458-authentic440-source-admission-current439-bridge",
-  "backendRequired": "1.9.440",
-  "gatewayRequired": "1.9.234",
+  "backendRequired": "1.9.441",
+  "gatewayRequired": "1.9.235",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
@@ -162,17 +162,11 @@
   "gatewaySourceSealSha256": "8851b19db9a066ff4c3afc720c6bdd0517421faee07865a125928809309f5559",
   "callerContract": "mixed-421-425-427-428-429-432-433-434-435-436-438-439-440-all-v1",
   "deploymentProvenance": {
-    "phase": "CURRENT439_421_233_OR234_TO_FUTURE440_SOURCE_ONLY",
-    "physicalOutputConfirmed": false,
-    "active440": false,
-    "topologyGateSha256": "cac8566fbaef27b85894693dfb2b35a5f1836c3e2c9151f06624300e274e1194",
-    "qualificationScope": "ACTUAL_INACTIVE440_BOTHHOST_23DAY_ENDPOINT_BOUND_PRESERVED_ACTIVE439_NOT_PHYSICAL_GO",
-    "publicationLane": "STAGED_CORRECTIVE_KNOWN439_DEFECT",
-    "current439CumulativeUiQualified": false,
-    "finalReleaseGo": false,
-    "known439FailureSha256": "e45c92616a4604577c35f76fb211dc40cead94aa8431af45e842d10712d76418",
-    "final440PublicUiRequired": true,
-    "final440AllPublicParityRequired": true
+    "phase": "STAGED_FRONT459_PRIMARY440_RESERVE421_GATEWAY235_AWAITING441_SWITCH",
+    "topologyGateSha256": "38e51408e57a30a1653194df4a508cd08d3b93d99822f0fcbcd9f4aca062b61c",
+    "final441PublicUiRequired": true,
+    "final441AllPublicParityRequired": true,
+    "physicalOutputConfirmed": false
   },
   "parentDeploymentProvenance": {
     "phase": "MAIN429_STANDBY421_FRONTEND447",
@@ -190,24 +184,17 @@
   "parentFrontendVersion": "1.9.457",
   "parentFrontendCommit": "c41c0f10ab72df13736a8a0dab0dc9778c87b96f",
   "qualification": {
-    "state": "FRONTEND458_SOURCE_ADMISSION_NOT_CURRENT_UI_OR440_RUNTIME_GO",
-    "parent457": {
-      "state": "ACTUAL456_CURRENT438_CUSTOMER_MANUAL_OP_PLANNING_GUI_BOUND_PRIVATE439_NINE_ANCESTRY_NOT_ACTIVE439",
-      "candidate": {
-        "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-candidate456-operator-1791197669224/REPORT.json",
-        "sha256": "57d4ad62c715e5d66ed5b69e202ab4df8f414dbc26f38ce86b4ca9296c5fbd34"
-      },
-      "private439": [
-        {
-          "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-nine439-1791196311008-pc73-actual.json",
-          "sha256": "3d18989ff04909c73af9df4c1ece199db04ac904a589e80479a38fe7b84be239"
-        },
-        {
-          "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-nine439-1791196311008-pc38-actual.json",
-          "sha256": "04b512594405daf1b60f7aaae1fd080f5ca5d9e2f05c4f429c71e25840fced60"
-        }
-      ]
-    }
+    "state": "AUTHENTIC_PRIMARY441_INACTIVE_FOUR_SNAPSHOT_REFERENCE_ENDPOINTS; CURRENT440_LONG_PERIOD_PUBLIC_FAILURE_REMAINS",
+    "primary441Endpoint": {
+      "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-inactive441-R4-PC73-045cbab386dabc78b3f0a6bf-actual-host-receipt.json",
+      "sha256": "9f1f5fadc5432730b18754fdead7e3b7c3ae9a5356d0cdddd2c9cf3ea666bdf6"
+    },
+    "sourceReview": {
+      "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/INDEPENDENT-publisher459-R4-SOURCE-20261006.json",
+      "sha256": "013a7266c361ac316be51ed2ef26c45a7f943fd9856954046dbcb357e7d7d7fb"
+    },
+    "physicalOutputConfirmed": false,
+    "public441Qualified": false
   },
   "parentQualification450": {
     "state": "ANCESTOR449_NINE_AVAILABLE_UI_PRESERVED_SCOPED450_TIMEOUT_SOURCE_PASS_PLANNING_PUBLIC_PENDING",
