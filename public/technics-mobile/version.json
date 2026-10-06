@@ -1,5 +1,5 @@
 {
-  "version": "1.9.463",
+  "version": "1.9.464",
   "build": "frontend458-authentic440-source-admission-current439-bridge",
   "backendRequired": "1.9.441",
   "gatewayRequired": "1.9.235",
@@ -510,5 +510,19 @@
     "automaticDispatch": false,
     "actualPublicVerified": false,
     "physicalOutputConfirmed": false
+  },
+  "runtimeGo": false,
+  "clockConfirmCorrection": {
+    "state": "SOURCE_ONLY_NOT_PUBLIC",
+    "baseActualCommit": "1838beca7567b1b84a2c75aef021a8a8d0057d70",
+    "scope": "Monotonic native timestamp deadlines, explicit confirm health/status before reserve, explicit reread period callback, popup persistent error and registry",
+    "TTL": {
+      "readinessMaxMs": 45000,
+      "snapshotMaxMs": 120000,
+      "previewMaxMs": 120000
+    },
+    "guardsPreserved": true,
+    "tableChanged": false,
+    "nativeChanged": false
   }
 }
