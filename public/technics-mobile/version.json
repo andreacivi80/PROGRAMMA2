@@ -1,5 +1,5 @@
 {
-  "version": "1.9.461",
+  "version": "1.9.463",
   "build": "frontend458-authentic440-source-admission-current439-bridge",
   "backendRequired": "1.9.441",
   "gatewayRequired": "1.9.235",
@@ -154,7 +154,7 @@
   },
   "standbyRequired": "1.9.421",
   "futurePrintBinding": "AUTHENTIC440_ENDPOINT_PROOF_REQUIRED",
-  "sourceOnly": false,
+  "sourceOnly": true,
   "runtimeQualified": false,
   "backendSourceRequired": "1.9.440",
   "backendSourceBuildHash": "f55e98d4d628e5a266e9fdbadbc3a6b8ebb780087ee652c8524015112d7d91a3",
@@ -498,5 +498,17 @@
     "bootstrapHealthRetry": false,
     "automaticDispatch": false,
     "releaseGo": false
+  },
+  "popupPreviewCorrection": {
+    "sourceOnly": true,
+    "scope": "FIFO_SIMULATION_PREVIEW_DIALOG_ONLY_CUMULATIVE_TABLE_PRESERVED",
+    "baseFrontend": "1.9.461",
+    "backendRequired": "1.9.441",
+    "gatewayRequired": "1.9.235",
+    "nativeChanged": false,
+    "transportGuardsChanged": false,
+    "automaticDispatch": false,
+    "actualPublicVerified": false,
+    "physicalOutputConfirmed": false
   }
 }
