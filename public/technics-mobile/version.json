@@ -1,5 +1,5 @@
 {
-  "version": "1.9.464",
+  "version": "1.9.465",
   "build": "frontend458-authentic440-source-admission-current439-bridge",
   "backendRequired": "1.9.441",
   "gatewayRequired": "1.9.235",
@@ -181,8 +181,8 @@
   "publishable": false,
   "releaseGo": false,
   "sourceCreatedAt": "2026-10-04T00:33:03.731Z",
-  "parentFrontendVersion": "1.9.457",
-  "parentFrontendCommit": "c41c0f10ab72df13736a8a0dab0dc9778c87b96f",
+  "parentFrontendVersion": "1.9.464",
+  "parentFrontendCommit": "03a3a1a190eeaa841d07cbee2bcd613ba5943b94",
   "qualification": {
     "state": "AUTHENTIC_PRIMARY441_INACTIVE_FOUR_SNAPSHOT_REFERENCE_ENDPOINTS; CURRENT440_LONG_PERIOD_PUBLIC_FAILURE_REMAINS",
     "primary441Endpoint": {
@@ -524,5 +524,16 @@
     "guardsPreserved": true,
     "tableChanged": false,
     "nativeChanged": false
+  },
+  "automaticHealthProbePause": {
+    "scope": "Automatic endpoint probes only while planning overlay or FIFO popup is visible",
+    "entryAndEachEndpointGuard": true,
+    "manualVerifyUnchanged": true,
+    "healthAndNodesUnchanged": true,
+    "inflightRequestsNeverAborted": true,
+    "resume": "Next existing automatic timer after close",
+    "tableTransportDocumentUnchanged": true,
+    "defaultAutomaticGuarded": true,
+    "manualOverride": "explicit:true only from Verifica ora"
   }
 }
