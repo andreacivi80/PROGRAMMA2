@@ -8,7 +8,7 @@ export function normalizePlanningPeriod449(period){
 export function readPlanningCalendarPeriod449(document){
  const workspace=document.querySelector('main.shell')?.dataset.workspace;
  const form=document.querySelector(workspace==='sales'?'#salesRange':'#scheduleRange');
- return normalizePlanningPeriod449({from:form?.elements?.from?.value,to:form?.elements?.to?.value,dateBasis:'schedule-current'});
+ return normalizePlanningPeriod449({from:form?.elements?.from?.value,to:form?.elements?.to?.value,dateBasis:'shipment'});
 }
 export function qualifyPlanningPeriodResult449(result,period){
  const requested=normalizePlanningPeriod449(period),scope=result?.periodSelection;

@@ -1,8 +1,8 @@
 {
-  "version": "1.9.471",
-  "build": "frontend471-op-number-nowrap-SOURCE",
-  "backendRequired": "1.9.443",
-  "gatewayRequired": "1.9.237",
+  "version": "1.9.472",
+  "build": "frontend472-native445-demand-susp-ship-source",
+  "backendRequired": "1.9.445",
+  "gatewayRequired": "1.9.239",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
@@ -751,5 +751,17 @@
     "automaticReplay": false,
     "actualDispatchTested": false,
     "physicalOutputConfirmed": false
+  },
+  "futureBackend445": {
+    "backendVersion": "1.9.445",
+    "buildHash": "754a4fbb87118743db5c495fbc0b940806bdcc1c6519422db09245884a45d268",
+    "componentCount": 763,
+    "endpointQualified": true,
+    "dispatchEnabled": false,
+    "publicRuntimeQualified": false,
+    "activeRuntimeQualified": false,
+    "backendInstanceId": null,
+    "runtimeQualificationSha256": "ceba482984cd85b26dfac07138843538616cc4139057b85d3ea0e8ef87bb1464",
+    "qualificationScope": "ACTUAL_INACTIVE445_TWO_PREVIEWS_NOT_PHYSICAL_DISPATCH_OR_ACTIVE_GO"
   }
 }
