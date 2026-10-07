@@ -1,6 +1,6 @@
 {
-  "version": "1.9.469",
-  "build": "frontend469-schedule-serialization-planning443-timer-SOURCE",
+  "version": "1.9.470",
+  "build": "frontend470-calendar-registry443-SOURCE",
   "backendRequired": "1.9.443",
   "gatewayRequired": "1.9.237",
   "capabilities": {
@@ -327,8 +327,8 @@
   "publishable": false,
   "releaseGo": false,
   "sourceCreatedAt": "2026-10-04T00:33:03.731Z",
-  "parentFrontendVersion": "1.9.468",
-  "parentFrontendCommit": "0165a68914f8e4da89a09c5c389046251e0deb48",
+  "parentFrontendVersion": "1.9.469",
+  "parentFrontendCommit": "71a298018e0007523716819490f283e7aa858237",
   "qualification": {
     "state": "443_SOURCE_ONLY_PENDING_REAL_HOST_AND_PUBLIC_PROOFS",
     "endpointQualified": false,
@@ -728,15 +728,28 @@
     "qualificationScope": "AUTHENTIC443_SOURCE_ONLY_NEW_REAL_HOST_ENDPOINT_PROOF_REQUIRED"
   },
   "clientPlanningReadCorrection": {
+    "baseRevision": "1.9.469",
     "sourceOnly": true,
-    "baseRevision": "1.9.468",
-    "sourceSealSha256": "807c84654960d29732e5057de4d942391da520bd91c8767fa855aebd61373d54",
-    "scope": "Schedule client pending guard; authentic443 admitted to existing same-origin planning GET timer",
+    "sourceSealSha256": "59586b45af0b2bc86706346cc81b8f8e157ae519053bfe09ea98ea2559de7fc2",
+    "scope": "Finite same-origin calendar schedule GET30s/oneattempt/cache0; genericOP and other policies unchanged",
+    "layoutChanged": false,
     "automaticGraphStart": false,
     "nativeDeadlineMsUnchanged": 15000,
     "nativePoolUnchanged": true,
     "cumulativeFourColumnsUnchanged": true,
     "publicQualified": false,
+    "privateMonthlyProofsPending": true,
+    "physicalOutputConfirmed": false
+  },
+  "planningIntentRegistryCorrection": {
+    "backendVersion": "1.9.443",
+    "sourceOnly": true,
+    "sourceSealSha256": "3c0b597a2f83b8141a31ef8576bfa01b5d62c38fa2eb8a67fc8b076e59b55de9",
+    "scope": "One literal addition to existing backendVersion allowlist; storage key, pending/uncertain/accepted states, legacy identities and duplicate guards unchanged",
+    "journalReset": false,
+    "migration": false,
+    "automaticReplay": false,
+    "actualDispatchTested": false,
     "physicalOutputConfirmed": false
   }
 }

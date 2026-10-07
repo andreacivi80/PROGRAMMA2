@@ -61,8 +61,17 @@
     const previousNode=state.lastNodeId;state.lastResponseRequestId=String(payload?.meta?.requestId||"");state.lastResponseCorrelated=payload?.__technicsResponseCorrelated!==false;state.emergencyReadOnly=payload?.__technicsEmergencyReadOnly===true;state.lastServerTime=String(payload?.meta?.serverTime||"");state.lastDataTime=String(dataTime||"");state.lastSource=String(source||"");state.lastNodeId=String(payload?.meta?.nodeId||"");state.lastNodeRole=String(payload?.meta?.nodeRole||"");state.lastLeaseEpoch=String(payload?.meta?.leaseEpoch||"");state.lastBridgeVersion=String(payload?.meta?.version||"");setEmergencyReadOnly(state.emergencyReadOnly,state.emergencyReadOnly?String(payload?.lastSyncAt||""):"");if(previousNode&&previousNode!==state.lastNodeId)document.dispatchEvent(new CustomEvent("technics:node-switch",{detail:{code:"UNEXPECTED-NODE-SWITCH",from:previousNode,to:state.lastNodeId,at:new Date().toISOString()}}));
     document.dispatchEvent(new CustomEvent("technics:data-success",{detail:{ok:true,validated:true,url:String(url),dataTime:state.lastDataTime,serverTime:state.lastServerTime,source:state.lastSource,nodeId:state.lastNodeId,nodeRole:state.lastNodeRole,bridgeVersion:state.lastBridgeVersion,requestId:state.lastRequestId,responseRequestId:state.lastResponseRequestId,correlated:state.lastResponseCorrelated,emergencyReadOnly:state.emergencyReadOnly,latencyMs:Number(latencyMs||0),cached:Boolean(cached)}}));
   };
+  // This is a finite calendar read budget, not an admission/authentication bypass.
+  const calendarSingleRead= (url,options,settings)=>{
+    if(settings.readProfile==null)return false;
+    if(settings.readProfile!=='planning-calendar-single-read-v1')throw Error('PLANNING_CALENDAR_READ_PROFILE_NOT_QUALIFIED');
+    const target=new URL(String(url),location.href),base=new URL(window.__technicsBridgeUrl,location.href),method=String(options.method||'GET').toUpperCase();
+    const day=v=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&Number.isFinite(Date.parse(v+'T00:00:00Z'))&&new Date(v+'T00:00:00Z').toISOString().slice(0,10)===v;
+    if(method!=='GET'||target.origin!==base.origin||base.protocol!=='https:'||target.username||target.password||target.hash||target.pathname!=='/api/planning/schedule'||target.searchParams.size!==2||target.searchParams.getAll('from').length!==1||target.searchParams.getAll('to').length!==1||!day(target.searchParams.get('from'))||!day(target.searchParams.get('to'))||target.searchParams.get('to')<target.searchParams.get('from'))throw Error('PLANNING_CALENDAR_READ_PROFILE_NOT_QUALIFIED');
+    return true;
+  };
   const runFetch=async(url,options,settings,key,sequence)=>{
-    const method=String(options.method||"GET").toUpperCase(),safe=method==="GET"||method==="HEAD",attempts=safe?Math.min(2,Math.max(1,Number(settings.attempts||2))):1,timeoutMs=Math.min(8000,Math.max(3000,Number(settings.timeoutMs||6500)));let lastError;
+    const method=String(options.method||"GET").toUpperCase(),safe=method==="GET"||method==="HEAD",calendarRead=calendarSingleRead(url,options,settings),attempts=calendarRead?1:safe?Math.min(2,Math.max(1,Number(settings.attempts||2))):1,timeoutMs=calendarRead?30000:Math.min(8000,Math.max(3000,Number(settings.timeoutMs||6500)));let lastError;
     for(let attempt=0;attempt<attempts;attempt++){
       if(attempt)await waitForNetwork();
       const id=requestId(),controller=new AbortController(),scope=String(settings.scope||document.querySelector("main.shell")?.dataset.workspace||"global"),urgent=/\/api\/(items\/lookup|barcodes\/resolve)/.test(String(url));activeControllers.set(controller,scope);const releaseSlot=await acquireSlot(urgent),timer=setTimeout(()=>controller.abort("timeout"),timeoutMs),started=performance.now();state.requests++;state.lastRequestId=id;
@@ -86,7 +95,7 @@
     state.failures++;document.dispatchEvent(new CustomEvent("technics:data-failure",{detail:{url,message:state.lastFailure}}));throw lastError||new Error("Collegamento dati non disponibile.");
   };
   const fetchJson=(url,options={},settings={})=>{
-    const method=String(options.method||"GET").toUpperCase(),dedupe=settings.dedupe!==false&&method==="GET",key=dedupe?canonicalRequestKey(method,url):"",cacheMs=method==="GET"?Math.max(0,Number(settings.cacheMs||0)):0;
+    const method=String(options.method||"GET").toUpperCase(),dedupe=settings.dedupe!==false&&method==="GET",key=dedupe?canonicalRequestKey(method,url):"",cacheMs=calendarSingleRead(url,options,settings)?0:method==="GET"?Math.max(0,Number(settings.cacheMs||0)):0;
     if(method!=="GET")responseCache.clear();
     if(key&&cacheMs){const cached=responseCache.get(key);if(cached&&Date.now()-cached.savedAt<=cacheMs){state.cached++;const result={...cached.result,payload:clone(cached.result.payload),cached:true};announceSuccess(url,result.payload,result.latencyMs,true);return Promise.resolve(result)}if(cached)responseCache.delete(key)}
     if(key&&inFlight.has(key)){state.deduplicated++;return inFlight.get(key)}
