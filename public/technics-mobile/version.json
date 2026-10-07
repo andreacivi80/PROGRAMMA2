@@ -1,6 +1,6 @@
 {
-  "version": "1.9.470",
-  "build": "frontend470-calendar-registry443-SOURCE",
+  "version": "1.9.471",
+  "build": "frontend471-op-number-nowrap-SOURCE",
   "backendRequired": "1.9.443",
   "gatewayRequired": "1.9.237",
   "capabilities": {
