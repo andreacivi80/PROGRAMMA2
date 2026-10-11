@@ -1,6 +1,6 @@
 {
-  "version": "1.9.476",
-  "build": "frontend476-native447-g244-module-cache-binding-fix",
+  "version": "1.9.477",
+  "build": "frontend477-g244-original421-preview-readonly-hotfix",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
   "capabilities": {
