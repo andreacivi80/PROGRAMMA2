@@ -400,14 +400,14 @@
     documentCategoryMaps.set(section, documentsByCategory);
     section.innerHTML = `<h4>DOCUMENTI · CHECKLIST E REVISIONI</h4><div class="formuladoccheck"><div class="formuladocprogress"><span>Analisi contenuto reale</span><b>${payload?.complete ? "COMPLETA" : `${analyzed}/${documents.length} · IN CORSO`}</b></div><div class="formuladocbadges">${checklistLabels.map((label) => { const matches = documentsByCategory.get(label) || [], latest = matches[0]; return latest ? `<span role="button" tabindex="0" class="formuladocbadge present" ${matches.length === 1 ? documentActionAttributes(latest, articleId) : `data-formula-category="${esc(label)}" data-article="${articleId}"`} aria-label="${matches.length === 1 ? "Apri" : "Mostra"} ${esc(label)}${matches.length > 1 ? `: ${matches.length} documenti` : `: ${esc(latest.name)}`}" title="${matches.length === 1 ? `Apri: ${esc(latest.name)}` : `Mostra ${matches.length} documenti`}">✓ ${esc(label)}${matches.length > 1 ? ` · ${matches.length}` : ""}</span>` : `<span class="formuladocbadge">${esc(label)}</span>`; }).join("")}</div><div class="formuladoccategorychoices hidden" data-formula-category-choices></div><input class="formuladocsearch" type="search" placeholder="Cerca documento" aria-label="Cerca documento, categoria o revisione"></div><div class="formuladocsectiontitle">Documenti correnti · ${current.length}</div><div class="formuladoclist">${current.length ? current.map((item) => documentButton(item, articleId)).join("") : '<div class="formulaempty">Nessun documento corrente.</div>'}</div>${previous.length ? `<div class="formuladocobsolete"><div class="formuladocsectiontitle obsolete">Documentazione obsoleta · revisioni superate · ${previous.length}</div><div class="formuladoclist formuladocprevious">${previous.map((item) => documentButton(item, articleId, true)).join("")}</div></div>` : ""}`;
   };
+  const formulaAnalysisPost=async(articleId)=>{const base=activeBridge||bridges()[0];const {response,payload}=await TechnicsDataClient.fetchJson(base+'/api/formulas/document-analysis',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({articleId:Number(articleId)})},{attempts:1,timeoutMs:15000,cacheMs:0,message:'Avvio analisi non disponibile.'});if(!response.ok||!payload?.ok)throw Error(payload?.error||'Avvio analisi non disponibile.');return payload.result};
   const loadDocumentChecklist = async (detail, articleId) => {
     const token = (documentChecklistTokens.get(detail) || 0) + 1;
     documentChecklistTokens.set(detail, token);
     const initialCheck = detail.querySelector('[data-formula-part="docs"] .formuladoccheck');
     if (initialCheck && !initialCheck.querySelector('.formuladocbadges'))
       initialCheck.insertAdjacentHTML('beforeend', `<div class="formuladocbadges">${checklistLabels.map((label) => `<span class="formuladocbadge">${esc(label)}</span>`).join('')}</div>`);
-    let remaining = 1,
-      retryCount = 0;
+    let remaining = 1, retryCount = 0, analysisJob=null, pollCount=0;
     while (remaining > 0 && detail.isConnected && !detail.classList.contains("hidden") && documentChecklistTokens.get(detail) === token) {
       try {
         const progress = detail.querySelector(".formuladocprogress b");
@@ -415,6 +415,7 @@
         const payload = await api(`/api/formulas/document-checklist?articleId=${articleId}&limit=2&fresh=${Date.now()}`, true);
         if (documentChecklistTokens.get(detail) !== token) return;
         renderDocumentChecklist(detail.querySelector('[data-formula-part="docs"]'), payload.result, articleId);
+        if(Number(payload.result?.remaining||0)>0){if(!analysisJob)analysisJob=await formulaAnalysisPost(articleId);if(documentChecklistTokens.get(detail)!==token)return;const status=await api('/api/formulas/document-analysis-status?articleId='+articleId+'&fingerprint='+analysisJob.fingerprint+'&ownerNodeId='+encodeURIComponent(analysisJob.ownerNodeId)+'&ownerBackendInstanceId='+encodeURIComponent(analysisJob.ownerBackendInstanceId)+'&fresh='+Date.now(),true);if(documentChecklistTokens.get(detail)!==token)return;if(!status.result||status.result.state==='failed')throw Error(status.result?.error||'Analisi interrotta: riapri Documenti per riprovare.');if(++pollCount>300)throw Error('Analisi ancora in corso: riapri Documenti per verificarla.');}
         if (payload.result?.analysisStatus === 'cached-only-analysis-unavailable') {
           const progress = detail.querySelector('.formuladocprogress b');
           if (progress) progress.textContent = 'ANALISI NON DISPONIBILE · archivio non qualificato';
@@ -422,7 +423,7 @@
         }
         remaining = Number(payload.result?.remaining || 0);
         retryCount = 0;
-        if (remaining > 0) await new Promise((resolve) => setTimeout(resolve, 250));
+        if (remaining > 0) await new Promise((resolve) => setTimeout(resolve, 2000));
       } catch (error) {
         const target = detail.querySelector(".formuladocprogress b");
         if (target) target.textContent = 'ANALISI NON DISPONIBILE · archivio non qualificato';

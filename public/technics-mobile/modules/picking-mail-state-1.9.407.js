@@ -96,7 +96,7 @@
       const response=await window.TechnicsTransport.fetch(bridgeUrl+'/api/picking/mail-preview?'+query(current.current),{signal:previewController.signal,headers:{'ngrok-skip-browser-warning':'1'}});
       const payload=await readJson(response);
       if(sequence!==previewSequence||signature!==currentSignature())return;
-      if(!response.ok||!payload.ok||payload.mailEditCapability!==true||typeof payload.body!=='string'||typeof payload.bodyHtml!=='string'||!payload.bodyHtml||payload.bodyHtml.length>500000||typeof payload.subject!=='string'||typeof payload.editableMessage!=='string'||!payload.editableMessage||payload.editableMessage.length>12000||!Number.isSafeInteger(payload.revision)||payload.revision<0||!(/^[0-9a-f]{64}$/.test(String(payload.digest||''))))throw Error(payload.error||'Anteprima modificabile non disponibile.');
+      if(!response.ok||!payload.ok||payload.mailEditCapability!==true||!(/^[0-9a-f]{64}$/.test(String(payload.attachmentFingerprint||'')))||typeof payload.body!=='string'||typeof payload.bodyHtml!=='string'||!payload.bodyHtml||payload.bodyHtml.length>500000||typeof payload.subject!=='string'||typeof payload.editableMessage!=='string'||!payload.editableMessage||payload.editableMessage.length>12000||!Number.isSafeInteger(payload.revision)||payload.revision<0||!(/^[0-9a-f]{64}$/.test(String(payload.digest||''))))throw Error(payload.error||'Anteprima modificabile non disponibile.');
       const responseIdentity=payload.target?.groupId?'group:'+payload.target.groupId:'op:'+payload.target?.year+':'+String(payload.target?.opNumber||'').padStart(6,'0');
       if(responseIdentity!==identity)throw Error('Anteprima riferita a una lista diversa.');
       const content='<div class="pickingmailconfirm" id="pickingMailPreviewStatus">Questa è la mail composta prima dell’invio. Puoi modificare oggetto e testo sopra la tabella.</div><div class="pickingmailpreview"><div><b>Da</b><span>Emanuele Bonanomi &lt;emanuele.bonanomi@iralab.it&gt;</span></div><div><b>A</b><span id="pickingMailRecipientTo">'+recipients.to+'</span></div><div><b>Cc</b><span id="pickingMailRecipientCc">'+recipients.cc+'</span></div><section class="pickingmailedit"><label for="pickingMailSubjectInput">Oggetto</label><input id="pickingMailSubjectInput" type="text" maxlength="180" autocomplete="off"><label for="pickingMailMessageInput">Testo della mail sopra la tabella (modificabile)</label><textarea id="pickingMailMessageInput" maxlength="12000" rows="7"></textarea><button type="button" data-refresh-picking-preview>Aggiorna anteprima</button></section><section class="pickingmailactual"><h3>La mail completa che verrà inviata</h3><iframe id="pickingMailActualHtmlFrame" title="Mail effettiva prima dell’invio" sandbox="" referrerpolicy="no-referrer"></iframe></section><div class="attachment">📎 '+escapeHtml(payload.attachmentName||'Lista di prelievo.pdf')+'</div></div>';
@@ -106,7 +106,7 @@
       const frame=document.getElementById('pickingMailActualHtmlFrame');
       if(!frame)throw Error('Anteprima HTML non disponibile.');
       frame.srcdoc='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src \'none\'; style-src \'unsafe-inline\'; img-src data:; font-src data:; base-uri \'none\'; form-action \'none\'"></head><body>'+payload.bodyHtml+'</body></html>';
-      confirmedPreview={signature,identity,revision:payload.revision,digest:payload.digest,edits:{subject:payload.subject,bodyText:payload.editableMessage}};
+      confirmedPreview={signature,identity,revision:payload.revision,digest:payload.digest,attachmentFingerprint:payload.attachmentFingerprint,edits:{subject:payload.subject,bodyText:payload.editableMessage}};
     }catch(error){if(sequence!==previewSequence||signature!==currentSignature())return;confirmedPreview=null;show('error','ANTEPRIMA MAIL NON DISPONIBILE',error.message||'Impossibile leggere il corpo mail.','','<button data-pick-cancel>Chiudi</button>');}
   };
   const refreshEditedPreview=async()=>{
@@ -125,10 +125,10 @@
       const payload=await readJson(response);
       if(sequence!==previewSequence||signature!==currentSignature()||subjectInput.value.trim()!==edits.subject||messageInput.value.replace(/\r\n?/g,'\n').trim()!==edits.bodyText)return;
       const responseIdentity=payload.target?.groupId?'group:'+payload.target.groupId:'op:'+payload.target?.year+':'+String(payload.target?.opNumber||'').padStart(6,'0');
-      if(!response.ok||!payload.ok||payload.mailEditCapability!==true||responseIdentity!==identity||payload.subject!==edits.subject||typeof payload.bodyHtml!=='string'||!payload.bodyHtml||payload.bodyHtml.length>500000||!Number.isSafeInteger(payload.revision)||!(/^[0-9a-f]{64}$/.test(String(payload.digest||''))))throw Error(payload.error||'Anteprima modificata non disponibile.');
+      if(!response.ok||!payload.ok||payload.mailEditCapability!==true||responseIdentity!==identity||payload.subject!==edits.subject||!(/^[0-9a-f]{64}$/.test(String(payload.attachmentFingerprint||'')))||typeof payload.bodyHtml!=='string'||!payload.bodyHtml||payload.bodyHtml.length>500000||!Number.isSafeInteger(payload.revision)||!(/^[0-9a-f]{64}$/.test(String(payload.digest||''))))throw Error(payload.error||'Anteprima modificata non disponibile.');
       const frame=document.getElementById('pickingMailActualHtmlFrame');if(!frame)throw Error('Riquadro anteprima non disponibile.');
       frame.srcdoc='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src \'none\'; style-src \'unsafe-inline\'; img-src data:; font-src data:; base-uri \'none\'; form-action \'none\'"></head><body>'+payload.bodyHtml+'</body></html>';
-      confirmedPreview={signature,identity,revision:payload.revision,digest:payload.digest,edits};
+      confirmedPreview={signature,identity,revision:payload.revision,digest:payload.digest,attachmentFingerprint:payload.attachmentFingerprint,edits};
       if(status)status.textContent='Anteprima aggiornata: controlla oggetto e tabella prima di inviare.';
       if(send)send.disabled=false;
     }catch(error){if(sequence===previewSequence&&status)status.textContent=error.message||'Anteprima non aggiornata.';}
@@ -150,6 +150,7 @@
       const body = current.current.multi ? { groupId: current.current.groupId, operationId, resend } : { opNumber: current.current.opNumber, year: current.current.year, operationId, resend };
       body.previewRevision=confirmedPreview.revision;
       body.previewDigest=confirmedPreview.digest;
+      body.previewAttachmentFingerprint=confirmedPreview.attachmentFingerprint;
       body.mailEdits=confirmedPreview.edits;
       const response = await window.TechnicsTransport.fetch(`${bridgeUrl}/api/picking/mail`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '1' }, body: JSON.stringify(body) });
       const payload = await readJson(response);

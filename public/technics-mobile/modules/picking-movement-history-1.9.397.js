@@ -118,7 +118,7 @@
         toggle.disabled=true;toggle.textContent='Caricamento…';
         try{
           if(!allMovements){
-            let offset=0,snapshot=null;const collected=[],keys=new Set();
+            let offset=0,snapshot=firstPage.snapshot;const collected=[],keys=new Set();
             do{
               const pageUrl=new URL(url);pageUrl.searchParams.set('movementOffset',String(offset));pageUrl.searchParams.set('movementLimit','50');if(snapshot)pageUrl.searchParams.set('movementSnapshot',snapshot);
               const pageController=new AbortController(),pageTimer=setTimeout(()=>pageController.abort(),12000);let pageResponse,body;try{pageResponse=await fetch(pageUrl,{cache:'no-store',signal:pageController.signal});body=await pageResponse.json();}finally{clearTimeout(pageTimer);}

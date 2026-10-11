@@ -1,8 +1,8 @@
 {
-  "version": "1.9.472",
-  "build": "frontend472-native445-demand-susp-ship-source",
-  "backendRequired": "1.9.445",
-  "gatewayRequired": "1.9.239",
+  "version": "1.9.473",
+  "build": "frontend473-native447-FORM-OPMAIL-source",
+  "backendRequired": "1.9.447",
+  "gatewayRequired": "1.9.244",
   "capabilities": {
     "movementHistoryAll": {
       "backendRequired": "1.9.357",
@@ -763,5 +763,9 @@
     "backendInstanceId": null,
     "runtimeQualificationSha256": "ceba482984cd85b26dfac07138843538616cc4139057b85d3ea0e8ef87bb1464",
     "qualificationScope": "ACTUAL_INACTIVE445_TWO_PREVIEWS_NOT_PHYSICAL_DISPATCH_OR_ACTIVE_GO"
+  },
+  "futureBackend447": {
+    "backendVersion": "1.9.447",
+    "qualificationScope": "SOURCE_ONLY_NO_NEW_RUNTIME_PROOF"
   }
 }
