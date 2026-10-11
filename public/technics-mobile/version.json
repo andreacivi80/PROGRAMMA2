@@ -1,6 +1,6 @@
 {
-  "version": "1.9.479",
-  "build": "frontend479-chain-existing-popup-preserve-fifo-and-dispatch-guards",
+  "version": "1.9.480",
+  "build": "frontend480-packing-cas-original-outbox-base-fields",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
   "capabilities": {
