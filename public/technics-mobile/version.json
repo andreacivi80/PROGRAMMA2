@@ -1,6 +1,6 @@
 {
-  "version": "1.9.478",
-  "build": "frontend478-manual-selection-suspended-detail-scoped-fix",
+  "version": "1.9.479",
+  "build": "frontend479-chain-existing-popup-preserve-fifo-and-dispatch-guards",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
   "capabilities": {
