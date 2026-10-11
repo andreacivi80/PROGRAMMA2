@@ -1,6 +1,6 @@
 {
-  "version": "1.9.473",
-  "build": "frontend473-native447-FORM-OPMAIL-source",
+  "version": "1.9.474",
+  "build": "frontend474-native447-g244-version-gate-fix",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
   "capabilities": {
