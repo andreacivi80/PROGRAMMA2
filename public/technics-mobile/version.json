@@ -1,6 +1,6 @@
 {
-  "version": "1.9.480",
-  "build": "frontend480-packing-cas-original-outbox-base-fields",
+  "version": "1.9.481",
+  "build": "frontend481-picking-native447-verified-session-scan-ack",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
   "capabilities": {
