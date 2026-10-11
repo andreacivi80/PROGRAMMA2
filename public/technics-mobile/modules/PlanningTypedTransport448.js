@@ -2,7 +2,7 @@ import {recoverOriginal445ReceiptOnly} from './PlanningOriginal445ReceiptRecover
 import {recoverOriginal443ReceiptOnly} from './PlanningOriginal443ReceiptRecovery471.js';
 import {normalizePlanningPeriod449,qualifyPlanningPeriodResult449} from './PlanningPeriodSelection449.js';
 import {createPlanningIntentRegistry449} from './PlanningDispatchIntent449.js';
-import {planningDispatchBinding449,planningHistorical433Binding449,planningFuture434Binding449,planningFuture435Binding453,planningFuture436Binding454,planningFuture438Binding455,planningFuture439Binding456,planningFuture440Binding458,planningFuture441Binding459,planningFuture443Binding468,planningFuture445Binding471} from './PlanningDispatchBinding449.js';
+import {planningDispatchBinding449,planningHistorical433Binding449,planningFuture434Binding449,planningFuture435Binding453,planningFuture436Binding454,planningFuture438Binding455,planningFuture439Binding456,planningFuture440Binding458,planningFuture441Binding459,planningFuture443Binding468,planningFuture445Binding471,planningActive447Binding475} from './PlanningDispatchBinding449.js';
 const periodFingerprint=(payload,period)=>{const selectors=qualifyPlanningPeriodResult449(payload,period),p=payload.periodSelection,a=p.dateAuthority;return JSON.stringify([p.from,p.to,p.dateBasis,p.complete,p.count,p.order,a.verified,a.field,a.meaning,a.rootProofSha256,selectors.map(x=>[x.number,x.year,x.headerId])]);};
 const roots=Object.freeze({PRODUCTION_CHAIN:'/api/planning/production-chain/',FIFO_SIMULATION:'/api/planning/fifo-simulation/'});
 const roles=Object.freeze({'technics-utente73-primary':'primary','technics-utente38-secondary':'secondary'});
@@ -67,7 +67,7 @@ export function createPlanningTypedTransport(approvedTransport,{baseHref=globalT
  });return api;
 }
 
-export function selectCurrentPlanningBinding452(health,historicalBinding,futureBinding,latestBinding=null,nextBinding=null,cumulativeBinding=null,opNumberBinding=null,readinessBinding=null,snapshotBinding=null,seedBinding=null,shipmentBinding=null){
+export function selectCurrentPlanningBinding452(health,historicalBinding,futureBinding,latestBinding=null,nextBinding=null,cumulativeBinding=null,opNumberBinding=null,readinessBinding=null,snapshotBinding=null,seedBinding=null,shipmentBinding=null,formBinding=null,activeReady=null){
  const bad=()=>{throw Error('PLANNING_ACTIVE_BACKEND_TUPLE_NOT_QUALIFIED_RELOAD_REQUIRED');};
  if(health?.ok!==true||health.activeNode!=='technics-utente73-primary'||!Array.isArray(health.nodes))bad();
  const primaries=health.nodes.filter(n=>n.nodeId===health.activeNode);
@@ -84,8 +84,11 @@ export function selectCurrentPlanningBinding452(health,historicalBinding,futureB
  const snapshot=n.backendVersion==='1.9.441'&&['1.9.235','1.9.237'].includes(health.gatewayVersion)&&n.buildHash==='4727877360e47829a639c7a810e63dc710c6aadaa424f9d7c5fb6a067ec7bcae'&&n.releaseId==='technics-backend-1.9.441-explicit-planning-snapshot-reuse';
  const shipment=n.backendVersion==='1.9.445'&&health.gatewayVersion==='1.9.239'&&n.buildHash==='754a4fbb87118743db5c495fbc0b940806bdcc1c6519422db09245884a45d268'&&n.releaseId==='technics-backend-1.9.445-demand-summary-suspension-shipment-colli';
  const seed=n.backendVersion==='1.9.443'&&['1.9.237','1.9.239'].includes(health.gatewayVersion)&&n.buildHash==='a56b6a21cf918545758b55c52c4da4c964fb0282b00c1481a4a63bdf656edd41'&&n.releaseId==='technics-backend-1.9.443-projection-seed-qualified-scanner-origin';
- const selected=shipment?shipmentBinding:seed?seedBinding:snapshot?snapshotBinding:historical?historicalBinding:future?futureBinding:latest?latestBinding:next?nextBinding:cumulative?cumulativeBinding:opNumber?opNumberBinding:readiness?readinessBinding:null;
+ const form=n.backendVersion==='1.9.447'&&health.gatewayVersion==='1.9.244'&&n.buildHash==='34ab64c8b03c077a82d2c9aad781b55e81b37995064fdce72d8368aa8343e4a5'&&n.releaseId==='technics-backend-1.9.447-form-analysis-opmail-frozen';
+ if(form&&(n.ok!==true||activeReady?.ok!==true||activeReady.ready!==true||activeReady.recovering!==false||activeReady.version!=='1.9.447'||activeReady.backendInstanceId!=='b3810898-4b1a-4639-9574-fbb31ef5ad65'||activeReady.meta?.backendInstanceId!==activeReady.backendInstanceId||activeReady.meta.version!==activeReady.version||activeReady.meta.nodeId!==health.activeNode||activeReady.meta.nodeRole!=='primary'))bad();
+ const selected=form?formBinding:shipment?shipmentBinding:seed?seedBinding:snapshot?snapshotBinding:historical?historicalBinding:future?futureBinding:latest?latestBinding:next?nextBinding:cumulative?cumulativeBinding:opNumber?opNumberBinding:readiness?readinessBinding:null;
  if(!selected||selected.endpointQualified!==true||selected.backendVersion!==n.backendVersion||selected.buildHash!==n.buildHash||selected.releaseId!==n.releaseId||!(selected.gatewayVersion===health.gatewayVersion||seed&&selected.gatewayVersion==='1.9.237'&&health.gatewayVersion==='1.9.239'||historical&&selected.gatewayVersion==='1.9.228'&&health.gatewayVersion==='1.9.229'||future&&selected.gatewayVersion==='1.9.229'&&health.gatewayVersion==='1.9.230'||latest&&selected.gatewayVersion==='1.9.230'&&health.gatewayVersion==='1.9.231'||next&&selected.gatewayVersion==='1.9.231'&&health.gatewayVersion==='1.9.232'||cumulative&&selected.gatewayVersion==='1.9.232'&&health.gatewayVersion==='1.9.233'||opNumber&&selected.gatewayVersion==='1.9.233'&&health.gatewayVersion==='1.9.234'||readiness&&selected.gatewayVersion==='1.9.234'&&health.gatewayVersion==='1.9.235'||snapshot&&selected.gatewayVersion==='1.9.235'&&health.gatewayVersion==='1.9.237'))bad();
+ if(form&&(selected.backendInstanceId!==activeReady.backendInstanceId||selected.dispatchEnabled!==true||selected.runtimeQualified!==true||selected.publicRuntimeQualified!==true))bad();
  return selected;
 }
 export async function createCurrentPlanningTypedTransport(approvedTransport,options={}){
@@ -99,6 +102,12 @@ export async function createCurrentPlanningTypedTransport(approvedTransport,opti
  let health;
  try{health=await response.json();}catch{throw Error('PLANNING_HEALTH_BOOTSTRAP_RESPONSE_INVALID');}
  if(!response.ok)throw Error('PLANNING_HEALTH_BOOTSTRAP_HTTP_'+response.status+': '+String(health?.code||health?.error||'UNAVAILABLE'));
- const dispatchBinding=selectCurrentPlanningBinding452(health,planningHistorical433Binding449,planningFuture434Binding449,planningFuture435Binding453,planningFuture436Binding454,planningFuture438Binding455,planningFuture439Binding456,planningFuture440Binding458,planningFuture441Binding459,planningFuture443Binding468,planningFuture445Binding471);
+ let activeReady=null;
+ if(health.nodes?.some(n=>n.nodeId===health.activeNode&&n.backendVersion==='1.9.447')){
+  const readyUrl=new URL(url);readyUrl.pathname='/health/ready';const readyRequestId=globalThis.crypto.randomUUID();let readyResponse;
+  try{readyResponse=await approvedTransport.fetch(readyUrl.href,{method:'GET',headers:{'X-Technics-Request-Id':readyRequestId},cache:'no-store'});}catch(raw){throw Error('PLANNING_READY_BOOTSTRAP_FAILED: '+String(raw?.message||raw));}
+  if(!readyResponse.ok)throw Error('PLANNING_READY_BOOTSTRAP_NOT_QUALIFIED');try{activeReady=await readyResponse.json();}catch{throw Error('PLANNING_READY_BOOTSTRAP_RESPONSE_INVALID');}
+ }
+ const dispatchBinding=selectCurrentPlanningBinding452(health,planningHistorical433Binding449,planningFuture434Binding449,planningFuture435Binding453,planningFuture436Binding454,planningFuture438Binding455,planningFuture439Binding456,planningFuture440Binding458,planningFuture441Binding459,planningFuture443Binding468,planningFuture445Binding471,planningActive447Binding475,activeReady);
  return createPlanningTypedTransport(approvedTransport,{...options,dispatchBinding});
 }

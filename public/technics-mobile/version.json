@@ -1,6 +1,6 @@
 {
-  "version": "1.9.474",
-  "build": "frontend474-native447-g244-version-gate-fix",
+  "version": "1.9.475",
+  "build": "frontend475-native447-g244-active-binding-fix",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
   "capabilities": {
