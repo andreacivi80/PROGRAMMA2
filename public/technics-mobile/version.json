@@ -1,6 +1,6 @@
 {
-  "version": "1.9.486",
-  "build": "frontend486-single-session-exact-receipt-before-install-and-settle",
+  "version": "1.9.487",
+  "build": "frontend487-current447-g245-promo-preview-transition",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
   "capabilities": {

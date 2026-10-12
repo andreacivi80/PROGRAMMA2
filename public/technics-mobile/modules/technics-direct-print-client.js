@@ -62,9 +62,9 @@
       if(method==='POST'&&route===printRoute&&previewTrace?.protocol==='legacyStandard')qualifyLegacyPrint(payload,response);
       return payload;
     };
-    function invalidate(){if(intent&&!globalThis.TechnicsPrintCaller446?.previewOnlyGateway244?.())return false;generation++;snapshot=null;previewTrace=null;confirmation=null;submitted=false;return true}
+    function invalidate(){if(intent&&!(globalThis.TechnicsPrintCaller446?.previewOnlyGateway244?.()||globalThis.TechnicsPrintCaller446?.previewOnlyGateway245?.()))return false;generation++;snapshot=null;previewTrace=null;confirmation=null;submitted=false;return true}
     async function preview(selection,target){
-      if(!intent||!await globalThis.TechnicsPrintCaller446?.qualifyPreviewOnly244?.())await recoverIntent();invalidate();const current=generation;
+      if(!intent||!(await globalThis.TechnicsPrintCaller446?.qualifyPreviewOnly244?.()||await globalThis.TechnicsPrintCaller446?.qualifyPreviewOnly245?.()))await recoverIntent();invalidate();const current=generation;
       if(!allowed.has(target))throw Error('Destinazione stampa non consentita.');
       if(!Array.isArray(selection)||!selection.length||selection.some(item=>!clean(item?.baseCode)||!clean(item?.unit)))throw Error('Seleziona almeno un articolo valido.');
       const started=await api('POST','/api/packaging/promoitalia/print-preview',{selection:selection.map(item=>({baseCode:clean(item.baseCode),unit:clean(item.unit)})),printerTarget:target});
@@ -88,7 +88,7 @@
       snapshot={documentType,...previewTrace,snapshotId:started.snapshotId,snapshotHash:started.snapshotHash,previewId:started.previewId,printerTarget:target,pageCount:state.pageCount,createdAt:now(),pages};
       return {...snapshot,pages:[...pages]};
     }
-    const ready=()=>Boolean(!globalThis.TechnicsPrintCaller446?.previewOnlyGateway244?.()&&snapshot&&now()-snapshot.createdAt<(snapshot.protocol==='legacyStandard'?29*60*1000:110000)&&!submitted);
+    const ready=()=>Boolean(!(globalThis.TechnicsPrintCaller446?.previewOnlyGateway244?.()||globalThis.TechnicsPrintCaller446?.previewOnlyGateway245?.())&&snapshot&&now()-snapshot.createdAt<(snapshot.protocol==='legacyStandard'?29*60*1000:110000)&&!submitted);
     function confirm(target){
       if(!allowed.has(target)||!ready()||snapshot.printerTarget!==target)throw Error('Anteprima scaduta o destinazione diversa: rigenerarla.');
       confirmation={target,previewId:snapshot.previewId,expiresAt:now()+10000};
