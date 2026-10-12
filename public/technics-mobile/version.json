@@ -1,6 +1,6 @@
 {
-  "version": "1.9.484",
-  "build": "frontend484-removebox-authentic-session-feedback-retain-pending-id",
+  "version": "1.9.485",
+  "build": "frontend485-group-original-revision-and-incomplete-ack-no-alternate-resend",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
   "capabilities": {
