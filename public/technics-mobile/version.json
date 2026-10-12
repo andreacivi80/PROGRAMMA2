@@ -1,6 +1,6 @@
 {
-  "version": "1.9.481",
-  "build": "frontend481-picking-native447-verified-session-scan-ack",
+  "version": "1.9.482",
+  "build": "frontend482-picking-single-quantity-render-bound-original-cas",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
   "capabilities": {
