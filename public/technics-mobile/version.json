@@ -1,6 +1,6 @@
 {
-  "version": "1.9.483",
-  "build": "frontend483-photo-lookup-explicit-manual-confirmation",
+  "version": "1.9.484",
+  "build": "frontend484-removebox-authentic-session-feedback-retain-pending-id",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
   "capabilities": {
