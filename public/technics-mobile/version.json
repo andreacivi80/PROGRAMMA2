@@ -1,6 +1,6 @@
 {
-  "version": "1.9.488",
-  "build": "frontend488-current447-g245-producer-deadline-fix",
+  "version": "1.9.489",
+  "build": "1.9.489",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
   "capabilities": {
