@@ -1,6 +1,6 @@
 {
-  "version": "1.9.485",
-  "build": "frontend485-group-original-revision-and-incomplete-ack-no-alternate-resend",
+  "version": "1.9.486",
+  "build": "frontend486-single-session-exact-receipt-before-install-and-settle",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
   "capabilities": {
