@@ -1,6 +1,6 @@
 {
-  "version": "1.9.491",
-  "build": "1.9.491",
+  "version": "1.9.492",
+  "build": "Ripristino anteprime dopo recupero PC73",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
   "capabilities": {
@@ -767,5 +767,18 @@
   "futureBackend447": {
     "backendVersion": "1.9.447",
     "qualificationScope": "SOURCE_ONLY_NO_NEW_RUNTIME_PROOF"
+  },
+  "postterminal447FrontendMaintenance": {
+    "authorityKind": "POSTTERMINAL_CURRENT447_FRONTEND_MAINTENANCE",
+    "backendVersion": "1.9.447",
+    "gatewayVersion": "1.9.245",
+    "backendInstanceId": "a27b8b00-572f-41d2-b17e-78528def448c",
+    "sourceOnly": true,
+    "standard449DispatchEnabled": false,
+    "preserveExistingOperatorAndPlanningDispatch": true,
+    "frontendPublicQualified": false,
+    "runtimeQualified": false,
+    "issuedAt": "2026-10-15T19:26:23.382Z",
+    "maintenanceCompletionSha256": "a7164d6b66f7ae3cd5f9e449464fc30ae4cff5b813455426aad16328eb5d1437"
   }
 }
