@@ -1,5 +1,5 @@
 {
-  "version": "1.9.492",
+  "version": "1.9.493",
   "build": "Ripristino anteprime dopo recupero PC73",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
@@ -780,5 +780,24 @@
     "runtimeQualified": false,
     "issuedAt": "2026-10-15T19:26:23.382Z",
     "maintenanceCompletionSha256": "a7164d6b66f7ae3cd5f9e449464fc30ae4cff5b813455426aad16328eb5d1437"
+  },
+  "compatibilityGateway247Prospective493": {
+    "schema": 1,
+    "scope": "PROSPECTIVE493_CURRENT447_G245_OR_UNBOUND_COMMON_G247_SOURCE_NOT_RUNTIME_GO",
+    "sourceOnly": true,
+    "runtimeGo": false,
+    "releaseGo": false,
+    "frontendVersion": "1.9.493",
+    "gatewayVersions": [
+      "1.9.245",
+      "1.9.247"
+    ],
+    "backendVersion": "1.9.447",
+    "backendInstanceId": "a27b8b00-572f-41d2-b17e-78528def448c",
+    "buildHash": "34ab64c8b03c077a82d2c9aad781b55e81b37995064fdce72d8368aa8343e4a5",
+    "gateway247CommonSourceSealSha256": "7b6f42503550c7a83d841ea2d17e51779f7c8402569d5d967367961e71a9bd1c",
+    "gateway247Components": 71,
+    "standard449Authority": null,
+    "native449Admission": false
   }
 }
