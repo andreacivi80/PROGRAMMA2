@@ -1,6 +1,6 @@
 {
-  "version": "1.9.494",
-  "build": "1.9.494",
+  "version": "1.9.495",
+  "build": "1.9.495",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
   "capabilities": {

@@ -1,10 +1,25 @@
 // Additive report consumer. Does not launch tests, write canonical files, change versions or publish.
 import assert from 'node:assert/strict';
 import {MOBILE_WIDTHS,MOBILE_SCENARIOS} from './probe.mjs';
-export function validateMobileScrollReleaseReportSOURCE(report,{candidateAssetSetSha256,baselineAssetSetSha256,expectedTestRunId}={}){
+
+// SOURCE ONLY admission parameterization: legacy494/493 or next495/494, never an implicit future pass.
+export function validateMobileScrollVersionBindingSOURCE({candidateVersion='1.9.494',baselineFrontendVersion='1.9.493',candidateRef,baselineRef,baselinePublicationRef}={}){
+ const legacy=candidateVersion==='1.9.494'&&baselineFrontendVersion==='1.9.493';
+ assert(legacy||(candidateVersion==='1.9.495'&&baselineFrontendVersion==='1.9.494'),'REVIEWED_MOBILE_VERSION_PAIR_REQUIRED');
+ if(!legacy){
+  for(const ref of [candidateRef,baselineRef,baselinePublicationRef]){assert(ref&&typeof ref.path==='string'&&ref.path.length>0);assert.match(ref.sha256,/^[a-f0-9]{64}$/);assert(Number.isSafeInteger(ref.bytes)&&ref.bytes>0);}
+  assert.equal(baselineRef.sha256,'23fe85f516889e550945328863d66969def18c05a6090300a90bde22e5c0df9d');assert.equal(baselineRef.bytes,51342);
+  assert.equal(baselinePublicationRef.sha256,'1be373c23eed4e88900fab7cca26907cc1774e59411479d3f92313960e1e53c6');assert.equal(baselinePublicationRef.bytes,79331);
+  assert.notEqual(candidateRef.sha256,baselineRef.sha256,'CANDIDATE_MUST_NOT_REUSE_BASELINE_MANIFEST');
+ }
+ return{candidateVersion,baselineFrontendVersion,legacy};
+}
+export function validateMobileScrollReleaseReportSOURCE(report,{candidateAssetSetSha256,baselineAssetSetSha256,expectedTestRunId,expectedCandidateVersion='1.9.494',expectedBaselineFrontendVersion='1.9.493',expectedCandidateRef,expectedBaselineRef,expectedBaselinePublicationRef}={}){
+ const versions=validateMobileScrollVersionBindingSOURCE({candidateVersion:expectedCandidateVersion,baselineFrontendVersion:expectedBaselineFrontendVersion,candidateRef:expectedCandidateRef,baselineRef:expectedBaselineRef,baselinePublicationRef:expectedBaselinePublicationRef});
+ if(!versions.legacy){assert.deepEqual(report.candidateRef,expectedCandidateRef);assert.deepEqual(report.baselineRef,expectedBaselineRef);assert.deepEqual(report.baselinePublicationRef,expectedBaselinePublicationRef);assert.equal(report.candidateVersion,expectedCandidateVersion);assert.equal(baselineAssetSetSha256,'da6c4f6fcbb1a1026bea1d7d8c24aad051d752a6139c556ae64b71074c4d3401');assert.notEqual(candidateAssetSetSha256,baselineAssetSetSha256);}
  assert.equal(report.issuer,'ROOT');assert.equal(report.state,'ACTUAL_MOBILE_SCROLL_MATRIX_COMPLETED');
  assert.equal(report.testRunId,expectedTestRunId);assert.match(expectedTestRunId,/^[a-f0-9]{24}$/);assert.equal(report.authorExecutedSourceOnly,false);
- assert.equal(report.baselineFrontendVersion,'1.9.493');assert.equal(report.candidateAssetSetSha256,candidateAssetSetSha256);assert.match(candidateAssetSetSha256,/^[a-f0-9]{64}$/);assert.equal(report.baselineAssetSetSha256,baselineAssetSetSha256);assert.match(baselineAssetSetSha256,/^[a-f0-9]{64}$/);
+ assert.equal(report.baselineFrontendVersion,expectedBaselineFrontendVersion);assert.equal(report.candidateAssetSetSha256,candidateAssetSetSha256);assert.match(candidateAssetSetSha256,/^[a-f0-9]{64}$/);assert.equal(report.baselineAssetSetSha256,baselineAssetSetSha256);assert.match(baselineAssetSetSha256,/^[a-f0-9]{64}$/);
  assert.equal(report.evidenceKind,'ACTUAL_HEADLESS_CHROME_CDP_TOUCH_NOT_PHYSICAL_ANDROID');assert.equal(report.actualMutationsForwarded,0);assert.equal(report.unobservedBrowserNetworkChannels,false);
  for(const key of ['physicalPrints','erpWrites','archiveWrites','realEmails','operationalSessionWrites'])assert.equal(report[key],0);
  assert.equal(report.userCacheOrSessionCleared,false);assert.equal(report.programmaticScrollUsedForTouchQualification,false);
