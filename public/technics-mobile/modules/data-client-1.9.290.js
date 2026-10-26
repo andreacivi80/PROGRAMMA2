@@ -4,6 +4,17 @@
   const rawFetch=globalThis.fetch.bind(globalThis);
   const state={requests:0,retries:0,recovered:0,failures:0,timeouts:0,offlineWaits:0,httpRetries:0,deduplicated:0,cached:0,discarded:0,integrityFailures:0,lastFailure:"",lastSuccessAt:"",lastLatencyMs:0,lastRequestId:"",lastResponseRequestId:"",lastResponseCorrelated:true,emergencyReadOnly:false,lastServerTime:"",lastDataTime:"",lastSource:"",lastNodeId:"",lastNodeRole:"",lastLeaseEpoch:"",lastBridgeVersion:""};
   const inFlight=new Map(),latestSequence=new Map(),responseCache=new Map(),activeControllers=new Map(),routeTimings=new Map();
+  const responseCacheMaxEntries=32,responseCacheMaxTtlMs=30000;
+  let responseCacheEpoch=0,responseCacheClock=null;
+  const clearResponseCache=()=>{responseCache.clear();responseCacheEpoch++};
+  const pruneResponseCache=()=>{
+    const now=Date.now();
+    if(!Number.isFinite(now)){clearResponseCache();responseCacheClock=null;return null}
+    if(responseCacheClock!==null&&now<responseCacheClock)clearResponseCache();
+    responseCacheClock=now;
+    for(const [key,entry] of responseCache){if(!Number.isFinite(entry.savedAt)||!Number.isFinite(entry.expiresAt)||entry.expiresAt<entry.savedAt||entry.expiresAt-entry.savedAt>responseCacheMaxTtlMs||entry.savedAt>now||now>entry.expiresAt)responseCache.delete(key)}
+    return now;
+  };
   let normalActive=0;const normalQueue=[];
   const acquireSlot=urgent=>urgent?Promise.resolve(()=>{}):new Promise(resolve=>{const enter=()=>{normalActive++;let released=false;resolve(()=>{if(released)return;released=true;normalActive--;normalQueue.shift()?.()})};if(normalActive<2)enter();else normalQueue.push(enter)});
   const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
@@ -95,15 +106,16 @@
     state.failures++;document.dispatchEvent(new CustomEvent("technics:data-failure",{detail:{url,message:state.lastFailure}}));throw lastError||new Error("Collegamento dati non disponibile.");
   };
   const fetchJson=(url,options={},settings={})=>{
-    const method=String(options.method||"GET").toUpperCase(),dedupe=settings.dedupe!==false&&method==="GET",key=dedupe?canonicalRequestKey(method,url):"",cacheMs=calendarSingleRead(url,options,settings)?0:method==="GET"?Math.max(0,Number(settings.cacheMs||0)):0;
-    if(method!=="GET")responseCache.clear();
-    if(key&&cacheMs){const cached=responseCache.get(key);if(cached&&Date.now()-cached.savedAt<=cacheMs){state.cached++;const result={...cached.result,payload:clone(cached.result.payload),cached:true};announceSuccess(url,result.payload,result.latencyMs,true);return Promise.resolve(result)}if(cached)responseCache.delete(key)}
+    const cacheNow=pruneResponseCache(),method=String(options.method||"GET").toUpperCase(),dedupe=settings.dedupe!==false&&method==="GET",key=dedupe?canonicalRequestKey(method,url):"",requestedCacheMs=calendarSingleRead(url,options,settings)?0:method==="GET"?Number(settings.cacheMs||0):0,cacheMs=Number.isFinite(requestedCacheMs)&&requestedCacheMs>0?Math.min(requestedCacheMs,responseCacheMaxTtlMs):0;
+    if(method!=="GET")clearResponseCache();
+    if(key&&cacheMs&&cacheNow!==null){const cached=responseCache.get(key);if(cached&&cacheNow-cached.savedAt<=cacheMs){responseCache.delete(key);responseCache.set(key,cached);state.cached++;const result={...cached.result,payload:clone(cached.result.payload),cached:true};announceSuccess(url,result.payload,result.latencyMs,true);return Promise.resolve(result)}if(cached)responseCache.delete(key)}
     if(key&&inFlight.has(key)){state.deduplicated++;return inFlight.get(key)}
     const sequence=(latestSequence.get(key)||0)+1;if(key)latestSequence.set(key,sequence);
-    const promise=runFetch(url,options,settings,key,sequence).then(result=>{if(key&&cacheMs&&result.response.ok&&result.payload.ok===true)responseCache.set(key,{savedAt:Date.now(),result:{...result,payload:clone(result.payload)}});if(method!=="GET"&&result.response.ok&&result.payload.ok===true)document.dispatchEvent(new CustomEvent("technics:data-mutated",{detail:{url:String(url),method}}));return result}).finally(()=>{if(key&&inFlight.get(key)===promise)inFlight.delete(key)});
+    const cacheEpoch=responseCacheEpoch;
+    const promise=runFetch(url,options,settings,key,sequence).then(result=>{if(key&&cacheMs&&cacheNow!==null&&result.response.ok&&result.payload.ok===true){const savedAt=pruneResponseCache();if(savedAt!==null&&cacheEpoch===responseCacheEpoch){responseCache.delete(key);responseCache.set(key,{savedAt,expiresAt:savedAt+cacheMs,result:{...result,payload:clone(result.payload)}});while(responseCache.size>responseCacheMaxEntries)responseCache.delete(responseCache.keys().next().value)}}if(method!=="GET"&&result.response.ok&&result.payload.ok===true)document.dispatchEvent(new CustomEvent("technics:data-mutated",{detail:{url:String(url),method}}));return result}).finally(()=>{if(key&&inFlight.get(key)===promise)inFlight.delete(key)});
     if(key)inFlight.set(key,promise);return promise;
   };
-  const invalidate=()=>responseCache.clear();
+  const invalidate=()=>clearResponseCache();
   const cancelledRequest=reason=>{const error=new Error(typeof reason==="string"?reason:"Richiesta annullata.");error.name="AbortError";error.cancelled=true;return error};
   const transportCircuits=new Map();let lastTransportOrigin="";
   const transportOrigin=url=>new URL(String(url),globalThis.location?.href||window.__technicsBridgeUrl).origin;

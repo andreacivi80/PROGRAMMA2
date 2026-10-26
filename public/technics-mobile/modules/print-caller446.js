@@ -34,7 +34,9 @@ function createTransport(original,{baseUrl=()=>globalThis.__technicsBridgeUrl,st
  // Re-sample expired READ producers with genuine GETs; never reuse stale proof or repeat POST.
  async function refreshExpired245Read(base,g,started){
   if(!['1.9.245','1.9.247'].includes(g?.version)||preview245Context(g))return g;
-  const tick=()=>{const t=globalThis.performance?.now();if(!Number.isFinite(started)||!Number.isFinite(t)||t<started||t-started>=15000)fail('PRINT245_READ_REFRESH_DEADLINE');return t;};
+  const refreshStarted=globalThis.performance?.now();
+  if(!Number.isFinite(started)||!Number.isFinite(refreshStarted)||refreshStarted<started)fail('PRINT245_READ_REFRESH_DEADLINE');
+  const tick=()=>{const t=globalThis.performance?.now();if(!Number.isFinite(t)||t<refreshStarted||t-refreshStarted>=15000)fail('PRINT245_READ_REFRESH_DEADLINE');return t;};
   tick();const fresh=await gatewayState(base,true);tick();
   if(!['1.9.245','1.9.247'].includes(fresh?.version)||!preview245Context(fresh))fail('PRINT245_READ_REFRESH_CONTEXT_CHANGED');
   return fresh;

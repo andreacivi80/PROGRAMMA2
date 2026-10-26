@@ -1,6 +1,6 @@
 {
-  "version": "1.9.495",
-  "build": "1.9.495",
+  "version": "1.9.496",
+  "build": "1.9.496",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
   "capabilities": {
@@ -799,5 +799,13 @@
     "gateway247Components": 71,
     "standard449Authority": null,
     "native449Admission": false
+  },
+  "incrementalMaintenance496": {
+    "scope": "Frontend only: read-preview refresh deadline and bounded data response cache",
+    "fullAudit110Complete": false,
+    "backendChanged": false,
+    "gatewayChanged": false,
+    "dispatchPermissionsChanged": false,
+    "physicalPrintConfirmed": false
   }
 }

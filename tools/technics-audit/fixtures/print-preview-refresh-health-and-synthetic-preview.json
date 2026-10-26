@@ -1,0 +1,412 @@
+{
+  "schema": 1,
+  "scope": "HISTORICAL_PUBLIC_HEALTH_AND_SYNTHETIC_PREVIEW_CLOSED_UNIT_ONLY_NOT_LIVE_AUTHORITY",
+  "historicalHealth": {
+    "capturedAt": "2026-10-20T15:22:18.667Z",
+    "sourceEvidenceSha256": "b7757dbb0cb0690242e3b11747c73740447a733db754516a8171b314301a6baf",
+    "sourceEvidenceBytes": 28027,
+    "rows": [
+      {
+        "path": "/__gateway/status",
+        "status": 200,
+        "headers": {
+          "access-control-allow-headers": "Content-Type,Cache-Control,ngrok-skip-browser-warning,X-Operation-Id,X-Technics-Request-Id,X-Technics-Priority,X-Technics-Print-Contract,X-Technics-Planning-Receipt-Only,X-Technics-Planning-Receipt-Owner",
+          "access-control-allow-methods": "GET,HEAD,POST,OPTIONS",
+          "access-control-allow-origin": "https://andreacivi80.github.io",
+          "access-control-expose-headers": "Content-Type,X-Technics-Node,X-Technics-Node-Role,X-Technics-Version,X-Technics-Backend-Instance-Id,X-Technics-Request-Id,X-Technics-Lease-Epoch,X-Technics-Server-Time,X-Technics-Gateway,X-Technics-Cache,X-Technics-Degraded-Read-Only,X-Technics-Last-Sync-At,X-Technics-Print-Receipt,X-Technics-Gateway-Version,X-Technics-Gateway-Request-Id,X-Technics-Planning-Receipt-Only,Date",
+          "access-control-max-age": "86400",
+          "alt-svc": "h3=\":443\"; ma=86400",
+          "cache-control": "no-store",
+          "cf-ray": "a4d906648dba83a9-MXP",
+          "connection": "keep-alive",
+          "content-encoding": "br",
+          "content-type": "application/json",
+          "date": "Tue, 20 Oct 2026 15:23:39 GMT",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=h5faax6f00W16jcznOIByONJdTNGxjiII5Jxb%2FWLzhmDuuMSCmel9Nz8WRk6v0o7z47fOVtDNgsAFyq4mF9mceorqrcnhTmJG6RVE1aXUu6kAuzqUgEpymbE%2F00lPcTYJfd7XVrmINpjKbuBLuOeCZ7gBBn03xfZ2CcbHrWYxTNgNuk%3D\"}]}",
+          "server": "cloudflare",
+          "transfer-encoding": "chunked",
+          "vary": "Origin",
+          "x-content-type-options": "nosniff",
+          "x-technics-gateway": "stable-worker"
+        },
+        "body": {
+          "ok": true,
+          "gateway": "technics-mobile-gateway",
+          "version": "1.9.245",
+          "planning447Qualification": [
+            {
+              "source": "EXACT_PLANNING_HANDLER_QUALIFIER_DIAGNOSTIC_NOT_AUTHORIZATION",
+              "family": "PRODUCTION_CHAIN",
+              "checkedAt": "2026-10-20T15:23:39.674Z",
+              "nodePresent": true,
+              "identityExact": true,
+              "currentMapSame": true,
+              "socketOpen": true,
+              "backendInstanceIdQualified": true,
+              "contractVersionExact": true,
+              "familyEnabled": true,
+              "dispatchBooleanQualified": true,
+              "ready": true,
+              "eligible": true,
+              "heartbeatAgeMs": 1848,
+              "readinessAgeMs": 1848,
+              "qualifies": true,
+              "failedChecks": []
+            },
+            {
+              "source": "EXACT_PLANNING_HANDLER_QUALIFIER_DIAGNOSTIC_NOT_AUTHORIZATION",
+              "family": "FIFO_SIMULATION",
+              "checkedAt": "2026-10-20T15:23:39.674Z",
+              "nodePresent": true,
+              "identityExact": true,
+              "currentMapSame": true,
+              "socketOpen": true,
+              "backendInstanceIdQualified": true,
+              "contractVersionExact": true,
+              "familyEnabled": true,
+              "dispatchBooleanQualified": true,
+              "ready": true,
+              "eligible": true,
+              "heartbeatAgeMs": 1848,
+              "readinessAgeMs": 1848,
+              "qualifies": true,
+              "failedChecks": []
+            }
+          ],
+          "planning445EffectiveAdmission": {
+            "source": "DURABLE_OBJECT_EFFECTIVE_ENV",
+            "readFlagEnabled": true,
+            "printFlagEnabled": true,
+            "expectedBackendInstanceId": "9f35ac48-69e7-43c5-ba03-e099de86d7a9",
+            "primaryBackendInstanceId": "9f35ac48-69e7-43c5-ba03-e099de86d7a9",
+            "primaryVersion": "1.9.447",
+            "expectedBuildHash": "34ab64c8b03c077a82d2c9aad781b55e81b37995064fdce72d8368aa8343e4a5",
+            "primaryBuildHash": "34ab64c8b03c077a82d2c9aad781b55e81b37995064fdce72d8368aa8343e4a5",
+            "exactBindingPresent": true,
+            "primaryIdentityMatchesExpected": true,
+            "primaryReady": true,
+            "readAdmissionQualified": false,
+            "diagnosticOnly": true
+          },
+          "releaseId": "technics-backend-1.9.343",
+          "requiredContractVersion": "1.9.30",
+          "requiredBuildHash": "30a69b74643a2c3053579f375dc7e057861467e15459fca7caee760db0260f06",
+          "legacyConnectorMigration": false,
+          "features": [
+            "stale-connection-replacement",
+            "write-authority-recovery",
+            "bounded-emergency-read-cache",
+            "separate-backend-connector-version-identity",
+            "safe-automatic-primary-failback",
+            "traceable-gateway-errors",
+            "idempotent-write-retry",
+            "bounded-authority-checkpoints",
+            "bounded-emergency-cache-writes",
+            "pending-recovery-with-uncertain-write",
+            "explicit-heartbeat-qualification",
+            "proactive-redundancy-prealarm",
+            "picking-mail-single-node-authority"
+          ],
+          "connected": true,
+          "nodes": [
+            {
+              "nodeId": "technics-utente73-primary",
+              "role": "primary",
+              "priority": 100,
+              "lastSeen": 1792509817826,
+              "ready": true,
+              "readinessCheckedAt": 1792509817826,
+              "backendVersion": "1.9.447",
+              "connectorVersion": "1.9.36"
+            },
+            {
+              "nodeId": "technics-utente38-secondary",
+              "role": "secondary",
+              "priority": 50,
+              "lastSeen": 1792509818035,
+              "ready": true,
+              "readinessCheckedAt": 1792509818035,
+              "backendVersion": "1.9.421",
+              "connectorVersion": "1.9.36"
+            }
+          ],
+          "activeNode": "technics-utente73-primary",
+          "activeSince": "2026-10-20T09:07:18.487Z",
+          "lastTransitionReason": "CONTROLLED_FAILBACK",
+          "failbackEligibleAt": null,
+          "failbackBlockedReasons": [],
+          "authorityPersistence": {
+            "lastPersistedAt": "2026-10-20T15:19:23.714Z",
+            "degraded": false
+          },
+          "writes": {
+            "pending": 0,
+            "uncertain": 0,
+            "storageAvailable": true,
+            "reconciliationRequired": false,
+            "lastRecovery": null
+          },
+          "checkedAt": "2026-10-20T15:23:39.674Z"
+        }
+      },
+      {
+        "path": "/health/nodes",
+        "status": 200,
+        "headers": {
+          "access-control-allow-headers": "Content-Type,Cache-Control,ngrok-skip-browser-warning,X-Operation-Id,X-Technics-Request-Id,X-Technics-Priority,X-Technics-Print-Contract,X-Technics-Planning-Receipt-Only,X-Technics-Planning-Receipt-Owner",
+          "access-control-allow-methods": "GET,HEAD,POST,OPTIONS",
+          "access-control-allow-origin": "https://andreacivi80.github.io",
+          "access-control-expose-headers": "Content-Type,X-Technics-Node,X-Technics-Node-Role,X-Technics-Version,X-Technics-Backend-Instance-Id,X-Technics-Request-Id,X-Technics-Lease-Epoch,X-Technics-Server-Time,X-Technics-Gateway,X-Technics-Cache,X-Technics-Degraded-Read-Only,X-Technics-Last-Sync-At,X-Technics-Print-Receipt,X-Technics-Gateway-Version,X-Technics-Gateway-Request-Id,X-Technics-Planning-Receipt-Only,Date",
+          "access-control-max-age": "86400",
+          "alt-svc": "h3=\":443\"; ma=86400",
+          "cache-control": "no-store",
+          "cf-ray": "a4d906664f4683a9-MXP",
+          "connection": "keep-alive",
+          "content-encoding": "br",
+          "content-type": "application/json",
+          "date": "Tue, 20 Oct 2026 15:23:39 GMT",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=ejoRB8k6KxxL%2Bd4AiNTsvQa6cQILMbsdZjZgS6h27KALnXKk34VjSCQX%2Br0tMs1fWm1Lz2GoGcrtjAmA%2B9uQ3UXZpghNLy3okxz6mVd6RvVjtHytmyIjXVPBbFxE1TWm3NOzuR3jds4ticQqvOLgLHzwKAvLHbTvUcT%2FLBuLa%2B%2B3kIY%3D\"}]}",
+          "server": "cloudflare",
+          "transfer-encoding": "chunked",
+          "vary": "Origin",
+          "x-content-type-options": "nosniff",
+          "x-technics-gateway": "stable-worker"
+        },
+        "body": {
+          "ok": true,
+          "gatewayVersion": "1.9.245",
+          "gatewayReleaseId": "technics-backend-1.9.343",
+          "requiredContractVersion": "1.9.30",
+          "requiredBuildHash": "30a69b74643a2c3053579f375dc7e057861467e15459fca7caee760db0260f06",
+          "gatewayFeatures": [
+            "stale-connection-replacement",
+            "write-authority-recovery",
+            "bounded-emergency-read-cache",
+            "separate-backend-connector-version-identity",
+            "safe-automatic-primary-failback",
+            "traceable-gateway-errors",
+            "idempotent-write-retry",
+            "bounded-authority-checkpoints",
+            "bounded-emergency-cache-writes",
+            "pending-recovery-with-uncertain-write",
+            "explicit-heartbeat-qualification",
+            "proactive-redundancy-prealarm",
+            "picking-mail-single-node-authority"
+          ],
+          "coordinatorId": "2581f159-1338-4dcb-9c4c-4af2ba4a7cb2",
+          "generation": 1,
+          "activeNode": "technics-utente73-primary",
+          "servingNode": "technics-utente73-primary",
+          "readFallback": false,
+          "epoch": 165,
+          "leaseId": "49151ed0-a7d0-4e42-aab7-6d2843fe0e9b",
+          "leaseExpiresAt": "2026-10-20T15:24:09.931Z",
+          "activeSince": "2026-10-20T09:07:18.487Z",
+          "lastTransitionAt": "2026-10-20T09:07:18.487Z",
+          "lastTransitionReason": "CONTROLLED_FAILBACK",
+          "failbackEligibleAt": null,
+          "failbackBlockedReasons": [],
+          "nodes": [
+            {
+              "nodeId": "technics-utente73-primary",
+              "role": "primary",
+              "priority": 100,
+              "online": true,
+              "ok": true,
+              "rawOk": true,
+              "bridge": true,
+              "external": true,
+              "readinessTransient": false,
+              "state": "running",
+              "version": "1.9.447",
+              "backendVersion": "1.9.447",
+              "connectorVersion": "1.9.36",
+              "releaseId": "technics-backend-1.9.447-form-analysis-opmail-frozen",
+              "contractVersion": "1.9.30",
+              "buildHash": "34ab64c8b03c077a82d2c9aad781b55e81b37995064fdce72d8368aa8343e4a5",
+              "compatible": true,
+              "checkedAt": "2026-10-20T15:23:39.827Z",
+              "ageSeconds": 0,
+              "leader": true
+            },
+            {
+              "nodeId": "technics-utente38-secondary",
+              "role": "secondary",
+              "priority": 50,
+              "online": true,
+              "ok": true,
+              "rawOk": true,
+              "bridge": true,
+              "external": true,
+              "readinessTransient": false,
+              "state": "running",
+              "version": "1.9.421",
+              "backendVersion": "1.9.421",
+              "connectorVersion": "1.9.36",
+              "releaseId": "technics-backend-1.9.421-sales-expiry-frozen-print",
+              "contractVersion": "1.9.30",
+              "buildHash": "80abf0af93e1ac31f82943f703f505425487050db15200dbc85e84b10bd35290",
+              "compatible": true,
+              "checkedAt": "2026-10-20T15:23:38.035Z",
+              "ageSeconds": 2,
+              "leader": false
+            }
+          ],
+          "healthActiveNode": "technics-utente73-primary",
+          "transientReadiness": false,
+          "onlineCount": 2,
+          "expectedNodeCount": 2,
+          "leaderCount": 1,
+          "splitBrain": false,
+          "degradedReason": null,
+          "preAlarm": {
+            "level": "healthy",
+            "color": "green",
+            "code": "READY_REDUNDANT",
+            "message": "Servizio e ridondanza verificati.",
+            "serviceAvailable": true,
+            "redundancyAvailable": true,
+            "automaticRecovery": "armed"
+          }
+        }
+      },
+      {
+        "path": "/health/ready",
+        "status": 200,
+        "headers": {
+          "access-control-allow-headers": "Content-Type,Cache-Control,ngrok-skip-browser-warning,X-Operation-Id,X-Technics-Request-Id,X-Technics-Priority,X-Technics-Print-Contract,X-Technics-Planning-Receipt-Only,X-Technics-Planning-Receipt-Owner",
+          "access-control-allow-methods": "GET,HEAD,POST,OPTIONS",
+          "access-control-allow-origin": "https://andreacivi80.github.io",
+          "access-control-expose-headers": "Content-Type,X-Technics-Node,X-Technics-Node-Role,X-Technics-Version,X-Technics-Backend-Instance-Id,X-Technics-Request-Id,X-Technics-Lease-Epoch,X-Technics-Server-Time,X-Technics-Gateway,X-Technics-Cache,X-Technics-Degraded-Read-Only,X-Technics-Last-Sync-At,X-Technics-Print-Receipt,X-Technics-Gateway-Version,X-Technics-Gateway-Request-Id,X-Technics-Planning-Receipt-Only,Date",
+          "access-control-max-age": "86400",
+          "alt-svc": "h3=\":443\"; ma=86400",
+          "cache-control": "no-store",
+          "cf-ray": "a4d90666cfc283a9-MXP",
+          "connection": "keep-alive",
+          "content-encoding": "br",
+          "content-type": "application/json; charset=utf-8",
+          "date": "Tue, 20 Oct 2026 15:23:40 GMT",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=TzkLhcT9xN%2Flb0iJRxtUt3VD17fef4IG0VFHmbRjmPyzi3NXrwhpI78V7u0O8Xb36wqSaARCCsxPHI%2FCJUKx2x5wgFI6awk7WLR1uN9r%2B8B9I6ze7TU2Oa594Hd5NbQAofTNFdfJ6u1NOAXPW7M7HgUUk67dJY%2Bp%2B4IEBl1Ho3Wc40E%3D\"}]}",
+          "server": "cloudflare",
+          "transfer-encoding": "chunked",
+          "vary": "Origin",
+          "x-content-type-options": "nosniff",
+          "x-technics-backend-instance-id": "9f35ac48-69e7-43c5-ba03-e099de86d7a9",
+          "x-technics-gateway": "stable-worker",
+          "x-technics-lease-epoch": "native-readonly",
+          "x-technics-node": "technics-utente73-primary",
+          "x-technics-node-role": "primary",
+          "x-technics-request-id": "6eed85ec-a6ab-495d-914e-06ef4ab742d7",
+          "x-technics-server-time": "2026-10-20T15:21:56.542Z",
+          "x-technics-version": "1.9.447"
+        },
+        "body": {
+          "ok": true,
+          "ready": true,
+          "code": "READY",
+          "recovering": false,
+          "version": "1.9.447",
+          "backendInstanceId": "9f35ac48-69e7-43c5-ba03-e099de86d7a9",
+          "frozenOperatorPrintContracts": {
+            "version": "frozen-operator-preview-v1",
+            "picking": true,
+            "packing": true,
+            "packingPicking": true
+          },
+          "frozenStandardPrintContracts": {
+            "version": "standard-family-frozen-v1",
+            "promoitalia": false,
+            "customerInventory": false
+          },
+          "planningFrozenContracts": {
+            "version": "planning-frozen-standard-lpd-v2",
+            "productionChain": true,
+            "fifoSimulation": true,
+            "dispatchEnabled": true,
+            "transport": "STANDARD_LPD"
+          },
+          "database": {
+            "ready": true,
+            "code": "READY"
+          },
+          "operational": {
+            "ready": true,
+            "code": "READY",
+            "lastVerifiedAt": "2026-10-20T15:21:53.946Z",
+            "freshUntil": "2026-10-20T15:22:38.946Z",
+            "stale": false,
+            "archives": {
+              "packing": {
+                "ok": true,
+                "code": "READY",
+                "sessions": 13
+              },
+              "picking": {
+                "ok": true,
+                "code": "READY",
+                "sessions": 11
+              }
+            },
+            "storageAttested": true,
+            "storageCode": "ATTESTED"
+          },
+          "mode": "read-only-shadow",
+          "meta": {
+            "requestId": "6eed85ec-a6ab-495d-914e-06ef4ab742d7",
+            "serverTime": "2026-10-20T15:21:56.542Z",
+            "version": "1.9.447",
+            "source": "TechnicsNativeBridge",
+            "nodeId": "technics-utente73-primary",
+            "nodeRole": "primary",
+            "leaseEpoch": "native-readonly",
+            "dataAuthority": "Technics",
+            "readOnly": true,
+            "backendInstanceId": "9f35ac48-69e7-43c5-ba03-e099de86d7a9"
+          }
+        }
+      }
+    ]
+  },
+  "syntheticPreview": {
+    "status": 202,
+    "headers": {
+      "content-type": "application/json",
+      "x-technics-version": "1.9.421",
+      "x-technics-node": "technics-utente38-secondary",
+      "x-technics-node-role": "secondary",
+      "x-technics-request-id": "00000000-0000-4000-8000-000000000000",
+      "x-technics-server-time": "2000-01-01T00:00:00.000Z",
+      "x-technics-lease-epoch": "native-readonly"
+    },
+    "body": {
+      "ok": true,
+      "ready": true,
+      "documentType": "CUSTOMER_INVENTORY",
+      "previewId": "CPU_PREVIEW_ONLY_0001",
+      "snapshotId": "CPU_PREVIEW_ONLY_0001",
+      "snapshotHash": "a6e98e8a886b187cb6a23ce4806bf9be3b6127f1ab855d87bab579f9ab20e6d4",
+      "printerTarget": "corridor",
+      "pageCount": 4,
+      "meta": {
+        "requestId": "00000000-0000-4000-8000-000000000000",
+        "serverTime": "2000-01-01T00:00:00.000Z",
+        "version": "1.9.421",
+        "source": "TechnicsNativeBridge",
+        "nodeId": "technics-utente38-secondary",
+        "nodeRole": "secondary",
+        "leaseEpoch": "native-readonly",
+        "dataAuthority": "Technics",
+        "readOnly": true
+      }
+    },
+    "image": "<svg xmlns=\"http://www.w3.org/2000/svg\"><text>SYNTHETIC CLOSED CLIENT TEST ONLY</text></svg>",
+    "notes": [
+      "Entire preview/snapshot/hash/page bytes and timestamp are synthetic protocol fixtures; no current server snapshot, live backendUUID or production owner attestation.",
+      "Logical Native421 secondary identity mirrors the reviewed legacy contract only; requestId is rebound per actual client request in closed transport.",
+      "Health is historical publicly readable capture, replayed with explicit fake monotonic clock; never fresh authority."
+    ]
+  }
+}
