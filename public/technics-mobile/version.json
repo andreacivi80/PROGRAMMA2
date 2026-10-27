@@ -1,6 +1,6 @@
 {
-  "version": "1.9.497",
-  "build": "1.9.497",
+  "version": "1.9.498",
+  "build": "1.9.498",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
   "capabilities": {
@@ -816,5 +816,16 @@
     "dispatchPermissionsChanged": false,
     "fullAudit110Complete": false,
     "physicalPrintConfirmed": false
+  },
+  "incrementalMaintenance498": {
+    "scope": "Only constrain two existing page footer selectors to direct shell children so preview modal footers retain their own layout.",
+    "parentVersion": "1.9.497",
+    "parentCommit": "1ed9bebb4f9033955e1a8a937ee2dabbd2add125",
+    "frontendOnly": true,
+    "backendOrGatewayChanged": false,
+    "sourceOnly": true,
+    "runtimeQualified": false,
+    "releaseGo": false,
+    "physicalOutputConfirmed": false
   }
 }
