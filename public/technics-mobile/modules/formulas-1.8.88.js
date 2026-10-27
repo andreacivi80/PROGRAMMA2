@@ -601,7 +601,7 @@
   });
   const suggestions = section.querySelector("[data-formula-suggestions]");
   let suggestionTimer = 0, suggestionToken = 0;
-  const closeSuggestions = () => { suggestions.classList.add("hidden"); suggestions.innerHTML = ""; };
+  const closeSuggestions = () => { suggestionToken += 1; clearTimeout(suggestionTimer); suggestions.classList.add("hidden"); suggestions.innerHTML = ""; };
   form.elements.code.addEventListener("input", () => {
     clearTimeout(suggestionTimer);
     const query = form.elements.code.value.trim();
@@ -614,7 +614,13 @@
         const rows = Array.isArray(payload.suggestions) ? payload.suggestions : [];
         suggestions.innerHTML = rows.length ? rows.map(item => `<button type="button" data-formula-suggestion="${esc(item.code)}"><b>${esc(item.code)}</b><span>${esc(item.description)}</span>${item.active ? "" : "<small>NON ATTIVO</small>"}</button>`).join("") : '<div class="formulaempty">Nessuna formula corrispondente.</div>';
         suggestions.classList.remove("hidden");
-      } catch { closeSuggestions(); }
+      } catch (error) {
+        if (token !== suggestionToken) return;
+        closeSuggestions();
+        const message = error?.status === 409 && error?.reason === "Risultato incompleto: restringere la ricerca." ? error.reason : "Suggerimenti temporaneamente non disponibili. Riprova la ricerca.";
+        suggestions.innerHTML = `<div class="formulaempty">${esc(message)}</div>`;
+        suggestions.classList.remove("hidden");
+      }
     }, 220);
   });
   suggestions.addEventListener("click", event => {

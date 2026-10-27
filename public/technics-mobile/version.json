@@ -1,6 +1,6 @@
 {
-  "version": "1.9.496",
-  "build": "1.9.496",
+  "version": "1.9.497",
+  "build": "1.9.497",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
   "capabilities": {
@@ -806,6 +806,15 @@
     "backendChanged": false,
     "gatewayChanged": false,
     "dispatchPermissionsChanged": false,
+    "physicalPrintConfirmed": false
+  },
+  "incrementalMaintenance497": {
+    "scope": "Formule suggestion lifecycle: closing cancels pending results; stale errors cannot clear newer suggestions; current errors stay visible.",
+    "parentFrontend": "1.9.496",
+    "backendChanged": false,
+    "gatewayChanged": false,
+    "dispatchPermissionsChanged": false,
+    "fullAudit110Complete": false,
     "physicalPrintConfirmed": false
   }
 }
