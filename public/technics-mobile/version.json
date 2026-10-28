@@ -1,6 +1,6 @@
 {
-  "version": "1.9.498",
-  "build": "1.9.498",
+  "version": "1.9.499",
+  "build": "1.9.499",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
   "capabilities": {
@@ -826,6 +826,19 @@
     "sourceOnly": true,
     "runtimeQualified": false,
     "releaseGo": false,
+    "physicalOutputConfirmed": false
+  },
+  "incrementalMaintenance499": {
+    "scope": "Desktop planning hardware barcode: use existing scanner-core hardware normalization/EAN validation and existing authoritative planning handler instead of inaccessible module-local symbols.",
+    "parentVersion": "1.9.498",
+    "parentCommit": "4c71b8418e29f573f619ac338fa0a7b67fa027e1",
+    "frontendOnly": true,
+    "backendOrGatewayChanged": false,
+    "sourceOnly": true,
+    "runtimeQualified": false,
+    "releaseGo": false,
+    "mobileHardwareBehaviorChanged": false,
+    "quantityValidationChanged": false,
     "physicalOutputConfirmed": false
   }
 }
