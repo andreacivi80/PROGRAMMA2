@@ -1,6 +1,6 @@
 {
-  "version": "1.9.499",
-  "build": "1.9.499",
+  "version": "1.9.500",
+  "build": "1.9.500",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
   "capabilities": {
@@ -839,6 +839,19 @@
     "releaseGo": false,
     "mobileHardwareBehaviorChanged": false,
     "quantityValidationChanged": false,
+    "physicalOutputConfirmed": false
+  },
+  "incrementalMaintenance500": {
+    "scope": "Picking quantity: reject negative, non-numeric or non-finite values before the single-material request; keep decimal/comma/zero and group behavior unchanged.",
+    "parentVersion": "1.9.499",
+    "parentIndexSha256": "33464540bf4cd090b59d85f506e873a2943bb653435a98db3fa6afb81acf15e2",
+    "frontendOnly": true,
+    "backendOrGatewayChanged": false,
+    "scannerHardwareFix499Preserved": true,
+    "mobileCameraScanQualified": false,
+    "sourceOnly": true,
+    "runtimeQualified": false,
+    "releaseGo": false,
     "physicalOutputConfirmed": false
   }
 }
