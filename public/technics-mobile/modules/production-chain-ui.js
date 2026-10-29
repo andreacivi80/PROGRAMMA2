@@ -1,6 +1,6 @@
 import {fifoDemandSummary,fifoDemandSummaryText} from './fifo-demand-summary.mjs';
 import {createCurrentPlanningTypedTransport} from './PlanningTypedTransport448.js?v=1.9.496';
-import {attachPlanningPrintControls} from './planning-print-ui.js?v=1.9.494';
+import {attachPlanningPrintControls} from './planning-print-ui.js?v=1.9.502';
 import {readPlanningCalendarPeriod449,qualifyPlanningPeriodResult449} from './PlanningPeriodSelection449.js';
 import {buildProductionChain,simulateFifo} from './production-chain-adapter.mjs';
 import {compactFifoPickingRows} from './compact-fifo-picking.mjs';

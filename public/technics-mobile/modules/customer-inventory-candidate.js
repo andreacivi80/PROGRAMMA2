@@ -122,7 +122,7 @@
       previewButton.disabled = !printerTarget || (showZero.checked ? selected.catalog.articleCount : selected.articleCount) === 0;
     };
     showZero.onchange = () => {directPrint?.invalidate();clearPages();preview.hidden=true;render()};
-    const close = () => {preview.hidden=true;overlay.hidden = true; sequence++;searchSequence++;directPrint?.invalidate();clearPages()};
+    const close = () => {if(printSubmitting)return;preview.hidden=true;overlay.hidden = true; sequence++;searchSequence++;directPrint?.invalidate();clearPages()};
     overlay.querySelector('[data-close]').onclick = close;
     overlay.addEventListener('click', event => {if (event.target === overlay) close()});
     launcher.querySelector('button').onclick = () => {overlay.hidden = false; input.focus()};
@@ -187,19 +187,25 @@
           const url=URL.createObjectURL(blob);pageUrls.push(url);const img=document.createElement('img');img.src=url;img.alt=`Pagina ${index+1} di ${result.pageCount} Inventario clienti`;pages.appendChild(img);
         }
         preview.querySelector('[data-print-status]').textContent=result.printLock?.locked?`${result.pageCount} pagine server. Esito precedente non verificato (${result.printLock.code}); invio bloccato, nessun reinvio automatico.`:`${result.pageCount} pagine server`;
-        preview.querySelector('[data-fixed-target]').textContent=printerTarget==='warehouse'?'Destinazione: Magazzino':'Destinazione: Corridoio';preview.querySelector('[data-print-confirm]').disabled=!directPrint.ready();
+        preview.querySelector('[data-fixed-target]').textContent=printerTarget==='warehouse'?'Destinazione: Magazzino':'Destinazione: Corridoio';const confirm=preview.querySelector('[data-print-confirm]'),ready=directPrint.ready();confirm.disabled=!ready;if(ready)confirm.textContent='Conferma e invia stampa';
         preview.hidden=false;
       }catch(error){directPrint?.invalidate();clearPages();status.textContent=error.message||'Anteprima server non disponibile.'}
       finally{previewButton.disabled=!selected||!printerTarget||(!showZero.checked&&selected.articleCount===0)}
     };
+    // PRINT_FEEDBACK_CUSTOMER_BUSY_BEGIN
+    let printSubmitting=false;const printBusyControls=new Map();
+    const setPrintBusy=active=>{preview.querySelector('.customerinventorypreviewcard').setAttribute('aria-busy',String(active));if(active){for(const control of [...overlay.querySelectorAll('button,input'),...preview.querySelectorAll('button')]){printBusyControls.set(control,control.disabled);control.disabled=true;}}else{for(const[control,disabled]of printBusyControls)control.disabled=disabled;printBusyControls.clear();}};
+    const guardPrintBusy=event=>{if(printSubmitting){event.preventDefault();event.stopImmediatePropagation();}};for(const element of [overlay,preview])for(const type of ['click','change','input'])element.addEventListener(type,guardPrintBusy,true);
+    // PRINT_FEEDBACK_CUSTOMER_BUSY_END
     preview.addEventListener('click',async event=>{
+      if(printSubmitting)return;
       if(event.target===preview||event.target.closest('[data-preview-close]')){preview.hidden=true;directPrint?.invalidate();clearPages();return}
       const button=event.target.closest('[data-print-confirm]');if(!button||button.disabled)return;
-      const target=printerTarget;button.disabled=true;
+      const target=printerTarget,message=preview.querySelector('[data-print-status]');let printAttempted=false;printSubmitting=true;setPrintBusy(true);message.setAttribute('aria-live','polite');button.disabled=true;
       try{
         if(!directPrint?.ready()||directPrint.snapshot?.printerTarget!==target)throw Error('Anteprima scaduta o destinazione cambiata: aggiornarla.');
-        directPrint.confirm(target);button.textContent='Invio in corso…';await directPrint.print(target);button.textContent='Documento accettato dalla stampante';preview.querySelector('[data-print-status]').textContent='Invio accettato; uscita del foglio non verificata.';
-      }catch(error){preview.querySelector('[data-print-status]').textContent=error.message||'Stampa non disponibile.'}
+        directPrint.confirm(target);button.textContent='Stampa in corso…';message.textContent='Stampa in corso… Invio alla coda '+(target==='warehouse'?'Magazzino':'Corridoio')+'.';printAttempted=true;await directPrint.print(target);button.textContent='Documento accettato dalla coda';message.textContent='Invio accettato; uscita del foglio non verificata.';
+      }catch(error){const retryable=directPrint?.ready()===true;button.textContent=retryable?'Conferma e invia stampa':'Invio da verificare';message.textContent=(error.message||'Stampa non disponibile.')+(!printAttempted||retryable?' Nessuna stampa inviata. Controlla l’anteprima prima di confermare.':' Esito da verificare. Nessun reinvio automatico.');}finally{printSubmitting=false;setPrintBusy(false);button.disabled=directPrint?.ready()!==true;}
     });
     return true;
   }

@@ -1,6 +1,6 @@
 {
-  "version": "1.9.500",
-  "build": "1.9.500",
+  "version": "1.9.502",
+  "build": "1.9.502",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
   "capabilities": {
@@ -326,9 +326,9 @@
   "published": false,
   "publishable": false,
   "releaseGo": false,
-  "sourceCreatedAt": "2026-10-04T00:33:03.731Z",
-  "parentFrontendVersion": "1.9.469",
-  "parentFrontendCommit": "71a298018e0007523716819490f283e7aa858237",
+  "sourceCreatedAt": "2026-10-29T09:25:03.670Z",
+  "parentFrontendVersion": "1.9.500",
+  "parentFrontendCommit": "fbc6e979312382fd642a4c5d6e1048230b5371b7",
   "qualification": {
     "state": "443_SOURCE_ONLY_PENDING_REAL_HOST_AND_PUBLIC_PROOFS",
     "endpointQualified": false,
@@ -853,5 +853,52 @@
     "runtimeQualified": false,
     "releaseGo": false,
     "physicalOutputConfirmed": false
+  },
+  "incrementalMaintenance502": {
+    "scope": "Only visible pending print feedback in existing customer inventory, Promoitalia, FIFO and production-chain dialogs; preserve one original dispatch, all options and exact owner/snapshot/target/no-resend.",
+    "operatorRequirement": "Nelle anteprime di Inventario clienti, Promoitalia, FIFO e Catena produzione, dopo la conferma su Corridoio o Magazzino compare Stampa in corso per tutta l’attesa. Il dialogo conserva lo stato, evita doppi invii e mostra esito accettato, incerto o errore senza dichiarare una stampa fisica non verificata.",
+    "parentVersion": "1.9.500",
+    "parentCommit": "fbc6e979312382fd642a4c5d6e1048230b5371b7",
+    "frontendOnly": true,
+    "changedAssets": [
+      "index.html",
+      "version.json",
+      "modules/production-chain-ui.js",
+      "modules/planning-print-ui.js",
+      "modules/customer-inventory-candidate.js",
+      "modules/promoitalia-preview-only.js"
+    ],
+    "cacheClosure": "ONLY_THREE_DIRECT_CHANGED_SCRIPT_URLS_AND_PLANNING_IMPORT_URL_USE502",
+    "newOverlay": false,
+    "backendOrGatewayChanged": false,
+    "protocolOwnerSnapshotTargetNoResendChanged": false,
+    "sourceOnly": true,
+    "originalUiQualified": false,
+    "touch140Qualified": false,
+    "canonical502Qualified": false,
+    "rollbackQualified": false,
+    "postPublicQualified": false,
+    "runtimeQualified": false,
+    "releaseGo": false,
+    "publicationGo": false,
+    "physicalOutputConfirmed": false,
+    "memory501Included": false,
+    "historical501HoldPreserved": true,
+    "noLaterDowngradeTo501": true,
+    "sourceRevision": "R2",
+    "previewCaptionReset": "Reset original Confirm caption only when a fresh original standard preview snapshot is ready; preserve pending/uncertain fence and all original client behavior.",
+    "standardUiSource": {
+      "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-PRINT500-FEEDBACK-STANDARD2-SOURCE-R2-20261029-01/SOURCE-SEAL.json",
+      "sha256": "416f2041460fe620f46419268f46bfcb4601c528fd0318d376062d744acf8514",
+      "bytes": 4602
+    },
+    "supersededR1": {
+      "packet": {
+        "path": "C:/Users/utente38/Desktop/Manuale/Technics/verification/ROOT-STATUS502-PUBLIC500-SPARSE-CANDIDATE-SOURCE-20261029-01/SOURCE-PACKET.json",
+        "sha256": "7ac60a674e1d62c4088188942706a0fc4938f329ee5d25b69fdb910d6d0d6123",
+        "bytes": 83301
+      },
+      "state": "HOLD_SOURCE_CAPTION_DEFECT_NOT_STAGED_NOT_PUBLISHED"
+    }
   }
 }
