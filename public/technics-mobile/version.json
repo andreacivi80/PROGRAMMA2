@@ -1,6 +1,6 @@
 {
-  "version": "1.9.502",
-  "build": "1.9.502",
+  "version": "1.9.506",
+  "build": "1.9.506",
   "backendRequired": "1.9.447",
   "gatewayRequired": "1.9.244",
   "capabilities": {
@@ -326,9 +326,9 @@
   "published": false,
   "publishable": false,
   "releaseGo": false,
-  "sourceCreatedAt": "2026-10-29T09:25:03.670Z",
-  "parentFrontendVersion": "1.9.500",
-  "parentFrontendCommit": "fbc6e979312382fd642a4c5d6e1048230b5371b7",
+  "sourceCreatedAt": "2026-11-03T08:02:25.182769+00:00",
+  "parentFrontendVersion": "1.9.502",
+  "parentFrontendCommit": "e77cfcc345d08dbd3d326e4196feda96d9902c97",
   "qualification": {
     "state": "443_SOURCE_ONLY_PENDING_REAL_HOST_AND_PUBLIC_PROOFS",
     "endpointQualified": false,

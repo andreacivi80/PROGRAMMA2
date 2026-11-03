@@ -66,7 +66,8 @@ self.addEventListener("message", event => {
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
   const networkUrl = new URL(event.request.url);
-  if (networkUrl.pathname.startsWith(`${BASE}technics-mobile/`)) {
+  if (networkUrl.pathname.startsWith(`${BASE}technics-mobile/`) ||
+      networkUrl.origin === "https://technics-mobile-gateway.andreacivi80.workers.dev") {
     event.respondWith(fetch(new Request(networkUrl, {
       cache: "no-store",
       headers: event.request.headers,
